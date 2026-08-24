@@ -1,0 +1,11 @@
+{
+  "project_name": "coastal-ruins-directions",
+  "task_type": "scene_direction",
+  "source_image": "assets/coastal-ruins-graybox.png",
+  "style_references": ["assets/style-reference.png"],
+  "intent": "Develop three distinct lighting and atmosphere directions for a game environment concept.",
+  "preserve": ["camera composition", "main ruin silhouette", "walkable path"],
+  "avoid": ["new characters", "text", "logo", "geometry redesign"],
+  "variant_count": 3
+}
+
