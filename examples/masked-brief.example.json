@@ -1,0 +1,10 @@
+{
+  "project_name": "coastal-ruins-arch-refinement",
+  "task_type": "masked_refinement",
+  "source_image": "replaced-by-selected-parent-artifact",
+  "style_references": [],
+  "intent": "Refine the selected ruin arch so its silhouette and material transition read cleanly without changing the surrounding composition.",
+  "preserve": ["all pixels outside the mask", "camera composition", "lighting direction"],
+  "avoid": ["new objects", "text", "logo", "changes outside the mask"],
+  "variant_count": 3
+}

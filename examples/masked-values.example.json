@@ -1,0 +1,11 @@
+{
+  "source_image": "ArtFlow/source.png",
+  "mask_image": "ArtFlow/mask.png",
+  "positive_prompt": "Repair the masked stone arch with coherent weathered masonry while preserving all unmasked pixels.",
+  "negative_prompt": "characters, text, logo, geometry changes outside the mask",
+  "seed": 142,
+  "denoise": 0.75,
+  "width": 768,
+  "height": 512,
+  "filename_prefix": "ArtFlow/refinement/stone-arch"
+}

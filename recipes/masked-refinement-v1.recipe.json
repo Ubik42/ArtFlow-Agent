@@ -1,0 +1,44 @@
+{
+  "recipe_id": "masked-refinement-v1",
+  "version": "1.1.0",
+  "task_type": "masked_refinement",
+  "description": "FLUX.2 Klein local refinement constrained by an explicit grayscale mask and partial denoising.",
+  "workflow_file": "masked-refinement-v1.workflow.json",
+  "execution_ready": true,
+  "required_models": [
+    "flux-2-klein-base-4b-fp8.safetensors",
+    "qwen_3_4b.safetensors",
+    "full_encoder_small_decoder.safetensors"
+  ],
+  "required_nodes": [
+    "UNETLoader",
+    "CLIPLoader",
+    "VAELoader",
+    "LoadImage",
+    "LoadImageMask",
+    "ImageScale",
+    "ResizeMask",
+    "CLIPTextEncode",
+    "InpaintModelConditioning",
+    "CFGGuider",
+    "RandomNoise",
+    "KSamplerSelect",
+    "Flux2Scheduler",
+    "SplitSigmasDenoise",
+    "SamplerCustomAdvanced",
+    "VAEDecode",
+    "SaveImage"
+  ],
+  "estimated_vram_mb": 14000,
+  "slots": [
+    {"name": "source_image", "node_id": "4", "input_name": "image", "value_type": "string"},
+    {"name": "mask_image", "node_id": "5", "input_name": "image", "value_type": "string"},
+    {"name": "positive_prompt", "node_id": "8", "input_name": "text", "value_type": "string"},
+    {"name": "negative_prompt", "node_id": "9", "input_name": "text", "value_type": "string"},
+    {"name": "seed", "node_id": "12", "input_name": "noise_seed", "value_type": "integer", "minimum": 0, "maximum": 18446744073709551615},
+    {"name": "denoise", "node_id": "15", "input_name": "denoise", "value_type": "number", "minimum": 0.25, "maximum": 1.0},
+    {"name": "width", "targets": [{"node_id": "6", "input_name": "width"}, {"node_id": "7", "input_name": "width"}, {"node_id": "14", "input_name": "width"}], "value_type": "integer", "minimum": 512, "maximum": 1536},
+    {"name": "height", "targets": [{"node_id": "6", "input_name": "height"}, {"node_id": "7", "input_name": "height"}, {"node_id": "14", "input_name": "height"}], "value_type": "integer", "minimum": 512, "maximum": 1536},
+    {"name": "filename_prefix", "node_id": "18", "input_name": "filename_prefix", "value_type": "string"}
+  ]
+}

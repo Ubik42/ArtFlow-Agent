@@ -6,4 +6,8 @@ __pycache__/
 .env
 runs/
 outputs/
-
+logs/
+.playwright-cli/
+web/node_modules/
+web/dist/
+web/*.tsbuildinfo

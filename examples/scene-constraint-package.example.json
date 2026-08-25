@@ -1,0 +1,42 @@
+{
+  "schema_id": "scene-constraint-package/1",
+  "package_id": "coastal-ruins-ue-capture-001",
+  "camera": {
+    "projection": "perspective",
+    "world_transform": [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+    "horizontal_fov_degrees": 70,
+    "near_clip": 10,
+    "far_clip": 100000,
+    "width": 1280,
+    "height": 720
+  },
+  "passes": [
+    {"kind": "beauty", "artifact": {"path": "passes/beauty.png", "sha256": "1111111111111111111111111111111111111111111111111111111111111111", "media_type": "image/png"}, "encoding": "srgb"},
+    {"kind": "depth", "artifact": {"path": "passes/depth.exr", "sha256": "2222222222222222222222222222222222222222222222222222222222222222", "media_type": "image/x-exr"}, "encoding": "linear-distance-centimeters"},
+    {"kind": "world_normal", "artifact": {"path": "passes/world-normal.exr", "sha256": "3333333333333333333333333333333333333333333333333333333333333333", "media_type": "image/x-exr"}, "encoding": "xyz-minus-one-to-one"},
+    {"kind": "object_id", "artifact": {"path": "passes/object-id.png", "sha256": "4444444444444444444444444444444444444444444444444444444444444444", "media_type": "image/png"}, "encoding": "uint24-rgb"}
+  ],
+  "regions": [
+    {"region_id": "main-ruin", "mode": "protected", "object_ids": ["SM_MainRuin"]},
+    {"region_id": "arch-repair", "mode": "editable", "object_ids": ["SM_Arch"]}
+  ],
+  "art_intent": {
+    "goal": "Explore lighting and atmosphere while preserving the camera and main ruin geometry.",
+    "preserve": ["camera framing", "walkable path", "main ruin silhouette"],
+    "prohibit": ["new characters", "logos", "geometry redesign"],
+    "reference_assets": []
+  },
+  "provenance": {
+    "application": "Unreal Engine",
+    "application_version": "5.8",
+    "project_name": "ArtFlowSceneDemo",
+    "scene_name": "CoastalRuins",
+    "captured_at": "2026-08-25T08:00:00Z"
+  },
+  "delivery": {
+    "color_space": "sRGB",
+    "file_format": "png",
+    "purpose": "art_direction"
+  }
+}
+

@@ -1,0 +1,8 @@
+[
+  {
+    "candidate_id": "candidate-01",
+    "direction_name": "cold-storm",
+    "image_path": "outputs/candidate-01.png",
+    "receipt_path": "runs/<run-id>/receipts/<prompt-id>.json"
+  }
+]

@@ -1,0 +1,10 @@
+{
+  "source_image": "ArtFlow/coastal-ruins-graybox.png",
+  "positive_prompt": "cold light before a storm, heavy clouds, crisp ruin silhouette",
+  "negative_prompt": "characters, text, logo, geometry redesign",
+  "seed": 42,
+  "denoise": 0.4,
+  "width": 768,
+  "height": 512,
+  "filename_prefix": "ArtFlow/coastal-ruins/cold-storm"
+}

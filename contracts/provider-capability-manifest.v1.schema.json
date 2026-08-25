@@ -1,0 +1,127 @@
+{
+  "$defs": {
+    "ProviderModelCapability": {
+      "properties": {
+        "controls": {
+          "items": {
+            "enum": [
+              "reference_image",
+              "mask",
+              "depth",
+              "world_normal",
+              "object_id",
+              "multi_turn_edit"
+            ],
+            "type": "string"
+          },
+          "title": "Controls",
+          "type": "array"
+        },
+        "max_reference_images": {
+          "default": 1,
+          "maximum": 32,
+          "minimum": 0,
+          "title": "Max Reference Images",
+          "type": "integer"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "model_version": {
+          "minLength": 1,
+          "title": "Model Version",
+          "type": "string"
+        },
+        "tasks": {
+          "items": {
+            "enum": [
+              "scene_direction",
+              "masked_refinement"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Tasks",
+          "type": "array"
+        }
+      },
+      "required": [
+        "model_id",
+        "model_version",
+        "tasks"
+      ],
+      "title": "ProviderModelCapability",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "cost_class": {
+      "enum": [
+        "local_compute",
+        "metered",
+        "subscription"
+      ],
+      "title": "Cost Class",
+      "type": "string"
+    },
+    "display_name": {
+      "minLength": 1,
+      "title": "Display Name",
+      "type": "string"
+    },
+    "execution_kind": {
+      "enum": [
+        "local",
+        "hosted",
+        "mcp"
+      ],
+      "title": "Execution Kind",
+      "type": "string"
+    },
+    "models": {
+      "items": {
+        "$ref": "#/$defs/ProviderModelCapability"
+      },
+      "minItems": 1,
+      "title": "Models",
+      "type": "array"
+    },
+    "privacy_class": {
+      "enum": [
+        "local_only",
+        "provider_processed",
+        "provider_retained"
+      ],
+      "title": "Privacy Class",
+      "type": "string"
+    },
+    "provider_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "requires_explicit_cost_approval": {
+      "title": "Requires Explicit Cost Approval",
+      "type": "boolean"
+    },
+    "schema_id": {
+      "const": "provider-capability-manifest/1",
+      "default": "provider-capability-manifest/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "provider_id",
+    "display_name",
+    "execution_kind",
+    "privacy_class",
+    "cost_class",
+    "requires_explicit_cost_approval",
+    "models"
+  ],
+  "title": "ProviderCapabilityManifest",
+  "type": "object"
+}

@@ -1,0 +1,333 @@
+{
+  "$defs": {
+    "ArtIntent": {
+      "properties": {
+        "goal": {
+          "maxLength": 1600,
+          "minLength": 10,
+          "title": "Goal",
+          "type": "string"
+        },
+        "preserve": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Preserve",
+          "type": "array"
+        },
+        "prohibit": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Prohibit",
+          "type": "array"
+        },
+        "reference_assets": {
+          "items": {
+            "$ref": "#/$defs/ArtifactRef"
+          },
+          "maxItems": 8,
+          "title": "Reference Assets",
+          "type": "array"
+        }
+      },
+      "required": [
+        "goal"
+      ],
+      "title": "ArtIntent",
+      "type": "object"
+    },
+    "ArtifactRef": {
+      "properties": {
+        "media_type": {
+          "minLength": 3,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "title": "ArtifactRef",
+      "type": "object"
+    },
+    "CameraConstraint": {
+      "properties": {
+        "far_clip": {
+          "exclusiveMinimum": 0,
+          "title": "Far Clip",
+          "type": "number"
+        },
+        "height": {
+          "maximum": 16384,
+          "minimum": 64,
+          "title": "Height",
+          "type": "integer"
+        },
+        "horizontal_fov_degrees": {
+          "anyOf": [
+            {
+              "exclusiveMaximum": 180,
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Horizontal Fov Degrees"
+        },
+        "near_clip": {
+          "exclusiveMinimum": 0,
+          "title": "Near Clip",
+          "type": "number"
+        },
+        "ortho_width": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Ortho Width"
+        },
+        "projection": {
+          "enum": [
+            "perspective",
+            "orthographic"
+          ],
+          "title": "Projection",
+          "type": "string"
+        },
+        "width": {
+          "maximum": 16384,
+          "minimum": 64,
+          "title": "Width",
+          "type": "integer"
+        },
+        "world_transform": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 16,
+          "minItems": 16,
+          "title": "World Transform",
+          "type": "array"
+        }
+      },
+      "required": [
+        "projection",
+        "world_transform",
+        "near_clip",
+        "far_clip",
+        "width",
+        "height"
+      ],
+      "title": "CameraConstraint",
+      "type": "object"
+    },
+    "DeliveryRequirements": {
+      "properties": {
+        "color_space": {
+          "minLength": 1,
+          "title": "Color Space",
+          "type": "string"
+        },
+        "file_format": {
+          "enum": [
+            "png",
+            "exr",
+            "tiff"
+          ],
+          "title": "File Format",
+          "type": "string"
+        },
+        "purpose": {
+          "enum": [
+            "art_direction",
+            "review_texture",
+            "concept_reference"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "color_space",
+        "file_format",
+        "purpose"
+      ],
+      "title": "DeliveryRequirements",
+      "type": "object"
+    },
+    "RegionConstraint": {
+      "properties": {
+        "mode": {
+          "enum": [
+            "protected",
+            "editable"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "object_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Object Ids",
+          "type": "array"
+        },
+        "region_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Region Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "region_id",
+        "mode",
+        "object_ids"
+      ],
+      "title": "RegionConstraint",
+      "type": "object"
+    },
+    "RenderPass": {
+      "properties": {
+        "artifact": {
+          "$ref": "#/$defs/ArtifactRef"
+        },
+        "encoding": {
+          "minLength": 1,
+          "title": "Encoding",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "beauty",
+            "depth",
+            "world_normal",
+            "object_id",
+            "editable_mask",
+            "protected_mask"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "artifact",
+        "encoding"
+      ],
+      "title": "RenderPass",
+      "type": "object"
+    },
+    "SourceProvenance": {
+      "properties": {
+        "application": {
+          "minLength": 1,
+          "title": "Application",
+          "type": "string"
+        },
+        "application_version": {
+          "minLength": 1,
+          "title": "Application Version",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "project_name": {
+          "minLength": 1,
+          "title": "Project Name",
+          "type": "string"
+        },
+        "scene_name": {
+          "minLength": 1,
+          "title": "Scene Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "application",
+        "application_version",
+        "project_name",
+        "scene_name",
+        "captured_at"
+      ],
+      "title": "SourceProvenance",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "art_intent": {
+      "$ref": "#/$defs/ArtIntent"
+    },
+    "camera": {
+      "$ref": "#/$defs/CameraConstraint"
+    },
+    "delivery": {
+      "$ref": "#/$defs/DeliveryRequirements"
+    },
+    "package_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Package Id",
+      "type": "string"
+    },
+    "passes": {
+      "items": {
+        "$ref": "#/$defs/RenderPass"
+      },
+      "minItems": 4,
+      "title": "Passes",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/SourceProvenance"
+    },
+    "regions": {
+      "items": {
+        "$ref": "#/$defs/RegionConstraint"
+      },
+      "title": "Regions",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "scene-constraint-package/1",
+      "default": "scene-constraint-package/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "package_id",
+    "camera",
+    "passes",
+    "art_intent",
+    "provenance",
+    "delivery"
+  ],
+  "title": "SceneConstraintPackage",
+  "type": "object"
+}
