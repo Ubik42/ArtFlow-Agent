@@ -34,85 +34,17 @@ ArtFlow 将这些步骤组织为一条可追踪的 Agentic 生产链。系统把
 
 ## Agentic 执行流程
 
-```mermaid
-flowchart LR
-    A[Unreal 场景] --> B[四 Pass Scene Package]
-    B --> C[Context Builder]
-    C --> D[Codex Agent 编排器]
-    D --> E{能力与策略路由}
-    E --> F[本地 ComfyUI]
-    E --> G[Codex GPT Image 2]
-    F --> H[标准化候选回执]
-    G --> H
-    H --> I[Constraint Judge]
-    H --> J[Multimodal Critic]
-    I --> K[Evidence Tribunal]
-    J --> K
-    K --> L[证据化自主采用]
-    L --> M[GPT Image 2 局部修订]
-    M --> N[像素边界与来源验证]
-    N --> O[Unreal 回流与可验证交付]
-```
+![ArtFlow Agentic 使用流程漫画：从 Unreal 场景理解、双路生成、独立评价到局部修订与验证回流](docs/assets/portfolio/11-agentic-workflow-comic.png)
+
+_由 Codex 内置图像生成功能制作的流程说明漫画，用于解释产品使用方式；实际运行结果与验证证据见下文。_
 
 执行期间，SQLite 事件日志、确定性 Reducer、恢复协调器、生产记忆和 OpenTelemetry 共同构成 Agent Harness。模型负责在有限能力中提出下一步行动，控制平面负责验证、执行、复检与持久化；任何模型置信度都不能覆盖确定性失败。
 
 ## 功能架构
 
-```mermaid
-flowchart TB
-    subgraph Inputs[场景与目标输入]
-        UE[Unreal Scene Bridge]
-        SP[Scene Package\n相机 / 深度 / 法线 / Object ID]
-        INTENT[美术意图与保护约束]
-    end
+![ArtFlow 工程架构漫画：Agent Harness 控制塔、受控生成执行、独立 Tribunal 与验证交付](docs/assets/portfolio/12-agent-architecture-comic.png)
 
-    subgraph Control[手工实现的 Agent 控制平面]
-        CTX[Context Engineering]
-        REG[Typed Capability Registry]
-        POLICY[Deterministic Policy & Routing]
-        RUNTIME[Durable Event Runtime]
-        RECOVERY[Recovery & Reconciliation]
-        MEMORY[Governed Production Memory]
-    end
-
-    subgraph Execution[生成与工具执行]
-        COMFY[Local ComfyUI Adapter]
-        GPT[Codex GPT Image 2 Adapter]
-        RETURN[Typed Unreal Return Tool]
-    end
-
-    subgraph Evaluation[独立评价与证据]
-        JUDGE[Constraint Judge]
-        CRITIC[Multimodal Visual Critic]
-        TRIBUNAL[Evidence Tribunal]
-        PROV[Provenance & Hash Verification]
-    end
-
-    subgraph Experience[产品与可观察性]
-        UI[Scene Lab Evidence Console]
-        OTEL[OpenTelemetry Traces]
-        RELEASE[Content-addressed Release]
-    end
-
-    UE --> SP
-    INTENT --> SP
-    SP --> CTX --> REG --> POLICY --> RUNTIME
-    RUNTIME --> COMFY
-    RUNTIME --> GPT
-    COMFY --> JUDGE
-    GPT --> JUDGE
-    COMFY --> CRITIC
-    GPT --> CRITIC
-    JUDGE --> TRIBUNAL
-    CRITIC --> TRIBUNAL
-    TRIBUNAL --> RUNTIME
-    RUNTIME --> RETURN --> PROV
-    RUNTIME <--> RECOVERY
-    RUNTIME <--> MEMORY
-    RUNTIME --> UI
-    RUNTIME --> OTEL
-    PROV --> RELEASE
-```
+_架构漫画突出职责与权限关系：Agent Harness 负责上下文、工具、策略和持久运行；ComfyUI 与 GPT Image 2 仅负责受控生成；独立 Tribunal 负责评价；Event Log、Recovery、Memory 与 OpenTelemetry 为持续执行提供基础设施。_
 
 ## 已验证的端到端闭环
 
