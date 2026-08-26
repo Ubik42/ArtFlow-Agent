@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "ComparisonChildPlan": {
+      "properties": {
+        "action_id": {
+          "title": "Action Id",
+          "type": "string"
+        },
+        "attestation_environment_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Attestation Environment Sha256",
+          "type": "string"
+        },
+        "authority_kind": {
+          "enum": [
+            "bounded_local_compute",
+            "hosted_privacy_cost"
+          ],
+          "title": "Authority Kind",
+          "type": "string"
+        },
+        "execution_id": {
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "idempotency_key": {
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider_id": {
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "local",
+            "hosted"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "route_decision_id": {
+          "title": "Route Decision Id",
+          "type": "string"
+        },
+        "route_fingerprint": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Route Fingerprint",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "action_id",
+        "run_id",
+        "execution_id",
+        "idempotency_key",
+        "provider_id",
+        "model_id",
+        "route_decision_id",
+        "route_fingerprint",
+        "attestation_environment_sha256",
+        "authority_kind"
+      ],
+      "title": "ComparisonChildPlan",
+      "type": "object"
+    },
+    "ComparisonOperatorPreview": {
+      "properties": {
+        "cost_cap_provider_enforced": {
+          "const": false,
+          "title": "Cost Cap Provider Enforced",
+          "type": "boolean"
+        },
+        "estimated_hosted_cost_usd": {
+          "minimum": 0,
+          "title": "Estimated Hosted Cost Usd",
+          "type": "number"
+        },
+        "hosted_endpoint": {
+          "const": "/v1/images/edits",
+          "title": "Hosted Endpoint",
+          "type": "string"
+        },
+        "hosted_model": {
+          "const": "gpt-image-2-2026-04-21",
+          "title": "Hosted Model",
+          "type": "string"
+        },
+        "hosted_privacy_class": {
+          "const": "provider_retained",
+          "title": "Hosted Privacy Class",
+          "type": "string"
+        },
+        "hosted_uploads": {
+          "items": {
+            "const": "beauty",
+            "type": "string"
+          },
+          "title": "Hosted Uploads",
+          "type": "array"
+        },
+        "local_uploads": {
+          "items": {
+            "const": "beauty",
+            "type": "string"
+          },
+          "title": "Local Uploads",
+          "type": "array"
+        },
+        "maximum_hosted_cost_usd": {
+          "exclusiveMinimum": 0,
+          "title": "Maximum Hosted Cost Usd",
+          "type": "number"
+        },
+        "output_count_per_provider": {
+          "const": 1,
+          "title": "Output Count Per Provider",
+          "type": "integer"
+        },
+        "output_size": {
+          "title": "Output Size",
+          "type": "string"
+        },
+        "unresolved_real_host_facts": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Unresolved Real Host Facts",
+          "type": "array"
+        }
+      },
+      "required": [
+        "local_uploads",
+        "hosted_uploads",
+        "hosted_endpoint",
+        "hosted_model",
+        "output_count_per_provider",
+        "output_size",
+        "estimated_hosted_cost_usd",
+        "maximum_hosted_cost_usd",
+        "hosted_privacy_class",
+        "cost_cap_provider_enforced",
+        "unresolved_real_host_facts"
+      ],
+      "title": "ComparisonOperatorPreview",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "art_intent_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Art Intent Sha256",
+      "type": "string"
+    },
+    "children": {
+      "items": {
+        "$ref": "#/$defs/ComparisonChildPlan"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Children",
+      "type": "array"
+    },
+    "comparison_id": {
+      "title": "Comparison Id",
+      "type": "string"
+    },
+    "dossier_id": {
+      "title": "Dossier Id",
+      "type": "string"
+    },
+    "dossier_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Dossier Sha256",
+      "type": "string"
+    },
+    "operator_preview": {
+      "$ref": "#/$defs/ComparisonOperatorPreview"
+    },
+    "scene_package_id": {
+      "title": "Scene Package Id",
+      "type": "string"
+    },
+    "scene_package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Scene Package Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "provider-comparison-plan/1",
+      "default": "provider-comparison-plan/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "comparison_id",
+    "dossier_id",
+    "dossier_sha256",
+    "scene_package_id",
+    "scene_package_sha256",
+    "art_intent_sha256",
+    "children",
+    "operator_preview"
+  ],
+  "title": "ProviderComparisonPlan",
+  "type": "object"
+}

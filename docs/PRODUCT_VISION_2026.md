@@ -3,11 +3,15 @@
 Status: accepted direction for the next refactor track  
 Decision date: 2026-08-25
 
+The complete Agent harness, evaluation and portfolio evidence program is defined in
+[AGENT_ENGINEERING_BLUEPRINT.md](AGENT_ENGINEERING_BLUEPRINT.md). If a generic-Skill migration
+document conflicts with this vision, the flagship Agent decision wins.
+
 ## Product thesis
 
 ArtFlow is a visual-production control plane for game-art iteration. Foundation models provide
-visual intelligence; ArtFlow owns scene intent, capability routing, approvals, durable execution,
-independent verification, human adoption, provenance, and delivery back to a DCC or engine.
+visual intelligence; ArtFlow owns scene intent, capability routing, durable execution, independent
+verification, evidence-backed adoption, provenance, and delivery back to a DCC or engine.
 
 The product does not compete with frontier models on raw image quality and does not expose arbitrary
 ComfyUI graph generation. A technical artist may inspect and author graphs, but an artist interacts
@@ -22,9 +26,9 @@ Unreal scene
   -> ArtFlow Agent control plane (this repository)
   -> capability-aware route
        -> reviewed local ComfyUI recipe
-       -> explicitly approved hosted image provider
+       -> Codex built-in GPT Image 2 development capability
   -> deterministic checks + independent visual critic
-  -> human selection / bounded revision
+  -> tribunal-backed autonomous selection / bounded revision
   -> reimportable package + signed provenance
 ```
 
@@ -34,6 +38,10 @@ The suite has three deployable products:
 2. **ArtFlow Unreal Bridge** will be a separate repository because it is installed into Unreal.
 3. **ComfyUI Production Nodes** remains a separate reusable custom-node package and supplies
    runtime-side gates and production metadata.
+
+The sibling **Art Pipeline Skill** is a separate reusable capability repository rather than a
+fourth ArtFlow control plane. It may expose rules and deterministic tools through versioned
+contracts, but it has independent Git and `/goal` state and does not replace the flagship Agent.
 
 The existing `verified-art-pipeline-agent` is not duplicated. Its proven patterns for typed intent,
 approval recovery, context boundaries, hash-chained events, OpenTelemetry, and independent
@@ -63,16 +71,16 @@ ArtFlow uses several roles inside one durable, inspectable state machine:
 
 - **Intent planner** proposes typed visual directions.
 - **Capability router** proposes only routes declared by provider manifests.
-- **Policy layer** deterministically enforces privacy, cost, licensing and approval boundaries.
+- **Policy layer** deterministically enforces privacy, licensing, scope and integrity boundaries.
 - **Provider executors** call only registered, slot-bounded capabilities.
 - **Evaluation tribunal** combines deterministic spatial checks with an independent multimodal
   critic and reports disagreements rather than hiding them.
-- **Recovery planner** may retry or propose a compatible fallback, but any privacy or cost boundary
-  change creates a new approval request.
-- **Human owner** approves spend, selects an adopted candidate and accepts delivery.
+- **Recovery planner** may retry or propose a compatible fallback within declared project scope.
+- **Codex orchestrator** selects a candidate and accepts delivery only from persisted tribunal evidence.
 
 Multiple roles are not multiple agents chatting for show. Every role has a restricted input schema,
-restricted tools, an evidence requirement, and no authority to mark its own output as adopted.
+restricted tools and an evidence requirement. Provider executors cannot adopt their own output;
+the orchestrator owns adoption after independent evaluation.
 
 ## Portfolio claim
 
@@ -80,7 +88,7 @@ The final case study should prove:
 
 > Unreal supplies spatial facts, models supply visual intelligence, and ArtFlow compiles intent into
 > controlled execution, survives failure, rejects attractive but invalid results, and returns a
-> human-approved asset with verifiable provenance.
+> evidence-selected asset with verifiable provenance.
 
 ## Non-goals
 
@@ -91,4 +99,3 @@ The final case study should prove:
 - a second copy of the existing AIToolTA Agent kernel;
 - production claims based only on mocks, schemas, or screenshots;
 - automatic learning from private project data without explicit authorization.
-

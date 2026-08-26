@@ -1,0 +1,41 @@
+.attestation-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  padding: 7px 8px;
+  border: 1px solid #3b4650;
+  color: #9da9b0;
+  background: #10161b;
+  font: 8px "Space Mono", monospace;
+  text-transform: uppercase;
+}
+
+.attestation-status i {
+  width: 6px;
+  height: 6px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #7d8991;
+}
+
+.attestation-status.supported {
+  color: var(--acid);
+  border-color: #526739;
+  background: rgba(201, 255, 106, .045);
+}
+
+.attestation-status.supported i {
+  background: var(--acid);
+  box-shadow: 0 0 9px var(--acid);
+}
+
+.attestation-status.unsupported {
+  color: var(--coral);
+  border-color: #633b3c;
+}
+
+.attestation-status.unknown {
+  color: #ffd071;
+  border-color: #63552f;
+}

@@ -1,0 +1,57 @@
+{
+  "properties": {
+    "approval_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$",
+      "title": "Approval Id",
+      "type": "string"
+    },
+    "approved_at": {
+      "format": "date-time",
+      "title": "Approved At",
+      "type": "string"
+    },
+    "approved_by": {
+      "minLength": 1,
+      "title": "Approved By",
+      "type": "string"
+    },
+    "expires_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Expires At"
+    },
+    "route_decision_id": {
+      "minLength": 1,
+      "title": "Route Decision Id",
+      "type": "string"
+    },
+    "route_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Route Fingerprint",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "approval-grant/1",
+      "default": "approval-grant/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "approval_id",
+    "route_decision_id",
+    "route_fingerprint",
+    "approved_by",
+    "approved_at"
+  ],
+  "title": "ApprovalGrant",
+  "type": "object"
+}

@@ -1,0 +1,59 @@
+{
+  "properties": {
+    "approved_at": {
+      "format": "date-time",
+      "title": "Approved At",
+      "type": "string"
+    },
+    "approved_by": {
+      "minLength": 1,
+      "title": "Approved By",
+      "type": "string"
+    },
+    "authorized_action_ids": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Authorized Action Ids",
+      "type": "array"
+    },
+    "comparison_binding_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Comparison Binding Sha256",
+      "type": "string"
+    },
+    "dossier_id": {
+      "title": "Dossier Id",
+      "type": "string"
+    },
+    "dossier_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Dossier Sha256",
+      "type": "string"
+    },
+    "resolution": {
+      "const": "approved",
+      "title": "Resolution",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "comparison-authorization-decision/1",
+      "default": "comparison-authorization-decision/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "dossier_id",
+    "dossier_sha256",
+    "comparison_binding_sha256",
+    "resolution",
+    "approved_by",
+    "approved_at",
+    "authorized_action_ids"
+  ],
+  "title": "ComparisonAuthorizationDecision",
+  "type": "object"
+}

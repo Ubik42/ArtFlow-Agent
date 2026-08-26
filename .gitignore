@@ -11,3 +11,10 @@ logs/
 web/node_modules/
 web/dist/
 web/*.tsbuildinfo
+contract-tests/unreal/build/
+integrations/unreal/**/Binaries/
+integrations/unreal/**/Intermediate/
+integrations/unreal/**/Saved/
+integrations/unreal/**/DerivedDataCache/
+integrations/unreal/ArtFlowBridgeHost/Content/ArtFlowDemo.umap
+artifacts/

@@ -1,0 +1,15 @@
+{
+  "width": 640,
+  "height": 360,
+  "goal": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette.",
+  "preserve": [
+    "camera framing",
+    "protected blockout silhouette",
+    "ground-plane composition"
+  ],
+  "prohibit": [
+    "new characters",
+    "logos",
+    "protected geometry redesign"
+  ]
+}

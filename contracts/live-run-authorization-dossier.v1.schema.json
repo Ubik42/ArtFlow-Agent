@@ -1,0 +1,264 @@
+{
+  "$defs": {
+    "LiveRunAction": {
+      "properties": {
+        "action_id": {
+          "title": "Action Id",
+          "type": "string"
+        },
+        "authorized": {
+          "const": false,
+          "default": false,
+          "title": "Authorized",
+          "type": "boolean"
+        },
+        "external_side_effect": {
+          "title": "External Side Effect",
+          "type": "boolean"
+        },
+        "operation": {
+          "title": "Operation",
+          "type": "string"
+        },
+        "target": {
+          "enum": [
+            "comfy-local",
+            "openai-images",
+            "unreal"
+          ],
+          "title": "Target",
+          "type": "string"
+        }
+      },
+      "required": [
+        "action_id",
+        "target",
+        "operation",
+        "external_side_effect"
+      ],
+      "title": "LiveRunAction",
+      "type": "object"
+    },
+    "ProviderRecoveryFacts": {
+      "properties": {
+        "ambiguous_completion_policy": {
+          "const": "do_not_retry_escalate",
+          "title": "Ambiguous Completion Policy",
+          "type": "string"
+        },
+        "client_idempotency_key": {
+          "const": "not_documented",
+          "title": "Client Idempotency Key",
+          "type": "string"
+        },
+        "lookup_by_client_key": {
+          "const": "not_available",
+          "title": "Lookup By Client Key",
+          "type": "string"
+        },
+        "synchronous_response": {
+          "title": "Synchronous Response",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "client_idempotency_key",
+        "lookup_by_client_key",
+        "synchronous_response",
+        "ambiguous_completion_policy"
+      ],
+      "title": "ProviderRecoveryFacts",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "actions": {
+      "items": {
+        "$ref": "#/$defs/LiveRunAction"
+      },
+      "minItems": 3,
+      "title": "Actions",
+      "type": "array"
+    },
+    "allowed_hosted_passes": {
+      "items": {
+        "const": "beauty",
+        "type": "string"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Allowed Hosted Passes",
+      "type": "array"
+    },
+    "authorization_state": {
+      "const": "awaiting_user",
+      "default": "awaiting_user",
+      "title": "Authorization State",
+      "type": "string"
+    },
+    "cost_is_provider_enforced": {
+      "const": false,
+      "title": "Cost Is Provider Enforced",
+      "type": "boolean"
+    },
+    "credential_environment_variable": {
+      "const": "OPENAI_API_KEY",
+      "title": "Credential Environment Variable",
+      "type": "string"
+    },
+    "credential_status": {
+      "const": "not_inspected",
+      "title": "Credential Status",
+      "type": "string"
+    },
+    "dossier_id": {
+      "title": "Dossier Id",
+      "type": "string"
+    },
+    "hosted_endpoint": {
+      "const": "/v1/images/edits",
+      "title": "Hosted Endpoint",
+      "type": "string"
+    },
+    "hosted_model_snapshot": {
+      "const": "gpt-image-2-2026-04-21",
+      "title": "Hosted Model Snapshot",
+      "type": "string"
+    },
+    "hosted_privacy_class": {
+      "const": "provider_retained",
+      "title": "Hosted Privacy Class",
+      "type": "string"
+    },
+    "hosted_provider_id": {
+      "const": "openai-images",
+      "title": "Hosted Provider Id",
+      "type": "string"
+    },
+    "local_attestation_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Local Attestation Sha256",
+      "type": "string"
+    },
+    "local_only_evaluation_passes": {
+      "items": {
+        "enum": [
+          "depth",
+          "world_normal",
+          "object_id"
+        ],
+        "type": "string"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Local Only Evaluation Passes",
+      "type": "array"
+    },
+    "local_provider_id": {
+      "const": "comfy-local",
+      "title": "Local Provider Id",
+      "type": "string"
+    },
+    "local_recipe_id": {
+      "title": "Local Recipe Id",
+      "type": "string"
+    },
+    "maximum_approved_cost_usd": {
+      "exclusiveMinimum": 0,
+      "maximum": 1,
+      "title": "Maximum Approved Cost Usd",
+      "type": "number"
+    },
+    "official_sources": {
+      "items": {
+        "format": "uri",
+        "maxLength": 2083,
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 4,
+      "title": "Official Sources",
+      "type": "array"
+    },
+    "output_count": {
+      "const": 1,
+      "title": "Output Count",
+      "type": "integer"
+    },
+    "output_format": {
+      "const": "png",
+      "title": "Output Format",
+      "type": "string"
+    },
+    "output_quality": {
+      "const": "medium",
+      "title": "Output Quality",
+      "type": "string"
+    },
+    "output_size": {
+      "const": "1280x720",
+      "title": "Output Size",
+      "type": "string"
+    },
+    "recovery": {
+      "$ref": "#/$defs/ProviderRecoveryFacts"
+    },
+    "scene_evidence_level": {
+      "const": "fixture",
+      "title": "Scene Evidence Level",
+      "type": "string"
+    },
+    "scene_package_id": {
+      "title": "Scene Package Id",
+      "type": "string"
+    },
+    "scene_package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Scene Package Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "live-run-authorization-dossier/1",
+      "default": "live-run-authorization-dossier/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "unresolved_requirements": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Unresolved Requirements",
+      "type": "array"
+    }
+  },
+  "required": [
+    "dossier_id",
+    "scene_evidence_level",
+    "scene_package_id",
+    "scene_package_sha256",
+    "local_provider_id",
+    "local_recipe_id",
+    "local_attestation_sha256",
+    "hosted_provider_id",
+    "hosted_model_snapshot",
+    "hosted_endpoint",
+    "hosted_privacy_class",
+    "credential_environment_variable",
+    "credential_status",
+    "allowed_hosted_passes",
+    "local_only_evaluation_passes",
+    "output_count",
+    "output_size",
+    "output_quality",
+    "output_format",
+    "maximum_approved_cost_usd",
+    "cost_is_provider_enforced",
+    "recovery",
+    "actions",
+    "unresolved_requirements",
+    "official_sources"
+  ],
+  "title": "LiveRunAuthorizationDossier",
+  "type": "object"
+}

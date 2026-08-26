@@ -1,0 +1,135 @@
+{
+  "schemaVersion": "codex-goal-state@2.0.0",
+  "stateRevision": 31,
+  "strategyVersion": "2.0.0",
+  "goalId": "artflow-agent",
+  "objective": "Build a useful Unreal-to-AIGC visual-production Agent that visibly proves a hand-built modern harness across context, typed tools, deterministic policy, durable autonomous execution, independent evaluation, recovery, evidence-backed adoption, observability, governed memory and verifiable delivery.",
+  "status": "complete",
+  "currentMilestone": "M6",
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Real Comfy baseline and contract-first seams",
+      "status": "completed",
+      "dependsOn": [],
+      "outcome": "The real RTX 4080 baseline remains reproducible and scene, provider, route, approval and receipt boundaries validate across Python, TypeScript and Unreal C++.",
+      "acceptance": ["Real baseline and cross-language contract evidence are recorded without overstating human adoption"]
+    },
+    {
+      "id": "M1",
+      "title": "Hand-built Agent kernel and scene context",
+      "status": "completed",
+      "dependsOn": ["M0"],
+      "outcome": "A verified Scene Package becomes durable AgentRun context in an append-only SQLite event model reconstructed by a deterministic reducer and exposed through a bounded capability registry.",
+      "acceptance": [
+        "Restart reconstructs the same state and pending interrupt from events",
+        "Scene attachment and tool side effects are idempotent",
+        "The model cannot mutate authoritative state or bypass typed policy"
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Scene Lab and typed Agent event UI",
+      "status": "completed",
+      "dependsOn": ["M1"],
+      "outcome": "A redesigned visual-production workspace exposes scene constraints, Agent lifecycle, tool actions, persisted approvals, recovery and evidence through typed streaming state.",
+      "acceptance": ["Refresh preserves the current run and pending decision, and every visible proof maps to real state or evidence"]
+    },
+    {
+      "id": "M3",
+      "title": "Real Unreal scene and matched provider routing",
+      "status": "completed",
+      "dependsOn": ["M2"],
+      "outcome": "One real Unreal scene package runs through local ComfyUI and Codex built-in GPT Image 2 using the same constraints and normalized receipts without a permission prompt.",
+      "acceptance": ["Both real execution surfaces are bound to the same verified scene intent, persist normalized receipts, recover idempotently and remain explicitly unselected"]
+    },
+    {
+      "id": "M4",
+      "title": "Evaluation tribunal and bounded revision",
+      "status": "completed",
+      "dependsOn": ["M3"],
+      "outcome": "Independent deterministic and multimodal evaluators expose disagreement, reject attractive-invalid candidates and verify one evidence-selected mask-bounded revision.",
+      "acceptance": ["An attractive negative control is rejected and evaluator evidence replays without regenerating images"]
+    },
+    {
+      "id": "M5",
+      "title": "Recovery observability memory and evaluation",
+      "status": "completed",
+      "dependsOn": ["M4"],
+      "outcome": "The Agent survives injected failures without duplicate side effects, emits correlated OpenTelemetry evidence, governs production memory and reports frozen Harness evaluations.",
+      "acceptance": ["Recovery, context, policy and memory scorecards report denominators, latency and cost from reproducible cases"]
+    },
+    {
+      "id": "M6",
+      "title": "Verified provenance and portfolio case study",
+      "status": "completed",
+      "dependsOn": ["M5"],
+      "outcome": "The complete Unreal-to-provider-to-tribunal-to-adoption-to-reimport story ships with independently verified C2PA provenance and inspectable evidence for every public claim.",
+      "acceptance": ["One successful run and one failure-injected run can be independently replayed and verified"]
+    }
+  ],
+  "nextSlice": {
+    "id": "M6-S2",
+    "milestone": "M6",
+    "title": "Portfolio Evidence Console and GitHub Release",
+    "outcome": "Ship one polished Chinese evidence console, a screenshot-rich GitHub case study and one content-addressed portfolio release that let a reviewer traverse the real Unreal scene, provider comparison, tribunal disagreement, autonomous adoption, bounded revision, failure recovery, Harness metrics and verified Unreal return without trusting feature claims.",
+    "risk": "R3",
+    "evidenceTarget": "A5",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "examples/**", "docs/**", "scripts/**", "web/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "nonGoals": [
+      "Do not ask the user to choose a candidate, approve evidence claims or approve the local release package",
+      "Do not generate or regenerate media; the release must replay existing evidence",
+      "Do not publish to any destination other than the user-authorized Ubik42/ArtFlow-Agent GitHub repository",
+      "Do not modify Unreal, ComfyUI, sibling repositories or shared installations",
+      "Do not hide the unsigned C2PA sidecar limitation or turn fixture metrics into open-domain claims"
+    ],
+    "acceptance": [
+      "Scene Lab exposes a concise verified-delivery panel with the real UE return, 9/9 hash-chain result and explicit unsigned-C2PA limitation",
+      "The main portfolio path shows provider disagreement, attractive-invalid rejection, autonomous adoption and bounded correction as evidence-backed decisions rather than feature text",
+      "A deterministic release builder includes only declared reviewer artifacts, a machine-readable manifest and independent replay commands",
+      "A fresh verifier validates every packaged file hash and the embedded run, Harness and delivery identities",
+      "The case study reports exact 20-case Harness, 6-case recovery, 6-case memory and real-host evidence denominators without invented quality claims",
+      "Desktop and narrow browser QA, full focused tests, goal audit and quick validation pass",
+      "Release selection and GitHub publication are autonomous after the user's explicit showcase request and create no approval interrupt"
+    ],
+    "stopConditions": [
+      "Stop if the resolved remote differs from the user-authorized Ubik42/ArtFlow-Agent repository",
+      "Stop if any release claim lacks an exact artifact, event or scorecard citation",
+      "Stop if packaging would include prompts, credentials, hidden reasoning, databases or unrelated host data",
+      "Stop if the verifier cannot detect a tampered packaged artifact",
+      "Stop if the UI describes the unsigned sidecar as a signed C2PA credential"
+    ],
+    "environmentRequirements": [
+      {"id": "python", "kind": "command", "value": "python", "required": true}
+    ],
+    "validationCommands": [
+      "python scripts/validate_goal_state.py",
+      "powershell -ExecutionPolicy Bypass -File scripts/validate.ps1 -Tier quick"
+    ]
+  },
+  "manualTracks": [],
+  "continuationPolicy": {
+    "sourceOfTruth": ["config/goal-state.json", "the checkpoint referenced by lastCheckpoint", "observable code, tests and current artifacts", "docs/AGENT_ENGINEERING_BLUEPRINT.md", "docs/development/CODEX_GOAL.md and docs/development/CODEX_LOOP.md"],
+    "maxInProgressMilestones": 1,
+    "checkpointRequiredBeforeAdvance": true,
+    "executeValidationCommandsDynamically": false,
+    "dirtyWorktreePolicy": "preserve_and_report",
+    "manualTrackPolicy": "non_blocking_unless_promoted"
+  },
+  "lastCheckpoint": "artifacts/goal/checkpoint-0028.json",
+  "currentBlocker": null,
+  "evidenceCeiling": "One real four-pass Unreal 5.8 package has two evaluated production candidates, an attractive-invalid rejected control, one evidence-backed autonomous adoption and one real Codex-built-in mask-bounded revision. Recovery is 6/6 with zero duplicates, governed memory is 6/6 and the frozen Harness is 20/20 with exact denominators. The adopted revision returned to the ArtFlow-owned UE 5.8 fixture; UE validation and a visible viewport capture prove the return. An independent verifier passes 9/9 artifact bindings while explicitly reporting that no cryptographic C2PA signature is present. Twenty-five append-only events preserve the story with no pending decisions. A Chinese evidence console, ten real process screenshots and a deterministic 24-file portfolio ZIP with an independent standard-library verifier form the public showcase; frozen fixture metrics and unsigned provenance remain explicitly bounded claims.",
+  "constraints": [
+    "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
+    "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
+    "No arbitrary model-generated ComfyUI graph, Python, Shell or host-script execution",
+    "No deterministic failure may be overridden by model confidence",
+    "Candidate adoption is owned by the orchestrating Codex workflow and must cite persisted evaluation evidence rather than a permission prompt",
+    "Use multiple Agent roles only for context isolation, distinct authority or real parallel work",
+    "No framework, protocol, RAG or memory system is added without a measured requirement",
+    "Tests focus on contracts, policy, replay, recovery and external boundaries and should stay near 15-25 percent of implementation effort",
+    "Every public metric identifies its dataset, denominator and inspectable evidence",
+    "Existing user work and historical source provenance must be preserved"
+  ]
+}

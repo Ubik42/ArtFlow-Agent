@@ -1,0 +1,46 @@
+{
+  "properties": {
+    "approved_max_cost_usd": {
+      "minimum": 0,
+      "title": "Approved Max Cost Usd",
+      "type": "number"
+    },
+    "binding_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Binding Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "packet_id": {
+      "title": "Packet Id",
+      "type": "string"
+    },
+    "privacy_class": {
+      "enum": [
+        "provider_processed",
+        "provider_retained"
+      ],
+      "title": "Privacy Class",
+      "type": "string"
+    },
+    "signature": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Signature",
+      "type": "string"
+    }
+  },
+  "required": [
+    "packet_id",
+    "binding_sha256",
+    "privacy_class",
+    "approved_max_cost_usd",
+    "expires_at",
+    "signature"
+  ],
+  "title": "HostedAuthorityPacket",
+  "type": "object"
+}

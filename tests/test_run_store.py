@@ -2,6 +2,7 @@ from datetime import UTC, datetime
 
 import pytest
 
+from artflow_agent.contracts import RouteDecision
 from artflow_agent.delivery import package_run
 from artflow_agent.domain import ArtBrief, Candidate, GenerationReceipt
 from artflow_agent.planning import DeterministicPlanner
@@ -16,6 +17,35 @@ def _brief() -> ArtBrief:
         preserve=["composition"],
         avoid=["characters"],
         variant_count=1,
+    )
+
+
+def _route(*, provider_id: str = "comfy-local", cost_class: str = "local_compute"):
+    hosted = provider_id != "comfy-local"
+    return RouteDecision(
+        decision_id="route-001",
+        scene_package_id="scene-001",
+        scene_package_sha256="a" * 64,
+        task="scene_direction",
+        selected={
+            "provider_id": provider_id,
+            "model_id": "flux-dev" if not hosted else "gpt-image-2",
+            "execution_kind": "local" if not hosted else "hosted",
+            "privacy_class": "local_only" if not hosted else "provider_processed",
+            "cost_class": cost_class,
+        },
+        execution_intent={
+            "required_controls": ["reference_image", "depth"],
+            "output_count": 1,
+            "width": 1280,
+            "height": 720,
+            "delivery_format": "png",
+            "intent_sha256": "d" * 64,
+        },
+        privacy_ceiling="provider_processed" if hosted else "local_only",
+        max_cost_usd=1 if hosted else 0,
+        requires_explicit_approval=True,
+        rationale="Select a compatible provider for the scene package.",
     )
 
 
@@ -84,3 +114,33 @@ def test_store_enforces_approval_and_human_selection(tmp_path) -> None:
     assert revision.source_candidate_id == "candidate-1"
     assert revision.brief.source_image == str(candidate_path.resolve())
     assert revision.plan.directions[0].recipe_id == "masked-refinement-v1"
+
+
+def test_route_change_invalidates_approval_before_execution(tmp_path) -> None:
+    store = RunStore(tmp_path)
+    state = store.create(
+        _brief(),
+        DeterministicPlanner().create_plan(_brief()),
+        run_id="route-run",
+        route_decision=_route(),
+    )
+    assert state.route_decision is not None
+
+    approved = store.approve("route-run", approved_by="portfolio-owner")
+    assert approved.approval_grant is not None
+    assert approved.approval_grant.authorizes(approved.route_decision)
+
+    rerouted = store.set_route_decision(
+        "route-run", _route(provider_id="gpt-image", cost_class="metered")
+    )
+    assert rerouted.status == "awaiting_approval"
+    assert rerouted.approval_grant is None
+    with pytest.raises(RunStateError, match="before explicit approval"):
+        store.mark_running("route-run")
+
+    reapproved = store.approve("route-run", approved_by="portfolio-owner")
+    assert reapproved.approval_grant is not None
+    assert reapproved.approval_grant.route_fingerprint == (
+        reapproved.route_decision.approval_fingerprint()
+    )
+    assert store.mark_running("route-run").status == "running"

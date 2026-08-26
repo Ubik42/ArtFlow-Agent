@@ -1,0 +1,19 @@
+{
+  "FileVersion": 3,
+  "Version": 1,
+  "VersionName": "1.0.0",
+  "FriendlyName": "ArtFlow Scene Bridge",
+  "Description": "Exports camera-bound Unreal scene evidence into an atomic ArtFlow Scene Package.",
+  "Category": "ArtFlow",
+  "CreatedBy": "ArtFlow",
+  "CanContainContent": false,
+  "IsBetaVersion": true,
+  "Installed": false,
+  "Modules": [
+    {
+      "Name": "ArtFlowSceneBridge",
+      "Type": "Editor",
+      "LoadingPhase": "PostEngineInit"
+    }
+  ]
+}

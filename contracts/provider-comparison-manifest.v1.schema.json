@@ -1,0 +1,245 @@
+{
+  "$defs": {
+    "ComparisonChildResult": {
+      "properties": {
+        "execution_id": {
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "model_id": {
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider_id": {
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "receipt": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ProviderExecutionReceipt"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "role": {
+          "enum": [
+            "local",
+            "hosted"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "not_started",
+            "reserved",
+            "submitted",
+            "completion_unknown",
+            "succeeded",
+            "failed",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "run_id",
+        "execution_id",
+        "provider_id",
+        "model_id",
+        "status"
+      ],
+      "title": "ComparisonChildResult",
+      "type": "object"
+    },
+    "ProviderExecutionReceipt": {
+      "properties": {
+        "artifacts": {
+          "items": {
+            "$ref": "#/$defs/ReceiptArtifact"
+          },
+          "title": "Artifacts",
+          "type": "array"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "error_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error Code"
+        },
+        "execution_id": {
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$",
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "provider_request_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Provider Request Id"
+        },
+        "route_decision_id": {
+          "minLength": 1,
+          "title": "Route Decision Id",
+          "type": "string"
+        },
+        "route_fingerprint": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Route Fingerprint",
+          "type": "string"
+        },
+        "schema_id": {
+          "const": "provider-execution-receipt/1",
+          "default": "provider-execution-receipt/1",
+          "title": "Schema Id",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "succeeded",
+            "failed",
+            "cancelled"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "execution_id",
+        "route_decision_id",
+        "route_fingerprint",
+        "provider_id",
+        "model_id",
+        "status",
+        "started_at",
+        "completed_at"
+      ],
+      "title": "ProviderExecutionReceipt",
+      "type": "object"
+    },
+    "ReceiptArtifact": {
+      "properties": {
+        "media_type": {
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "title": "ReceiptArtifact",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "children": {
+      "items": {
+        "$ref": "#/$defs/ComparisonChildResult"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Children",
+      "type": "array"
+    },
+    "comparison_binding_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Comparison Binding Sha256",
+      "type": "string"
+    },
+    "comparison_id": {
+      "title": "Comparison Id",
+      "type": "string"
+    },
+    "human_selected_candidate_id": {
+      "default": null,
+      "title": "Human Selected Candidate Id",
+      "type": "null"
+    },
+    "scene_package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Scene Package Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "provider-comparison-manifest/1",
+      "default": "provider-comparison-manifest/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "not_started",
+        "partial",
+        "succeeded",
+        "failed",
+        "needs_human_recovery"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "comparison_id",
+    "comparison_binding_sha256",
+    "scene_package_sha256",
+    "status",
+    "children"
+  ],
+  "title": "ProviderComparisonManifest",
+  "type": "object"
+}

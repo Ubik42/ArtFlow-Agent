@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M6-S2",
+  "status": "completed",
+  "outcome": "The real Unreal-to-AIGC run now ships as a polished Chinese evidence console, a ten-screenshot public case study and a deterministic 24-file portfolio release. Both the project verifier and the packaged standard-library verifier pass every declared file and embedded identity, while the unsigned C2PA limitation remains explicit.",
+  "evidence": [
+    "README.md",
+    "docs/DEMO_GUIDE.md",
+    "docs/portfolio-story.md",
+    "docs/evidence/M6_S2_PORTFOLIO_EVIDENCE_RELEASE_2026-08-25.md",
+    "docs/assets/portfolio/09-verified-delivery.png",
+    "docs/assets/portfolio/10-mobile-delivery.png",
+    "src/artflow_agent/portfolio_release.py",
+    "scripts/build_portfolio_release.py",
+    "scripts/verify_portfolio_release.py",
+    "scripts/verify_portfolio_release_standalone.py",
+    "tests/test_portfolio_release.py",
+    "artifacts/goal/m6-s2-release/artflow-agent-portfolio-f157471a784dbe7b.zip"
+  ]
+}

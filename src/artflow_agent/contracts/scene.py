@@ -6,9 +6,39 @@ from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator, model_validator
 
+PORTABLE_PACKAGE_PATH_PATTERN = (
+    r"^(?!\s)(?![\\/])(?![A-Za-z]:)(?!.*(?:^|[\\/])\.\.(?:[\\/]|$)).*\S$"
+)
+RENDER_PASS_KINDS = (
+    "beauty",
+    "depth",
+    "world_normal",
+    "object_id",
+    "editable_mask",
+    "protected_mask",
+)
+REQUIRED_RENDER_PASS_KINDS = frozenset(RENDER_PASS_KINDS[:4])
+RENDER_PASS_CARDINALITY_SCHEMA = {
+    "allOf": [
+        {
+            "contains": {
+                "type": "object",
+                "properties": {"kind": {"const": kind}},
+                "required": ["kind"],
+            },
+            "minContains": 1 if kind in REQUIRED_RENDER_PASS_KINDS else 0,
+            "maxContains": 1,
+        }
+        for kind in RENDER_PASS_KINDS
+    ]
+}
+
 
 class ArtifactRef(BaseModel):
-    path: str = Field(min_length=1)
+    path: str = Field(
+        min_length=1,
+        json_schema_extra={"pattern": PORTABLE_PACKAGE_PATH_PATTERN},
+    )
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     media_type: str = Field(min_length=3)
 
@@ -49,12 +79,7 @@ class CameraConstraint(BaseModel):
 
 
 RenderPassKind = Literal[
-    "beauty",
-    "depth",
-    "world_normal",
-    "object_id",
-    "editable_mask",
-    "protected_mask",
+    "beauty", "depth", "world_normal", "object_id", "editable_mask", "protected_mask"
 ]
 
 
@@ -95,7 +120,10 @@ class SceneConstraintPackage(BaseModel):
     schema_id: Literal["scene-constraint-package/1"] = "scene-constraint-package/1"
     package_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,119}$")
     camera: CameraConstraint
-    passes: list[RenderPass] = Field(min_length=4)
+    passes: list[RenderPass] = Field(
+        min_length=4,
+        json_schema_extra=RENDER_PASS_CARDINALITY_SCHEMA,
+    )
     regions: list[RegionConstraint] = Field(default_factory=list)
     art_intent: ArtIntent
     provenance: SourceProvenance
@@ -106,12 +134,10 @@ class SceneConstraintPackage(BaseModel):
         kinds = [item.kind for item in self.passes]
         if len(kinds) != len(set(kinds)):
             raise ValueError("render pass kinds must be unique")
-        required = {"beauty", "depth", "world_normal", "object_id"}
-        missing = sorted(required - set(kinds))
+        missing = sorted(REQUIRED_RENDER_PASS_KINDS - set(kinds))
         if missing:
             raise ValueError(f"missing required render passes: {', '.join(missing)}")
         region_ids = [item.region_id for item in self.regions]
         if len(region_ids) != len(set(region_ids)):
             raise ValueError("region IDs must be unique")
         return self
-

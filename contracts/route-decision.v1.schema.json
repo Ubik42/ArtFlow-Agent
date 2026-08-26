@@ -1,0 +1,270 @@
+{
+  "$defs": {
+    "ProviderSelection": {
+      "properties": {
+        "cost_class": {
+          "enum": [
+            "local_compute",
+            "metered",
+            "subscription"
+          ],
+          "title": "Cost Class",
+          "type": "string"
+        },
+        "execution_kind": {
+          "enum": [
+            "local",
+            "hosted",
+            "mcp"
+          ],
+          "title": "Execution Kind",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "privacy_class": {
+          "enum": [
+            "local_only",
+            "provider_processed",
+            "provider_retained"
+          ],
+          "title": "Privacy Class",
+          "type": "string"
+        },
+        "provider_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+          "title": "Provider Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider_id",
+        "model_id",
+        "execution_kind",
+        "privacy_class",
+        "cost_class"
+      ],
+      "title": "ProviderSelection",
+      "type": "object"
+    },
+    "RejectedProviderAlternative": {
+      "properties": {
+        "cost_class": {
+          "enum": [
+            "local_compute",
+            "metered",
+            "subscription"
+          ],
+          "title": "Cost Class",
+          "type": "string"
+        },
+        "execution_kind": {
+          "enum": [
+            "local",
+            "hosted",
+            "mcp"
+          ],
+          "title": "Execution Kind",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "privacy_class": {
+          "enum": [
+            "local_only",
+            "provider_processed",
+            "provider_retained"
+          ],
+          "title": "Privacy Class",
+          "type": "string"
+        },
+        "provider_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "reasons": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Reasons",
+          "type": "array"
+        }
+      },
+      "required": [
+        "provider_id",
+        "model_id",
+        "execution_kind",
+        "privacy_class",
+        "cost_class",
+        "reasons"
+      ],
+      "title": "RejectedProviderAlternative",
+      "type": "object"
+    },
+    "RouteExecutionIntent": {
+      "properties": {
+        "delivery_format": {
+          "enum": [
+            "png",
+            "exr",
+            "tiff"
+          ],
+          "title": "Delivery Format",
+          "type": "string"
+        },
+        "evaluation_evidence": {
+          "items": {
+            "enum": [
+              "depth",
+              "world_normal",
+              "object_id",
+              "protected_mask"
+            ],
+            "type": "string"
+          },
+          "title": "Evaluation Evidence",
+          "type": "array"
+        },
+        "height": {
+          "maximum": 16384,
+          "minimum": 64,
+          "title": "Height",
+          "type": "integer"
+        },
+        "intent_sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Intent Sha256",
+          "type": "string"
+        },
+        "output_count": {
+          "default": 1,
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Output Count",
+          "type": "integer"
+        },
+        "required_controls": {
+          "items": {
+            "enum": [
+              "reference_image",
+              "mask",
+              "depth",
+              "world_normal",
+              "object_id",
+              "multi_turn_edit"
+            ],
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Required Controls",
+          "type": "array"
+        },
+        "width": {
+          "maximum": 16384,
+          "minimum": 64,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "required_controls",
+        "width",
+        "height",
+        "delivery_format",
+        "intent_sha256"
+      ],
+      "title": "RouteExecutionIntent",
+      "type": "object"
+    }
+  },
+  "description": "Auditable provider choice whose policy-sensitive fields share one integrity fingerprint.",
+  "properties": {
+    "decision_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$",
+      "title": "Decision Id",
+      "type": "string"
+    },
+    "execution_intent": {
+      "$ref": "#/$defs/RouteExecutionIntent"
+    },
+    "max_cost_usd": {
+      "minimum": 0,
+      "title": "Max Cost Usd",
+      "type": "number"
+    },
+    "privacy_ceiling": {
+      "enum": [
+        "local_only",
+        "provider_processed",
+        "provider_retained"
+      ],
+      "title": "Privacy Ceiling",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "title": "Rationale",
+      "type": "string"
+    },
+    "rejected": {
+      "items": {
+        "$ref": "#/$defs/RejectedProviderAlternative"
+      },
+      "title": "Rejected",
+      "type": "array"
+    },
+    "requires_explicit_approval": {
+      "title": "Requires Explicit Approval",
+      "type": "boolean"
+    },
+    "scene_package_id": {
+      "minLength": 1,
+      "title": "Scene Package Id",
+      "type": "string"
+    },
+    "scene_package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Scene Package Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "route-decision/1",
+      "default": "route-decision/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "selected": {
+      "$ref": "#/$defs/ProviderSelection"
+    },
+    "task": {
+      "enum": [
+        "scene_direction",
+        "masked_refinement"
+      ],
+      "title": "Task",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision_id",
+    "scene_package_id",
+    "scene_package_sha256",
+    "task",
+    "selected",
+    "execution_intent",
+    "privacy_ceiling",
+    "max_cost_usd",
+    "requires_explicit_approval",
+    "rationale"
+  ],
+  "title": "RouteDecision",
+  "type": "object"
+}

@@ -116,6 +116,14 @@ class ComfyGateway:
             raise ComfyError(f"Could not upload {path.name}: {exc}") from exc
 
     def download_output(self, artifact: OutputArtifact, destination: Path) -> Path:
+        content = self.fetch_output_bytes(artifact)
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        temporary = destination.with_suffix(destination.suffix + ".part")
+        temporary.write_bytes(content)
+        temporary.replace(destination)
+        return destination
+
+    def fetch_output_bytes(self, artifact: OutputArtifact) -> bytes:
         try:
             response = self.client.get(
                 "/view",
@@ -128,11 +136,7 @@ class ComfyGateway:
             response.raise_for_status()
         except httpx.HTTPError as exc:
             raise ComfyError(f"Could not download {artifact.filename}: {exc}") from exc
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        temporary = destination.with_suffix(destination.suffix + ".part")
-        temporary.write_bytes(response.content)
-        temporary.replace(destination)
-        return destination
+        return response.content
 
     def history(self, prompt_id: str) -> dict[str, Any] | None:
         try:

@@ -5,6 +5,7 @@
   "description": "FLUX.2 Klein local refinement constrained by an explicit grayscale mask and partial denoising.",
   "workflow_file": "masked-refinement-v1.workflow.json",
   "execution_ready": true,
+  "consumed_controls": ["reference_image", "mask"],
   "required_models": [
     "flux-2-klein-base-4b-fp8.safetensors",
     "qwen_3_4b.safetensors",

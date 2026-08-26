@@ -3,9 +3,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from .comfy import ComfyError, ComfyGateway
+from .comfy import ComfyError
 from .domain import Candidate, RunState
-from .execution import execute_recipe
+from .providers import RecipeExecutionProvider
 from .recipes import RecipeCatalog
 from .run_store import RunStateError, RunStore
 
@@ -13,7 +13,7 @@ from .run_store import RunStateError, RunStore
 def run_batch(
     store: RunStore,
     run_id: str,
-    gateway: ComfyGateway,
+    provider: RecipeExecutionProvider,
     catalog: RecipeCatalog,
     source_path: Path,
     base_values: dict[str, Any],
@@ -24,7 +24,7 @@ def run_batch(
     if state.status not in {"approved", "running"}:
         raise RunStateError(f"Batch requires an approved or running run, not {state.status}")
 
-    snapshot = gateway.inspect()
+    snapshot = provider.inspect()
     recipes = {
         direction.recipe_id: catalog.get(direction.recipe_id) for direction in state.plan.directions
     }
@@ -37,7 +37,7 @@ def run_batch(
     if incompatible:
         raise ComfyError(" | ".join(incompatible))
 
-    uploaded = gateway.upload_image(source_path, subfolder=f"ArtFlow/{run_id}")
+    uploaded = provider.upload_image(source_path, subfolder=f"ArtFlow/{run_id}")
     remote_source = "/".join(part for part in (uploaded.subfolder, uploaded.name) if part)
     remote_mask: str | None = None
     needs_mask = any(
@@ -46,7 +46,7 @@ def run_batch(
     if needs_mask:
         if mask_path is None:
             raise RunStateError("The approved masked-refinement recipe requires a mask image")
-        uploaded_mask = gateway.upload_image(mask_path, subfolder=f"ArtFlow/{run_id}")
+        uploaded_mask = provider.upload_image(mask_path, subfolder=f"ArtFlow/{run_id}")
         remote_mask = "/".join(
             part for part in (uploaded_mask.subfolder, uploaded_mask.name) if part
         )
@@ -73,14 +73,14 @@ def run_batch(
             values["mask_image"] = remote_mask
         store.begin_direction(run_id, direction.name)
         try:
-            receipt = execute_recipe(gateway, recipe, values, environment=snapshot)
+            receipt = provider.execute(recipe, values, environment=snapshot)
             if not receipt.outputs:
                 raise ComfyError(f"Direction {direction.name} completed without image outputs")
             output_dir = store.root / run_id / "artifacts" / direction.name
             candidates: list[Candidate] = []
             for output_index, artifact in enumerate(receipt.outputs, start=1):
                 destination = output_dir / Path(artifact.filename).name
-                gateway.download_output(artifact, destination)
+                provider.download_output(artifact, destination)
                 artifact.local_path = str(destination.resolve())
                 candidates.append(
                     Candidate(

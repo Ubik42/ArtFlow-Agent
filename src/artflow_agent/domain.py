@@ -5,6 +5,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field, HttpUrl
 
+from .contracts import ApprovalGrant, RouteDecision
+
 
 class ArtBrief(BaseModel):
     """User-owned constraints that must survive every generation round."""
@@ -79,6 +81,16 @@ class RecipeDefinition(BaseModel):
     description: str
     workflow_file: str
     execution_ready: bool = False
+    consumed_controls: list[
+        Literal[
+            "reference_image",
+            "mask",
+            "depth",
+            "world_normal",
+            "object_id",
+            "multi_turn_edit",
+        ]
+    ] = Field(default_factory=list)
     required_models: list[str] = Field(default_factory=list)
     required_nodes: list[str] = Field(default_factory=list)
     estimated_vram_mb: int | None = Field(default=None, ge=0)
@@ -160,6 +172,8 @@ class RunState(BaseModel):
     source_candidate_id: str | None = None
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     approved_at: datetime | None = None
+    route_decision: RouteDecision | None = None
+    approval_grant: ApprovalGrant | None = None
     direction_runs: list[DirectionRun] = Field(default_factory=list)
     candidates: list[Candidate] = Field(default_factory=list)
     selected_candidate_id: str | None = None

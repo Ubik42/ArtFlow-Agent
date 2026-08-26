@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "HostedAssetReference": {
+      "properties": {
+        "media_type": {
+          "enum": [
+            "image/png",
+            "image/x-exr"
+          ],
+          "title": "Media Type",
+          "type": "string"
+        },
+        "package_path": {
+          "title": "Package Path",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "reference_image",
+            "depth",
+            "world_normal",
+            "object_id",
+            "mask"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "package_path",
+        "sha256",
+        "media_type"
+      ],
+      "title": "HostedAssetReference",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "approved_max_cost_usd": {
+      "minimum": 0,
+      "title": "Approved Max Cost Usd",
+      "type": "number"
+    },
+    "art_goal": {
+      "maxLength": 4000,
+      "minLength": 1,
+      "title": "Art Goal",
+      "type": "string"
+    },
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/HostedAssetReference"
+      },
+      "maxItems": 8,
+      "minItems": 1,
+      "title": "Assets",
+      "type": "array"
+    },
+    "attestation_environment_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Attestation Environment Sha256",
+      "type": "string"
+    },
+    "estimated_cost_usd": {
+      "minimum": 0,
+      "title": "Estimated Cost Usd",
+      "type": "number"
+    },
+    "execution_id": {
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "height": {
+      "maximum": 16384,
+      "minimum": 64,
+      "title": "Height",
+      "type": "integer"
+    },
+    "idempotency_key": {
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "output_count": {
+      "maximum": 8,
+      "minimum": 1,
+      "title": "Output Count",
+      "type": "integer"
+    },
+    "preserve": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Preserve",
+      "type": "array"
+    },
+    "privacy_class": {
+      "enum": [
+        "provider_processed",
+        "provider_retained"
+      ],
+      "title": "Privacy Class",
+      "type": "string"
+    },
+    "prohibit": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 64,
+      "title": "Prohibit",
+      "type": "array"
+    },
+    "provider_id": {
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "route_decision_id": {
+      "title": "Route Decision Id",
+      "type": "string"
+    },
+    "route_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Route Fingerprint",
+      "type": "string"
+    },
+    "run_id": {
+      "title": "Run Id",
+      "type": "string"
+    },
+    "scene_package_id": {
+      "title": "Scene Package Id",
+      "type": "string"
+    },
+    "scene_package_sha256": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Scene Package Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "compiled-hosted-request/1",
+      "default": "compiled-hosted-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "width": {
+      "maximum": 16384,
+      "minimum": 64,
+      "title": "Width",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "run_id",
+    "execution_id",
+    "idempotency_key",
+    "route_decision_id",
+    "route_fingerprint",
+    "provider_id",
+    "model_id",
+    "scene_package_id",
+    "scene_package_sha256",
+    "attestation_environment_sha256",
+    "privacy_class",
+    "approved_max_cost_usd",
+    "estimated_cost_usd",
+    "width",
+    "height",
+    "output_count",
+    "art_goal",
+    "preserve",
+    "prohibit",
+    "assets"
+  ],
+  "title": "CompiledHostedRequest",
+  "type": "object"
+}

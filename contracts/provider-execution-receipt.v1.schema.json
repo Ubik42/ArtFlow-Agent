@@ -1,0 +1,125 @@
+{
+  "$defs": {
+    "ReceiptArtifact": {
+      "properties": {
+        "media_type": {
+          "minLength": 1,
+          "title": "Media Type",
+          "type": "string"
+        },
+        "path": {
+          "minLength": 1,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "sha256",
+        "media_type"
+      ],
+      "title": "ReceiptArtifact",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/ReceiptArtifact"
+      },
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "error_code": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Error Code"
+    },
+    "execution_id": {
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$",
+      "title": "Execution Id",
+      "type": "string"
+    },
+    "model_id": {
+      "minLength": 1,
+      "title": "Model Id",
+      "type": "string"
+    },
+    "provider_id": {
+      "minLength": 1,
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "provider_request_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Provider Request Id"
+    },
+    "route_decision_id": {
+      "minLength": 1,
+      "title": "Route Decision Id",
+      "type": "string"
+    },
+    "route_fingerprint": {
+      "pattern": "^[a-f0-9]{64}$",
+      "title": "Route Fingerprint",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "provider-execution-receipt/1",
+      "default": "provider-execution-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled"
+      ],
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "execution_id",
+    "route_decision_id",
+    "route_fingerprint",
+    "provider_id",
+    "model_id",
+    "status",
+    "started_at",
+    "completed_at"
+  ],
+  "title": "ProviderExecutionReceipt",
+  "type": "object"
+}

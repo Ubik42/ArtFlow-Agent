@@ -9,6 +9,7 @@ from artflow_agent.domain import (
     UploadedInput,
 )
 from artflow_agent.planning import DeterministicPlanner
+from artflow_agent.providers import ComfyRecipeProvider
 from artflow_agent.recipes import RecipeCatalog
 from artflow_agent.run_store import RunStore
 
@@ -78,7 +79,7 @@ def test_batch_executes_all_directions_and_enters_review(tmp_path) -> None:
         "seed": 42,
     }
 
-    state = run_batch(store, "run", gateway, catalog, source, values)
+    state = run_batch(store, "run", ComfyRecipeProvider(gateway), catalog, source, values)
 
     assert state.status == "review"
     assert len(state.candidates) == 2

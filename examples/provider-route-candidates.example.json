@@ -1,0 +1,48 @@
+[
+  {
+    "manifest": {
+      "schema_id": "provider-capability-manifest/1",
+      "provider_id": "comfy-local",
+      "display_name": "Reviewed local ComfyUI",
+      "execution_kind": "local",
+      "privacy_class": "local_only",
+      "cost_class": "local_compute",
+      "requires_explicit_cost_approval": false,
+      "models": [
+        {
+          "model_id": "flux-depth-local",
+          "model_version": "fixture-reviewed",
+          "tasks": ["scene_direction"],
+          "controls": ["reference_image"],
+          "max_reference_images": 4
+        }
+      ]
+    },
+    "model_id": "flux-depth-local",
+    "availability": "supported",
+    "estimated_cost_usd": 0
+  },
+  {
+    "manifest": {
+      "schema_id": "provider-capability-manifest/1",
+      "provider_id": "openai-images",
+      "display_name": "OpenAI Images API (not live-attested)",
+      "execution_kind": "hosted",
+      "privacy_class": "provider_processed",
+      "cost_class": "metered",
+      "requires_explicit_cost_approval": true,
+      "models": [
+        {
+          "model_id": "gpt-image-2-2026-04-21",
+          "model_version": "2026-04-21",
+          "tasks": ["scene_direction"],
+          "controls": ["reference_image", "mask"],
+          "max_reference_images": 4
+        }
+      ]
+    },
+    "model_id": "gpt-image-2-2026-04-21",
+    "availability": "unknown",
+    "estimated_cost_usd": 0.08
+  }
+]

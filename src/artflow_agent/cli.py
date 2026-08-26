@@ -3,10 +3,13 @@ from __future__ import annotations
 import json
 from glob import glob
 from pathlib import Path
-from typing import Annotated
+from typing import Annotated, Literal
 
 import typer
 
+from .agent_harness import OfflineCoordinator, build_offline_registry
+from .agent_runtime import AgentBudget, AgentEventStore
+from .attestation import attest_local_capability
 from .batch import run_batch
 from .comfy import ComfyGateway, inspect_environment
 from .delivery import package_run
@@ -14,9 +17,12 @@ from .domain import ArtBrief, Candidate
 from .evaluation import PydanticAIVisualEvaluator, evaluate_candidate
 from .execution import execute_recipe
 from .planning import DeterministicPlanner, PydanticAIPlanner
+from .providers import ComfyRecipeProvider
 from .recipes import RecipeCatalog
 from .review import create_contact_sheet, evaluate_trajectory
+from .routing import ProviderRouteCandidate, RoutePolicyRequest, route_scene_package
 from .run_store import RunStore
+from .scene_packages import ScenePackageArchive, ScenePackagePreview
 
 app = typer.Typer(no_args_is_help=True, help="ArtFlow Agent development CLI.")
 
@@ -30,6 +36,155 @@ def validate_brief(path: Path) -> None:
     """Validate an art brief and print its normalized form."""
     brief = _read_brief(path)
     typer.echo(brief.model_dump_json(indent=2))
+
+
+@app.command("inspect-scene-package")
+def inspect_scene_package(path: Path) -> None:
+    """Read and verify an atomic Unreal-originated scene package without extracting it."""
+    preview = ScenePackageArchive().inspect(path)
+    typer.echo(preview.model_dump_json(indent=2))
+
+
+@app.command("create-agent-run")
+def create_agent_run(
+    run_id: str,
+    database: Path = Path("runs/agent-events.sqlite3"),
+    max_iterations: int = 12,
+    max_tool_calls: int = 24,
+    max_retries: int = 3,
+    max_cost_usd: float | None = None,
+) -> None:
+    """Create the durable, event-sourced shell for an ArtFlow Agent run."""
+    state = AgentEventStore(database).create_run(
+        run_id,
+        budgets=AgentBudget(
+            max_iterations=max_iterations,
+            max_tool_calls=max_tool_calls,
+            max_retries=max_retries,
+            max_cost_usd=max_cost_usd,
+        ),
+    )
+    typer.echo(state.model_dump_json(indent=2))
+
+
+@app.command("attach-scene-package")
+def attach_scene_package(
+    run_id: str,
+    path: Path,
+    database: Path = Path("runs/agent-events.sqlite3"),
+    expected_archive_sha256: str | None = None,
+) -> None:
+    """Verify and atomically bind a Scene Package to a durable Agent run."""
+    preview = ScenePackageArchive().inspect(path)
+    state = AgentEventStore(database).attach_scene(
+        run_id,
+        preview,
+        expected_archive_sha256=expected_archive_sha256,
+    )
+    typer.echo(state.model_dump_json(indent=2))
+
+
+@app.command("agent-status")
+def agent_status(
+    run_id: str,
+    database: Path = Path("runs/agent-events.sqlite3"),
+) -> None:
+    """Rebuild an Agent run from events and print its code-generated status bar."""
+    status = AgentEventStore(database).load(run_id).status_bar()
+    typer.echo(status.model_dump_json(indent=2))
+
+
+@app.command("run-offline-agent-step")
+def run_offline_agent_step(
+    run_id: str,
+    database: Path = Path("runs/agent-events.sqlite3"),
+) -> None:
+    """Run one deterministic, network-free Agent capability loop for inspection."""
+    store = AgentEventStore(database)
+    result = OfflineCoordinator(store, build_offline_registry()).run_once(run_id)
+    typer.echo(result.model_dump_json(indent=2))
+
+
+@app.command("propose-offline-route")
+def propose_offline_route(
+    run_id: str,
+    candidates_path: Path,
+    decision_id: str,
+    database: Path = Path("runs/agent-events.sqlite3"),
+    privacy_ceiling: Literal[
+        "local_only", "provider_processed", "provider_retained"
+    ] = "local_only",
+    max_cost_usd: float = 0,
+) -> None:
+    """Evaluate provider manifests and persist an approval-bound route without execution."""
+    store = AgentEventStore(database)
+    state = store.load(run_id)
+    if state.scene is None:
+        raise typer.BadParameter("The Agent run has no attached Scene Package")
+    payload = json.loads(candidates_path.read_text(encoding="utf-8"))
+    candidates = [ProviderRouteCandidate.model_validate(item) for item in payload]
+    preview = ScenePackagePreview(
+        package=state.scene.package,
+        archive_sha256=state.scene.archive_sha256,
+        artifacts=state.scene.artifacts,
+    )
+    result = route_scene_package(
+        preview,
+        candidates,
+        RoutePolicyRequest(
+            decision_id=decision_id,
+            privacy_ceiling=privacy_ceiling,
+            max_cost_usd=max_cost_usd,
+        ),
+    )
+    proposed = store.propose_route(run_id, result.decision)
+    typer.echo(
+        json.dumps(
+            {
+                "route": result.decision.model_dump(mode="json"),
+                "status": proposed.status_bar().model_dump(mode="json"),
+            },
+            indent=2,
+        )
+    )
+
+
+@app.command("attest-local-provider")
+def attest_local_provider(
+    candidates_path: Path,
+    provider_id: str,
+    model_id: str,
+    recipe_id: str,
+    output: Path,
+    comfy_url: str = "http://127.0.0.1:8188",
+    run_id: str | None = None,
+    database: Path = Path("runs/agent-events.sqlite3"),
+) -> None:
+    """Read ComfyUI facts and save a bounded capability attestation; never queue work."""
+    payload = json.loads(candidates_path.read_text(encoding="utf-8"))
+    candidates = [ProviderRouteCandidate.model_validate(item) for item in payload]
+    candidate = next(
+        (
+            item
+            for item in candidates
+            if item.manifest.provider_id == provider_id and item.model_id == model_id
+        ),
+        None,
+    )
+    if candidate is None:
+        raise typer.BadParameter("Provider/model pair is absent from the candidate manifest")
+    recipe = RecipeCatalog.bundled().get(recipe_id).definition
+    snapshot = inspect_environment(comfy_url)
+    attestation = attest_local_capability(
+        snapshot,
+        candidate.manifest,
+        model_id,
+        recipe,
+    )
+    attestation.save(output)
+    if run_id is not None:
+        AgentEventStore(database).record_capability_attestation(run_id, attestation)
+    typer.echo(attestation.model_dump_json(indent=2))
 
 
 @app.command()
@@ -167,10 +322,11 @@ def run_batch_command(
     store = RunStore(runs_dir)
     resolved_source = source or Path(store.load(run_id).brief.source_image)
     with ComfyGateway(comfy_url) as gateway:
+        provider = ComfyRecipeProvider(gateway)
         state = run_batch(
             store,
             run_id,
-            gateway,
+            provider,
             RecipeCatalog.bundled(),
             resolved_source,
             values,
@@ -291,12 +447,19 @@ def serve(
     host: str = "127.0.0.1",
     port: int = 8787,
     reload: bool = False,
+    runs_dir: Path = Path("runs"),
+    agent_database: Path | None = None,
 ) -> None:
     """Serve the local portfolio workbench and typed run API."""
     import uvicorn
 
+    from .web_api import create_app
+
     uvicorn.run(
-        "artflow_agent.web_api:create_app", host=host, port=port, reload=reload, factory=True
+        create_app(runs_dir=runs_dir, agent_database=agent_database),
+        host=host,
+        port=port,
+        reload=reload,
     )
 
 

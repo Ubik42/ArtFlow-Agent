@@ -4,6 +4,7 @@ import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 
+from .contracts import ApprovalGrant, RouteDecision
 from .domain import (
     ArtBrief,
     Candidate,
@@ -31,6 +32,7 @@ class RunStore:
         *,
         parent_run_id: str | None = None,
         source_candidate_id: str | None = None,
+        route_decision: RouteDecision | None = None,
     ) -> RunState:
         resolved_id = run_id or uuid.uuid4().hex[:12]
         run_dir = self.root / resolved_id
@@ -43,9 +45,14 @@ class RunStore:
             run_id=resolved_id,
             brief=brief,
             plan=plan,
-            status="awaiting_approval" if plan.approval_required else "approved",
+            status=(
+                "awaiting_approval"
+                if plan.approval_required or route_decision is not None
+                else "approved"
+            ),
             parent_run_id=parent_run_id,
             source_candidate_id=source_candidate_id,
+            route_decision=route_decision,
         )
         self._write_state(state)
         self.append_event(
@@ -55,6 +62,10 @@ class RunStore:
                 "approval_required": plan.approval_required,
                 "parent_run_id": parent_run_id,
                 "source_candidate_id": source_candidate_id,
+                "route_decision_id": route_decision.decision_id if route_decision else None,
+                "route_fingerprint": (
+                    route_decision.approval_fingerprint() if route_decision else None
+                ),
             },
         )
         return state
@@ -115,20 +126,77 @@ class RunStore:
         except OSError as exc:
             raise RunStateError(f"Unknown run: {run_id}") from exc
 
-    def approve(self, run_id: str) -> RunState:
+    def approve(
+        self,
+        run_id: str,
+        *,
+        approved_by: str = "local-operator",
+        expires_at: datetime | None = None,
+    ) -> RunState:
         state = self.load(run_id)
         if state.status != "awaiting_approval":
             raise RunStateError(f"Run {run_id} cannot be approved from {state.status}")
         state.status = "approved"
         state.approved_at = datetime.now(UTC)
+        if state.route_decision is not None:
+            state.approval_grant = ApprovalGrant(
+                approval_id=f"approval-{uuid.uuid4().hex[:12]}",
+                route_decision_id=state.route_decision.decision_id,
+                route_fingerprint=state.route_decision.approval_fingerprint(),
+                approved_by=approved_by,
+                approved_at=state.approved_at,
+                expires_at=expires_at,
+            )
         self._write_state(state)
-        self.append_event(run_id, "plan_approved")
+        self.append_event(
+            run_id,
+            "plan_approved",
+            {
+                "approved_by": approved_by,
+                "approval_id": state.approval_grant.approval_id
+                if state.approval_grant
+                else None,
+                "route_fingerprint": state.approval_grant.route_fingerprint
+                if state.approval_grant
+                else None,
+            },
+        )
         return state
 
-    def mark_running(self, run_id: str) -> RunState:
+    def set_route_decision(self, run_id: str, decision: RouteDecision) -> RunState:
+        state = self.load(run_id)
+        if state.status not in {"awaiting_approval", "approved"}:
+            raise RunStateError(f"Route cannot change while run is {state.status}")
+        previous = state.route_decision
+        previous_fingerprint = previous.approval_fingerprint() if previous else None
+        next_fingerprint = decision.approval_fingerprint()
+        changed = previous_fingerprint != next_fingerprint
+        state.route_decision = decision
+        if changed and state.status == "approved":
+            state.status = "awaiting_approval"
+            state.approved_at = None
+            state.approval_grant = None
+        self._write_state(state)
+        self.append_event(
+            run_id,
+            "route_decision_recorded",
+            {
+                "route_decision_id": decision.decision_id,
+                "route_fingerprint": next_fingerprint,
+                "previous_approval_invalidated": changed and previous_fingerprint is not None,
+            },
+        )
+        return state
+
+    def mark_running(self, run_id: str, *, at: datetime | None = None) -> RunState:
         state = self.load(run_id)
         if state.status != "approved":
             raise RunStateError("Generation cannot start before explicit approval")
+        if state.route_decision is not None and (
+            state.approval_grant is None
+            or not state.approval_grant.authorizes(state.route_decision, at=at)
+        ):
+            raise RunStateError("Generation cannot start with a changed or expired route approval")
         state.status = "running"
         self._write_state(state)
         self.append_event(run_id, "generation_started")

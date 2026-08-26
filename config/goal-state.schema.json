@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "codex-goal-state@2.0.0",
+  "type": "object",
+  "required": ["schemaVersion", "stateRevision", "strategyVersion", "goalId", "objective", "status", "currentMilestone", "milestones", "nextSlice", "manualTracks", "continuationPolicy", "lastCheckpoint", "currentBlocker", "evidenceCeiling", "constraints"],
+  "properties": {
+    "schemaVersion": { "const": "codex-goal-state@2.0.0" },
+    "stateRevision": { "type": "integer", "minimum": 1 },
+    "strategyVersion": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "goalId": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,63}$" },
+    "objective": { "type": "string", "minLength": 20 },
+    "status": { "enum": ["active", "blocked", "complete"] },
+    "currentMilestone": { "type": "string", "pattern": "^M[0-9]+$" },
+    "milestones": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "dependsOn", "outcome", "acceptance"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^M[0-9]+$" },
+          "title": { "type": "string", "minLength": 3 },
+          "status": { "enum": ["pending", "in_progress", "completed"] },
+          "dependsOn": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^M[0-9]+$" } },
+          "outcome": { "type": "string", "minLength": 10 },
+          "acceptance": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 5 } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "nextSlice": {
+      "type": "object",
+      "required": ["id", "milestone", "title", "outcome", "risk", "evidenceTarget", "requiresRealHosts", "allowedPaths", "nonGoals", "acceptance", "stopConditions", "environmentRequirements", "validationCommands"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^M[0-9]+-S[0-9]+$" },
+        "milestone": { "type": "string", "pattern": "^M[0-9]+$" },
+        "title": { "type": "string", "minLength": 3 },
+        "outcome": { "type": "string", "minLength": 20 },
+        "risk": { "enum": ["R0", "R1", "R2", "R3", "R4"] },
+        "evidenceTarget": { "enum": ["A1", "A2", "A3", "A4", "A5"] },
+        "requiresRealHosts": { "type": "boolean" },
+        "allowedPaths": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "nonGoals": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 5 } },
+        "acceptance": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 5 } },
+        "stopConditions": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 5 } },
+        "environmentRequirements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "kind", "value", "required"],
+            "properties": {
+              "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{1,63}$" },
+              "kind": { "enum": ["command", "sibling_path", "environment"] },
+              "value": { "type": "string", "minLength": 1 },
+              "required": { "type": "boolean" }
+            },
+            "additionalProperties": false
+          }
+        },
+        "validationCommands": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 5 } }
+      },
+      "additionalProperties": false
+    },
+    "manualTracks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title", "status", "blocking", "resumeCondition", "evidence"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{2,63}$" },
+          "title": { "type": "string", "minLength": 3 },
+          "status": { "enum": ["pending", "ready", "in_progress", "completed", "blocked"] },
+          "blocking": { "type": "boolean" },
+          "resumeCondition": { "type": "string", "minLength": 5 },
+          "evidence": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+        },
+        "additionalProperties": false
+      }
+    },
+    "continuationPolicy": {
+      "type": "object",
+      "required": ["sourceOfTruth", "maxInProgressMilestones", "checkpointRequiredBeforeAdvance", "executeValidationCommandsDynamically", "dirtyWorktreePolicy", "manualTrackPolicy"],
+      "properties": {
+        "sourceOfTruth": { "type": "array", "minItems": 3, "items": { "type": "string" } },
+        "maxInProgressMilestones": { "const": 1 },
+        "checkpointRequiredBeforeAdvance": { "const": true },
+        "executeValidationCommandsDynamically": { "const": false },
+        "dirtyWorktreePolicy": { "const": "preserve_and_report" },
+        "manualTrackPolicy": { "const": "non_blocking_unless_promoted" }
+      },
+      "additionalProperties": false
+    },
+    "lastCheckpoint": { "type": "string", "pattern": "^artifacts/goal/checkpoint-[0-9]{4}\\.json$" },
+    "currentBlocker": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "required": ["code", "reason", "resumeCondition", "firstObservedRevision", "consecutiveGoalTurns"],
+          "properties": {
+            "code": { "type": "string", "minLength": 3 },
+            "reason": { "type": "string", "minLength": 10 },
+            "resumeCondition": { "type": "string", "minLength": 5 },
+            "firstObservedRevision": { "type": "integer", "minimum": 1 },
+            "consecutiveGoalTurns": { "type": "integer", "minimum": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "evidenceCeiling": { "type": "string", "minLength": 10 },
+    "constraints": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 5 } }
+  },
+  "additionalProperties": false
+}

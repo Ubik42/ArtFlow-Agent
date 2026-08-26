@@ -5,6 +5,9 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 TaskKind = Literal["scene_direction", "masked_refinement"]
+ExecutionKind = Literal["local", "hosted", "mcp"]
+PrivacyClass = Literal["local_only", "provider_processed", "provider_retained"]
+CostClass = Literal["local_compute", "metered", "subscription"]
 ControlKind = Literal[
     "reference_image",
     "mask",
@@ -13,6 +16,7 @@ ControlKind = Literal[
     "object_id",
     "multi_turn_edit",
 ]
+EvaluationEvidenceKind = Literal["depth", "world_normal", "object_id", "protected_mask"]
 
 
 class ProviderModelCapability(BaseModel):
@@ -35,9 +39,9 @@ class ProviderCapabilityManifest(BaseModel):
     schema_id: Literal["provider-capability-manifest/1"] = "provider-capability-manifest/1"
     provider_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,119}$")
     display_name: str = Field(min_length=1)
-    execution_kind: Literal["local", "hosted", "mcp"]
-    privacy_class: Literal["local_only", "provider_processed", "provider_retained"]
-    cost_class: Literal["local_compute", "metered", "subscription"]
+    execution_kind: ExecutionKind
+    privacy_class: PrivacyClass
+    cost_class: CostClass
     requires_explicit_cost_approval: bool
     models: list[ProviderModelCapability] = Field(min_length=1)
 
@@ -51,4 +55,3 @@ class ProviderCapabilityManifest(BaseModel):
         if self.execution_kind == "local" and self.privacy_class != "local_only":
             raise ValueError("local providers must use local_only privacy")
         return self
-

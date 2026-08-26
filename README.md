@@ -1,154 +1,136 @@
 # ArtFlow Agent
 
-面向游戏美术迭代的 AIGC Agent。它不让大模型任意拼接 ComfyUI 图，而是把美术需求转换为受约束、可审批、可恢复的生成任务，并把工作流版本、模型环境、Seed、候选结果、人工选择与交付文件保存在同一条可审计链路中。
+> 从 Unreal 场景事实出发，完成受约束生成、独立评价、失败恢复、证据采用、局部纠正与可验证回流的 AIGC 生产 Agent。
 
-![用于构图保持测试的场景灰盒](examples/assets/coastal-ruins-graybox.png)
+ArtFlow 面向游戏美术、技术美术和 AIGC 工具团队。它解决的不是“再做一个 ComfyUI 前端”，而是把相机、物体 ID、保护区域、可编辑区域与美术意图编译成可重放的生产决策链：模型只能在已声明的能力中选择，确定性策略拥有最终约束权，生成器不能评价自己的结果，Codex 编排器依据持久化 Tribunal 证据完成采用、局部修订和项目内交付。
 
-> **当前阶段：可运行的首个端到端切片。** 构图保持流程已经在本地 RTX 4080 / ComfyUI 环境完成三方向生成；蒙版局部精修已通过真实工作流结构预检，但仍等待一次批准后的 GPU 视觉验收。仓库正在按 Contract-first 路线重构，现有切片被保留为回归基线。
+![ArtFlow 最终可验证交付面板](docs/assets/portfolio/09-verified-delivery.png)
 
-## 为什么需要 Agent
+## 一次真实闭环
 
-公开 ComfyUI 工作流很多，但直接让 Agent 修改任意节点图，会同时带来成本、兼容性和结果可追溯问题。ArtFlow 将“模型可以判断什么”和“系统必须确定什么”分开：
+当前作品集主运行使用项目自有 Unreal Engine 5.8 场景和本机 RTX 4080：
 
 ```text
-美术 Brief
-  → 确定性 / 可选模型规划
-  → 人工审批
-  → 本机 ComfyUI 能力与工作流 Schema 预检
-  → 只修改 Recipe 允许的参数槽
-  → 多方向生成与断点恢复
-  → 技术检查 + 可选视觉评价
-  → 人工选片与局部精修
-  → 带校验值的交付包
+Unreal 四 Pass Scene Package
+  → 有界 Context + Capability Registry
+  → 本地 ComfyUI / Codex 内置 GPT Image 2 同约束候选
+  → 确定性 Constraint Judge + 独立多模态 Visual Critic
+  → 拒绝“更漂亮但越界”的负对照
+  → Codex 编排器从持久证据自主采用
+  → GPT Image 2 蒙版限定局部修订
+  → 像素级验证蒙版外 0 变化
+  → typed Unreal return tool 回写 ArtFlowDemo
+  → 9/9 来源文件哈希验证与本地作品集发布
 ```
 
-Agent 负责形成方向和调用受控工具；确定性代码负责审批边界、环境检查、执行、状态转换、收据和交付；最终采用哪张图始终由人决定。
+这条主运行目前有 **25 个 append-only 事件**，刷新和重启均从 SQLite reducer 重建；没有待处理的人工审批。候选采用、局部修订、UE 回流和最终本地发布由 Codex 编排器负责，预览界面只提供可见性，不会被重新包装成审批门禁。
 
-## 当前可演示能力
+## 完整流程实录
 
-- **结构化 Brief**：记录项目、任务类型、必须保留与禁止改变的视觉约束。
-- **双规划入口**：默认使用离线确定性规划；只有显式传入 `--model` 才调用 PydanticAI 模型。
-- **真实环境预检**：读取 ComfyUI `system_stats` 与 `object_info`，核对节点、模型、输入类型、枚举、数值范围和显存条件。
-- **受审 Recipe**：Agent 只能填写允许的参数槽，不能提交任意工作流图。
-- **显式审批**：未批准的 Run 无法进入 ComfyUI 队列，模型输出也不能绕过这一状态机。
-- **多方向批处理**：上传源图、逐方向排队、轮询、下载并保存独立状态；中断后跳过已完成方向继续运行。
-- **过程证据**：记录解析后的输入、Seed、工作流 Hash、运行环境指纹、ComfyUI 输出与逐步事件。
-- **评估与选片**：生成 Contact Sheet，执行分辨率、宽高比、亮度范围和结构边缘等确定性检查，并保留独立的可选视觉评价入口。
-- **可追踪 Revision**：局部精修只能从已经完成且由人工选中的父结果派生，并重新经过审批。
-- **交付封装**：把状态、事件、收据、评估、选中结果和文件 SHA-256 写入可复核的 ZIP。
-- **本地 Workbench**：React/TypeScript 界面展示环境、Brief、Plan、方向进度、Contact Sheet 与人工选择；它不能上传任意工作流图。
+以下截图均来自同一条项目自有运行，不是概念稿或后期拼接的静态 UI。
 
-## 两条受控美术流程
-
-### 构图保持的气氛方向
-
-从场景灰盒生成多个灯光/天气方向，同时用结构边缘相似度检查构图是否发生明显漂移。当前真实运行 `862ac768a2f2` 已产生 cold storm、warm ruins 与 ritual contrast 三个候选，并下载对应收据和 Contact Sheet。
-
-![真实 ComfyUI 运行生成的三方向候选](docs/assets/composition-contact-sheet.jpg)
-
-### 蒙版限定的局部精修
-
-精修只能作用于指定区域；父图必须来自已完成人工选择的 Run，遮罩与源图作为显式输入上传，后续可用非遮罩区域稳定性检查判断越界变化。
-
-| 场景灰盒 | 拱门区域蒙版 |
+| 1. UE 四 Pass 场景事实 | 2. 双 Provider 独立 Tribunal |
 | --- | --- |
-| ![场景灰盒](examples/assets/coastal-ruins-graybox.png) | ![拱门蒙版](examples/assets/coastal-ruins-arch-mask.png) |
+| ![Unreal 原始场景](docs/assets/portfolio/01-unreal-scene.png) | ![候选 Tribunal](docs/assets/portfolio/02-provider-tribunal.png) |
+| 3. 更漂亮但越界的负对照 | 4. 蒙版限定局部纠正 |
+| ![负对照硬拒绝](docs/assets/portfolio/03-attractive-invalid.png) | ![有界修订](docs/assets/portfolio/04-bounded-revision.png) |
+| 5. 崩溃恢复矩阵 | 6. 来源绑定生产记忆 |
+| ![恢复矩阵](docs/assets/portfolio/05-recovery.png) | ![生产记忆](docs/assets/portfolio/06-memory.png) |
+| 7. 20/20 Agent Harness | 8. UE 5.8 真实回流 |
+| ![Agent Harness](docs/assets/portfolio/07-harness.png) | ![Unreal 回流](docs/assets/portfolio/08-unreal-return.png) |
+| 9. 可验证交付总览 | 10. 窄屏展示 |
+| ![可验证交付](docs/assets/portfolio/09-verified-delivery.png) | ![移动端交付面板](docs/assets/portfolio/10-mobile-delivery.png) |
 
-## 安装与本地验证
+## 为什么这是 Agent，而不是工作流脚本
 
-需要 Python 3.11+。默认测试不需要模型 Key、ComfyUI 或 GPU。
+核心工程公式是 `Agent = Model + Harness`。ArtFlow 的主要代码价值位于手写 Harness，而不是某个框架名称：
+
+| Agent 能力 | ArtFlow 实现 | 可检查证据 |
+| --- | --- | --- |
+| 上下文工程 | 稳定前缀、Reducer 状态栏、最近观察窗口、精确元数据记忆、artifact citation | 深埋硬约束保留；陈旧观察与无关记忆被排除 |
+| 工具工程 | Pydantic 输入输出、能力注册、读写域、风险、超时、幂等和独立验证信号 | 不可用能力 fail closed；模型不能提交任意 ComfyUI 图或 host code |
+| 路由与策略 | 能力收敛、隐私/成本上限、确定性硬门禁、绑定指纹 | 路由/策略冻结案例 5/5；审批指纹不能绕过 |
+| 持久执行 | SQLite append-only 事件、哈希链、确定性 reducer、reserve/submit/reconcile | 崩溃点重放保持相同终态；副作用不重复 |
+| 独立评价 | 生产者与 Judge 分离，技术 Tribunal 与多模态 Critic 并列 | 更漂亮但改变相机/结构的负对照被硬拒绝 |
+| 纠正 | 失败分类、checkpoint、unknown completion 对账、蒙版限定修订 | 恢复 6/6；局部修订蒙版外变化 0 像素 |
+| 生产记忆 | episodic / semantic / procedural 三类来源绑定记忆 | 治理案例 6/6；冲突、伪造来源与越权共享被拒绝 |
+| 可观察与评估 | OpenTelemetry 关联 trace；冻结 Harness 聚合六个领域 | 20/20 命名案例，精确分母、fixture 延迟和 $0 外部成本 |
+| 可验证交付 | typed UE return receipt、内容哈希、C2PA 2.4 兼容 sidecar | UE 5.8 可见回流；来源绑定 9/9 |
+
+PydanticAI 只负责类型化模型交互，不拥有状态机、策略或执行权限。ArtFlow 没有为了“显得复杂”引入 LangGraph、Temporal、向量数据库或开放式多 Agent 群聊。
+
+## 真实结果与诚实边界
+
+- **Unreal 输入**：UE `5.8.1`，固定相机，beauty / depth / world normal / object ID 四 Pass，Scene Package 原子发布并逐文件 SHA-256。
+- **双生成面**：本地 ComfyUI 与 Codex 内置 GPT Image 2 使用同一 Scene Package 和美术约束；输出统一为不可变 receipt。
+- **评价分歧**：Codex 候选获得更强视觉方向评价，本地候选保留更强边缘布局代理指标；分歧没有被抹平。
+- **负对照**：一个主观吸引力更高的候选因相机和结构违反被确定性硬门禁拒绝，不能进入采用排序。
+- **自主采用**：编排器按 `hard-eligible-then-visual-direction-v1` 从已持久化评价选择 Codex 候选。
+- **局部纠正**：第二次 feathered composite 改变蒙版内 42,803 个像素，蒙版外 1,530,358 个像素中变化为 0。
+- **真实回流**：修订资产导入 `/Game/ArtFlow/Returns`，绑定 `/Game/ArtFlowDemo` 的 `ArtFlow_Return_1194a8d6` Actor，UE 内容验证通过。
+- **来源限制**：9/9 文件哈希链通过，但当前是 `compatible_unsigned_sidecar`，没有签名证书，**不声称完整加密 C2PA Credential**。
+
+## 五分钟演示
+
+安装 Python 3.11+ 和 Node.js 后：
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[dev]"
-.\.venv\Scripts\artflow validate-brief examples\brief.example.json
-.\.venv\Scripts\pytest
-```
-
-检查正在运行的 ComfyUI：
-
-```powershell
-.\.venv\Scripts\artflow doctor --comfy-url http://127.0.0.1:8188
-```
-
-## 完整演示流程
-
-```powershell
-# 1. 建立可审阅任务；默认不调用模型。
-.\.venv\Scripts\artflow create-run examples\brief.example.json
-
-# 2. 人工查看计划后明确批准。
-.\.venv\Scripts\artflow approve <run-id>
-
-# 3. 运行全部方向；重试时会跳过已完成方向。
-.\.venv\Scripts\artflow list-recipes
-.\.venv\Scripts\artflow run-batch <run-id> examples\composition-values.example.json
-
-# 4. 生成对比、人工选片并执行检查。
-.\.venv\Scripts\artflow make-contact-sheet <run-id>
-.\.venv\Scripts\artflow select <run-id> candidate-01
-.\.venv\Scripts\artflow evaluate <run-id>
-.\.venv\Scripts\artflow evaluate-assets <run-id>
-
-# 5. 完成选片后制作带校验值的交付包。
-.\.venv\Scripts\artflow package-run <run-id>
-```
-
-从选中结果建立蒙版精修子任务：
-
-```powershell
-.\.venv\Scripts\artflow create-revision <parent-run-id> examples\masked-brief.example.json
-.\.venv\Scripts\artflow approve <revision-run-id>
-.\.venv\Scripts\artflow run-batch <revision-run-id> examples\masked-values.example.json `
-  --mask examples\assets\coastal-ruins-arch-mask.png
-```
-
-只有显式传入兼容的 PydanticAI 模型标识时，规划或视觉评价才会访问模型服务，例如：
-
-```powershell
-.\.venv\Scripts\artflow plan examples\brief.example.json --model <provider:model>
-```
-
-## 本地 Workbench
-
-```powershell
 cd web
 npm install
 npm run build
 cd ..
-.\.venv\Scripts\artflow serve
+.\.venv\Scripts\python scripts\serve_agent_fixture.py `
+  artifacts\goal\m3-s11-local-run --port 8796
 ```
 
-访问 `http://127.0.0.1:8787`。界面通过类型化本地 API 读取已持久化的 Run；批准仍是单独的人类操作，执行入口只接受仓库内受审 Recipe。
+打开 `http://127.0.0.1:8796`。推荐演示顺序与讲解词见 [演示与复现指南](docs/DEMO_GUIDE.md)。界面读取持久化运行，不会重新调用生成器或消耗 API Token。
 
-## 关键设计边界
+## 本地作品集发布
 
-- 默认路径确定性、离线且不消耗模型 Token。
-- Recipe Manifest 是信任边界，模型不能改变图拓扑或放宽用户约束。
-- Run 状态持久化在模型上下文之外，因此失败恢复不依赖模型“记忆”。
-- 确定性资产检查与主观视觉判断分别记录，视觉模型不能修改 Run 状态。
-- 只有已经完成并人工选中的结果才能打包交付或作为 Revision 的父项。
+构建只包含声明过的审阅材料，不包含 prompt、事件数据库、凭据或隐藏推理：
 
-更完整的实现说明见[架构](docs/architecture.md)、[作品演示叙事](docs/portfolio-story.md)和[验证台账](docs/verification.md)。
+```powershell
+.\.venv\Scripts\python scripts\build_portfolio_release.py
+.\.venv\Scripts\python scripts\verify_portfolio_release.py `
+  artifacts\goal\m6-s2-release\artflow-agent-portfolio-<manifest>.zip
+```
+
+ZIP 内同时附带仅依赖 Python 标准库的 `tools/verify_release.py`。验证器重新打开发布包，检查所有文件哈希、Run 与事件头、20/20 Harness、6/6 恢复、6/6 记忆和 9/9 unsigned provenance 边界；任何已声明文件被修改都会返回非零退出码。
+
+## 验证
+
+```powershell
+.\scripts\goal.ps1 -Action Doctor
+.\.venv\Scripts\python -m pytest -q
+powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
+```
+
+测试数量是工程回归信号，不替代真实宿主与 artifact 证据。各阶段证据位于 [`docs/evidence/`](docs/evidence/)；稳定完成定义见 [`docs/development/CODEX_GOAL.md`](docs/development/CODEX_GOAL.md)。
 
 ## 工程结构
 
 | 路径 | 内容 |
 | --- | --- |
-| `src/artflow_agent/` | 类型模型、规划、执行、评估、存储、API 与 CLI |
-| `web/` | React/TypeScript 本地 Workbench |
-| `recipes/` | 受审 ComfyUI Recipe 与允许参数槽 |
-| `contracts/` | 场景约束与 Provider 能力契约 |
-| `examples/` | 可公开的 Brief、输入值、灰盒与蒙版 |
-| `tests/` | 无 GPU 的确定性与协议测试 |
-| `runs/` | 本地运行状态和真实产物；默认不进入 Git |
+| `src/artflow_agent/agent_runtime.py` | append-only 事件、Reducer、幂等状态转换 |
+| `src/artflow_agent/agent_harness.py` | Context 装配、能力注册与有界观察 |
+| `src/artflow_agent/routing.py` | Provider 路由、隐私/成本策略与指纹 |
+| `src/artflow_agent/tribunal.py` | 确定性独立评价与硬门禁 |
+| `src/artflow_agent/recovery_eval.py` | 故障注入与 exactly-once 恢复记分卡 |
+| `src/artflow_agent/production_memory.py` | 来源绑定生产记忆治理 |
+| `src/artflow_agent/provenance.py` | UE return、来源清单与独立验证 |
+| `src/artflow_agent/portfolio_release.py` | 确定性发布包与篡改检测 |
+| `integrations/unreal/` | 可单独安装的 ArtFlow Scene Bridge 与 UE 5.8 测试宿主 |
+| `web/` | React / TypeScript Scene Lab 与证据控制台 |
+| `artifacts/goal/` | 当前作品集运行、截图、记分卡与 checkpoint |
 
-## 已验证与待补证据
+`D:\3D\_tools\art-pipeline-skill` 和 `D:\3D\_tools\ComfyUI-Production-Nodes` 是独立 sibling 仓库；前者是可选领域 Skill，后者是版本化 ComfyUI 自定义节点包，都不拥有 ArtFlow 的 Agent 状态。
 
-已验证：真实 ComfyUI / RTX 4080 环境探测、两条工作流 Schema 预检、审批拒绝、上传下载协议、断点恢复、收据追踪、构图三方向生成、技术检查、前端生产构建与 Wheel 内容。
+## 已知限制
 
-尚未完成：从真实候选中记录最终人工选择、执行一次蒙版精修、输出最终交付 ZIP，以及录制完整桌面演示。README 不把这些项目描述为已完成；最新状态以[验证台账](docs/verification.md)为准。
-
-## 重构路线
-
-项目正在从首个垂直切片演进为 Scene-to-Visual 生产控制层，目标包括 Unreal 约束桥、Provider 路由、独立评价和标准化来源记录。具体边界与迁移顺序见[产品愿景](docs/PRODUCT_VISION_2026.md)、[重构路线图](docs/REFACTOR_ROADMAP.md)与 [ADR](docs/adr/)。
+- 当前作品集只验证一条项目自有 UE 场景主运行；它是强端到端证据，不是开放域质量 benchmark。
+- 20/20 Harness 延迟是本地冻结夹具延迟，不代表真实 provider 生产延迟。
+- C2PA sidecar 使用 2.4 断言词汇并可验证内容哈希，但没有 JUMBF 嵌入、证书或签名。
+- 发布包刻意不携带 prompt 与 SQLite 数据库；完整事件重放在开发仓内完成，发布包提供事件头和经过清洗的证据摘要。
+- 项目当前面向 Windows、UE 5.8、ComfyUI 本机工作流；未声称验证其他平台和 Unreal 版本。
