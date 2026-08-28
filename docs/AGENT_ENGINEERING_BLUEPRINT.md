@@ -1,8 +1,50 @@
 # ArtFlow Agent engineering blueprint
 
-Status: accepted portfolio architecture  
-Decision date: 2026-08-25  
-Primary goal: prove a modern, hand-built Agent harness through one useful game-art production loop.
+Status: Phase I 已验证，Phase II 已接受
+
+Initial decision: 2026-08-25
+
+Phase II decision: 2026-08-27
+Primary goal: prove a modern, hand-built Agent harness through useful Unreal scene-transformation loops.
+
+## Phase II extension — visual intent to staged 3D scene delta
+
+M0–M6 established the durable harness, real UE capture, matched image providers, independent
+tribunal, bounded revision, recovery, memory and provenance. Phase II does not discard that work.
+It changes the product endpoint from an adopted 2D image on a preview plane to a verified 3D scene
+delta inside Unreal.
+
+The new portfolio thesis is:
+
+> ArtFlow reads a real Unreal scene as a digital twin, treats a concept image as visual intent,
+> compiles a typed dependency graph of lighting, PCG, material and asset changes, executes it in an
+> isolated staging layer, independently evaluates the rerender and 3D constraints, corrects only
+> failed domains, and publishes a replayable scene delta.
+
+The authority model remains `Agent = Model + Harness`. The model may analyze intent and propose a
+typed plan. The hand-built Harness owns facts, tool discovery, DAG validation, write scopes,
+fingerprints, idempotency, staging, serial Unreal transactions, recovery, technical validation,
+visual evaluation, correction and publish/discard.
+
+Phase II roles are bounded views of one durable run, not free-chat workers:
+
+| Role | May produce | May not do |
+| --- | --- | --- |
+| Scene Analyst | source-bound scene observations | write the host or infer missing facts as truth |
+| Visual Director | target attributes and uncertainty | emit host commands |
+| Scene Delta Planner | typed operation DAG | execute or publish it |
+| Domain Specialists | material, asset, PCG or lighting proposals | cross another domain's write scope |
+| Unreal Executor | receipts from frozen operations | invent parameters or override policy |
+| Technical Judge / Visual Critic | independent findings | adopt their own evaluated result |
+| Correction Planner | a minimal failed-domain patch | restart the whole run without cause |
+| Publisher / Reconciler | publish, discard and recovery receipts | reinterpret unknown completion as failure |
+
+MCP is deliberately outside the kernel: it projects existing ArtFlow resources and tools for
+external Agent hosts, while every call still enters the same policy and event path. ComfyUI uses a
+reviewed subgraph compiler, and image-to-3D models remain replaceable candidate providers. The
+normative decision is [ADR-0004](adr/0004-unreal-scene-delta-orchestration-and-mcp-boundary.md);
+research and evidence bounds are in
+[UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md](research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md).
 
 ## 1. Decision
 

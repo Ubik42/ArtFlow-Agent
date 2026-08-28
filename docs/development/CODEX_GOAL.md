@@ -1,43 +1,74 @@
 # ArtFlow Agent 持续开发目标
 
-## 产品目标
+## 当前总目标
 
-持续交付一个能够体现全面现代 Agent 工程能力、并真正服务游戏美术视觉迭代的 ArtFlow
-Agent。模型负责受约束决策，手写 Harness 负责上下文、工具、策略、持久状态、审批、验证、
-纠正、可观测性与评估；独立 sibling 仓库 Art Pipeline Skill 只是可按需调用的领域能力层，
-不能与 ArtFlow 共用 Git、Python 包或 `/goal` 状态。
+将 ArtFlow 持续开发为 **Unreal 原生的二维视觉意图到三维场景变更 Agent**。二维生成图只是
+目标和证据，最终产物是 Unreal 中经过暂存、回渲、评价、纠正和验证的 `Scene Delta`。
+
+已完成的 M0–M6（场景四 Pass、持久 Harness、Provider 路由、独立评价、恢复、记忆、来源和
+作品集交付）作为可信底座保留，不重复重构。M7 起集中补齐三维事实、三维计划和三维执行。
 
 ## 稳定完成定义
 
-1. 一个真实 Unreal 场景包驱动本地 ComfyUI 与 Codex 内置 GPT Image 2 的同约束任务；
-2. 自研事件状态机、SQLite 事件存储、上下文状态栏、能力注册、策略、完整性校验与恢复可检查；
-3. PydanticAI 负责类型化模型交互，不替代项目自己的控制平面；
-4. Planner、Router、Executor、Constraint Judge、Visual Critic 与 Recovery Planner 权限分离；
-5. 每个工具声明作用域、风险、幂等、取消、验证和观察大小，未知状态不能冒充成功；
-6. 前端真实呈现状态、工具、策略、评价分歧、恢复和证据，不展示隐藏思维链；
-7. 冻结 Eval 与故障注入量化任务成功、约束违反、重复副作用、恢复、延迟和成本；
-8. Codex 编排器依据持久化独立评价负责候选采用、局部修订和最终作品集交付；
-9. C2PA 兼容交付可由独立验证器复核；
-10. 当前证据等级在 `config/goal-state.json` 中如实记录。
+1. Scene Package 扩展为 Scene Digital Twin，包含相机、多 Pass、Actor、边界、材质、灯光、
+   PCG、Data Layer、保护关系和预算；
+2. 模型只产出版本化 `SceneChangePlan`，不能产出或执行任意 Blueprint、Python、Shell、C++ 或
+   ComfyUI 图；
+3. 至少支持灯光/后处理、PCG 布局、材质实例和三维资产候选四类场景操作，每类都有类型化合同、
+   前置条件、幂等、验证和回滚语义；
+4. 所有场景写入先进入 `ArtFlow_<run_id>` 隔离暂存层，源关卡不原地覆盖；Unreal 写入串行并
+   使用事务，非 UE 资产准备可按依赖图并行；
+5. 同机位回渲视觉评价与确定性三维技术检查并列；视觉分数不能覆盖保护对象、碰撞、边界、资源
+   完整性和性能失败；
+6. 纠正器只重做失败域，事件存储能从中断点恢复，外部执行结果未知时先对账而不是盲目重试；
+7. ComfyUI 通过能力探测、已审阅子图目录和插槽编译器接入；`ComfyUI-Production-Nodes` 必须有
+   真实 `/object_info` 和运行收据后才算集成；
+8. 图生 3D 是可替换的实验资产 Provider；主闭环不依赖它，生成网格必须经过 Interchange、比例、
+   面数、材质、碰撞、许可证和命名空间检查；
+9. MCP 仅为现有类型化工具和资源提供薄适配，不拥有 Agent 状态机，不暴露任意代码执行；
+10. 至少一条项目自有 UE 5.8 演示完成“概念图 → 灯光 + PCG 三维变更 → 同机位回渲 → 自动纠正
+    → 发布”，并保留中文界面、流程截图、宿主证据和可重放收据；
+11. 每个公开指标都给出数据集、分母和证据路径；规划中的能力与已验证能力严格区分；
+12. 唯一下一切片、允许路径、停止条件和证据上限由 `config/goal-state.json` 决定。
 
-正常闭环不设置人工批准点：项目内候选采用、局部修订、UE 回写验证与最终本地发布由 Codex
-编排器负责。预览和证据检查只提供可见性，不能暂停执行。只有越出项目边界的不可恢复操作、
-公共上传、共享安装或无可替代的外部能力缺失才允许中断并询问用户。
-
-候选采用与最终本地发布不是人工轨道，也不得重新包装成“只读预览”审批。开发中若确需新增
-视觉生成，只能由 Codex 编排器调用内置 GPT Image 能力并记录来源；不得接入第三方生图 API，
-不得要求用户代选、代采用或代发布。
-
-## 开发顺序
+## 持久编排结构
 
 ```text
-Agent Kernel + Scene Package
-  → Scene Lab + typed event UI
-  → Unreal + 双 Provider 路由
-  → Evaluation Tribunal + bounded revision
-  → recovery / observability / eval
-  → C2PA delivery + portfolio evidence
+Scene Analyst（只读事实）
+  -> Visual Director（目标拆解）
+  -> Scene Delta Planner（类型化 DAG）
+  -> Material / Asset / PCG / Lighting Specialists（受限候选）
+  -> Unreal Staging Executor（唯一写入通道）
+  -> Visual Critic + Technical Judge（独立评价）
+  -> Correction Planner（只修失败域）
+  -> Publisher / Reconciler（发布、恢复、来源）
 ```
 
-唯一下一切片、允许修改路径和停止条件以 `config/goal-state.json` 为准。
-架构判断和反偏移规则以 `docs/AGENT_ENGINEERING_BLUEPRINT.md` 为准。
+角色不是多个 Agent 自由聊天。每个角色只接收必要上下文，只能调用声明过的工具，并把结果写成
+不可变事件或内容寻址 artifact。PydanticAI 可以承担类型化模型交互，但项目自己的 reducer、策略、
+工具注册、恢复和评价仍是控制平面。
+
+## 阶段顺序
+
+```text
+M7 Scene Digital Twin + Staged Scene Delta Kernel
+  -> M8 ComfyUI Production Graph + PBR Material Route
+  -> M9 PCG / Lighting / Asset Closed Loop
+  -> M10 MCP Interoperability + Image-to-3D Experiment + Portfolio Release
+```
+
+首个切片只实现扩展场景事实和灯光/PCG 的 dry-run 计划，不同时开发材质生成、图生 3D 和新前端。
+完成真实合同后再扩张执行面，防止目标被模型或中间件牵走。
+
+## 自主开发与停止边界
+
+项目内候选选择、暂存层创建、项目自有演示场景修改、Codex 内置图像生成、同机位回渲、验证、
+本地发布和已授权 GitHub 仓库更新由 Codex 负责，不设置人为权限门禁，也不要求用户代选结果。
+
+只有以下情况允许停止并请求方向：目标会越出 ArtFlow 仓库或项目自有 UE 测试宿主；需要公开上传
+未授权资产；会修改共享安装或无关用户数据；许可证不允许作品集用途；或唯一外部能力真实缺失且
+没有项目内替代路线。正常测试失败、宿主启动、截图和候选质量波动都由开发循环自行处理。
+
+测试优先覆盖合同、策略、重放、恢复和宿主边界，约占实现投入的 15–25%；不为追求测试数量延迟
+真实 UE 闭环。前端在三维事件合同稳定后重做，必须中文、场景化、截图丰富，并展示真实状态而非
+隐藏推理链。

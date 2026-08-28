@@ -1,6 +1,8 @@
 # ArtFlow Agent
 
-> 面向 Unreal Engine 美术生产的受约束 AIGC Agent：从场景事实出发，协调本地 ComfyUI 与 Codex 内置 GPT Image 2，完成候选生成、独立评价、证据化决策、局部修订、失败恢复和可验证回流。
+> 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
+
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；二维结果目前绑定为 UE 预览平面。正在开发的 M7–M10 将交付 Scene Digital Twin、隔离暂存、灯光/PCG/PBR/资产 Scene Delta 与 MCP 互操作。在新宿主证据完成前，不把这些规划写成已实现功能。
 
 ## 项目概述
 
@@ -9,6 +11,8 @@
 ArtFlow 将这些步骤组织为一条可追踪的 Agentic 生产链。系统把 Unreal 中的相机、物体 ID、保护区域、可编辑区域和美术目标编译为 Scene Package；Agent 只能从声明过的能力中规划动作，确定性策略负责最终约束，生成器不参与自身结果的评价。Codex 编排器根据持久化的 Tribunal 证据自主选择候选、调用 GPT Image 2 完成蒙版限定修订，并通过类型化工具将验证后的结果回写 Unreal。
 
 当前展示版本聚焦一条完整、可审计的 Unreal-to-AIGC-to-Unreal 闭环，用于体现现代 Agent 在视觉生产中的上下文工程、工具调用、策略控制、持久执行、独立评价、恢复与交付能力。
+
+下一阶段不再以“得到一张更好看的图”为终点。ArtFlow 会把概念图当作目标，读取真实 Unreal 场景中的 Actor、材质、灯光、PCG 和空间约束，编译类型化 `SceneChangePlan`，在独立候选层中重布置和回渲，再发布可回滚的三维场景增量。完整方向与边界见 [产品愿景](docs/PRODUCT_VISION_2026.md) 和 [技术调研](docs/research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md)。
 
 ![ArtFlow 最终可验证交付面板](docs/assets/portfolio/09-verified-delivery.png)
 

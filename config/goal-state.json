@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 31,
-  "strategyVersion": "2.0.0",
+  "stateRevision": 32,
+  "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
-  "objective": "Build a useful Unreal-to-AIGC visual-production Agent that visibly proves a hand-built modern harness across context, typed tools, deterministic policy, durable autonomous execution, independent evaluation, recovery, evidence-backed adoption, observability, governed memory and verifiable delivery.",
-  "status": "complete",
-  "currentMilestone": "M6",
+  "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
+  "status": "active",
+  "currentMilestone": "M7",
   "milestones": [
     {
       "id": "M0",
@@ -66,42 +66,89 @@
       "dependsOn": ["M5"],
       "outcome": "The complete Unreal-to-provider-to-tribunal-to-adoption-to-reimport story ships with independently verified C2PA provenance and inspectable evidence for every public claim.",
       "acceptance": ["One successful run and one failure-injected run can be independently replayed and verified"]
+    },
+    {
+      "id": "M7",
+      "title": "Scene Digital Twin and staged Scene Delta kernel",
+      "status": "in_progress",
+      "dependsOn": ["M6"],
+      "outcome": "A real UE 5.8 scene exports stable 3D facts and accepts a frozen typed lighting/PCG SceneChangePlan whose dry-run proves dependency, scope, fingerprint, deterministic seed, validation and cleanup semantics before any host mutation.",
+      "acceptance": [
+        "The extended scene package records actor, material, light, PCG, data-layer, bounds and protected-object facts with content hashes",
+        "A discriminated SceneChangePlan supports bounded lighting and PCG operations, rejects arbitrary code and validates as a dependency DAG",
+        "A real UE dry-run receipt resolves staging strategy and write scope without modifying the source level"
+      ]
+    },
+    {
+      "id": "M8",
+      "title": "ComfyUI production graph and PBR material route",
+      "status": "pending",
+      "dependsOn": ["M7"],
+      "outcome": "Reviewed ComfyUI subgraphs and verified production nodes compile visual intent into validated PBR texture sets and Unreal material instances without arbitrary graph execution.",
+      "acceptance": [
+        "Runtime capability inspection proves every required custom node and workflow version",
+        "One real PBR set passes channel, size, hash and material-instance validation in UE"
+      ]
+    },
+    {
+      "id": "M9",
+      "title": "PCG lighting and asset scene-transformation closed loop",
+      "status": "pending",
+      "dependsOn": ["M8"],
+      "outcome": "One project-owned concept target drives staged lighting, PCG layout and bounded asset/material changes, same-camera rerender evaluation, failed-domain correction and verified publish or discard.",
+      "acceptance": [
+        "The source camera, protected actors and walkable bounds remain invariant while the staged 3D scene visibly changes",
+        "Technical and visual evaluators produce independent evidence and correction reruns only the failed branch",
+        "The real UE result is published or discarded from a replayable receipt with no duplicate side effect"
+      ]
+    },
+    {
+      "id": "M10",
+      "title": "MCP interoperability image-to-3D experiment and portfolio release",
+      "status": "pending",
+      "dependsOn": ["M9"],
+      "outcome": "A thin MCP facade exposes the same bounded resources and tools, one optional image-to-3D provider passes through Interchange validation, and a Chinese screenshot-rich case study truthfully demonstrates the complete Unreal scene-transformation Agent.",
+      "acceptance": [
+        "MCP calls enter the existing policy, event, idempotency and validation path and expose no arbitrary host execution",
+        "One generated GLB candidate is either admitted or rejected by recorded license, geometry, material, collision and budget checks while the main route still works without it",
+        "The public release distinguishes implemented, experimental and planned capabilities and maps every claim to host evidence"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M6-S2",
-    "milestone": "M6",
-    "title": "Portfolio Evidence Console and GitHub Release",
-    "outcome": "Ship one polished Chinese evidence console, a screenshot-rich GitHub case study and one content-addressed portfolio release that let a reviewer traverse the real Unreal scene, provider comparison, tribunal disagreement, autonomous adoption, bounded revision, failure recovery, Harness metrics and verified Unreal return without trusting feature claims.",
-    "risk": "R3",
-    "evidenceTarget": "A5",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "examples/**", "docs/**", "scripts/**", "web/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M7-S1",
+    "milestone": "M7",
+    "title": "Scene Digital Twin and lighting/PCG dry-run contract",
+    "outcome": "Extend the real Unreal scene package with stable actor, material, light, PCG, data-layer and bounds facts; define a frozen typed SceneChangePlan limited to lighting and approved-PCG operations; and produce one real UE 5.8 dry-run receipt that resolves staging and validation without mutating the source level.",
+    "risk": "R2",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not ask the user to choose a candidate, approve evidence claims or approve the local release package",
-      "Do not generate or regenerate media; the release must replay existing evidence",
-      "Do not publish to any destination other than the user-authorized Ubik42/ArtFlow-Agent GitHub repository",
-      "Do not modify Unreal, ComfyUI, sibling repositories or shared installations",
-      "Do not hide the unsigned C2PA sidecar limitation or turn fixture metrics into open-domain claims"
+      "Do not implement material generation, image-to-3D, MCP, a frontend redesign or arbitrary graph authoring in this slice",
+      "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
+      "Do not mutate, save over or publish changes into the source ArtFlowDemo level",
+      "Do not add LangGraph, Temporal, a vector database or a second runtime state machine",
+      "Do not describe dry-run contracts as a completed 2D-to-3D execution loop"
     ],
     "acceptance": [
-      "Scene Lab exposes a concise verified-delivery panel with the real UE return, 9/9 hash-chain result and explicit unsigned-C2PA limitation",
-      "The main portfolio path shows provider disagreement, attractive-invalid rejection, autonomous adoption and bounded correction as evidence-backed decisions rather than feature text",
-      "A deterministic release builder includes only declared reviewer artifacts, a machine-readable manifest and independent replay commands",
-      "A fresh verifier validates every packaged file hash and the embedded run, Harness and delivery identities",
-      "The case study reports exact 20-case Harness, 6-case recovery, 6-case memory and real-host evidence denominators without invented quality claims",
-      "Desktop and narrow browser QA, full focused tests, goal audit and quick validation pass",
-      "Release selection and GitHub publication are autonomous after the user's explicit showcase request and create no approval interrupt"
+      "A versioned Scene Digital Twin contract records stable actor identity, class, transform, bounds, tags, material slots, light parameters, PCG graph/parameter facts, data-layer membership and protected/editable status",
+      "Cross-field validation rejects duplicate identities, invalid bounds, missing source fingerprints and protected objects marked writable",
+      "A versioned SceneChangePlan discriminated union supports only SetLightingRig and ApplyPCGLayout operations, validates dependencies as an acyclic graph and rejects unknown operation types or script payloads",
+      "Every operation carries target fingerprint, write scope, deterministic seed where applicable, idempotency key, budget, validators and cleanup semantics",
+      "The ArtFlow UE Bridge emits one real host dry-run receipt naming the staging strategy, approved PCG graph parameters, intended light changes, protected invariants and zero committed mutations",
+      "Focused contract tests, goal audit and quick validation pass; implementation time remains concentrated on the real UE boundary"
     ],
     "stopConditions": [
-      "Stop if the resolved remote differs from the user-authorized Ubik42/ArtFlow-Agent repository",
-      "Stop if any release claim lacks an exact artifact, event or scorecard citation",
-      "Stop if packaging would include prompts, credentials, hidden reasoning, databases or unrelated host data",
-      "Stop if the verifier cannot detect a tampered packaged artifact",
-      "Stop if the UI describes the unsigned sidecar as a signed C2PA credential"
+      "Stop if the resolved host project is not the project-owned ArtFlowBridgeHost fixture",
+      "Stop if the Bridge cannot inspect PCG or lighting facts without enabling or modifying a shared engine installation",
+      "Stop if a proposed contract requires accepting arbitrary code, workflow JSON or unrestricted Unreal object paths",
+      "Stop if source-level mutation occurs during dry-run; preserve evidence and diagnose before continuing",
+      "Stop if an existing user change overlaps the same contract or Unreal Bridge source and cannot be preserved"
     ],
     "environmentRequirements": [
-      {"id": "python", "kind": "command", "value": "python", "required": true}
+      {"id": "python", "kind": "command", "value": "python", "required": true},
+      {"id": "unreal", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -119,7 +166,7 @@
   },
   "lastCheckpoint": "artifacts/goal/checkpoint-0028.json",
   "currentBlocker": null,
-  "evidenceCeiling": "One real four-pass Unreal 5.8 package has two evaluated production candidates, an attractive-invalid rejected control, one evidence-backed autonomous adoption and one real Codex-built-in mask-bounded revision. Recovery is 6/6 with zero duplicates, governed memory is 6/6 and the frozen Harness is 20/20 with exact denominators. The adopted revision returned to the ArtFlow-owned UE 5.8 fixture; UE validation and a visible viewport capture prove the return. An independent verifier passes 9/9 artifact bindings while explicitly reporting that no cryptographic C2PA signature is present. Twenty-five append-only events preserve the story with no pending decisions. A Chinese evidence console, ten real process screenshots and a deterministic 24-file portfolio ZIP with an independent standard-library verifier form the public showcase; frozen fixture metrics and unsigned provenance remain explicitly bounded claims.",
+  "evidenceCeiling": "M0-M6 remain verified: one real four-pass UE 5.8 package, two matched image candidates, independent tribunal, one bounded Codex image revision, 6/6 simulated recovery with zero duplicate effects, 6/6 governed memory, 20/20 frozen Harness cases, one preview-plane Unreal return, 9/9 unsigned provenance bindings and a 24-file portfolio release. The current return is a 2D preview material on an Unreal plane, not a verified 2D-to-3D transformation. PCG, lighting, PBR material, mesh generation, Scene Delta execution and MCP interoperability are planned M7-M10 capabilities until new real-host evidence is recorded.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
@@ -130,6 +177,9 @@
     "No framework, protocol, RAG or memory system is added without a measured requirement",
     "Tests focus on contracts, policy, replay, recovery and external boundaries and should stay near 15-25 percent of implementation effort",
     "Every public metric identifies its dataset, denominator and inspectable evidence",
-    "Existing user work and historical source provenance must be preserved"
+    "Existing user work and historical source provenance must be preserved",
+    "All scene mutations are staged in a project-owned Data Layer, Level Instance or candidate level before publish; the source level is not overwritten in place",
+    "MCP is a thin adapter over the existing typed runtime and never owns a parallel state machine or arbitrary code-execution tool",
+    "Image-to-3D providers produce candidates only; no generated mesh enters a scene before license, Interchange, geometry, material, collision and budget validation"
   ]
 }

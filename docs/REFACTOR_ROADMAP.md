@@ -7,6 +7,56 @@ perform a big-bang rewrite.
 The architectural definition and portfolio evidence matrix live in
 [AGENT_ENGINEERING_BLUEPRINT.md](AGENT_ENGINEERING_BLUEPRINT.md).
 
+## Phase II roadmap — Unreal 3D scene transformation
+
+M0–M6 below are completed and remain the regression/evidence base. The active roadmap begins at M7;
+the exact current slice lives in `config/goal-state.json`.
+
+### M7 — Scene Digital Twin and staged Scene Delta kernel
+
+Status: in progress from 2026-08-27.
+
+- **M7-S1** extends the real UE package with actors, bounds, materials, lights, PCG, Data Layers and
+  protection fingerprints; it adds a DAG contract limited to lighting and approved-PCG dry runs.
+- **M7-S2** creates a run-specific staging layer or candidate level and executes deterministic
+  lighting/PCG operations with receipts, same-camera render and cleanup.
+- **M7-S3** adds independent 3D validation and failed-domain correction without changing source
+  actors or replaying successful branches.
+
+Exit evidence: one real UE 5.8 fixture can stage, validate, rerender, correct and publish or discard
+a lighting + PCG scene delta while source fingerprints remain unchanged.
+
+### M8 — ComfyUI production graph and PBR material route
+
+- version and probe `ComfyUI-Production-Nodes` through real `/object_info` evidence;
+- compile only reviewed subgraphs with typed slots and normalized receipts;
+- generate or transform one PBR map set and build an Unreal Material Instance in staging;
+- validate channel semantics, texture settings, hashes and same-camera visual effect.
+
+Exit evidence: a real Comfy run and real UE material instance are connected by a content-addressed
+receipt; missing nodes or invalid maps fail closed before scene publish.
+
+### M9 — PCG, lighting and asset closed loop
+
+- turn a concept target into a dependency graph across lighting, PCG, existing assets and material;
+- prepare independent branches concurrently while serializing Unreal writes;
+- enforce protected actors, walkable bounds, collision, actor-count and rendering budgets;
+- rerender, compare, correct only failed domains and publish a Scene Delta.
+
+Exit evidence: the project-owned “废墟祭坛视觉开发” demo produces a visibly changed 3D scene and a
+Chinese screenshot-rich evidence trail, not a preview-plane substitution.
+
+### M10 — MCP, image-to-3D experiment and public release
+
+- project the existing runtime through thin MCP resources and narrow tools;
+- integrate one optional GLB-generating Provider and validate it through Interchange;
+- prove the main PCG/lighting route still works when 3D generation is unavailable or rejected;
+- redesign the Chinese Scene Lab around the stable 3D event contract and publish the case study.
+
+Exit evidence: an external MCP host can inspect and invoke the same bounded run; one generated mesh
+is admitted or rejected with explicit license/geometry/material/collision evidence; public claims
+clearly distinguish completed, experimental and planned capability.
+
 ## Baseline that must keep working
 
 - deterministic brief planning and optional PydanticAI planning;

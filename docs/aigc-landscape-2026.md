@@ -186,23 +186,33 @@ This is valuable even when generation itself becomes a commodity.
 - A claim that generated pixels are production-ready without engine or asset validation.
 - A product whose value disappears when the next foundation model improves prompt adherence.
 
-## Recommended next slice
+## 2026-08-27 direction update
 
-Build one narrow Unreal-oriented loop:
+The previously recommended Unreal-to-image loop is now complete as M0–M6 evidence. Its limitation is
+also explicit: the current Unreal return is a 2D preview material, not a 3D scene transformation.
+
+The next defensible product step is:
 
 ```text
-UE graybox camera + depth/normal/object-ID passes + art brief
-  -> ArtFlow constraint package
-  -> two routed backends: reviewed local ComfyUI recipe and one frontier image-edit API
-  -> matched candidate batch
-  -> camera/silhouette/protected-region evaluation
-  -> human selection
-  -> reimportable image package + provenance manifest
+UE Scene Digital Twin + concept target
+  -> typed SceneChangePlan dependency graph
+  -> reviewed Comfy/PBR, existing or generated assets, PCG and lighting tools
+  -> isolated Unreal staging layer
+  -> same-camera rerender + independent 3D technical checks
+  -> failed-domain correction
+  -> replayable publish or discard
 ```
 
-This demonstrates that ArtFlow is not dependent on a single model and that its value increases when
-models become stronger. The portfolio story becomes: foundation models supply visual intelligence;
-ArtFlow supplies production discipline.
+This captures a stronger 2026 opportunity: foundation models increasingly commoditize pixels and
+single-object generation, while a studio still needs scene understanding, cross-tool orchestration,
+host-safe execution, spatial constraints, recovery, evaluation and provenance. Image-to-3D models
+such as TRELLIS.2 or Hunyuan3D should be optional asset providers behind a stable contract, not the
+product's identity. PCG and lighting provide the shortest real 2D-intent-to-3D loop; PBR material and
+generated mesh routes follow after the scene contract is proven.
+
+The detailed decision and research are recorded in
+[ADR-0004](adr/0004-unreal-scene-delta-orchestration-and-mcp-boundary.md) and
+[the Unreal scene-transformation research note](research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md).
 
 ## Sources
 
