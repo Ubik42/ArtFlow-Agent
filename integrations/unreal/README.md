@@ -1,8 +1,7 @@
-# Unreal integration
+# Unreal 集成
 
-- `ArtFlowSceneBridge/` is the separately installable editor plugin.
-- `ArtFlowBridgeHost/` is the ArtFlow-owned disposable UE 5.8 validation project.
+- `ArtFlowSceneBridge/` 是可独立安装的 Editor 插件；
+- `ArtFlowBridgeHost/` 是项目自有 UE 5.8 验证宿主，不是用户生产项目。
 
-The host is evidence infrastructure, not a sibling product and not a production game project. Build
-and capture artifacts remain ignored runtime output under its `Binaries`, `Intermediate`, `Saved`,
-`DerivedDataCache` and `Content/ArtFlowDemo.umap` paths.
+M7 起宿主保存真实 PCG 测试图和升级后的 `ArtFlowDemo` fixture。`Binaries`、`Intermediate`、`Saved`
+与 `DerivedDataCache` 仍是忽略的运行产物；冻结证据复制到 `artifacts/goal/` 并由独立验证器检查。

@@ -1,0 +1,156 @@
+{
+  "$defs": {
+    "PlannedOperationSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "operation_id": {
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "enum": [
+            "set_lighting_rig",
+            "apply_pcg_layout"
+          ],
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "parameter_names": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Parameter Names",
+          "type": "array"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation_id",
+        "operation_type",
+        "target_ids",
+        "parameter_names"
+      ],
+      "title": "PlannedOperationSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "committed_mutation_count": {
+      "const": 0,
+      "default": 0,
+      "title": "Committed Mutation Count",
+      "type": "integer"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "dry_run": {
+      "const": true,
+      "default": true,
+      "title": "Dry Run",
+      "type": "boolean"
+    },
+    "plan_id": {
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "planned_operations": {
+      "items": {
+        "$ref": "#/$defs/PlannedOperationSummary"
+      },
+      "minItems": 1,
+      "title": "Planned Operations",
+      "type": "array"
+    },
+    "protected_invariants": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Protected Invariants",
+      "type": "object"
+    },
+    "receipt_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "scene-dry-run-receipt/1",
+      "default": "scene-dry-run-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_fingerprint_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Fingerprint After",
+      "type": "string"
+    },
+    "source_scene_fingerprint_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Fingerprint Before",
+      "type": "string"
+    },
+    "source_scene_path": {
+      "pattern": "^/Game/[A-Za-z0-9_./-]+$",
+      "title": "Source Scene Path",
+      "type": "string"
+    },
+    "stage_id": {
+      "pattern": "^artflow-[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Stage Id",
+      "type": "string"
+    },
+    "staging_strategy": {
+      "enum": [
+        "data_layer",
+        "level_instance",
+        "candidate_level"
+      ],
+      "title": "Staging Strategy",
+      "type": "string"
+    },
+    "twin_id": {
+      "title": "Twin Id",
+      "type": "string"
+    },
+    "twin_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Twin Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "twin_id",
+    "twin_sha256",
+    "plan_id",
+    "plan_sha256",
+    "source_scene_path",
+    "source_scene_fingerprint_before",
+    "source_scene_fingerprint_after",
+    "staging_strategy",
+    "stage_id",
+    "planned_operations",
+    "protected_invariants",
+    "created_at"
+  ],
+  "title": "SceneDryRunReceipt",
+  "type": "object"
+}

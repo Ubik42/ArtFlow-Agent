@@ -1,0 +1,27 @@
+{
+  "schema": "artflow-scene-dry-run-verification/1",
+  "status": "passed",
+  "archive": "D:\\3D\\_tools\\ArtFlow-Agent\\artifacts\\goal\\m7-s1-scene-dry-run\\scene-package.zip",
+  "archive_sha256": "e9de9b1b2789c76d0e51467c330a88d081f98f6ed75b46e37cb939ebfd053050",
+  "package_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1",
+  "twin_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-twin",
+  "twin_sha256": "7604b26e775a4a92b4fddc83338ce8b55e2a79749f3e7710ec43958e606aba82",
+  "actor_count": 21,
+  "light_actor_count": 2,
+  "pcg_component_count": 1,
+  "protected_actor_count": 1,
+  "plan_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-plan",
+  "plan_sha256": "90d6c82ab19c7aadc0941f0113ba6204685f6c4037c1689d16f7f1168769983d",
+  "operation_types": [
+    "set_lighting_rig",
+    "apply_pcg_layout"
+  ],
+  "staging_strategy": "candidate_level",
+  "dry_run": true,
+  "committed_mutation_count": 0,
+  "source_map": "D:\\3D\\_tools\\ArtFlow-Agent\\integrations\\unreal\\ArtFlowBridgeHost\\Content\\ArtFlowDemo.umap",
+  "source_map_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_map_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_map_unchanged": true,
+  "artifact_count": 7
+}

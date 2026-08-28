@@ -14,6 +14,13 @@ from .execution import (
 )
 from .provider import ProviderCapabilityManifest, ProviderModelCapability
 from .scene import SceneConstraintPackage
+from .scene_delta import (
+    ApplyPCGLayout,
+    SceneChangePlan,
+    SceneDigitalTwin,
+    SceneDryRunReceipt,
+    SetLightingRig,
+)
 
 __all__ = [
     "CodexImageCandidateReceipt",
@@ -29,4 +36,9 @@ __all__ = [
     "RouteDecision",
     "RouteExecutionIntent",
     "SceneConstraintPackage",
+    "ApplyPCGLayout",
+    "SceneChangePlan",
+    "SceneDigitalTwin",
+    "SceneDryRunReceipt",
+    "SetLightingRig",
 ]

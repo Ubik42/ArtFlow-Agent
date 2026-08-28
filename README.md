@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；二维结果目前绑定为 UE 预览平面。正在开发的 M7–M10 将交付 Scene Digital Twin、隔离暂存、灯光/PCG/PBR/资产 Scene Delta 与 MCP 互操作。在新宿主证据完成前，不把这些规划写成已实现功能。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7-S1 又在真实 UE 5.8 中验证了 21 个 Actor 的 Scene Digital Twin、真实灯光/PCG 事实、受限计划 DAG 和源关卡零写入 dry-run。二维结果仍只绑定为 UE 预览平面，灯光/PCG 暂存执行、PBR、三维资产生成与 MCP 仍在开发中。
 
 ## 项目概述
 
@@ -158,6 +158,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
 | 路径 | 内容 |
 | --- | --- |
 | `src/artflow_agent/agent_runtime.py` | append-only 事件、Reducer、幂等状态转换 |
+| `src/artflow_agent/contracts/scene_delta.py` | Scene Digital Twin、灯光/PCG 计划 DAG 与零写入收据 |
 | `src/artflow_agent/agent_harness.py` | Context 装配、能力注册与有界观察 |
 | `src/artflow_agent/routing.py` | Provider 路由、隐私/成本策略与指纹 |
 | `src/artflow_agent/tribunal.py` | 确定性独立评价与硬门禁 |

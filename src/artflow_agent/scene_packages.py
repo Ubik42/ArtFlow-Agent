@@ -92,10 +92,18 @@ class ScenePackageArchive:
 
 
 def _artifact_refs(package: SceneConstraintPackage) -> list[ArtifactRef]:
-    return [
+    artifacts = [
         *(item.artifact for item in package.passes),
         *package.art_intent.reference_assets,
     ]
+    for artifact in (
+        package.scene_digital_twin,
+        package.scene_change_plan,
+        package.scene_dry_run_receipt,
+    ):
+        if artifact is not None:
+            artifacts.append(artifact)
+    return artifacts
 
 
 def _validate_archive_entries(entries: list[ZipInfo]) -> dict[str, ZipInfo]:

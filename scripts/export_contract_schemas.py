@@ -14,7 +14,10 @@ from artflow_agent.contracts import (
     ProviderCapabilityManifest,
     ProviderExecutionReceipt,
     RouteDecision,
+    SceneChangePlan,
     SceneConstraintPackage,
+    SceneDigitalTwin,
+    SceneDryRunReceipt,
 )
 from artflow_agent.hosted_execution import CompiledHostedRequest, HostedAuthorityPacket
 from artflow_agent.live_run import LiveRunAuthorizationDossier
@@ -36,6 +39,9 @@ SCHEMAS = {
     "provider-execution-receipt.v1.schema.json": ProviderExecutionReceipt.model_json_schema(),
     "route-decision.v1.schema.json": RouteDecision.model_json_schema(),
     "scene-constraint-package.v1.schema.json": SceneConstraintPackage.model_json_schema(),
+    "scene-digital-twin.v1.schema.json": SceneDigitalTwin.model_json_schema(),
+    "scene-change-plan.v1.schema.json": SceneChangePlan.model_json_schema(),
+    "scene-dry-run-receipt.v1.schema.json": SceneDryRunReceipt.model_json_schema(),
 }
 
 

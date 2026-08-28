@@ -1,14 +1,20 @@
 {
   "FileVersion": 3,
-  "Version": 1,
-  "VersionName": "1.0.0",
+  "Version": 2,
+  "VersionName": "1.1.0",
   "FriendlyName": "ArtFlow Scene Bridge",
-  "Description": "Exports camera-bound Unreal scene evidence into an atomic ArtFlow Scene Package.",
+  "Description": "Exports camera-bound Unreal scene evidence, a 3D digital twin and a zero-write Scene Delta dry-run into an atomic ArtFlow package.",
   "Category": "ArtFlow",
   "CreatedBy": "ArtFlow",
   "CanContainContent": false,
   "IsBetaVersion": true,
   "Installed": false,
+  "Plugins": [
+    {
+      "Name": "PCG",
+      "Enabled": true
+    }
+  ],
   "Modules": [
     {
       "Name": "ArtFlowSceneBridge",

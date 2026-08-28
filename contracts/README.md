@@ -1,4 +1,10 @@
-# Cross-language contracts
+# 跨语言合同
+
+M7 新增三套三维场景合同：
+
+- `scene-digital-twin.v1.schema.json`：Unreal 三维事实；
+- `scene-change-plan.v1.schema.json`：受限灯光/PCG 操作 DAG；
+- `scene-dry-run-receipt.v1.schema.json`：零写入 dry-run 证明。
 
 This directory contains generated JSON Schemas used at process and repository boundaries. The
 authoritative Python models live in `src/artflow_agent/contracts`.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 32,
+  "stateRevision": 33,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -116,34 +116,36 @@
     }
   ],
   "nextSlice": {
-    "id": "M7-S1",
+    "id": "M7-S2",
     "milestone": "M7",
-    "title": "Scene Digital Twin and lighting/PCG dry-run contract",
-    "outcome": "Extend the real Unreal scene package with stable actor, material, light, PCG, data-layer and bounds facts; define a frozen typed SceneChangePlan limited to lighting and approved-PCG operations; and produce one real UE 5.8 dry-run receipt that resolves staging and validation without mutating the source level.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
+    "title": "Candidate-level lighting and PCG Scene Delta execution",
+    "outcome": "Materialize the frozen M7-S1 lighting/PCG plan into a run-specific candidate level, execute real light parameter changes and a real approved PCG graph, capture a same-camera candidate render, validate source invariants and provide deterministic publish/discard cleanup receipts without changing the source ArtFlowDemo map.",
+    "risk": "R3",
+    "evidenceTarget": "A5",
     "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not implement material generation, image-to-3D, MCP, a frontend redesign or arbitrary graph authoring in this slice",
+      "Do not implement material generation, image-to-3D, MCP or a frontend redesign in this slice",
       "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
-      "Do not mutate, save over or publish changes into the source ArtFlowDemo level",
+      "Do not mutate, save over or publish changes into the source ArtFlowDemo level; only a run-specific project-owned candidate level is writable",
       "Do not add LangGraph, Temporal, a vector database or a second runtime state machine",
-      "Do not describe dry-run contracts as a completed 2D-to-3D execution loop"
+      "Do not add arbitrary PCG graph generation; author exactly one project-owned reviewed demonstration graph",
+      "Do not describe the candidate-level execution as a complete visual correction or production publish loop"
     ],
     "acceptance": [
-      "A versioned Scene Digital Twin contract records stable actor identity, class, transform, bounds, tags, material slots, light parameters, PCG graph/parameter facts, data-layer membership and protected/editable status",
-      "Cross-field validation rejects duplicate identities, invalid bounds, missing source fingerprints and protected objects marked writable",
-      "A versioned SceneChangePlan discriminated union supports only SetLightingRig and ApplyPCGLayout operations, validates dependencies as an acyclic graph and rejects unknown operation types or script payloads",
-      "Every operation carries target fingerprint, write scope, deterministic seed where applicable, idempotency key, budget, validators and cleanup semantics",
-      "The ArtFlow UE Bridge emits one real host dry-run receipt naming the staging strategy, approved PCG graph parameters, intended light changes, protected invariants and zero committed mutations",
-      "Focused contract tests, goal audit and quick validation pass; implementation time remains concentrated on the real UE boundary"
+      "The executor copies the source level to a deterministic /Game/ArtFlow/Staging namespace after verifying the M7-S1 source package and plan hashes",
+      "Lighting execution changes only the frozen target light inside the candidate level and records before/after parameter values",
+      "The approved PCG_ArtFlowScatter graph uses the recorded seed and exposed parameters to generate a visible project-owned primitive prop layout inside bounded space",
+      "A same-camera candidate beauty render and execution receipt prove both operations completed while source and protected-actor fingerprints remain unchanged",
+      "Repeated execution reconciles the deterministic candidate level and does not duplicate PCG output or light mutations",
+      "Discard removes only the content-addressed candidate level and generated assets; publish is represented by a typed receipt and never overwrites the source level",
+      "Independent verification, focused tests, UE build, isolated real-host lifecycle, goal audit and quick validation pass"
     ],
     "stopConditions": [
-      "Stop if the resolved host project is not the project-owned ArtFlowBridgeHost fixture",
-      "Stop if the Bridge cannot inspect PCG or lighting facts without enabling or modifying a shared engine installation",
-      "Stop if a proposed contract requires accepting arbitrary code, workflow JSON or unrestricted Unreal object paths",
-      "Stop if source-level mutation occurs during dry-run; preserve evidence and diagnose before continuing",
+      "Stop if the resolved host project is not the project-owned ArtFlowBridgeHost fixture or the input plan is not bound to the verified M7-S1 twin",
+      "Stop if candidate-level creation would overwrite an unrelated existing Unreal package",
+      "Stop if a proposed executor requires accepting arbitrary code, workflow JSON or unrestricted Unreal object paths",
+      "Stop if the source ArtFlowDemo map hash changes during stage execution, render, reconciliation or cleanup",
       "Stop if an existing user change overlaps the same contract or Unreal Bridge source and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -164,9 +166,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0028.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0029.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M6 remain verified: one real four-pass UE 5.8 package, two matched image candidates, independent tribunal, one bounded Codex image revision, 6/6 simulated recovery with zero duplicate effects, 6/6 governed memory, 20/20 frozen Harness cases, one preview-plane Unreal return, 9/9 unsigned provenance bindings and a 24-file portfolio release. The current return is a 2D preview material on an Unreal plane, not a verified 2D-to-3D transformation. PCG, lighting, PBR material, mesh generation, Scene Delta execution and MCP interoperability are planned M7-M10 capabilities until new real-host evidence is recorded.",
+  "evidenceCeiling": "M0-M6 remain verified at their prior bounded claims. M7-S1 additionally proves one real UE 5.8 atomic package containing 21 actor facts, 2 light facts, 1 real approved PCG component, a typed two-operation lighting/PCG DAG and a zero-write dry-run receipt. An independent verifier passed all 7 referenced artifacts, exact twin/plan bindings and protected invariants; isolated PID 48740 exited cleanly and the source ArtFlowDemo map SHA-256 remained 620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a before and after. No staged Scene Delta has yet been executed, rerendered or published; PBR, mesh generation and MCP remain planned.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

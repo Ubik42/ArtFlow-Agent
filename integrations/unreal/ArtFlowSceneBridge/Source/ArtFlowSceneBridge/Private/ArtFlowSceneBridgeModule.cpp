@@ -1,5 +1,6 @@
 #include "ArtFlowSceneBridgeModule.h"
 
+#include "AssetRegistry/AssetRegistryModule.h"
 #include "BufferVisualizationData.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
@@ -7,14 +8,20 @@
 #include "Components/PrimitiveComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/LightComponent.h"
 #include "Editor.h"
 #include "Editor/EditorEngine.h"
 #include "Engine/DirectionalLight.h"
+#include "Engine/PointLight.h"
+#include "Engine/RectLight.h"
+#include "Engine/SkyLight.h"
+#include "Engine/SpotLight.h"
 #include "Engine/Engine.h"
 #include "Engine/Selection.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/TextureRenderTarget2D.h"
+#include "EngineUtils.h"
 #include "FileHelpers.h"
 #include "FileUtilities/ZipArchiveWriter.h"
 #include "HAL/FileManager.h"
@@ -31,10 +38,15 @@
 #include "Misc/Guid.h"
 #include "Misc/MessageDialog.h"
 #include "Misc/Paths.h"
+#include "Misc/PackageName.h"
 #include "Misc/ScopeExit.h"
 #include "Misc/ScopedSlowTask.h"
 #include "RenderingThread.h"
+#include "PCGComponent.h"
+#include "PCGGraph.h"
+#include "StructUtils/PropertyBag.h"
 #include "ToolMenus.h"
+#include "UObject/SavePackage.h"
 
 #define LOCTEXT_NAMESPACE "ArtFlowSceneBridge"
 
@@ -66,6 +78,17 @@ struct FPassFile
     FString AbsolutePath;
     FString Sha256;
 };
+
+struct FSceneActorEvidence
+{
+    AActor* Actor = nullptr;
+    FString ActorId;
+    FString Fingerprint;
+    FString PCGComponentId;
+    FString PCGGraphPath;
+};
+
+TArray<TSharedPtr<FJsonValue>> StringValues(const TArray<FString>& Values);
 
 struct FPrimitiveStencilState
 {
@@ -267,6 +290,197 @@ bool HashFile(const FString& Path, FString& OutSha256, FString& OutError)
     return true;
 }
 
+FString HashText(const FString& Text)
+{
+    FTCHARToUTF8 Utf8(*Text);
+    TArray<uint8> Bytes;
+    Bytes.Append(reinterpret_cast<const uint8*>(Utf8.Get()), Utf8.Length());
+    FString Digest;
+    HashBytes(Bytes, Digest);
+    return Digest;
+}
+
+TSharedPtr<FJsonObject> VectorJson(const FVector& Value)
+{
+    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+    Json->SetNumberField(TEXT("x"), Value.X);
+    Json->SetNumberField(TEXT("y"), Value.Y);
+    Json->SetNumberField(TEXT("z"), Value.Z);
+    return Json;
+}
+
+TSharedPtr<FJsonObject> RotatorJson(const FRotator& Value)
+{
+    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+    Json->SetNumberField(TEXT("pitch"), Value.Pitch);
+    Json->SetNumberField(TEXT("yaw"), Value.Yaw);
+    Json->SetNumberField(TEXT("roll"), Value.Roll);
+    return Json;
+}
+
+FString StableActorId(const AActor* Actor)
+{
+    const FString Guid = Actor->GetActorGuid().ToString(EGuidFormats::Digits).ToLower();
+    return Guid.IsEmpty() || Guid == TEXT("00000000000000000000000000000000")
+        ? HashText(Actor->GetPathName()).Left(32)
+        : Guid;
+}
+
+FString LightType(const AActor* Actor)
+{
+    if (Actor->IsA<ADirectionalLight>()) return TEXT("directional");
+    if (Actor->IsA<ASpotLight>()) return TEXT("spot");
+    if (Actor->IsA<ARectLight>()) return TEXT("rect");
+    if (Actor->IsA<APointLight>()) return TEXT("point");
+    return TEXT("sky");
+}
+
+FString GenerationTriggerName(const UPCGComponent* Component)
+{
+    switch (Component->GenerationTrigger)
+    {
+    case EPCGComponentGenerationTrigger::GenerateOnDemand:
+        return TEXT("on_demand");
+    case EPCGComponentGenerationTrigger::GenerateAtRuntime:
+        return TEXT("runtime");
+    default:
+        return TEXT("generate_on_load");
+    }
+}
+
+TSharedPtr<FJsonObject> BuildActorFact(AActor* Actor, FSceneActorEvidence& OutEvidence)
+{
+    OutEvidence.Actor = Actor;
+    OutEvidence.ActorId = StableActorId(Actor);
+
+    TSharedPtr<FJsonObject> Json = MakeShared<FJsonObject>();
+    Json->SetStringField(TEXT("actor_id"), OutEvidence.ActorId);
+    Json->SetStringField(TEXT("actor_guid"), OutEvidence.ActorId.Left(32));
+    Json->SetStringField(TEXT("actor_path"), Actor->GetPathName());
+    Json->SetStringField(TEXT("label"), Actor->GetActorLabel());
+    Json->SetStringField(TEXT("class_path"), Actor->GetClass()->GetPathName());
+
+    TSharedPtr<FJsonObject> Transform = MakeShared<FJsonObject>();
+    Transform->SetObjectField(TEXT("location"), VectorJson(Actor->GetActorLocation()));
+    Transform->SetObjectField(TEXT("rotation"), RotatorJson(Actor->GetActorRotation()));
+    Transform->SetObjectField(TEXT("scale"), VectorJson(Actor->GetActorScale3D()));
+    Json->SetObjectField(TEXT("transform"), Transform);
+
+    FBox Bounds = Actor->GetComponentsBoundingBox(true);
+    if (!Bounds.IsValid)
+    {
+        Bounds = FBox(Actor->GetActorLocation(), Actor->GetActorLocation());
+    }
+    TSharedPtr<FJsonObject> BoundsJson = MakeShared<FJsonObject>();
+    BoundsJson->SetObjectField(TEXT("minimum"), VectorJson(Bounds.Min));
+    BoundsJson->SetObjectField(TEXT("maximum"), VectorJson(Bounds.Max));
+    Json->SetObjectField(TEXT("bounds"), BoundsJson);
+
+    TArray<FString> Tags;
+    for (const FName Tag : Actor->Tags)
+    {
+        Tags.Add(Tag.ToString());
+    }
+    Tags.Sort();
+    Json->SetArrayField(TEXT("tags"), StringValues(Tags));
+
+    TArray<FString> DataLayers;
+    for (const FName Layer : Actor->GetDataLayerInstanceNames())
+    {
+        DataLayers.Add(Layer.ToString());
+    }
+    DataLayers.Sort();
+    Json->SetArrayField(TEXT("data_layers"), StringValues(DataLayers));
+
+    TArray<TSharedPtr<FJsonValue>> MaterialSlots;
+    TInlineComponentArray<UStaticMeshComponent*> MeshComponents(Actor);
+    int32 GlobalSlot = 0;
+    for (const UStaticMeshComponent* MeshComponent : MeshComponents)
+    {
+        for (int32 SlotIndex = 0; SlotIndex < MeshComponent->GetNumMaterials(); ++SlotIndex)
+        {
+            if (const UMaterialInterface* Material = MeshComponent->GetMaterial(SlotIndex))
+            {
+                TSharedPtr<FJsonObject> Slot = MakeShared<FJsonObject>();
+                Slot->SetNumberField(TEXT("slot_index"), GlobalSlot++);
+                Slot->SetStringField(TEXT("slot_name"), FString::Printf(TEXT("%s:%d"), *MeshComponent->GetName(), SlotIndex));
+                Slot->SetStringField(TEXT("material_path"), Material->GetPathName());
+                MaterialSlots.Add(MakeShared<FJsonValueObject>(Slot));
+            }
+        }
+    }
+    Json->SetArrayField(TEXT("material_slots"), MaterialSlots);
+
+    if (const ULightComponent* Light = Actor->FindComponentByClass<ULightComponent>())
+    {
+        const FLinearColor Color = Light->GetLightColor();
+        TSharedPtr<FJsonObject> LightJson = MakeShared<FJsonObject>();
+        LightJson->SetStringField(TEXT("light_type"), LightType(Actor));
+        LightJson->SetNumberField(TEXT("intensity"), Light->Intensity);
+        LightJson->SetArrayField(TEXT("color_srgb"), {
+            MakeShared<FJsonValueNumber>(Color.R),
+            MakeShared<FJsonValueNumber>(Color.G),
+            MakeShared<FJsonValueNumber>(Color.B)});
+        LightJson->SetBoolField(TEXT("use_temperature"), Light->bUseTemperature != 0);
+        LightJson->SetNumberField(TEXT("temperature_kelvin"), Light->Temperature);
+        LightJson->SetBoolField(TEXT("cast_shadows"), Light->CastShadows != 0);
+        Json->SetObjectField(TEXT("light"), LightJson);
+    }
+    else
+    {
+        Json->SetField(TEXT("light"), MakeShared<FJsonValueNull>());
+    }
+
+    TArray<TSharedPtr<FJsonValue>> PCGComponents;
+    TInlineComponentArray<UPCGComponent*> Components(Actor);
+    for (const UPCGComponent* Component : Components)
+    {
+        const UPCGGraphInterface* GraphInterface = Component->GetGraphInstance();
+        if (GraphInterface == nullptr || GraphInterface->GetGraph() == nullptr)
+        {
+            continue;
+        }
+        const FString GraphPath = GraphInterface->GetGraph()->GetPathName();
+        const FString ComponentId = OutEvidence.ActorId + TEXT(":") + Component->GetName().ToLower();
+        TSharedPtr<FJsonObject> Parameters = MakeShared<FJsonObject>();
+        const FInstancedPropertyBag* ParameterBag = GraphInterface->GetUserParametersStruct();
+        if (ParameterBag != nullptr && ParameterBag->GetPropertyBagStruct() != nullptr)
+        {
+            for (const FPropertyBagPropertyDesc& Desc : ParameterBag->GetPropertyBagStruct()->GetPropertyDescs())
+            {
+                const auto Serialized = ParameterBag->GetValueSerializedString(Desc.Name);
+                if (Serialized.IsValid())
+                {
+                    Parameters->SetStringField(Desc.Name.ToString(), Serialized.GetValue());
+                }
+            }
+        }
+        const FString GraphFingerprint = HashText(GraphPath + TEXT("|") + Component->GetName() + TEXT("|") + FString::FromInt(Component->Seed));
+        TSharedPtr<FJsonObject> ComponentJson = MakeShared<FJsonObject>();
+        ComponentJson->SetStringField(TEXT("component_id"), ComponentId);
+        ComponentJson->SetStringField(TEXT("component_path"), Component->GetPathName());
+        ComponentJson->SetStringField(TEXT("graph_path"), GraphPath);
+        ComponentJson->SetStringField(TEXT("graph_fingerprint"), GraphFingerprint);
+        ComponentJson->SetObjectField(TEXT("exposed_parameters"), Parameters);
+        ComponentJson->SetStringField(TEXT("generation_trigger"), GenerationTriggerName(Component));
+        PCGComponents.Add(MakeShared<FJsonValueObject>(ComponentJson));
+        if (OutEvidence.PCGComponentId.IsEmpty())
+        {
+            OutEvidence.PCGComponentId = ComponentId;
+            OutEvidence.PCGGraphPath = GraphPath;
+        }
+    }
+    Json->SetArrayField(TEXT("pcg_components"), PCGComponents);
+    Json->SetBoolField(TEXT("protected"), Actor->ActorHasTag(ProtectedTag));
+    Json->SetBoolField(TEXT("editable"), Actor->ActorHasTag(EditableTag));
+
+    FString FingerprintSource;
+    FJsonSerializer::Serialize(Json.ToSharedRef(), TJsonWriterFactory<>::Create(&FingerprintSource));
+    OutEvidence.Fingerprint = HashText(FingerprintSource);
+    Json->SetStringField(TEXT("source_fingerprint"), OutEvidence.Fingerprint);
+    return Json;
+}
+
 bool SaveRenderTarget(UTextureRenderTarget2D* Target, const FString& Path, FString& OutError)
 {
     FImage Image;
@@ -369,12 +583,226 @@ TSharedPtr<FJsonObject> ArtifactJson(const FPassFile& Pass)
     return Artifact;
 }
 
+bool SaveJsonArtifact(const TSharedPtr<FJsonObject>& Json, FPassFile& Artifact, FString& OutError)
+{
+    FString Text;
+    const TSharedRef<TJsonWriter<>> Writer = TJsonWriterFactory<>::Create(&Text);
+    if (!FJsonSerializer::Serialize(Json.ToSharedRef(), Writer) ||
+        !FFileHelper::SaveStringToFile(Text, *Artifact.AbsolutePath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM) ||
+        !HashFile(Artifact.AbsolutePath, Artifact.Sha256, OutError))
+    {
+        OutError = FString::Printf(TEXT("Could not write ArtFlow JSON artifact: %s"), *Artifact.RelativePath);
+        return false;
+    }
+    return true;
+}
+
+TArray<TSharedPtr<FJsonValue>> ValidatorValues(std::initializer_list<const TCHAR*> Kinds)
+{
+    TArray<TSharedPtr<FJsonValue>> Values;
+    for (const TCHAR* Kind : Kinds)
+    {
+        TSharedPtr<FJsonObject> Validator = MakeShared<FJsonObject>();
+        Validator->SetStringField(TEXT("kind"), Kind);
+        Validator->SetBoolField(TEXT("required"), true);
+        Values.Add(MakeShared<FJsonValueObject>(Validator));
+    }
+    return Values;
+}
+
+TSharedPtr<FJsonObject> BudgetJson(int32 Mutations, int32 Spawns, int32 Duration)
+{
+    TSharedPtr<FJsonObject> Budget = MakeShared<FJsonObject>();
+    Budget->SetNumberField(TEXT("max_actor_mutations"), Mutations);
+    Budget->SetNumberField(TEXT("max_spawned_actors"), Spawns);
+    Budget->SetNumberField(TEXT("max_duration_seconds"), Duration);
+    return Budget;
+}
+
+TSharedPtr<FJsonObject> WriteScopeJson(const FString& StageId, const FString& AssetRoot, const FString& ActorId)
+{
+    TSharedPtr<FJsonObject> Scope = MakeShared<FJsonObject>();
+    Scope->SetStringField(TEXT("stage_id"), StageId);
+    Scope->SetStringField(TEXT("asset_root"), AssetRoot);
+    Scope->SetArrayField(TEXT("target_actor_ids"), {StringValue(ActorId)});
+    return Scope;
+}
+
+bool WriteSceneDeltaArtifacts(
+    UWorld* World,
+    const FString& StagingRoot,
+    const FString& PackageId,
+    TArray<FPassFile>& OutArtifacts,
+    FString& OutError)
+{
+    const FString CapturedAt = FDateTime::UtcNow().ToIso8601();
+    const FString TwinId = PackageId + TEXT("-twin");
+    const FString PlanId = PackageId + TEXT("-plan");
+    const FString StageId = TEXT("artflow-") + PackageId.Right(16);
+    const FString AssetRoot = TEXT("/Game/ArtFlow/Generated/") + PackageId.Right(16);
+
+    TArray<FSceneActorEvidence> Evidence;
+    for (TActorIterator<AActor> It(World); It; ++It)
+    {
+        if (IsValid(*It) && !It->IsTemplate())
+        {
+            FSceneActorEvidence Item;
+            Item.Actor = *It;
+            Item.ActorId = StableActorId(*It);
+            Evidence.Add(Item);
+        }
+    }
+    Evidence.Sort([](const FSceneActorEvidence& Left, const FSceneActorEvidence& Right)
+    {
+        return Left.ActorId < Right.ActorId;
+    });
+
+    TSharedPtr<FJsonObject> Twin = MakeShared<FJsonObject>();
+    Twin->SetStringField(TEXT("schema_id"), TEXT("scene-digital-twin/1"));
+    Twin->SetStringField(TEXT("twin_id"), TwinId);
+    Twin->SetStringField(TEXT("source_package_id"), PackageId);
+    Twin->SetStringField(TEXT("scene_path"), World->GetOutermost()->GetName());
+    Twin->SetStringField(TEXT("captured_at"), CapturedAt);
+    TArray<TSharedPtr<FJsonValue>> Actors;
+    FSceneActorEvidence* LightEvidence = nullptr;
+    FSceneActorEvidence* PCGEvidence = nullptr;
+    TSharedPtr<FJsonObject> ProtectedInvariants = MakeShared<FJsonObject>();
+    TArray<FString> SceneFingerprintParts;
+    for (FSceneActorEvidence& Item : Evidence)
+    {
+        Actors.Add(MakeShared<FJsonValueObject>(BuildActorFact(Item.Actor, Item)));
+        SceneFingerprintParts.Add(Item.ActorId + TEXT(":") + Item.Fingerprint);
+        if (Item.Actor->GetActorLabel() == TEXT("ArtFlow_KeyLight") && Item.Actor->FindComponentByClass<ULightComponent>() != nullptr)
+        {
+            LightEvidence = &Item;
+        }
+        else if (LightEvidence == nullptr && Item.Actor->FindComponentByClass<ULightComponent>() != nullptr)
+        {
+            LightEvidence = &Item;
+        }
+        if (PCGEvidence == nullptr && !Item.PCGComponentId.IsEmpty())
+        {
+            PCGEvidence = &Item;
+        }
+        if (Item.Actor->ActorHasTag(ProtectedTag))
+        {
+            ProtectedInvariants->SetStringField(Item.ActorId, Item.Fingerprint);
+        }
+    }
+    if (LightEvidence == nullptr || PCGEvidence == nullptr || ProtectedInvariants->Values.IsEmpty())
+    {
+        OutError = TEXT("Scene Delta dry-run requires one light, one approved PCG component and one protected actor.");
+        return false;
+    }
+    Twin->SetArrayField(TEXT("actors"), Actors);
+    const bool bHasWorldPartition = World->GetWorldPartition() != nullptr;
+    TArray<TSharedPtr<FJsonValue>> Capabilities;
+    const auto AddCapability = [&Capabilities](const TCHAR* Strategy, bool bAvailable, const TCHAR* Reason)
+    {
+        TSharedPtr<FJsonObject> Capability = MakeShared<FJsonObject>();
+        Capability->SetStringField(TEXT("strategy"), Strategy);
+        Capability->SetBoolField(TEXT("available"), bAvailable);
+        Capability->SetStringField(TEXT("reason"), Reason);
+        Capabilities.Add(MakeShared<FJsonValueObject>(Capability));
+    };
+    AddCapability(TEXT("data_layer"), bHasWorldPartition,
+        bHasWorldPartition ? TEXT("The source world supports run-specific Data Layers.") : TEXT("The fixture does not use World Partition."));
+    AddCapability(TEXT("candidate_level"), true, TEXT("A project-local candidate level is available as the safe fallback."));
+    Twin->SetArrayField(TEXT("staging_capabilities"), Capabilities);
+
+    FPassFile TwinArtifact{TEXT("scene_digital_twin"), TEXT("scene-digital-twin.json"), TEXT("application/json"), TEXT("utf-8-json"), FPaths::Combine(StagingRoot, TEXT("scene-digital-twin.json")), TEXT("")};
+    if (!SaveJsonArtifact(Twin, TwinArtifact, OutError)) return false;
+
+    TSharedPtr<FJsonObject> Plan = MakeShared<FJsonObject>();
+    Plan->SetStringField(TEXT("schema_id"), TEXT("scene-change-plan/1"));
+    Plan->SetStringField(TEXT("plan_id"), PlanId);
+    Plan->SetStringField(TEXT("twin_id"), TwinId);
+    Plan->SetStringField(TEXT("twin_sha256"), TwinArtifact.Sha256);
+    Plan->SetStringField(TEXT("created_at"), CapturedAt);
+
+    TSharedPtr<FJsonObject> Lighting = MakeShared<FJsonObject>();
+    Lighting->SetStringField(TEXT("operation_id"), TEXT("lighting-main"));
+    Lighting->SetStringField(TEXT("operation_type"), TEXT("set_lighting_rig"));
+    Lighting->SetArrayField(TEXT("depends_on"), {});
+    TSharedPtr<FJsonObject> LightFingerprints = MakeShared<FJsonObject>();
+    LightFingerprints->SetStringField(LightEvidence->ActorId, LightEvidence->Fingerprint);
+    Lighting->SetObjectField(TEXT("expected_source_fingerprints"), LightFingerprints);
+    Lighting->SetObjectField(TEXT("write_scope"), WriteScopeJson(StageId, AssetRoot, LightEvidence->ActorId));
+    Lighting->SetStringField(TEXT("idempotency_key"), PackageId + TEXT(":lighting-main"));
+    Lighting->SetObjectField(TEXT("budget"), BudgetJson(1, 0, 30));
+    Lighting->SetArrayField(TEXT("validators"), ValidatorValues({TEXT("protected_fingerprint"), TEXT("light_parameter_bounds"), TEXT("zero_source_mutations")}));
+    Lighting->SetStringField(TEXT("cleanup"), TEXT("restore_staged_properties"));
+    Lighting->SetArrayField(TEXT("target_light_ids"), {StringValue(LightEvidence->ActorId)});
+    Lighting->SetNumberField(TEXT("intensity"), 5.5);
+    Lighting->SetNumberField(TEXT("temperature_kelvin"), 4200.0);
+
+    TSharedPtr<FJsonObject> PCG = MakeShared<FJsonObject>();
+    PCG->SetStringField(TEXT("operation_id"), TEXT("pcg-scatter"));
+    PCG->SetStringField(TEXT("operation_type"), TEXT("apply_pcg_layout"));
+    PCG->SetArrayField(TEXT("depends_on"), {StringValue(TEXT("lighting-main"))});
+    TSharedPtr<FJsonObject> PCGFingerprints = MakeShared<FJsonObject>();
+    PCGFingerprints->SetStringField(PCGEvidence->ActorId, PCGEvidence->Fingerprint);
+    PCG->SetObjectField(TEXT("expected_source_fingerprints"), PCGFingerprints);
+    PCG->SetObjectField(TEXT("write_scope"), WriteScopeJson(StageId, AssetRoot, PCGEvidence->ActorId));
+    PCG->SetStringField(TEXT("idempotency_key"), PackageId + TEXT(":pcg-scatter"));
+    PCG->SetObjectField(TEXT("budget"), BudgetJson(1, 80, 60));
+    PCG->SetArrayField(TEXT("validators"), ValidatorValues({TEXT("protected_fingerprint"), TEXT("pcg_graph_allowlist"), TEXT("bounds"), TEXT("no_collision"), TEXT("actor_budget"), TEXT("zero_source_mutations")}));
+    PCG->SetStringField(TEXT("cleanup"), TEXT("delete_generated_actors"));
+    PCG->SetStringField(TEXT("component_id"), PCGEvidence->PCGComponentId);
+    PCG->SetStringField(TEXT("approved_graph_path"), PCGEvidence->PCGGraphPath);
+    TSharedPtr<FJsonObject> GraphParameters = MakeShared<FJsonObject>();
+    GraphParameters->SetNumberField(TEXT("density"), 0.35);
+    GraphParameters->SetStringField(TEXT("asset_set"), TEXT("demo-rocks"));
+    PCG->SetObjectField(TEXT("graph_parameters"), GraphParameters);
+    PCG->SetNumberField(TEXT("seed"), 240827);
+    Plan->SetArrayField(TEXT("operations"), {MakeShared<FJsonValueObject>(Lighting), MakeShared<FJsonValueObject>(PCG)});
+
+    FPassFile PlanArtifact{TEXT("scene_change_plan"), TEXT("scene-change-plan.json"), TEXT("application/json"), TEXT("utf-8-json"), FPaths::Combine(StagingRoot, TEXT("scene-change-plan.json")), TEXT("")};
+    if (!SaveJsonArtifact(Plan, PlanArtifact, OutError)) return false;
+
+    SceneFingerprintParts.Sort();
+    const FString SourceFingerprint = HashText(FString::Join(SceneFingerprintParts, TEXT("|")));
+    TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();
+    Receipt->SetStringField(TEXT("schema_id"), TEXT("scene-dry-run-receipt/1"));
+    Receipt->SetStringField(TEXT("receipt_id"), PackageId + TEXT("-dry"));
+    Receipt->SetStringField(TEXT("twin_id"), TwinId);
+    Receipt->SetStringField(TEXT("twin_sha256"), TwinArtifact.Sha256);
+    Receipt->SetStringField(TEXT("plan_id"), PlanId);
+    Receipt->SetStringField(TEXT("plan_sha256"), PlanArtifact.Sha256);
+    Receipt->SetStringField(TEXT("source_scene_path"), World->GetOutermost()->GetName());
+    Receipt->SetStringField(TEXT("source_scene_fingerprint_before"), SourceFingerprint);
+    Receipt->SetStringField(TEXT("source_scene_fingerprint_after"), SourceFingerprint);
+    Receipt->SetStringField(TEXT("staging_strategy"), bHasWorldPartition ? TEXT("data_layer") : TEXT("candidate_level"));
+    Receipt->SetStringField(TEXT("stage_id"), StageId);
+    TSharedPtr<FJsonObject> LightingSummary = MakeShared<FJsonObject>();
+    LightingSummary->SetStringField(TEXT("operation_id"), TEXT("lighting-main"));
+    LightingSummary->SetStringField(TEXT("operation_type"), TEXT("set_lighting_rig"));
+    LightingSummary->SetArrayField(TEXT("target_ids"), {StringValue(LightEvidence->ActorId)});
+    LightingSummary->SetArrayField(TEXT("parameter_names"), {StringValue(TEXT("intensity")), StringValue(TEXT("temperature_kelvin"))});
+    TSharedPtr<FJsonObject> PCGSummary = MakeShared<FJsonObject>();
+    PCGSummary->SetStringField(TEXT("operation_id"), TEXT("pcg-scatter"));
+    PCGSummary->SetStringField(TEXT("operation_type"), TEXT("apply_pcg_layout"));
+    PCGSummary->SetArrayField(TEXT("target_ids"), {StringValue(PCGEvidence->PCGComponentId)});
+    PCGSummary->SetArrayField(TEXT("parameter_names"), {StringValue(TEXT("density")), StringValue(TEXT("asset_set")), StringValue(TEXT("seed"))});
+    Receipt->SetArrayField(TEXT("planned_operations"), {MakeShared<FJsonValueObject>(LightingSummary), MakeShared<FJsonValueObject>(PCGSummary)});
+    Receipt->SetObjectField(TEXT("protected_invariants"), ProtectedInvariants);
+    Receipt->SetBoolField(TEXT("dry_run"), true);
+    Receipt->SetNumberField(TEXT("committed_mutation_count"), 0);
+    Receipt->SetStringField(TEXT("created_at"), CapturedAt);
+
+    FPassFile ReceiptArtifact{TEXT("scene_dry_run_receipt"), TEXT("scene-dry-run-receipt.json"), TEXT("application/json"), TEXT("utf-8-json"), FPaths::Combine(StagingRoot, TEXT("scene-dry-run-receipt.json")), TEXT("")};
+    if (!SaveJsonArtifact(Receipt, ReceiptArtifact, OutError)) return false;
+    OutArtifacts = {TwinArtifact, PlanArtifact, ReceiptArtifact};
+    return true;
+}
+
 bool WriteManifest(
     const FString& ManifestPath,
     const FString& PackageId,
     const FCaptureRequest& Request,
     const ACameraActor* Camera,
     const TArray<FPassFile>& Passes,
+    const TArray<FPassFile>& SceneArtifacts,
     const TArray<AActor*>& ProtectedActors,
     const TArray<AActor*>& EditableActors,
     FString& OutError)
@@ -421,6 +849,10 @@ bool WriteManifest(
         PassValues.Add(MakeShared<FJsonValueObject>(PassJson));
     }
     Root->SetArrayField(TEXT("passes"), PassValues);
+    for (const FPassFile& Artifact : SceneArtifacts)
+    {
+        Root->SetObjectField(Artifact.Kind, ArtifactJson(Artifact));
+    }
 
     TArray<TSharedPtr<FJsonValue>> RegionValues;
     const auto AddRegion = [&RegionValues](const TCHAR* RegionId, const TCHAR* Mode, const TArray<AActor*>& Actors)
@@ -471,7 +903,7 @@ bool WriteManifest(
     return true;
 }
 
-bool WriteAtomicArchive(const FString& FinalPath, const FString& ManifestPath, const TArray<FPassFile>& Passes, FString& OutError)
+bool WriteAtomicArchive(const FString& FinalPath, const FString& ManifestPath, const TArray<FPassFile>& Passes, const TArray<FPassFile>& SceneArtifacts, FString& OutError)
 {
     const FString PartialPath = FinalPath + TEXT(".partial");
     if (!IsPathInside(FinalPath, GetExportRoot()) || !IsPathInside(PartialPath, GetExportRoot()))
@@ -504,6 +936,16 @@ bool WriteAtomicArchive(const FString& FinalPath, const FString& ManifestPath, c
                 return false;
             }
             Zip.AddFile(Pass.RelativePath, Bytes, FDateTime::UtcNow());
+        }
+        for (const FPassFile& Artifact : SceneArtifacts)
+        {
+            Bytes.Reset();
+            if (!FFileHelper::LoadFileToArray(Bytes, *Artifact.AbsolutePath) || Bytes.IsEmpty())
+            {
+                OutError = FString::Printf(TEXT("Could not read staged artifact %s"), *Artifact.Kind);
+                return false;
+            }
+            Zip.AddFile(Artifact.RelativePath, Bytes, FDateTime::UtcNow());
         }
     }
     if (IFileManager::Get().FileSize(*PartialPath) <= 0 || !IFileManager::Get().Move(*FinalPath, *PartialPath, true, true, false, true))
@@ -682,12 +1124,17 @@ bool ExportSelection(FString& OutArchivePath, FString& OutError)
             return false;
         }
     }
+    TArray<FPassFile> SceneArtifacts;
+    if (!WriteSceneDeltaArtifacts(World, StagingRoot, PackageId, SceneArtifacts, OutError))
+    {
+        return false;
+    }
     if (!Step(LOCTEXT("ManifestPass", "Writing signed manifest")))
     {
         return false;
     }
     const FString ManifestPath = FPaths::Combine(StagingRoot, TEXT("scene-package.json"));
-    if (!WriteManifest(ManifestPath, PackageId, Request, Camera, Passes, ProtectedActors, EditableActors, OutError))
+    if (!WriteManifest(ManifestPath, PackageId, Request, Camera, Passes, SceneArtifacts, ProtectedActors, EditableActors, OutError))
     {
         return false;
     }
@@ -696,7 +1143,42 @@ bool ExportSelection(FString& OutArchivePath, FString& OutError)
         return false;
     }
     OutArchivePath = FPaths::Combine(GetExportRoot(), PackageId + TEXT(".zip"));
-    return WriteAtomicArchive(OutArchivePath, ManifestPath, Passes, OutError);
+    return WriteAtomicArchive(OutArchivePath, ManifestPath, Passes, SceneArtifacts, OutError);
+}
+
+UPCGGraph* LoadOrCreateDemoPCGGraph(FString& OutError)
+{
+    const FString AssetPath = TEXT("/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter");
+    if (UPCGGraph* Existing = LoadObject<UPCGGraph>(nullptr, *AssetPath))
+    {
+        return Existing;
+    }
+    const FString PackageName = TEXT("/Game/ArtFlow/PCG/PCG_ArtFlowScatter");
+    UPackage* Package = CreatePackage(*PackageName);
+    UPCGGraph* Graph = NewObject<UPCGGraph>(Package, TEXT("PCG_ArtFlowScatter"), RF_Public | RF_Standalone);
+    if (Graph == nullptr)
+    {
+        OutError = TEXT("Could not create the project-owned ArtFlow PCG graph.");
+        return nullptr;
+    }
+    Graph->AddUserParameters({
+        FPropertyBagPropertyDesc(TEXT("density"), EPropertyBagPropertyType::Float),
+        FPropertyBagPropertyDesc(TEXT("asset_set"), EPropertyBagPropertyType::String)});
+    Graph->SetGraphParameter<float>(TEXT("density"), 0.35f);
+    Graph->SetGraphParameter<FString>(TEXT("asset_set"), TEXT("demo-rocks"));
+    FAssetRegistryModule::AssetCreated(Graph);
+    Package->MarkPackageDirty();
+    const FString Filename = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
+    IFileManager::Get().MakeDirectory(*FPaths::GetPath(Filename), true);
+    FSavePackageArgs SaveArgs;
+    SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+    SaveArgs.SaveFlags = SAVE_NoError;
+    if (!UPackage::SavePackage(Package, Graph, *Filename, SaveArgs))
+    {
+        OutError = TEXT("Could not save the project-owned ArtFlow PCG graph.");
+        return nullptr;
+    }
+    return Graph;
 }
 
 bool CreateAutomationScene(FString& OutError)
@@ -746,6 +1228,22 @@ bool CreateAutomationScene(FString& OutError)
     Ground->SetActorScale3D(FVector(8.0, 8.0, 0.5));
     Light->SetActorLabel(TEXT("ArtFlow_KeyLight"));
     Light->GetLightComponent()->SetIntensity(8.0f);
+    UPCGGraph* PCGGraph = LoadOrCreateDemoPCGGraph(OutError);
+    if (PCGGraph == nullptr)
+    {
+        return false;
+    }
+    UPCGComponent* PCGComponent = NewObject<UPCGComponent>(Editable, TEXT("PCG_ArtFlowScatter"));
+    if (PCGComponent == nullptr)
+    {
+        OutError = TEXT("Could not create the ArtFlow PCG component.");
+        return false;
+    }
+    Editable->AddInstanceComponent(PCGComponent);
+    PCGComponent->SetGraph(PCGGraph);
+    PCGComponent->Seed = 240827;
+    PCGComponent->GenerationTrigger = EPCGComponentGenerationTrigger::GenerateOnDemand;
+    PCGComponent->RegisterComponent();
 
     GEditor->SelectNone(false, true, false);
     GEditor->SelectActor(Camera, true, false, true);
@@ -758,6 +1256,71 @@ bool CreateAutomationScene(FString& OutError)
         OutError = TEXT("Could not save the ArtFlow validation map.");
         return false;
     }
+    return true;
+}
+
+bool PrepareExistingAutomationScene(bool bAllowFixtureUpgrade, FString& OutError)
+{
+    if (GEditor == nullptr || GEditor->GetEditorWorldContext().World() == nullptr)
+    {
+        OutError = TEXT("The ArtFlow editor world is unavailable.");
+        return false;
+    }
+    UWorld* World = GEditor->GetEditorWorldContext().World();
+    if (World->GetOutermost()->GetName() != TEXT("/Game/ArtFlowDemo"))
+    {
+        OutError = FString::Printf(TEXT("Expected the project-owned /Game/ArtFlowDemo fixture, got %s."), *World->GetOutermost()->GetName());
+        return false;
+    }
+
+    ACameraActor* Camera = nullptr;
+    AActor* Protected = nullptr;
+    AActor* Editable = nullptr;
+    AActor* Light = nullptr;
+    for (TActorIterator<AActor> It(World); It; ++It)
+    {
+        if (It->GetActorLabel() == TEXT("ArtFlow_Camera")) Camera = Cast<ACameraActor>(*It);
+        if (It->ActorHasTag(ProtectedTag) && Protected == nullptr) Protected = *It;
+        if (It->ActorHasTag(EditableTag) && Editable == nullptr) Editable = *It;
+        if (It->FindComponentByClass<ULightComponent>() != nullptr && Light == nullptr) Light = *It;
+    }
+    if (Camera == nullptr || Protected == nullptr || Editable == nullptr || Light == nullptr)
+    {
+        OutError = TEXT("ArtFlowDemo is missing its camera, protected actor, editable actor or light.");
+        return false;
+    }
+
+    UPCGComponent* PCGComponent = Editable->FindComponentByClass<UPCGComponent>();
+    if (PCGComponent == nullptr && bAllowFixtureUpgrade)
+    {
+        UPCGGraph* Graph = LoadOrCreateDemoPCGGraph(OutError);
+        if (Graph == nullptr) return false;
+        PCGComponent = NewObject<UPCGComponent>(Editable, TEXT("PCG_ArtFlowScatter"), RF_Transactional);
+        Editable->Modify();
+        Editable->AddInstanceComponent(PCGComponent);
+        PCGComponent->SetGraph(Graph);
+        PCGComponent->Seed = 240827;
+        PCGComponent->GenerationTrigger = EPCGComponentGenerationTrigger::GenerateOnDemand;
+        PCGComponent->RegisterComponent();
+        const FString MapPath = FPaths::Combine(FPaths::ProjectContentDir(), TEXT("ArtFlowDemo.umap"));
+        if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, MapPath))
+        {
+            OutError = TEXT("Could not save the one-time project fixture PCG upgrade.");
+            return false;
+        }
+    }
+    if (PCGComponent == nullptr || PCGComponent->GetGraph() == nullptr)
+    {
+        OutError = bAllowFixtureUpgrade
+            ? TEXT("The one-time PCG fixture upgrade did not produce a valid component.")
+            : TEXT("ArtFlowDemo has no approved PCG component; run the project-owned fixture preparation first.");
+        return false;
+    }
+
+    GEditor->SelectNone(false, true, false);
+    GEditor->SelectActor(Camera, true, false, true);
+    GEditor->SelectActor(Protected, true, false, true);
+    GEditor->SelectActor(Editable, true, true, true);
     return true;
 }
 
@@ -780,7 +1343,9 @@ void FArtFlowSceneBridgeModule::StartupModule()
 {
     ArtFlowSceneBridge::RecoverInterruptedExports();
     UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::RegisterMenus));
-    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")))
+    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")))
     {
         AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
@@ -849,13 +1414,28 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     bAutomationHandled = true;
     FString Error;
     FString ArchivePath;
-    const bool bSuccess = ArtFlowSceneBridge::CreateAutomationScene(Error) && ArtFlowSceneBridge::ExportSelection(ArchivePath, Error);
+    const bool bPrepareOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo"));
+    bool bSuccess = false;
+    if (bPrepareOnly)
+    {
+        bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(true, Error);
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")))
+    {
+        bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(false, Error) &&
+            ArtFlowSceneBridge::ExportSelection(ArchivePath, Error);
+    }
+    else
+    {
+        bSuccess = ArtFlowSceneBridge::CreateAutomationScene(Error) && ArtFlowSceneBridge::ExportSelection(ArchivePath, Error);
+    }
     if (bSuccess)
     {
         LastExportPath = ArchivePath;
     }
     ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ArchivePath, Error);
     UE_LOG(LogArtFlowSceneBridge, Display, TEXT("ARTFLOW_AUTOMATION_RESULT success=%s archive=%s error=%s"), bSuccess ? TEXT("true") : TEXT("false"), *ArchivePath, *Error);
+    FPlatformMisc::RequestExit(false);
     return false;
 }
 

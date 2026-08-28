@@ -128,6 +128,9 @@ class SceneConstraintPackage(BaseModel):
     art_intent: ArtIntent
     provenance: SourceProvenance
     delivery: DeliveryRequirements
+    scene_digital_twin: ArtifactRef | None = None
+    scene_change_plan: ArtifactRef | None = None
+    scene_dry_run_receipt: ArtifactRef | None = None
 
     @model_validator(mode="after")
     def require_unique_production_passes(self) -> SceneConstraintPackage:

@@ -1,0 +1,23 @@
+{
+  "schema": "artflow-unreal-host-lifecycle/1",
+  "status": "passed",
+  "engine_version": "5.8.1",
+  "plugin_version": "1.1.0",
+  "mode": "ArtFlowDryRunExport",
+  "before_pids": [],
+  "owned_pid": 48740,
+  "after_pids": [],
+  "started_at": "2026-08-28T02:38:55.6119786Z",
+  "result_at": "2026-08-28T02:39:12.036Z",
+  "log_closed_at": "2026-08-28T02:39:14.497Z",
+  "ready_seconds": 16.424,
+  "shutdown_seconds": 18.885,
+  "result": "success",
+  "source_map_unchanged": true,
+  "cleanup": {
+    "owned_process_exited": true,
+    "preexisting_processes_untouched": true,
+    "residual_processes": 0
+  },
+  "log_path": "integrations/unreal/ArtFlowBridgeHost/Saved/Logs/ArtFlowBridgeHost.log"
+}

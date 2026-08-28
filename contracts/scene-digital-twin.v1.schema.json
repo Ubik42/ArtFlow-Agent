@@ -1,0 +1,435 @@
+{
+  "$defs": {
+    "BoundsFact": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum": {
+          "$ref": "#/$defs/Vector3"
+        },
+        "minimum": {
+          "$ref": "#/$defs/Vector3"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum"
+      ],
+      "title": "BoundsFact",
+      "type": "object"
+    },
+    "LightFact": {
+      "additionalProperties": false,
+      "properties": {
+        "cast_shadows": {
+          "title": "Cast Shadows",
+          "type": "boolean"
+        },
+        "color_srgb": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Color Srgb",
+          "type": "array"
+        },
+        "intensity": {
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        },
+        "light_type": {
+          "enum": [
+            "directional",
+            "sky",
+            "point",
+            "spot",
+            "rect"
+          ],
+          "title": "Light Type",
+          "type": "string"
+        },
+        "temperature_kelvin": {
+          "maximum": 20000,
+          "minimum": 1000,
+          "title": "Temperature Kelvin",
+          "type": "number"
+        },
+        "use_temperature": {
+          "title": "Use Temperature",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "light_type",
+        "intensity",
+        "color_srgb",
+        "use_temperature",
+        "temperature_kelvin",
+        "cast_shadows"
+      ],
+      "title": "LightFact",
+      "type": "object"
+    },
+    "MaterialSlotFact": {
+      "additionalProperties": false,
+      "properties": {
+        "material_path": {
+          "pattern": "^/(?:Game|Engine)/[A-Za-z0-9_./-]+$",
+          "title": "Material Path",
+          "type": "string"
+        },
+        "slot_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Slot Index",
+          "type": "integer"
+        },
+        "slot_name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Slot Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slot_index",
+        "slot_name",
+        "material_path"
+      ],
+      "title": "MaterialSlotFact",
+      "type": "object"
+    },
+    "PCGComponentFact": {
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{2,159}$",
+          "title": "Component Id",
+          "type": "string"
+        },
+        "component_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Component Path",
+          "type": "string"
+        },
+        "exposed_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "maxProperties": 64,
+          "title": "Exposed Parameters",
+          "type": "object"
+        },
+        "generation_trigger": {
+          "enum": [
+            "on_demand",
+            "generate_on_load",
+            "runtime"
+          ],
+          "title": "Generation Trigger",
+          "type": "string"
+        },
+        "graph_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Graph Fingerprint",
+          "type": "string"
+        },
+        "graph_path": {
+          "pattern": "^/(?:Game|Engine)/[A-Za-z0-9_./-]+$",
+          "title": "Graph Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component_id",
+        "component_path",
+        "graph_path",
+        "graph_fingerprint",
+        "generation_trigger"
+      ],
+      "title": "PCGComponentFact",
+      "type": "object"
+    },
+    "Rotator": {
+      "additionalProperties": false,
+      "properties": {
+        "pitch": {
+          "title": "Pitch",
+          "type": "number"
+        },
+        "roll": {
+          "title": "Roll",
+          "type": "number"
+        },
+        "yaw": {
+          "title": "Yaw",
+          "type": "number"
+        }
+      },
+      "required": [
+        "pitch",
+        "yaw",
+        "roll"
+      ],
+      "title": "Rotator",
+      "type": "object"
+    },
+    "SceneActorFact": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_guid": {
+          "pattern": "^[0-9a-f]{32}$",
+          "title": "Actor Guid",
+          "type": "string"
+        },
+        "actor_id": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{2,159}$",
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "actor_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Actor Path",
+          "type": "string"
+        },
+        "bounds": {
+          "$ref": "#/$defs/BoundsFact"
+        },
+        "class_path": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Class Path",
+          "type": "string"
+        },
+        "data_layers": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Data Layers",
+          "type": "array"
+        },
+        "editable": {
+          "title": "Editable",
+          "type": "boolean"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "light": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/LightFact"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "material_slots": {
+          "items": {
+            "$ref": "#/$defs/MaterialSlotFact"
+          },
+          "maxItems": 256,
+          "title": "Material Slots",
+          "type": "array"
+        },
+        "pcg_components": {
+          "items": {
+            "$ref": "#/$defs/PCGComponentFact"
+          },
+          "maxItems": 32,
+          "title": "Pcg Components",
+          "type": "array"
+        },
+        "protected": {
+          "title": "Protected",
+          "type": "boolean"
+        },
+        "source_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Fingerprint",
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Tags",
+          "type": "array"
+        },
+        "transform": {
+          "$ref": "#/$defs/TransformFact"
+        }
+      },
+      "required": [
+        "actor_id",
+        "actor_guid",
+        "actor_path",
+        "label",
+        "class_path",
+        "transform",
+        "bounds",
+        "protected",
+        "editable",
+        "source_fingerprint"
+      ],
+      "title": "SceneActorFact",
+      "type": "object"
+    },
+    "StagingCapability": {
+      "additionalProperties": false,
+      "properties": {
+        "available": {
+          "title": "Available",
+          "type": "boolean"
+        },
+        "reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        },
+        "strategy": {
+          "enum": [
+            "data_layer",
+            "level_instance",
+            "candidate_level"
+          ],
+          "title": "Strategy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "strategy",
+        "available",
+        "reason"
+      ],
+      "title": "StagingCapability",
+      "type": "object"
+    },
+    "TransformFact": {
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/Vector3"
+        },
+        "rotation": {
+          "$ref": "#/$defs/Rotator"
+        },
+        "scale": {
+          "$ref": "#/$defs/Vector3"
+        }
+      },
+      "required": [
+        "location",
+        "rotation",
+        "scale"
+      ],
+      "title": "TransformFact",
+      "type": "object"
+    },
+    "Vector3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "title": "Vector3",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actors": {
+      "items": {
+        "$ref": "#/$defs/SceneActorFact"
+      },
+      "maxItems": 100000,
+      "minItems": 1,
+      "title": "Actors",
+      "type": "array"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "scene_path": {
+      "pattern": "^/Game/[A-Za-z0-9_./-]+$",
+      "title": "Scene Path",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "scene-digital-twin/1",
+      "default": "scene-digital-twin/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_package_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Source Package Id",
+      "type": "string"
+    },
+    "staging_capabilities": {
+      "items": {
+        "$ref": "#/$defs/StagingCapability"
+      },
+      "maxItems": 3,
+      "minItems": 1,
+      "title": "Staging Capabilities",
+      "type": "array"
+    },
+    "twin_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Twin Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "twin_id",
+    "source_package_id",
+    "scene_path",
+    "captured_at",
+    "actors",
+    "staging_capabilities"
+  ],
+  "title": "SceneDigitalTwin",
+  "type": "object"
+}

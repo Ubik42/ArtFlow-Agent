@@ -10,12 +10,14 @@ public class ArtFlowSceneBridge : ModuleRules
         {
             "Core",
             "CoreUObject",
-            "Engine"
+            "Engine",
+            "PCG"
         });
 
         PrivateDependencyModuleNames.AddRange(new[]
         {
             "FileUtilities",
+            "AssetRegistry",
             "ImageCore",
             "Json",
             "LevelEditor",

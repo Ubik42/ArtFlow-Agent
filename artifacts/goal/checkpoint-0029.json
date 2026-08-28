@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M7-S1",
+  "status": "completed",
+  "outcome": "A real UE 5.8 scene now exports content-addressed actor, material, light, PCG, Data Layer and authority facts plus a typed lighting/PCG DAG and independently verified zero-write dry-run receipt. The isolated host process exited cleanly and the source ArtFlowDemo map hash remained identical before and after export.",
+  "evidence": [
+    "docs/evidence/M7_S1_SCENE_DIGITAL_TWIN_DRY_RUN_2026-08-27.md",
+    "contracts/scene-digital-twin.v1.schema.json",
+    "contracts/scene-change-plan.v1.schema.json",
+    "contracts/scene-dry-run-receipt.v1.schema.json",
+    "src/artflow_agent/contracts/scene_delta.py",
+    "scripts/verify_scene_dry_run.py",
+    "tests/test_scene_delta_contracts.py",
+    "artifacts/goal/m7-s1-scene-dry-run/scene-package.zip",
+    "artifacts/goal/m7-s1-scene-dry-run/verification.json",
+    "artifacts/goal/m7-s1-scene-dry-run/host-lifecycle.json"
+  ]
+}
