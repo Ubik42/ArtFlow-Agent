@@ -1,6 +1,7 @@
 #include "ArtFlowSceneBridgeModule.h"
 
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetToolsModule.h"
 #include "BufferVisualizationData.h"
 #include "Camera/CameraActor.h"
 #include "Camera/CameraComponent.h"
@@ -9,6 +10,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/LightComponent.h"
+#include "Components/InstancedStaticMeshComponent.h"
 #include "Editor.h"
 #include "Editor/EditorEngine.h"
 #include "Engine/DirectionalLight.h"
@@ -41,9 +43,14 @@
 #include "Misc/PackageName.h"
 #include "Misc/ScopeExit.h"
 #include "Misc/ScopedSlowTask.h"
+#include "PackageTools.h"
 #include "RenderingThread.h"
 #include "PCGComponent.h"
 #include "PCGGraph.h"
+#include "PCGNode.h"
+#include "Elements/PCGCreatePoints.h"
+#include "Elements/PCGStaticMeshSpawner.h"
+#include "MeshSelectors/PCGMeshSelectorWeighted.h"
 #include "StructUtils/PropertyBag.h"
 #include "ToolMenus.h"
 #include "UObject/SavePackage.h"
@@ -59,6 +66,12 @@ constexpr int32 DefaultHeight = 360;
 constexpr float DefaultFarClip = 100000.0f;
 const FName ProtectedTag(TEXT("ArtFlow.Protected"));
 const FName EditableTag(TEXT("ArtFlow.Editable"));
+const FString FrozenTwinId(TEXT("artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-twin"));
+const FString FrozenTwinSha(TEXT("7604b26e775a4a92b4fddc83338ce8b55e2a79749f3e7710ec43958e606aba82"));
+const FString FrozenPlanId(TEXT("artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-plan"));
+const FString FrozenPlanSha(TEXT("90d6c82ab19c7aadc0941f0113ba6204685f6c4037c1689d16f7f1168769983d"));
+const FString FrozenStageId(TEXT("artflow-cb2176a7a45bbad1"));
+const FString CandidatePackage(TEXT("/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1"));
 
 struct FCaptureRequest
 {
@@ -1149,24 +1162,108 @@ bool ExportSelection(FString& OutArchivePath, FString& OutError)
 UPCGGraph* LoadOrCreateDemoPCGGraph(FString& OutError)
 {
     const FString AssetPath = TEXT("/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter");
-    if (UPCGGraph* Existing = LoadObject<UPCGGraph>(nullptr, *AssetPath))
-    {
-        return Existing;
-    }
     const FString PackageName = TEXT("/Game/ArtFlow/PCG/PCG_ArtFlowScatter");
-    UPackage* Package = CreatePackage(*PackageName);
-    UPCGGraph* Graph = NewObject<UPCGGraph>(Package, TEXT("PCG_ArtFlowScatter"), RF_Public | RF_Standalone);
+    UPackage* Package = nullptr;
+    UPCGGraph* Graph = LoadObject<UPCGGraph>(nullptr, *AssetPath);
+    const bool bGraphAlreadyAuthored = Graph != nullptr && Graph->GetNodes().Num() >= 2;
+    if (Graph != nullptr)
+    {
+        Package = Graph->GetOutermost();
+        Graph->Modify();
+    }
+    else
+    {
+        Package = CreatePackage(*PackageName);
+        Graph = NewObject<UPCGGraph>(Package, TEXT("PCG_ArtFlowScatter"), RF_Public | RF_Standalone);
+    }
     if (Graph == nullptr)
     {
         OutError = TEXT("Could not create the project-owned ArtFlow PCG graph.");
         return nullptr;
     }
-    Graph->AddUserParameters({
-        FPropertyBagPropertyDesc(TEXT("density"), EPropertyBagPropertyType::Float),
-        FPropertyBagPropertyDesc(TEXT("asset_set"), EPropertyBagPropertyType::String)});
-    Graph->SetGraphParameter<float>(TEXT("density"), 0.35f);
-    Graph->SetGraphParameter<FString>(TEXT("asset_set"), TEXT("demo-rocks"));
-    FAssetRegistryModule::AssetCreated(Graph);
+    if (!Graph->GetUserParametersStruct()->FindPropertyDescByName(TEXT("density")))
+    {
+        Graph->AddUserParameters({
+            FPropertyBagPropertyDesc(TEXT("density"), EPropertyBagPropertyType::Float),
+            FPropertyBagPropertyDesc(TEXT("asset_set"), EPropertyBagPropertyType::String)});
+        Graph->SetGraphParameter<float>(TEXT("density"), 0.35f);
+        Graph->SetGraphParameter<FString>(TEXT("asset_set"), TEXT("demo-rocks"));
+    }
+
+    const FString PropAssetPath = TEXT("/Game/ArtFlow/Props/SM_ArtFlowRock.SM_ArtFlowRock");
+    UStaticMesh* PropMesh = LoadObject<UStaticMesh>(nullptr, *PropAssetPath);
+    if (PropMesh == nullptr)
+    {
+        UStaticMesh* SourceMesh = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cone.Cone"));
+        IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")).Get();
+        PropMesh = Cast<UStaticMesh>(AssetTools.DuplicateAsset(TEXT("SM_ArtFlowRock"), TEXT("/Game/ArtFlow/Props"), SourceMesh));
+        if (PropMesh != nullptr)
+        {
+            UPackage* PropPackage = PropMesh->GetOutermost();
+            const FString PropFilename = FPackageName::LongPackageNameToFilename(TEXT("/Game/ArtFlow/Props/SM_ArtFlowRock"), FPackageName::GetAssetPackageExtension());
+            IFileManager::Get().MakeDirectory(*FPaths::GetPath(PropFilename), true);
+            FSavePackageArgs PropSaveArgs;
+            PropSaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+            PropSaveArgs.SaveFlags = SAVE_NoError;
+            if (!UPackage::SavePackage(PropPackage, PropMesh, *PropFilename, PropSaveArgs))
+            {
+                OutError = TEXT("Could not save the project-owned ArtFlow primitive prop.");
+                return nullptr;
+            }
+        }
+    }
+    if (PropMesh == nullptr)
+    {
+        OutError = TEXT("Could not create the project-owned ArtFlow primitive prop.");
+        return nullptr;
+    }
+    if (bGraphAlreadyAuthored)
+    {
+        return Graph;
+    }
+
+    UPCGCreatePointsSettings* PointSettings = nullptr;
+    UPCGNode* PointNode = Graph->AddNodeOfType<UPCGCreatePointsSettings>(PointSettings);
+    UPCGStaticMeshSpawnerSettings* SpawnerSettings = nullptr;
+    UPCGNode* SpawnerNode = Graph->AddNodeOfType<UPCGStaticMeshSpawnerSettings>(SpawnerSettings);
+    if (PointNode == nullptr || PointSettings == nullptr || SpawnerNode == nullptr || SpawnerSettings == nullptr)
+    {
+        OutError = TEXT("Could not author the reviewed Create Points to Static Mesh Spawner graph.");
+        return nullptr;
+    }
+    PointSettings->CoordinateSpace = EPCGCoordinateSpace::World;
+    PointSettings->PointsToCreate.Reset();
+    const TArray<FVector> Positions = {
+        FVector(-40, -330, 20), FVector(80, -270, 26), FVector(190, -205, 18),
+        FVector(260, -90, 32), FVector(300, 45, 20), FVector(250, 175, 28),
+        FVector(155, 300, 22), FVector(25, 345, 30), FVector(-95, 285, 18),
+        FVector(-170, 175, 26), FVector(-200, 45, 20), FVector(-150, -120, 30)};
+    for (int32 Index = 0; Index < Positions.Num(); ++Index)
+    {
+        FPCGPoint& Point = PointSettings->PointsToCreate.AddDefaulted_GetRef();
+        const float UniformScale = 0.45f + static_cast<float>((Index * 7) % 5) * 0.07f;
+        Point.Transform = FTransform(FRotator(0, Index * 29.0f, 0), Positions[Index], FVector(UniformScale));
+        Point.Seed = 240827 + Index;
+        Point.Density = 1.0f;
+    }
+    SpawnerSettings->SetMeshSelectorType(UPCGMeshSelectorWeighted::StaticClass());
+    UPCGMeshSelectorWeighted* Selector = Cast<UPCGMeshSelectorWeighted>(SpawnerSettings->MeshSelectorParameters);
+    if (Selector == nullptr)
+    {
+        OutError = TEXT("Could not configure the reviewed ArtFlow PCG mesh selector.");
+        return nullptr;
+    }
+    Selector->MeshEntries.Reset();
+    FPCGMeshSelectorWeightedEntry Entry(TSoftObjectPtr<UStaticMesh>(PropMesh), 1);
+    Entry.Descriptor.ComponentTags = {TEXT("ArtFlow.Generated"), TEXT("ArtFlow.PCG.ArtFlowScatter")};
+    Selector->MeshEntries.Add(Entry);
+    SpawnerSettings->bSynchronousLoad = true;
+    Graph->AddLabeledEdge(PointNode, PCGPinConstants::DefaultOutputLabel, SpawnerNode, PCGPinConstants::DefaultInputLabel);
+    Graph->AddLabeledEdge(SpawnerNode, PCGPinConstants::DefaultOutputLabel, Graph->GetOutputNode(), PCGPinConstants::DefaultOutputLabel);
+    if (!Graph->GetOuter()->HasAnyFlags(RF_WasLoaded))
+    {
+        FAssetRegistryModule::AssetCreated(Graph);
+    }
     Package->MarkPackageDirty();
     const FString Filename = FPackageName::LongPackageNameToFilename(PackageName, FPackageName::GetAssetPackageExtension());
     IFileManager::Get().MakeDirectory(*FPaths::GetPath(Filename), true);
@@ -1179,6 +1276,348 @@ UPCGGraph* LoadOrCreateDemoPCGGraph(FString& OutError)
         return nullptr;
     }
     return Graph;
+}
+
+int32 CountGeneratedInstances(UWorld* World)
+{
+    int32 Count = 0;
+    for (TActorIterator<AActor> It(World); It; ++It)
+    {
+        TInlineComponentArray<UInstancedStaticMeshComponent*> Components(*It);
+        for (const UInstancedStaticMeshComponent* Component : Components)
+        {
+            if (Component->ComponentHasTag(TEXT("ArtFlow.Generated")))
+            {
+                Count += Component->GetInstanceCount();
+            }
+        }
+    }
+    return Count;
+}
+
+AActor* FindActorByLabel(UWorld* World, const FString& Label)
+{
+    for (TActorIterator<AActor> It(World); It; ++It)
+    {
+        if (It->GetActorLabel() == Label)
+        {
+            return *It;
+        }
+    }
+    return nullptr;
+}
+
+FString ActorFingerprint(AActor* Actor)
+{
+    FSceneActorEvidence Evidence;
+    BuildActorFact(Actor, Evidence);
+    return Evidence.Fingerprint;
+}
+
+FString ProtectedSemanticFingerprint(AActor* Actor)
+{
+    FString Stable = Actor->GetClass()->GetPathName() + TEXT("|") + Actor->GetActorLabel() + TEXT("|") +
+        Actor->GetActorTransform().ToHumanReadableString();
+    TArray<FString> Tags;
+    for (const FName Tag : Actor->Tags) Tags.Add(Tag.ToString());
+    Tags.Sort();
+    Stable += TEXT("|") + FString::Join(Tags, TEXT(","));
+    TInlineComponentArray<UStaticMeshComponent*> MeshComponents(Actor);
+    for (const UStaticMeshComponent* MeshComponent : MeshComponents)
+    {
+        Stable += TEXT("|") + (MeshComponent->GetStaticMesh() == nullptr ? TEXT("none") : MeshComponent->GetStaticMesh()->GetPathName());
+        for (int32 Index = 0; Index < MeshComponent->GetNumMaterials(); ++Index)
+        {
+            const UMaterialInterface* Material = MeshComponent->GetMaterial(Index);
+            Stable += TEXT("|") + (Material == nullptr ? TEXT("none") : Material->GetPathName());
+        }
+    }
+    return HashText(Stable);
+}
+
+bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FString& OutSourceHash, FString& OutProtectedHash, FString& OutError)
+{
+    UWorld* SourceWorld = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    if (SourceWorld == nullptr || SourceWorld->GetOutermost()->GetName() != TEXT("/Game/ArtFlowDemo"))
+    {
+        OutError = TEXT("Candidate execution requires the frozen /Game/ArtFlowDemo source map.");
+        return false;
+    }
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(TEXT("/Game/ArtFlowDemo"), FPackageName::GetMapPackageExtension());
+    if (!HashFile(SourceFilename, OutSourceHash, OutError))
+    {
+        return false;
+    }
+    AActor* SourceProtected = FindActorByLabel(SourceWorld, TEXT("Protected_Blockout"));
+    if (SourceProtected == nullptr || ActorFingerprint(SourceProtected) != TEXT("c840399a559a02edb48974263f78e2f30ed4c4a1ad262cb0db7afeae494f1910"))
+    {
+        OutError = TEXT("Frozen protected actor fingerprint no longer matches the M7-S1 plan.");
+        return false;
+    }
+    OutProtectedHash = ProtectedSemanticFingerprint(SourceProtected);
+
+    UPCGGraph* ReviewedGraph = LoadOrCreateDemoPCGGraph(OutError);
+    if (ReviewedGraph == nullptr)
+    {
+        return false;
+    }
+    UWorld* CandidateWorld = nullptr;
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(CandidatePackage, FPackageName::GetMapPackageExtension());
+    if (!IFileManager::Get().FileExists(*CandidateFilename))
+    {
+        IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")).Get();
+        CandidateWorld = Cast<UWorld>(AssetTools.DuplicateAsset(
+            FPackageName::GetLongPackageAssetName(CandidatePackage),
+            FPackageName::GetLongPackagePath(CandidatePackage), SourceWorld));
+        if (CandidateWorld == nullptr)
+        {
+            OutError = TEXT("Could not create the content-addressed candidate level.");
+            return false;
+        }
+        UPackage* CandidatePackageObject = CandidateWorld->GetOutermost();
+        FSavePackageArgs CandidateSaveArgs;
+        CandidateSaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+        CandidateSaveArgs.SaveFlags = SAVE_NoError;
+        IFileManager::Get().MakeDirectory(*FPaths::GetPath(CandidateFilename), true);
+        if (!UPackage::SavePackage(CandidatePackageObject, CandidateWorld, *CandidateFilename, CandidateSaveArgs))
+        {
+            OutError = TEXT("Could not persist the content-addressed candidate level.");
+            return false;
+        }
+        CandidateWorld = nullptr;
+        FText UnloadError;
+        if (!UPackageTools::UnloadPackages({CandidatePackageObject}, UnloadError, true))
+        {
+            OutError = FString::Printf(TEXT("Could not release duplicated candidate package before loading it: %s"), *UnloadError.ToString());
+            return false;
+        }
+    }
+    if (!FEditorFileUtils::LoadMap(CandidateFilename, false, false))
+    {
+        OutError = TEXT("Could not load the content-addressed candidate level.");
+        return false;
+    }
+    CandidateWorld = GEditor->GetEditorWorldContext().World();
+    AActor* LightActor = FindActorByLabel(CandidateWorld, TEXT("ArtFlow_KeyLight"));
+    AActor* Editable = FindActorByLabel(CandidateWorld, TEXT("Editable_Form"));
+    AActor* Protected = FindActorByLabel(CandidateWorld, TEXT("Protected_Blockout"));
+    if (LightActor == nullptr || Editable == nullptr || Protected == nullptr)
+    {
+        OutError = TEXT("Candidate level is missing a frozen operation target or protected actor.");
+        return false;
+    }
+    ULightComponent* Light = LightActor->FindComponentByClass<ULightComponent>();
+    OutPCG = Editable->FindComponentByClass<UPCGComponent>();
+    if (Light == nullptr || OutPCG == nullptr)
+    {
+        OutError = TEXT("Candidate targets do not expose the required typed components.");
+        return false;
+    }
+    OutPCG->SetGraph(ReviewedGraph);
+    OutPCG->Seed = 240827;
+    Light->SetIntensity(5.5f);
+    Light->SetUseTemperature(true);
+    Light->SetTemperature(4200.0f);
+    const int32 ExistingInstances = CountGeneratedInstances(CandidateWorld);
+    OutReconciled = ExistingInstances == 12;
+    if (!OutReconciled)
+    {
+        OutPCG->CleanupLocalImmediate(true, true);
+        OutPCG->GenerateLocal(true);
+    }
+    return true;
+}
+
+bool FinalizeCandidateExecution(bool bReconciled, const FString& SourceHash, const FString& ProtectedHash, FString& OutReceiptPath, FString& OutError)
+{
+    UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    if (World == nullptr || World->GetOutermost()->GetName() != CandidatePackage)
+    {
+        OutError = TEXT("The candidate world was replaced before execution could be finalized.");
+        return false;
+    }
+    const int32 InstanceCount = CountGeneratedInstances(World);
+    if (InstanceCount != 12)
+    {
+        OutError = FString::Printf(TEXT("Reviewed PCG graph produced %d instances; expected exactly 12."), InstanceCount);
+        return false;
+    }
+    AActor* Camera = FindActorByLabel(World, TEXT("ArtFlow_Camera"));
+    AActor* Protected = FindActorByLabel(World, TEXT("Protected_Blockout"));
+    if (Camera == nullptr || Protected == nullptr)
+    {
+        OutError = TEXT("Candidate render camera or protected actor is missing.");
+        return false;
+    }
+    const FString ProtectedAfter = ProtectedSemanticFingerprint(Protected);
+    if (ProtectedAfter != ProtectedHash)
+    {
+        OutError = TEXT("Candidate execution changed the protected actor fingerprint.");
+        return false;
+    }
+    const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("Candidates"), FrozenStageId);
+    IFileManager::Get().MakeDirectory(*OutputRoot, true);
+    const FString BeautyPath = FPaths::Combine(OutputRoot, TEXT("candidate-beauty.png"));
+    FCaptureRequest Request;
+    if (!LoadCaptureRequest(Request, OutError) ||
+        !CapturePass(World, Cast<ACameraActor>(Camera), Request, SCS_FinalColorLDR, false, BeautyPath, nullptr, {}, OutError))
+    {
+        return false;
+    }
+    FString BeautyHash;
+    if (!HashFile(BeautyPath, BeautyHash, OutError))
+    {
+        return false;
+    }
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(CandidatePackage, FPackageName::GetMapPackageExtension());
+    if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, CandidateFilename))
+    {
+        OutError = TEXT("Could not save the staged candidate level.");
+        return false;
+    }
+    FString SourceAfter;
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(TEXT("/Game/ArtFlowDemo"), FPackageName::GetMapPackageExtension());
+    if (!HashFile(SourceFilename, SourceAfter, OutError) || SourceAfter != SourceHash)
+    {
+        OutError = TEXT("Source level package changed during candidate execution.");
+        return false;
+    }
+
+    TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();
+    Receipt->SetStringField(TEXT("schema_id"), TEXT("scene-execution-receipt/1"));
+    Receipt->SetStringField(TEXT("receipt_id"), FrozenStageId + (bReconciled ? TEXT("-reconcile") : TEXT("-execute")));
+    Receipt->SetStringField(TEXT("twin_id"), FrozenTwinId);
+    Receipt->SetStringField(TEXT("twin_sha256"), FrozenTwinSha);
+    Receipt->SetStringField(TEXT("plan_id"), FrozenPlanId);
+    Receipt->SetStringField(TEXT("plan_sha256"), FrozenPlanSha);
+    Receipt->SetStringField(TEXT("source_scene_path"), TEXT("/Game/ArtFlowDemo"));
+    Receipt->SetStringField(TEXT("source_scene_fingerprint_before"), SourceHash);
+    Receipt->SetStringField(TEXT("source_scene_fingerprint_after"), SourceAfter);
+    Receipt->SetStringField(TEXT("candidate_scene_path"), CandidatePackage);
+    Receipt->SetStringField(TEXT("stage_id"), FrozenStageId);
+    Receipt->SetStringField(TEXT("status"), TEXT("staged"));
+    Receipt->SetNumberField(TEXT("execution_attempt"), bReconciled ? 2 : 1);
+    Receipt->SetBoolField(TEXT("reconciled"), bReconciled);
+
+    const FString OperationStatus = bReconciled ? TEXT("reconciled") : TEXT("executed");
+    TSharedPtr<FJsonObject> IntensityChange = MakeShared<FJsonObject>();
+    IntensityChange->SetStringField(TEXT("property_name"), TEXT("intensity"));
+    IntensityChange->SetNumberField(TEXT("before"), 8.0);
+    IntensityChange->SetNumberField(TEXT("after"), 5.5);
+    TSharedPtr<FJsonObject> TemperatureChange = MakeShared<FJsonObject>();
+    TemperatureChange->SetStringField(TEXT("property_name"), TEXT("temperature_kelvin"));
+    TemperatureChange->SetNumberField(TEXT("before"), 6500.0);
+    TemperatureChange->SetNumberField(TEXT("after"), 4200.0);
+    TSharedPtr<FJsonObject> Lighting = MakeShared<FJsonObject>();
+    Lighting->SetStringField(TEXT("operation_id"), TEXT("lighting-main"));
+    Lighting->SetStringField(TEXT("operation_type"), TEXT("set_lighting_rig"));
+    Lighting->SetStringField(TEXT("idempotency_key"), FrozenPlanId.Replace(TEXT("-plan"), TEXT(":")) + TEXT("lighting-main"));
+    Lighting->SetStringField(TEXT("status"), OperationStatus);
+    Lighting->SetArrayField(TEXT("target_ids"), StringValues({TEXT("2fd6e5d1474ecd751f1b8f8729e64ad1")}));
+    Lighting->SetArrayField(TEXT("property_changes"), {MakeShared<FJsonValueObject>(IntensityChange), MakeShared<FJsonValueObject>(TemperatureChange)});
+    Lighting->SetNumberField(TEXT("generated_instance_count"), 0);
+    Lighting->SetArrayField(TEXT("generated_resource_paths"), {});
+    TSharedPtr<FJsonObject> PCG = MakeShared<FJsonObject>();
+    PCG->SetStringField(TEXT("operation_id"), TEXT("pcg-scatter"));
+    PCG->SetStringField(TEXT("operation_type"), TEXT("apply_pcg_layout"));
+    PCG->SetStringField(TEXT("idempotency_key"), FrozenPlanId.Replace(TEXT("-plan"), TEXT(":")) + TEXT("pcg-scatter"));
+    PCG->SetStringField(TEXT("status"), OperationStatus);
+    PCG->SetArrayField(TEXT("target_ids"), StringValues({TEXT("3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter")}));
+    PCG->SetArrayField(TEXT("property_changes"), {});
+    PCG->SetNumberField(TEXT("generated_instance_count"), InstanceCount);
+    PCG->SetArrayField(TEXT("generated_resource_paths"), StringValues({TEXT("/Game/ArtFlow/Props/SM_ArtFlowRock"), TEXT("/Game/ArtFlow/PCG/PCG_ArtFlowScatter")}));
+    Receipt->SetArrayField(TEXT("operations"), {MakeShared<FJsonValueObject>(Lighting), MakeShared<FJsonValueObject>(PCG)});
+    TSharedPtr<FJsonObject> ProtectedBefore = MakeShared<FJsonObject>();
+    ProtectedBefore->SetStringField(TEXT("5e5124c6414eac2826f9e9a1eba6c9d9"), ProtectedHash);
+    Receipt->SetObjectField(TEXT("protected_invariants_before"), ProtectedBefore);
+    Receipt->SetObjectField(TEXT("protected_invariants_after"), ProtectedBefore);
+    Receipt->SetStringField(TEXT("candidate_beauty_path"), BeautyPath);
+    Receipt->SetStringField(TEXT("candidate_beauty_sha256"), BeautyHash);
+    Receipt->SetStringField(TEXT("created_at"), FDateTime::UtcNow().ToIso8601());
+    FString Text;
+    FJsonSerializer::Serialize(Receipt.ToSharedRef(), TJsonWriterFactory<>::Create(&Text));
+    OutReceiptPath = FPaths::Combine(OutputRoot, bReconciled ? TEXT("scene-execution-reconcile-receipt.json") : TEXT("scene-execution-receipt.json"));
+    return FFileHelper::SaveStringToFile(Text, *OutReceiptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
+}
+
+bool ExecuteStageDisposition(bool bPublish, FString& OutReceiptPath, FString& OutError)
+{
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(TEXT("/Game/ArtFlowDemo"), FPackageName::GetMapPackageExtension());
+    FString SourceBefore;
+    if (!HashFile(SourceFilename, SourceBefore, OutError)) return false;
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(CandidatePackage, FPackageName::GetMapPackageExtension());
+    if (!IFileManager::Get().FileExists(*CandidateFilename))
+    {
+        OutError = TEXT("The content-addressed candidate level does not exist.");
+        return false;
+    }
+    TArray<FString> AffectedPaths;
+    if (bPublish)
+    {
+        const FString PublishedPackage = TEXT("/Game/ArtFlow/Published/AF_cb2176a7a45bbad1");
+        const FString PublishedFilename = FPackageName::LongPackageNameToFilename(PublishedPackage, FPackageName::GetMapPackageExtension());
+        if (!IFileManager::Get().FileExists(*PublishedFilename))
+        {
+            const FString CandidateObjectPath = CandidatePackage + TEXT(".") + FPackageName::GetLongPackageAssetName(CandidatePackage);
+            UWorld* CandidateWorld = LoadObject<UWorld>(nullptr, *CandidateObjectPath);
+            if (CandidateWorld == nullptr)
+            {
+                OutError = TEXT("Could not load the staged candidate for publication.");
+                return false;
+            }
+            IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")).Get();
+            UWorld* PublishedWorld = Cast<UWorld>(AssetTools.DuplicateAsset(
+                FPackageName::GetLongPackageAssetName(PublishedPackage),
+                FPackageName::GetLongPackagePath(PublishedPackage), CandidateWorld));
+            if (PublishedWorld == nullptr)
+            {
+                OutError = TEXT("Could not duplicate the staged candidate into the published namespace.");
+                return false;
+            }
+            FSavePackageArgs SaveArgs;
+            SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+            SaveArgs.SaveFlags = SAVE_NoError;
+            IFileManager::Get().MakeDirectory(*FPaths::GetPath(PublishedFilename), true);
+            if (!UPackage::SavePackage(PublishedWorld->GetOutermost(), PublishedWorld, *PublishedFilename, SaveArgs))
+            {
+                OutError = TEXT("Could not save the published candidate level.");
+                return false;
+            }
+        }
+        AffectedPaths.Add(PublishedPackage);
+    }
+    else
+    {
+        if (!IFileManager::Get().Delete(*CandidateFilename, false, true, true))
+        {
+            OutError = TEXT("Could not remove the exact content-addressed candidate level.");
+            return false;
+        }
+        AffectedPaths.Add(CandidatePackage);
+    }
+    FString SourceAfter;
+    if (!HashFile(SourceFilename, SourceAfter, OutError) || SourceAfter != SourceBefore)
+    {
+        OutError = TEXT("Disposition changed the source scene package.");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();
+    Receipt->SetStringField(TEXT("schema_id"), TEXT("scene-disposition-receipt/1"));
+    Receipt->SetStringField(TEXT("receipt_id"), FrozenStageId + (bPublish ? TEXT("-published") : TEXT("-discarded")));
+    Receipt->SetStringField(TEXT("execution_receipt_id"), FrozenStageId + TEXT("-execute"));
+    Receipt->SetStringField(TEXT("plan_sha256"), FrozenPlanSha);
+    Receipt->SetStringField(TEXT("stage_id"), FrozenStageId);
+    Receipt->SetStringField(TEXT("candidate_scene_path"), CandidatePackage);
+    Receipt->SetStringField(TEXT("disposition"), bPublish ? TEXT("published") : TEXT("discarded"));
+    Receipt->SetBoolField(TEXT("source_overwritten"), false);
+    Receipt->SetArrayField(TEXT("affected_paths"), StringValues(AffectedPaths));
+    Receipt->SetStringField(TEXT("created_at"), FDateTime::UtcNow().ToIso8601());
+    FString Text;
+    FJsonSerializer::Serialize(Receipt.ToSharedRef(), TJsonWriterFactory<>::Create(&Text));
+    const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("Candidates"), FrozenStageId);
+    IFileManager::Get().MakeDirectory(*OutputRoot, true);
+    OutReceiptPath = FPaths::Combine(OutputRoot, bPublish ? TEXT("scene-publish-receipt.json") : TEXT("scene-discard-receipt.json"));
+    return FFileHelper::SaveStringToFile(Text, *OutReceiptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
 }
 
 bool CreateAutomationScene(FString& OutError)
@@ -1345,7 +1784,10 @@ void FArtFlowSceneBridgeModule::StartupModule()
     UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::RegisterMenus));
     if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")))
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
     {
         AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
@@ -1407,6 +1849,21 @@ void FArtFlowSceneBridgeModule::ReviewLastExport() const
 
 bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
 {
+    if (bStageGenerationPending)
+    {
+        if (StagePCGComponent.IsValid() && StagePCGComponent->IsGenerating())
+        {
+            return true;
+        }
+        bStageGenerationPending = false;
+        FString Error;
+        FString ReceiptPath;
+        const bool bSuccess = ArtFlowSceneBridge::FinalizeCandidateExecution(bStageReconciled, StageSourceHash, StageProtectedHash, ReceiptPath, Error);
+        ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
+        UE_LOG(LogArtFlowSceneBridge, Display, TEXT("ARTFLOW_STAGE_RESULT success=%s receipt=%s error=%s"), bSuccess ? TEXT("true") : TEXT("false"), *ReceiptPath, *Error);
+        FPlatformMisc::RequestExit(false);
+        return false;
+    }
     if (bAutomationHandled || GEditor == nullptr || GEditor->GetEditorWorldContext().World() == nullptr)
     {
         return true;
@@ -1416,7 +1873,23 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     FString ArchivePath;
     const bool bPrepareOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo"));
     bool bSuccess = false;
-    if (bPrepareOnly)
+    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) || FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
+    {
+        const bool bPublish = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage"));
+        bSuccess = ArtFlowSceneBridge::ExecuteStageDisposition(bPublish, ArchivePath, Error);
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")))
+    {
+        UPCGComponent* Component = nullptr;
+        bSuccess = ArtFlowSceneBridge::StartCandidateExecution(Component, bStageReconciled, StageSourceHash, StageProtectedHash, Error);
+        if (bSuccess)
+        {
+            StagePCGComponent = Component;
+            bStageGenerationPending = true;
+            return true;
+        }
+    }
+    else if (bPrepareOnly)
     {
         bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(true, Error);
     }

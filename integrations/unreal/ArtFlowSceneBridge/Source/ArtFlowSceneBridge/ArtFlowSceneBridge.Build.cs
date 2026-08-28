@@ -17,6 +17,7 @@ public class ArtFlowSceneBridge : ModuleRules
         PrivateDependencyModuleNames.AddRange(new[]
         {
             "FileUtilities",
+            "AssetTools",
             "AssetRegistry",
             "ImageCore",
             "Json",

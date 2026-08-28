@@ -1,0 +1,67 @@
+{
+	"schema_id": "scene-execution-receipt/1",
+	"receipt_id": "artflow-cb2176a7a45bbad1-execute",
+	"twin_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-twin",
+	"twin_sha256": "7604b26e775a4a92b4fddc83338ce8b55e2a79749f3e7710ec43958e606aba82",
+	"plan_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-plan",
+	"plan_sha256": "90d6c82ab19c7aadc0941f0113ba6204685f6c4037c1689d16f7f1168769983d",
+	"source_scene_path": "/Game/ArtFlowDemo",
+	"source_scene_fingerprint_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_scene_fingerprint_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+	"stage_id": "artflow-cb2176a7a45bbad1",
+	"status": "staged",
+	"execution_attempt": 1,
+	"reconciled": false,
+	"operations": [
+		{
+			"operation_id": "lighting-main",
+			"operation_type": "set_lighting_rig",
+			"idempotency_key": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1:lighting-main",
+			"status": "executed",
+			"target_ids": [
+				"2fd6e5d1474ecd751f1b8f8729e64ad1"
+			],
+			"property_changes": [
+				{
+					"property_name": "intensity",
+					"before": 8,
+					"after": 5.5
+				},
+				{
+					"property_name": "temperature_kelvin",
+					"before": 6500,
+					"after": 4200
+				}
+			],
+			"generated_instance_count": 0,
+			"generated_resource_paths": []
+		},
+		{
+			"operation_id": "pcg-scatter",
+			"operation_type": "apply_pcg_layout",
+			"idempotency_key": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1:pcg-scatter",
+			"status": "executed",
+			"target_ids": [
+				"3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter"
+			],
+			"property_changes": [],
+			"generated_instance_count": 12,
+			"generated_resource_paths": [
+				"/Game/ArtFlow/Props/SM_ArtFlowRock",
+				"/Game/ArtFlow/PCG/PCG_ArtFlowScatter"
+			]
+		}
+	],
+	"protected_invariants_before":
+	{
+		"5e5124c6414eac2826f9e9a1eba6c9d9": "65454d0cdcd4aba6811db0c7668fa65fd4b76abf594cb9ab33e20cd20b12a36f"
+	},
+	"protected_invariants_after":
+	{
+		"5e5124c6414eac2826f9e9a1eba6c9d9": "65454d0cdcd4aba6811db0c7668fa65fd4b76abf594cb9ab33e20cd20b12a36f"
+	},
+	"candidate_beauty_path": "D:/3D/_tools/ArtFlow-Agent/integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/Candidates/artflow-cb2176a7a45bbad1/candidate-beauty.png",
+	"candidate_beauty_sha256": "dfd572e9b5beb29aef906e4e5923dc0bcf66482c05de6f222a098476fb0f1ecc",
+	"created_at": "2026-08-28T02:56:40.840Z"
+}

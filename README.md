@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7-S1 又在真实 UE 5.8 中验证了 21 个 Actor 的 Scene Digital Twin、真实灯光/PCG 事实、受限计划 DAG 和源关卡零写入 dry-run。二维结果仍只绑定为 UE 预览平面，灯光/PCG 暂存执行、PBR、三维资产生成与 MCP 仍在开发中。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 又在真实 UE 5.8 中完成 21 Actor Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账以及发布/丢弃。PBR、自动纠正、三维资产生成与 MCP 仍在开发中。
 
 ## 项目概述
 
@@ -12,7 +12,7 @@ ArtFlow 将这些步骤组织为一条可追踪的 Agentic 生产链。系统把
 
 当前展示版本聚焦一条完整、可审计的 Unreal-to-AIGC-to-Unreal 闭环，用于体现现代 Agent 在视觉生产中的上下文工程、工具调用、策略控制、持久执行、独立评价、恢复与交付能力。
 
-下一阶段不再以“得到一张更好看的图”为终点。ArtFlow 会把概念图当作目标，读取真实 Unreal 场景中的 Actor、材质、灯光、PCG 和空间约束，编译类型化 `SceneChangePlan`，在独立候选层中重布置和回渲，再发布可回滚的三维场景增量。完整方向与边界见 [产品愿景](docs/PRODUCT_VISION_2026.md) 和 [技术调研](docs/research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md)。
+ArtFlow 已不再以“得到一张更好看的图”为终点：概念图作为目标，Agent 读取真实 Unreal Actor、材质、灯光、PCG 和空间约束，编译类型化 `SceneChangePlan`，在独立候选关卡中重布置和回渲，再发布可回滚的三维场景增量。完整方向与边界见 [产品愿景](docs/PRODUCT_VISION_2026.md) 和 [技术调研](docs/research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md)。
 
 ![ArtFlow 最终可验证交付面板](docs/assets/portfolio/09-verified-delivery.png)
 
@@ -35,6 +35,12 @@ ArtFlow 将这些步骤组织为一条可追踪的 Agentic 生产链。系统把
 ### 场景四：生成服务中断后的可靠续作
 
 当 Provider 超时、回执丢失或进程在提交后崩溃时，Agent 从 append-only 事件恢复运行，通过 reserve / submit / reconcile 区分“尚未执行”和“结果未知”。恢复矩阵验证了 6/6 个故障案例，并保持重复外部副作用为 0，避免重新生成和重复导入。
+
+### 场景五：把二维视觉意图落实为可编辑的三维候选
+
+Agent 将场景事实编译成只包含白名单灯光与 PCG 操作的 DAG，在内容寻址的候选关卡中把主光调为 `5.5 / 4200K`，再由受审 `Create Points → Static Mesh Spawner` 图生成 12 个项目内道具。同一计划重跑仍为 12 个实例；通过后发布为独立关卡，不采用时只删除对应候选，源 `ArtFlowDemo` 哈希始终不变。
+
+![真实 UE 候选关卡：灯光与 PCG 三维变更](artifacts/goal/m7-s2-scene-execution/candidate-beauty.png)
 
 ## Agentic 执行流程
 
@@ -68,6 +74,8 @@ Unreal 四 Pass Scene Package
 ```
 
 这条主运行包含 **25 个 append-only 事件**，刷新和重启均可由 SQLite Reducer 重建，且不存在待处理的人工审批。候选采用、局部修订、UE 回流和最终发布均由 Codex 编排器依据已持久化证据完成；预览界面承担结果检查与过程解释，不参与改变执行权限。
+
+第二条 UE 三维执行证据已验证 `Scene Digital Twin → SceneChangePlan → candidate level → lighting/PCG → same-camera render → reconcile → publish/discard`。它使用独立类型化回执，源关卡在整个执行生命周期中保持零写入。
 
 ## 实际运行证据
 

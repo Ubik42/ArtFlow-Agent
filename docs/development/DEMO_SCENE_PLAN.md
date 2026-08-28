@@ -22,9 +22,9 @@
 | --- | --- | --- | --- |
 | 祭坛主体 | 现有 `ArtFlowDemo` 基础体组合 | 已存在 | 受保护结构与视觉主体 |
 | 地面和通道 | 现有基础网格 | 已存在 | PCG 禁入区与碰撞验证 |
-| 碎石三件套 | UE cube/sphere 复制、非均匀缩放、固定 pivot | M7-S2 生成 | PCG scatter 资产集合 |
-| 发光柱两件套 | cylinder/cube + 项目自有母材质实例 | M7-S2 生成 | PCG 重点物与灯光响应 |
-| 地表点缀 | plane/cube 组合 | M7-S2 生成 | 密度、坡度和边界演示 |
+| 程序化石锥道具 | UE Cone 复制为项目内资产、固定 12 点布局 | M7-S2 已验证 | PCG scatter 与幂等对账 |
+| 发光柱两件套 | cylinder/cube + 项目自有母材质实例 | M9 计划 | PCG 重点物与灯光响应 |
+| 地表点缀 | plane/cube 组合 | M9 计划 | 密度、坡度和边界演示 |
 | 目标概念图 | Codex 内置图像生成或项目自有合成图 | M9 生成 | 视觉意图，不作为三维事实 |
 | PBR 材质组 | 固定 ComfyUI 子图生成 | M8 生成 | BaseColor/Normal/Roughness 等验证 |
 | 图生 3D 单体 | 可选 TRELLIS.2/其他 Provider | M10 实验 | Interchange 接纳/拒绝对照 |

@@ -18,15 +18,18 @@ from .scene_delta import (
     ApplyPCGLayout,
     SceneChangePlan,
     SceneDigitalTwin,
+    SceneDispositionReceipt,
     SceneDryRunReceipt,
+    SceneExecutionReceipt,
     SetLightingRig,
 )
 
 __all__ = [
+    "ApplyPCGLayout",
+    "ApprovalGrant",
     "CodexImageCandidateReceipt",
     "CodexImageCandidateRecord",
     "CodexImageRequestBinding",
-    "ApprovalGrant",
     "ProviderCapabilityManifest",
     "ProviderExecutionReceipt",
     "ProviderModelCapability",
@@ -35,10 +38,11 @@ __all__ = [
     "RejectedProviderAlternative",
     "RouteDecision",
     "RouteExecutionIntent",
-    "SceneConstraintPackage",
-    "ApplyPCGLayout",
     "SceneChangePlan",
+    "SceneConstraintPackage",
     "SceneDigitalTwin",
+    "SceneDispositionReceipt",
     "SceneDryRunReceipt",
+    "SceneExecutionReceipt",
     "SetLightingRig",
 ]

@@ -1,0 +1,11 @@
+{
+  "schema_id": "scene-execution-verification/1",
+  "verified": true,
+  "stage_id": "artflow-cb2176a7a45bbad1",
+  "source_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "candidate_beauty_sha256": "dfd572e9b5beb29aef906e4e5923dc0bcf66482c05de6f222a098476fb0f1ecc",
+  "generated_instance_count": 12,
+  "reconciled_instance_count": 12,
+  "publish_without_source_overwrite": true,
+  "discard_probe_removed_only_candidate": true
+}

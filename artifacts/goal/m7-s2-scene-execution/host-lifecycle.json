@@ -1,0 +1,31 @@
+{
+  "schema_id": "artflow-host-lifecycle/1",
+  "preexisting_unreal_processes": [],
+  "owned_processes": {
+    "execute": 8280,
+    "reconcile": 10836,
+    "publish": 44716,
+    "discard": 53108,
+    "restore_candidate": 58600
+  },
+  "source_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "execute": {
+    "generated_instance_count": 12,
+    "candidate_scene_sha256": "f9a7f90fb4ae56ce55ccb94ce83fdf0723bbdcea74dc65cdb199a0ced17e881a"
+  },
+  "reconcile": {
+    "generated_instance_count_before": 12,
+    "generated_instance_count_after": 12,
+    "duplicate_external_effects": 0
+  },
+  "publish": {
+    "published_scene_sha256": "4010eb1ec32baa00d0cef44f427fd2be1e61e97f5b9d4d9a96e8a8a454ba1c63",
+    "source_overwritten": false
+  },
+  "discard_probe": {
+    "candidate_existed_after_discard": false,
+    "source_sha256_after_discard": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a"
+  },
+  "final_candidate_restored": true
+}

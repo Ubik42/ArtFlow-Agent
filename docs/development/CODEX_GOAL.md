@@ -57,8 +57,9 @@ M7 Scene Digital Twin + Staged Scene Delta Kernel
   -> M10 MCP Interoperability + Image-to-3D Experiment + Portfolio Release
 ```
 
-首个切片只实现扩展场景事实和灯光/PCG 的 dry-run 计划，不同时开发材质生成、图生 3D 和新前端。
-完成真实合同后再扩张执行面，防止目标被模型或中间件牵走。
+M7 已完成扩展场景事实、灯光/PCG dry-run、候选关卡真实执行、同机位回渲、幂等对账以及发布/
+丢弃回执。当前进入 M8：先通过真实 `/object_info` 固定 ComfyUI 能力清单和项目自有 PBR 模板，
+再生成并验证贴图与 Unreal Material Instance；图生 3D、MCP 和新前端仍按后续里程碑推进。
 
 ## 自主开发与停止边界
 

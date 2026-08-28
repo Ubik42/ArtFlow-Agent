@@ -1,0 +1,264 @@
+{
+  "$defs": {
+    "ExecutedOperation": {
+      "additionalProperties": false,
+      "properties": {
+        "generated_instance_count": {
+          "default": 0,
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Generated Instance Count",
+          "type": "integer"
+        },
+        "generated_resource_paths": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 1024,
+          "title": "Generated Resource Paths",
+          "type": "array"
+        },
+        "idempotency_key": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{7,199}$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "operation_id": {
+          "pattern": "^[a-z][a-z0-9._-]{2,119}$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "enum": [
+            "set_lighting_rig",
+            "apply_pcg_layout"
+          ],
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "property_changes": {
+          "items": {
+            "$ref": "#/$defs/PropertyChange"
+          },
+          "maxItems": 64,
+          "title": "Property Changes",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "executed",
+            "reconciled"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "target_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Target Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "operation_id",
+        "operation_type",
+        "idempotency_key",
+        "status",
+        "target_ids"
+      ],
+      "title": "ExecutedOperation",
+      "type": "object"
+    },
+    "PropertyChange": {
+      "additionalProperties": false,
+      "properties": {
+        "after": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "After"
+        },
+        "before": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "title": "Before"
+        },
+        "property_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Property Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_name",
+        "before",
+        "after"
+      ],
+      "title": "PropertyChange",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate_beauty_path": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "title": "Candidate Beauty Path",
+      "type": "string"
+    },
+    "candidate_beauty_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Beauty Sha256",
+      "type": "string"
+    },
+    "candidate_scene_path": {
+      "pattern": "^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$",
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "execution_attempt": {
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Execution Attempt",
+      "type": "integer"
+    },
+    "operations": {
+      "items": {
+        "$ref": "#/$defs/ExecutedOperation"
+      },
+      "maxItems": 256,
+      "minItems": 1,
+      "title": "Operations",
+      "type": "array"
+    },
+    "plan_id": {
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "protected_invariants_after": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Protected Invariants After",
+      "type": "object"
+    },
+    "protected_invariants_before": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Protected Invariants Before",
+      "type": "object"
+    },
+    "receipt_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "reconciled": {
+      "title": "Reconciled",
+      "type": "boolean"
+    },
+    "schema_id": {
+      "const": "scene-execution-receipt/1",
+      "default": "scene-execution-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_fingerprint_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Fingerprint After",
+      "type": "string"
+    },
+    "source_scene_fingerprint_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Fingerprint Before",
+      "type": "string"
+    },
+    "source_scene_path": {
+      "pattern": "^/Game/[A-Za-z0-9_./-]+$",
+      "title": "Source Scene Path",
+      "type": "string"
+    },
+    "stage_id": {
+      "pattern": "^artflow-[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Stage Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "staged",
+      "default": "staged",
+      "title": "Status",
+      "type": "string"
+    },
+    "twin_id": {
+      "title": "Twin Id",
+      "type": "string"
+    },
+    "twin_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Twin Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "twin_id",
+    "twin_sha256",
+    "plan_id",
+    "plan_sha256",
+    "source_scene_path",
+    "source_scene_fingerprint_before",
+    "source_scene_fingerprint_after",
+    "candidate_scene_path",
+    "stage_id",
+    "execution_attempt",
+    "reconciled",
+    "operations",
+    "protected_invariants_before",
+    "protected_invariants_after",
+    "candidate_beauty_path",
+    "candidate_beauty_sha256",
+    "created_at"
+  ],
+  "title": "SceneExecutionReceipt",
+  "type": "object"
+}

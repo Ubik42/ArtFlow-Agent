@@ -17,7 +17,9 @@ from artflow_agent.contracts import (
     SceneChangePlan,
     SceneConstraintPackage,
     SceneDigitalTwin,
+    SceneDispositionReceipt,
     SceneDryRunReceipt,
+    SceneExecutionReceipt,
 )
 from artflow_agent.hosted_execution import CompiledHostedRequest, HostedAuthorityPacket
 from artflow_agent.live_run import LiveRunAuthorizationDossier
@@ -42,6 +44,8 @@ SCHEMAS = {
     "scene-digital-twin.v1.schema.json": SceneDigitalTwin.model_json_schema(),
     "scene-change-plan.v1.schema.json": SceneChangePlan.model_json_schema(),
     "scene-dry-run-receipt.v1.schema.json": SceneDryRunReceipt.model_json_schema(),
+    "scene-execution-receipt.v1.schema.json": SceneExecutionReceipt.model_json_schema(),
+    "scene-disposition-receipt.v1.schema.json": SceneDispositionReceipt.model_json_schema(),
 }
 
 

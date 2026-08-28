@@ -3,6 +3,8 @@
 #include "Containers/Ticker.h"
 #include "Modules/ModuleManager.h"
 
+class UPCGComponent;
+
 class FArtFlowSceneBridgeModule final : public IModuleInterface
 {
 public:
@@ -17,5 +19,10 @@ private:
 
     FTSTicker::FDelegateHandle AutomationTickHandle;
     bool bAutomationHandled = false;
+    bool bStageGenerationPending = false;
+    bool bStageReconciled = false;
+    TWeakObjectPtr<UPCGComponent> StagePCGComponent;
+    FString StageSourceHash;
+    FString StageProtectedHash;
     FString LastExportPath;
 };

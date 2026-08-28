@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M7-S2",
+  "status": "completed",
+  "outcome": "The frozen M7-S1 lighting and PCG plan now executes in a deterministic UE 5.8 candidate level, produces 12 visible project-owned PCG instances and a same-camera render, reconciles 12-to-12 without duplicate effects, and supports typed publish and exact discard while the source map hash remains unchanged.",
+  "evidence": [
+    "docs/evidence/M7_S2_CANDIDATE_SCENE_EXECUTION_2026-08-27.md",
+    "contracts/scene-execution-receipt.v1.schema.json",
+    "contracts/scene-disposition-receipt.v1.schema.json",
+    "scripts/verify_scene_execution.py",
+    "artifacts/goal/m7-s2-scene-execution/candidate-beauty.png",
+    "artifacts/goal/m7-s2-scene-execution/scene-execution-receipt.json",
+    "artifacts/goal/m7-s2-scene-execution/scene-execution-reconcile-receipt.json",
+    "artifacts/goal/m7-s2-scene-execution/scene-publish-receipt.json",
+    "artifacts/goal/m7-s2-scene-execution/scene-discard-receipt.json",
+    "artifacts/goal/m7-s2-scene-execution/verification.json",
+    "artifacts/goal/m7-s2-scene-execution/host-lifecycle.json"
+  ]
+}

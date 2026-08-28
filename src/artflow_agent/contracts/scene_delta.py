@@ -333,3 +333,76 @@ class SceneDryRunReceipt(StrictContract):
         if self.source_scene_fingerprint_before != self.source_scene_fingerprint_after:
             raise ValueError("dry-run source scene fingerprint must remain unchanged")
         return self
+
+
+class PropertyChange(StrictContract):
+    property_name: str = Field(min_length=1, max_length=160)
+    before: PrimitiveParameter
+    after: PrimitiveParameter
+
+
+class ExecutedOperation(StrictContract):
+    operation_id: str = Field(pattern=r"^[a-z][a-z0-9._-]{2,119}$")
+    operation_type: Literal["set_lighting_rig", "apply_pcg_layout"]
+    idempotency_key: str = Field(pattern=r"^[a-z0-9][a-z0-9._:-]{7,199}$")
+    status: Literal["executed", "reconciled"]
+    target_ids: list[str] = Field(min_length=1, max_length=128)
+    property_changes: list[PropertyChange] = Field(default_factory=list, max_length=64)
+    generated_instance_count: int = Field(default=0, ge=0, le=100000)
+    generated_resource_paths: list[str] = Field(default_factory=list, max_length=1024)
+
+    @model_validator(mode="after")
+    def validate_result_shape(self) -> ExecutedOperation:
+        if self.operation_type == "set_lighting_rig":
+            if not self.property_changes or self.generated_instance_count:
+                raise ValueError("lighting execution must record changes and cannot generate instances")
+        elif self.generated_instance_count < 1:
+            raise ValueError("PCG execution must generate at least one visible instance")
+        return self
+
+
+class SceneExecutionReceipt(StrictContract):
+    schema_id: Literal["scene-execution-receipt/1"] = "scene-execution-receipt/1"
+    receipt_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,119}$")
+    twin_id: str
+    twin_sha256: str = Field(pattern=SHA256_PATTERN)
+    plan_id: str
+    plan_sha256: str = Field(pattern=SHA256_PATTERN)
+    source_scene_path: str = Field(pattern=r"^/Game/[A-Za-z0-9_./-]+$")
+    source_scene_fingerprint_before: str = Field(pattern=SHA256_PATTERN)
+    source_scene_fingerprint_after: str = Field(pattern=SHA256_PATTERN)
+    candidate_scene_path: str = Field(pattern=r"^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$")
+    stage_id: str = Field(pattern=r"^artflow-[a-z0-9][a-z0-9._-]{2,119}$")
+    status: Literal["staged"] = "staged"
+    execution_attempt: int = Field(ge=1, le=1000)
+    reconciled: bool
+    operations: list[ExecutedOperation] = Field(min_length=1, max_length=256)
+    protected_invariants_before: dict[str, str] = Field(min_length=1)
+    protected_invariants_after: dict[str, str] = Field(min_length=1)
+    candidate_beauty_path: str = Field(min_length=1, max_length=1024)
+    candidate_beauty_sha256: str = Field(pattern=SHA256_PATTERN)
+    created_at: datetime
+
+    @model_validator(mode="after")
+    def prove_bounded_candidate_execution(self) -> SceneExecutionReceipt:
+        if self.source_scene_fingerprint_before != self.source_scene_fingerprint_after:
+            raise ValueError("candidate execution must not mutate the source scene package")
+        if self.protected_invariants_before != self.protected_invariants_after:
+            raise ValueError("candidate execution changed a protected actor")
+        statuses = {item.status for item in self.operations}
+        if self.reconciled != (statuses == {"reconciled"}):
+            raise ValueError("receipt reconciliation flag must match all operation statuses")
+        return self
+
+
+class SceneDispositionReceipt(StrictContract):
+    schema_id: Literal["scene-disposition-receipt/1"] = "scene-disposition-receipt/1"
+    receipt_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,119}$")
+    execution_receipt_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,119}$")
+    plan_sha256: str = Field(pattern=SHA256_PATTERN)
+    stage_id: str = Field(pattern=r"^artflow-[a-z0-9][a-z0-9._-]{2,119}$")
+    candidate_scene_path: str = Field(pattern=r"^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$")
+    disposition: Literal["published", "discarded"]
+    source_overwritten: Literal[False] = False
+    affected_paths: list[str] = Field(min_length=1, max_length=1024)
+    created_at: datetime

@@ -1,0 +1,76 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "affected_paths": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Affected Paths",
+      "type": "array"
+    },
+    "candidate_scene_path": {
+      "pattern": "^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$",
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "disposition": {
+      "enum": [
+        "published",
+        "discarded"
+      ],
+      "title": "Disposition",
+      "type": "string"
+    },
+    "execution_receipt_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Execution Receipt Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "receipt_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "scene-disposition-receipt/1",
+      "default": "scene-disposition-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_overwritten": {
+      "const": false,
+      "default": false,
+      "title": "Source Overwritten",
+      "type": "boolean"
+    },
+    "stage_id": {
+      "pattern": "^artflow-[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Stage Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "execution_receipt_id",
+    "plan_sha256",
+    "stage_id",
+    "candidate_scene_path",
+    "disposition",
+    "affected_paths",
+    "created_at"
+  ],
+  "title": "SceneDispositionReceipt",
+  "type": "object"
+}
