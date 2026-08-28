@@ -23,6 +23,14 @@ from artflow_agent.contracts import (
     SceneExecutionReceipt,
 )
 from artflow_agent.hosted_execution import CompiledHostedRequest, HostedAuthorityPacket
+from artflow_agent.image_to_3d import (
+    GLBInspectionReceipt,
+    ImageTo3DGenerationReceipt,
+    ImageTo3DGenerationRequest,
+    MeshAdmissionPolicy,
+    UnrealMeshAdmissionReceipt,
+    UnrealMeshAdmissionRequest,
+)
 from artflow_agent.live_run import LiveRunAuthorizationDossier
 from artflow_agent.pbr import (
     ComfyCapabilitySnapshot,
@@ -80,6 +88,12 @@ SCHEMAS = {
     "lighting-domain-patch-receipt.v1.schema.json": LightingPatchReceipt.model_json_schema(),
     "verified-scene-disposition-request.v1.schema.json": VerifiedDispositionRequest.model_json_schema(),
     "verified-scene-disposition-receipt.v1.schema.json": VerifiedDispositionReceipt.model_json_schema(),
+    "image-to-3d-generation-request.v1.schema.json": ImageTo3DGenerationRequest.model_json_schema(),
+    "image-to-3d-generation-receipt.v1.schema.json": ImageTo3DGenerationReceipt.model_json_schema(),
+    "mesh-admission-policy.v1.schema.json": MeshAdmissionPolicy.model_json_schema(),
+    "glb-inspection-receipt.v1.schema.json": GLBInspectionReceipt.model_json_schema(),
+    "unreal-mesh-admission-request.v1.schema.json": UnrealMeshAdmissionRequest.model_json_schema(),
+    "unreal-mesh-admission-receipt.v1.schema.json": UnrealMeshAdmissionReceipt.model_json_schema(),
 }
 
 

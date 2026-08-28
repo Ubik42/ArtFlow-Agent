@@ -1,0 +1,26 @@
+{
+  "schema_id": "unreal-mesh-admission-receipt/1",
+  "request_id": "m10-unreal-86bcc31c4daa2c7c3411",
+  "request_sha256": "64a5b7b7f8cf7b25eecbb57c34acc21a911fc909b6c3ae7fd1d3ca709fb5f87a",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "static_mesh_path": "/Game/ArtFlow/Generated/m10_86bcc31c4daa/altar-triposr/StaticMeshes/SM_AF_GeneratedAltar.SM_AF_GeneratedAltar",
+  "imported_object_paths": [
+    "/Game/ArtFlow/Generated/m10_86bcc31c4daa/M_AF_GeneratedVertexColor.M_AF_GeneratedVertexColor",
+    "/Game/ArtFlow/Generated/m10_86bcc31c4daa/altar-triposr/StaticMeshes/SM_AF_GeneratedAltar.SM_AF_GeneratedAltar"
+  ],
+  "vertex_count": 2413,
+  "triangle_count": 4817,
+  "material_slot_count": 1,
+  "simple_collision_count": 1,
+  "bounds_extent_cm": [
+    46.634687423706055,
+    36.78445816040039,
+    38.470577239990234
+  ],
+  "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-08-28T04:40:43.486919Z",
+  "receipt_sha256": "c98f1e41aba9253f67a95a66dc68a83a673100ceaaa02fbb63c8008faa87ea21"
+}

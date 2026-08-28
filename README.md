@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布；M10-S1 又通过真实 stdio 子进程把同一控制平面投影为 3 个 MCP Resources 和 4 个只读 Tools。图生 3D与新版中文 Scene Lab 仍按 M10 后续独立切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布；M10 已验证受限 MCP 互操作，以及真实 TripoSR GLB 经确定性预检、UE 5.8 Interchange 和候选关卡接纳。新版中文 Scene Lab 与最终作品集发布仍按后续切片推进。
 
 ## 项目概述
 
@@ -88,6 +88,21 @@ workflow、Python、Shell 或 Blueprint，也不另建状态机。真实 stdio �
 资源读取和 4 个正常调用；4 类越权输入全部失败，调用前后 SQLite 仍为 9 条事件，两个 UE 关卡文件
 字节不变。完整协议记录见 [M10-S1 MCP 边界证据](docs/evidence/M10_S1_MCP_FACADE_2026-08-27.md)。
 
+### 场景十：把二维概念道具转成可审查的 Unreal 三维候选
+
+Agent 可以把 GPT Image 2 生成的项目自有概念参考交给可替换图生 3D Provider，但生成结果不会
+直接进入场景。系统先记录 provider revision、许可证、成本和 GLB 内容哈希，再确定性检查外部 URI、
+扩展、几何、比例、材质表示和预算。真实 TripoSR 候选随后通过 UE 5.8 Interchange 导入隔离命名空间，
+生成简单碰撞并以约 180 cm 尺度放入独立候选关卡；源关卡字节不变，重复执行不产生重复资产。
+
+| GPT Image 2 概念参考 | UE 5.8 真实 GLB 候选 |
+| --- | --- |
+| ![玄武岩祭坛概念参考](artifacts/goal/m10-s2-image-to-3d/altar-reference.png) | ![Unreal 中的生成祭坛候选](artifacts/goal/m10-s2-image-to-3d/unreal-generated-altar-v3.png) |
+
+当前候选能表达主体几何，但仅有顶点色，尚不是最终 PBR 资产；超出 100,000 三角面预算的负对照会
+在放置前失败，主流程则自动保留项目资产目录路线。完整数据和能力边界见
+[M10-S2 图生 3D 实机证据](docs/evidence/M10_S2_IMAGE_TO_3D_INTERCHANGE_2026-08-28.md)。
+
 ## Agentic 执行流程
 
 ![ArtFlow Agentic 使用流程漫画：从 Unreal 场景理解、双路生成、独立评价到局部修订与验证回流](docs/assets/portfolio/11-agentic-workflow-comic.png)
@@ -97,7 +112,7 @@ _由 Codex 内置图像生成功能制作的流程说明漫画，用于解释产
 执行期间，SQLite 事件日志、确定性 Reducer、恢复协调器、生产记忆和 OpenTelemetry 共同构成 Agent Harness。模型负责在有限能力中提出下一步行动，控制平面负责验证、执行、复检与持久化；任何模型置信度都不能覆盖确定性失败。
 
 MCP 位于 Harness 外侧，只把已经存在的资源和窄工具投影给兼容宿主；ComfyUI、GPT Image 2、UE
-Bridge 与后续图生 3D Provider 都是可替换能力，不拥有规划、策略、记忆或发布权。
+Bridge 与图生 3D Provider 都是可替换能力，不拥有规划、策略、记忆或发布权。
 
 ## 功能架构
 
@@ -131,6 +146,10 @@ Unreal 四 Pass Scene Package
 第四条三维 Agent 闭环在同一候选上证明了独立四域评价、仅灯光域重跑、崩溃后无重提对账和真实
 Unreal 发布。发布并非把图片贴到平面，而是复制经过双机位复检的候选关卡；9 个生命周期事件把
 失败评价、纠正、复检和 disposition 串成可重放来源链。
+
+第五条实验资产支线证明了概念参考可以产生真实 GLB，并在任何场景写入前完成许可证、内容哈希、
+格式、几何、比例、材质表示和预算检查。通过的候选只进入内容寻址的 UE 隔离命名空间与候选关卡；
+质量不足或门禁失败时，Agent 仍可使用已验证的项目资产目录路线。
 
 ## 实际运行证据
 

@@ -1,0 +1,118 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "bounds_extent_cm": {
+      "items": {
+        "type": "number"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Bounds Extent Cm",
+      "type": "array"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "duplicate_side_effect_count": {
+      "minimum": 0,
+      "title": "Duplicate Side Effect Count",
+      "type": "integer"
+    },
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "imported_object_paths": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Imported Object Paths",
+      "type": "array"
+    },
+    "material_slot_count": {
+      "minimum": 1,
+      "title": "Material Slot Count",
+      "type": "integer"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "unreal-mesh-admission-receipt/1",
+      "default": "unreal-mesh-admission-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "simple_collision_count": {
+      "minimum": 1,
+      "title": "Simple Collision Count",
+      "type": "integer"
+    },
+    "source_scene_sha256_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 After",
+      "type": "string"
+    },
+    "source_scene_sha256_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 Before",
+      "type": "string"
+    },
+    "static_mesh_path": {
+      "title": "Static Mesh Path",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "imported",
+        "reconciled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "triangle_count": {
+      "minimum": 1,
+      "title": "Triangle Count",
+      "type": "integer"
+    },
+    "vertex_count": {
+      "minimum": 3,
+      "title": "Vertex Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_sha256",
+    "status",
+    "engine_version",
+    "static_mesh_path",
+    "imported_object_paths",
+    "vertex_count",
+    "triangle_count",
+    "material_slot_count",
+    "simple_collision_count",
+    "bounds_extent_cm",
+    "source_scene_sha256_before",
+    "source_scene_sha256_after",
+    "duplicate_side_effect_count",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "UnrealMeshAdmissionReceipt",
+  "type": "object"
+}

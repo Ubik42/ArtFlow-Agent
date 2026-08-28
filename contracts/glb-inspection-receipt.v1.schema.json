@@ -1,0 +1,198 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "bounds_max": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bounds Max"
+    },
+    "bounds_min": {
+      "anyOf": [
+        {
+          "items": {
+            "type": "number"
+          },
+          "type": "array"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Bounds Min"
+    },
+    "candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Sha256",
+      "type": "string"
+    },
+    "collision_strategy": {
+      "const": "generate_simple_after_import",
+      "title": "Collision Strategy",
+      "type": "string"
+    },
+    "embedded_buffer_count": {
+      "minimum": 0,
+      "title": "Embedded Buffer Count",
+      "type": "integer"
+    },
+    "external_uri_count": {
+      "minimum": 0,
+      "title": "External Uri Count",
+      "type": "integer"
+    },
+    "file_size_bytes": {
+      "exclusiveMinimum": 0,
+      "title": "File Size Bytes",
+      "type": "integer"
+    },
+    "generation_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Generation Receipt Sha256",
+      "type": "string"
+    },
+    "inspected_at": {
+      "format": "date-time",
+      "title": "Inspected At",
+      "type": "string"
+    },
+    "longest_extent": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Longest Extent"
+    },
+    "material_count": {
+      "minimum": 0,
+      "title": "Material Count",
+      "type": "integer"
+    },
+    "material_strategy": {
+      "enum": [
+        "pbr_material",
+        "vertex_color_engine_material",
+        "missing"
+      ],
+      "title": "Material Strategy",
+      "type": "string"
+    },
+    "mesh_count": {
+      "minimum": 0,
+      "title": "Mesh Count",
+      "type": "integer"
+    },
+    "normals_strategy": {
+      "enum": [
+        "source",
+        "generate_in_unreal",
+        "missing"
+      ],
+      "title": "Normals Strategy",
+      "type": "string"
+    },
+    "primitive_count": {
+      "minimum": 0,
+      "title": "Primitive Count",
+      "type": "integer"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "rejection_reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Rejection Reasons",
+      "type": "array"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "glb-inspection-receipt/1",
+      "default": "glb-inspection-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "admitted",
+        "rejected"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "triangle_count": {
+      "minimum": 0,
+      "title": "Triangle Count",
+      "type": "integer"
+    },
+    "unreal_uniform_scale": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Unreal Uniform Scale"
+    },
+    "unsupported_extensions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Unsupported Extensions",
+      "type": "array"
+    },
+    "vertex_count": {
+      "minimum": 0,
+      "title": "Vertex Count",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "request_sha256",
+    "generation_receipt_sha256",
+    "candidate_sha256",
+    "status",
+    "rejection_reasons",
+    "file_size_bytes",
+    "mesh_count",
+    "primitive_count",
+    "vertex_count",
+    "triangle_count",
+    "material_count",
+    "embedded_buffer_count",
+    "external_uri_count",
+    "unsupported_extensions",
+    "bounds_min",
+    "bounds_max",
+    "longest_extent",
+    "unreal_uniform_scale",
+    "material_strategy",
+    "normals_strategy",
+    "collision_strategy",
+    "inspected_at",
+    "receipt_sha256"
+  ],
+  "title": "GLBInspectionReceipt",
+  "type": "object"
+}

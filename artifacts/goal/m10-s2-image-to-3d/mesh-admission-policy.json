@@ -1,0 +1,13 @@
+{
+  "schema_id": "mesh-admission-policy/1",
+  "policy_id": "artflow-generated-prop-v1",
+  "max_file_bytes": 20000000,
+  "max_vertices": 100000,
+  "max_triangles": 150000,
+  "min_longest_extent": 0.1,
+  "max_longest_extent": 10.0,
+  "target_longest_extent_cm": 180.0,
+  "allow_vertex_color_material": true,
+  "allow_generated_normals": true,
+  "allowed_extensions": []
+}

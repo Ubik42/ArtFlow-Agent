@@ -1,0 +1,36 @@
+{
+  "schema_id": "glb-inspection-receipt/1",
+  "request_sha256": "b920b536568c13aba61669dc831c7a4884aecd6cb1295533adf9eb83dec5b4cb",
+  "generation_receipt_sha256": "0278f89f3dae838533cef6ac0ee27ede12c36362504906c2a00af9f2e5d5fa6f",
+  "candidate_sha256": "86bcc31c4daa2c7c341140f90021d1ca1d0def2364182021b01d97f221571b5b",
+  "status": "rejected",
+  "rejection_reasons": [
+    "triangle_budget_exceeded"
+  ],
+  "file_size_bytes": 2519740,
+  "mesh_count": 1,
+  "primitive_count": 1,
+  "vertex_count": 63044,
+  "triangle_count": 125834,
+  "material_count": 0,
+  "embedded_buffer_count": 1,
+  "external_uri_count": 0,
+  "unsupported_extensions": [],
+  "bounds_min": [
+    -0.48653483390808105,
+    -0.33081841468811035,
+    -0.3510298728942871
+  ],
+  "bounds_max": [
+    0.44615891575813293,
+    0.43859314918518066,
+    0.3846592903137207
+  ],
+  "longest_extent": 0.932693749666214,
+  "unreal_uniform_scale": 1.9298939235351062,
+  "material_strategy": "vertex_color_engine_material",
+  "normals_strategy": "generate_in_unreal",
+  "collision_strategy": "generate_simple_after_import",
+  "inspected_at": "2026-08-28T04:44:58.748606Z",
+  "receipt_sha256": "de6177919e48940cab5b4b0db58dea9b30c480c45fe2fc556b9c99490ec470b2"
+}

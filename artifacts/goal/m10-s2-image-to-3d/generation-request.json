@@ -1,0 +1,17 @@
+{
+  "schema_id": "image-to-3d-generation-request/1",
+  "request_id": "m10-mesh-90aaa78a3b66336e2c34",
+  "source_artifact_id": "m10-ruin-altar-reference",
+  "source_image_sha256": "90aaa78a3b66336e2c3452f4add200f6bb97c681d33b73b5da5256ff849a16bf",
+  "provider_id": "stabilityai-triposr-space",
+  "model_id": "stabilityai/TripoSR",
+  "provider_revision": "f84354eb350eb07a108faf33a6bc564d455f9764",
+  "license_spdx": "MIT",
+  "license_sha256": "ade0a66629bdd7e01e46b3296b3851cff0fd27989bca53da470ad6e96ed620fb",
+  "license_source_url": "https://raw.githubusercontent.com/VAST-AI-Research/TripoSR/main/LICENSE",
+  "output_format": "glb",
+  "remove_background": true,
+  "foreground_ratio": 0.85,
+  "marching_cubes_resolution": 256,
+  "request_sha256": "b920b536568c13aba61669dc831c7a4884aecd6cb1295533adf9eb83dec5b4cb"
+}

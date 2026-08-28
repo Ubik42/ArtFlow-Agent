@@ -1,0 +1,18 @@
+{
+  "schema_id": "unreal-mesh-admission-request/1",
+  "request_id": "m10-unreal-86bcc31c4daa2c7c3411",
+  "generation_receipt_sha256": "0278f89f3dae838533cef6ac0ee27ede12c36362504906c2a00af9f2e5d5fa6f",
+  "inspection_receipt_sha256": "c11d4500ef62784aab773e798c25ea277b560f1d91ac90da566912946f165876",
+  "candidate_relative_path": "artifacts/goal/m10-s2-image-to-3d/altar-triposr.glb",
+  "candidate_sha256": "86bcc31c4daa2c7c341140f90021d1ca1d0def2364182021b01d97f221571b5b",
+  "destination_root": "/Game/ArtFlow/Generated/m10_86bcc31c4daa",
+  "asset_name": "SM_AF_GeneratedAltar",
+  "target_longest_extent_cm": 180.0,
+  "unreal_uniform_scale": 1.9298939235351062,
+  "material_strategy": "vertex_color_engine_material",
+  "normals_strategy": "generate_in_unreal",
+  "collision_strategy": "generate_simple_after_import",
+  "authority_scope": "project_local_unreal_fixture",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "request_sha256": "64a5b7b7f8cf7b25eecbb57c34acc21a911fc909b6c3ae7fd1d3ca709fb5f87a"
+}

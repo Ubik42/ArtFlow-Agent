@@ -1,0 +1,98 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "elapsed_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Elapsed Seconds",
+      "type": "number"
+    },
+    "estimated_cost_usd": {
+      "const": 0.0,
+      "default": 0.0,
+      "title": "Estimated Cost Usd",
+      "type": "number"
+    },
+    "external_submission_count": {
+      "const": 1,
+      "default": 1,
+      "title": "External Submission Count",
+      "type": "integer"
+    },
+    "glb_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Glb Sha256",
+      "type": "string"
+    },
+    "glb_size_bytes": {
+      "exclusiveMinimum": 0,
+      "title": "Glb Size Bytes",
+      "type": "integer"
+    },
+    "model_id": {
+      "const": "stabilityai/TripoSR",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "processed_image_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Processed Image Sha256",
+      "type": "string"
+    },
+    "provider_endpoint": {
+      "const": "https://stabilityai-triposr.hf.space",
+      "title": "Provider Endpoint",
+      "type": "string"
+    },
+    "provider_id": {
+      "const": "stabilityai-triposr-space",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "image-to-3d-generation-receipt/1",
+      "default": "image-to-3d-generation-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "status": {
+      "const": "succeeded",
+      "default": "succeeded",
+      "title": "Status",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_sha256",
+    "provider_id",
+    "model_id",
+    "provider_endpoint",
+    "processed_image_sha256",
+    "glb_sha256",
+    "glb_size_bytes",
+    "elapsed_seconds",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "ImageTo3DGenerationReceipt",
+  "type": "object"
+}

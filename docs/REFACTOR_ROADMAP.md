@@ -69,14 +69,18 @@ Chinese screenshot-rich evidence trail, not a preview-plane substitution.
 
 ### M10 — MCP, image-to-3D experiment and public release
 
-Status: in progress from 2026-08-27. M10-S1 completed the thin MCP boundary; image-to-3D and the
-new Scene Lab remain separate later slices so neither can become a second control plane.
+Status: in progress from 2026-08-27. M10-S1 completed the thin MCP boundary and M10-S2 completed
+the real image-to-3D admission experiment; the new Scene Lab remains a separate slice so UI work
+cannot become a second control plane.
 
 - **M10-S1 completed:** the official MCP 2.1 client negotiated protocol `2026-07-28` over a real
   stdio subprocess, read three fixed resources and invoked four content-addressed read-only tools;
   four hostile inputs failed closed while the nine-event ledger and protected UE bytes stayed fixed;
-- integrate one optional GLB-generating Provider and validate it through Interchange;
-- prove the main PCG/lighting route still works when 3D generation is unavailable or rejected;
+- **M10-S2 completed:** one GPT Image 2 project reference produced a real TripoSR GLB under a
+  pinned MIT revision; deterministic inspection recorded 63,044 vertices and 125,834 triangles,
+  rejected a 100,000-triangle negative control, and UE 5.8 Interchange admitted the candidate into
+  an isolated namespace with one material slot, one simple collision and no source-level mutation;
+- the established `asset.catalog.query` fallback still compiles when generated 3D is rejected;
 - redesign the Chinese Scene Lab around the stable 3D event contract and publish the case study.
 
 Exit evidence: an external MCP host can inspect and invoke the same bounded run; one generated mesh

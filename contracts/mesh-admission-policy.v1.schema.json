@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "allow_generated_normals": {
+      "default": true,
+      "title": "Allow Generated Normals",
+      "type": "boolean"
+    },
+    "allow_vertex_color_material": {
+      "default": true,
+      "title": "Allow Vertex Color Material",
+      "type": "boolean"
+    },
+    "allowed_extensions": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 8,
+      "title": "Allowed Extensions",
+      "type": "array"
+    },
+    "max_file_bytes": {
+      "default": 20000000,
+      "minimum": 1,
+      "title": "Max File Bytes",
+      "type": "integer"
+    },
+    "max_longest_extent": {
+      "default": 10.0,
+      "exclusiveMinimum": 0,
+      "title": "Max Longest Extent",
+      "type": "number"
+    },
+    "max_triangles": {
+      "default": 150000,
+      "minimum": 1,
+      "title": "Max Triangles",
+      "type": "integer"
+    },
+    "max_vertices": {
+      "default": 100000,
+      "minimum": 3,
+      "title": "Max Vertices",
+      "type": "integer"
+    },
+    "min_longest_extent": {
+      "default": 0.1,
+      "exclusiveMinimum": 0,
+      "title": "Min Longest Extent",
+      "type": "number"
+    },
+    "policy_id": {
+      "const": "artflow-generated-prop-v1",
+      "default": "artflow-generated-prop-v1",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "mesh-admission-policy/1",
+      "default": "mesh-admission-policy/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "target_longest_extent_cm": {
+      "default": 180.0,
+      "maximum": 1000,
+      "minimum": 10,
+      "title": "Target Longest Extent Cm",
+      "type": "number"
+    }
+  },
+  "title": "MeshAdmissionPolicy",
+  "type": "object"
+}

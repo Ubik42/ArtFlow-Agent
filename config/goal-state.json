@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 40,
+  "stateRevision": 41,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -116,42 +116,40 @@
     }
   ],
   "nextSlice": {
-    "id": "M10-S2",
+    "id": "M10-S3",
     "milestone": "M10",
-    "title": "Provider-neutral image-to-3D candidate and Unreal Interchange admission",
-    "outcome": "Turn one project-owned concept reference into a content-addressed GLB candidate through a replaceable provider boundary, then admit or reject it with recorded license, format, geometry, material, scale, collision, namespace and budget evidence before any staged Unreal placement.",
-    "risk": "R4",
+    "title": "Chinese Scene Lab 3D control room and portfolio release",
+    "outcome": "Replace the historical workflow-like frontend with a polished Chinese 3D production control room that explains one real concept-to-scene run, exposes Agent decisions and bounded tools from persisted evidence, and packages a screenshot-rich truthful portfolio release.",
+    "risk": "R3",
     "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
+    "requiresRealHosts": false,
+    "allowedPaths": ["web/**", "src/artflow_agent/**", "tests/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not make the main PCG, lighting, material and project-asset route depend on image-to-3D availability or quality",
-      "Do not place a generated mesh directly into the source level or bypass the existing candidate-level staging boundary",
-      "Do not accept a provider URL, archive or GLB without content hashing, declared provenance and bounded local inspection",
-      "Do not execute scripts, extensions or arbitrary import instructions embedded in a generated asset",
-      "Do not build a general 3D DCC editor, train a foundation model or redesign the Scene Lab in this slice",
-      "Do not modify shared Unreal, ComfyUI or model installations outside project-owned integration and evidence paths",
-      "Do not hide provider unavailability or a rejected candidate; a truthful rejection receipt is a valid experiment result"
+      "Do not introduce a second frontend-only state machine or make the UI authoritative for planning, policy, adoption or publish",
+      "Do not expose hidden chain-of-thought, arbitrary prompts, arbitrary ComfyUI graphs, host paths or unrestricted execution controls",
+      "Do not invent live metrics, provider outputs, Unreal mutations or adoption states that are absent from persisted evidence",
+      "Do not turn the portfolio page into a generic node editor, chat shell or infrastructure dashboard",
+      "Do not add a design framework, animation library or backend dependency unless it materially improves the real demonstration",
+      "Do not delay the release for broad browser matrices or cosmetic unit-test expansion"
     ],
     "acceptance": [
-      "A strict provider-neutral request and receipt bind the source reference, provider/model identity, terms or license evidence, generation parameters, GLB bytes and costs without exposing provider-specific state to the planner",
-      "A bounded pre-import inspector rejects traversal, external URI dependencies, unsupported extensions, malformed geometry, missing materials, invalid scale and declared triangle or texture-budget violations",
-      "A real generated GLB candidate passes through Unreal Interchange in the project-owned UE 5.8 host and produces an admission or rejection receipt with asset paths, geometry, material, collision and namespace evidence",
-      "Any admitted mesh is placed only in the existing candidate level through a typed Scene Delta operation and independently checked from authored and validation cameras; rejected candidates produce zero scene mutation",
-      "The established project-asset fallback still compiles and executes when the provider is unavailable or the generated candidate is rejected",
-      "Focused hostile fixtures and one real host transcript prove the boundary without spending time on broad quality benchmarking"
+      "The first viewport explains in plain Chinese what ArtFlow does through a real before, target, staged 3D and verified-result narrative",
+      "The main workspace shows scene constraints, typed plan DAG, bounded provider and Unreal tool calls, independent evaluation, failed-domain correction and publish provenance using persisted run data",
+      "Image, material, PCG, lighting, project-asset, generated-GLB and MCP capabilities are visually distinct while remaining subordinate to one Agent control plane",
+      "Every implemented, experimental and planned label maps to repository evidence and no UI copy overstates TripoSR geometry or provenance quality",
+      "Desktop and narrow layouts pass focused visual inspection with readable Chinese typography, complete empty/loading/error/reconciled states and no blocking permission gate",
+      "README and release materials contain numerous real workflow screenshots plus concise reproduction and verification instructions"
     ],
     "stopConditions": [
-      "Stop a candidate immediately if its license or portfolio-use terms cannot be recorded",
-      "Stop before import if the GLB references external or escaping files, embeds executable extensions, exceeds declared budgets or cannot be parsed deterministically",
-      "Stop before placement if Unreal Interchange cannot produce inspectable mesh, material and collision facts in the project-owned namespace",
-      "Degrade to the project-asset route if the selected provider requires unavailable credentials, a prohibited upload or shared-install mutation",
-      "Stop if existing user changes overlap the image-to-3D or Interchange boundary and cannot be preserved"
+      "Stop any UI claim whose source artifact or denominator cannot be identified",
+      "Stop if the redesign would require changing frozen M9/M10 event semantics merely to simplify presentation",
+      "Stop before bundling credentials, local absolute paths, SQLite event bodies containing sensitive data or unreviewed generated assets",
+      "Stop if existing user frontend changes overlap the redesign and cannot be preserved"
     ],
     "environmentRequirements": [
+      {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor", "kind": "path", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "image_to_3d_provider", "kind": "capability", "value": "replaceable local or hosted GLB generation surface", "required": false}
+      {"id": "browser", "kind": "capability", "value": "built-in browser or Playwright visual verification", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -167,9 +165,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0036.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0037.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M9 remain verified at their prior bounded claims. M10-S1 is complete: the official MCP 2.1 client negotiated protocol 2026-07-28 through a real STDIO subprocess, read three fixed resources and invoked four content-addressed read-only tools. Four hostile inputs failed closed, all input schemas are closed, the existing nine-event ledger and protected Unreal package bytes remained unchanged, and no arbitrary execution surface was exposed. Image-to-3D and the redesigned frontend remain planned M10 work.",
+  "evidenceCeiling": "M0-M9 remain verified at their prior bounded claims. M10-S1 is complete at its recorded MCP boundary. M10-S2 is complete as an experiment: one GPT Image 2 project reference produced a real TripoSR GLB under a pinned MIT revision in 8.236468 seconds with one external submission and zero estimated cost. Pre-import inspection recorded 63,044 vertices and 125,834 triangles with no external URI; a 100,000-triangle negative control failed closed. UE 5.8 Interchange admitted the candidate into an isolated namespace, built a 2,413-vertex/4,817-triangle mesh with one project-owned material slot and one simple collision, and staged it at approximately 180 cm while the source level bytes remained unchanged and duplicate side effects stayed zero. The result is recognizable experimental geometry with vertex color, not final PBR production quality. The redesigned frontend and final portfolio release remain M10-S3 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

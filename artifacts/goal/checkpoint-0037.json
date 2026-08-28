@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M10-S2",
+  "status": "completed",
+  "outcome": "One project-owned GPT Image 2 reference produced a real TripoSR GLB through a provider-neutral contract; deterministic inspection rejected an over-budget negative control, UE 5.8 Interchange admitted the real candidate into an isolated namespace, and candidate staging preserved the source level and produced no duplicate side effects.",
+  "evidence": [
+    "docs/evidence/M10_S2_IMAGE_TO_3D_INTERCHANGE_2026-08-28.md",
+    "src/artflow_agent/image_to_3d.py",
+    "tests/test_image_to_3d.py",
+    "scripts/verify_m10_s2_evidence.py",
+    "artifacts/goal/m10-s2-image-to-3d/verification.json",
+    "artifacts/goal/m10-s2-image-to-3d/unreal-admission-receipt.json",
+    "artifacts/goal/m10-s2-image-to-3d/stage-receipt.json",
+    "artifacts/goal/m10-s2-image-to-3d/triangle-budget-rejection.json",
+    "artifacts/goal/m10-s2-image-to-3d/unreal-generated-altar-v3.png"
+  ]
+}

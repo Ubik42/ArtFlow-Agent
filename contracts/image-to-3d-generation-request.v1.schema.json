@@ -1,0 +1,101 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "foreground_ratio": {
+      "maximum": 1.0,
+      "minimum": 0.5,
+      "title": "Foreground Ratio",
+      "type": "number"
+    },
+    "license_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "License Sha256",
+      "type": "string"
+    },
+    "license_source_url": {
+      "const": "https://raw.githubusercontent.com/VAST-AI-Research/TripoSR/main/LICENSE",
+      "title": "License Source Url",
+      "type": "string"
+    },
+    "license_spdx": {
+      "const": "MIT",
+      "title": "License Spdx",
+      "type": "string"
+    },
+    "marching_cubes_resolution": {
+      "maximum": 320,
+      "minimum": 32,
+      "multipleOf": 32,
+      "title": "Marching Cubes Resolution",
+      "type": "integer"
+    },
+    "model_id": {
+      "const": "stabilityai/TripoSR",
+      "title": "Model Id",
+      "type": "string"
+    },
+    "output_format": {
+      "const": "glb",
+      "default": "glb",
+      "title": "Output Format",
+      "type": "string"
+    },
+    "provider_id": {
+      "const": "stabilityai-triposr-space",
+      "title": "Provider Id",
+      "type": "string"
+    },
+    "provider_revision": {
+      "pattern": "^[0-9a-f]{40}$",
+      "title": "Provider Revision",
+      "type": "string"
+    },
+    "remove_background": {
+      "default": true,
+      "title": "Remove Background",
+      "type": "boolean"
+    },
+    "request_id": {
+      "pattern": "^m10-mesh-[0-9a-f]{20}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "image-to-3d-generation-request/1",
+      "default": "image-to-3d-generation-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_artifact_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Source Artifact Id",
+      "type": "string"
+    },
+    "source_image_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Image Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "source_artifact_id",
+    "source_image_sha256",
+    "provider_id",
+    "model_id",
+    "provider_revision",
+    "license_spdx",
+    "license_sha256",
+    "license_source_url",
+    "foreground_ratio",
+    "marching_cubes_resolution",
+    "request_sha256"
+  ],
+  "title": "ImageTo3DGenerationRequest",
+  "type": "object"
+}

@@ -1,0 +1,17 @@
+{
+  "schema_id": "image-to-3d-generation-receipt/1",
+  "request_id": "m10-mesh-90aaa78a3b66336e2c34",
+  "request_sha256": "b920b536568c13aba61669dc831c7a4884aecd6cb1295533adf9eb83dec5b4cb",
+  "provider_id": "stabilityai-triposr-space",
+  "model_id": "stabilityai/TripoSR",
+  "provider_endpoint": "https://stabilityai-triposr.hf.space",
+  "status": "succeeded",
+  "processed_image_sha256": "92d22ccb609c3f00ee8369f6848b28cea0a8af85490c145e0213db128ba94955",
+  "glb_sha256": "86bcc31c4daa2c7c341140f90021d1ca1d0def2364182021b01d97f221571b5b",
+  "glb_size_bytes": 2519740,
+  "external_submission_count": 1,
+  "estimated_cost_usd": 0.0,
+  "elapsed_seconds": 8.236468,
+  "completed_at": "2026-08-28T04:29:24.056068Z",
+  "receipt_sha256": "0278f89f3dae838533cef6ac0ee27ede12c36362504906c2a00af9f2e5d5fa6f"
+}

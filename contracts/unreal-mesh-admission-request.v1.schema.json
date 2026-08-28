@@ -1,0 +1,106 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "asset_name": {
+      "const": "SM_AF_GeneratedAltar",
+      "title": "Asset Name",
+      "type": "string"
+    },
+    "authority_scope": {
+      "const": "project_local_unreal_fixture",
+      "title": "Authority Scope",
+      "type": "string"
+    },
+    "candidate_relative_path": {
+      "const": "artifacts/goal/m10-s2-image-to-3d/altar-triposr.glb",
+      "title": "Candidate Relative Path",
+      "type": "string"
+    },
+    "candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Sha256",
+      "type": "string"
+    },
+    "collision_strategy": {
+      "const": "generate_simple_after_import",
+      "title": "Collision Strategy",
+      "type": "string"
+    },
+    "destination_root": {
+      "pattern": "^/Game/ArtFlow/Generated/m10_[0-9a-f]{12}$",
+      "title": "Destination Root",
+      "type": "string"
+    },
+    "generation_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Generation Receipt Sha256",
+      "type": "string"
+    },
+    "inspection_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Inspection Receipt Sha256",
+      "type": "string"
+    },
+    "material_strategy": {
+      "const": "vertex_color_engine_material",
+      "title": "Material Strategy",
+      "type": "string"
+    },
+    "normals_strategy": {
+      "const": "generate_in_unreal",
+      "title": "Normals Strategy",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^m10-unreal-[0-9a-f]{20}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "unreal-mesh-admission-request/1",
+      "default": "unreal-mesh-admission-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256",
+      "type": "string"
+    },
+    "target_longest_extent_cm": {
+      "maximum": 1000,
+      "minimum": 10,
+      "title": "Target Longest Extent Cm",
+      "type": "number"
+    },
+    "unreal_uniform_scale": {
+      "exclusiveMinimum": 0,
+      "title": "Unreal Uniform Scale",
+      "type": "number"
+    }
+  },
+  "required": [
+    "request_id",
+    "generation_receipt_sha256",
+    "inspection_receipt_sha256",
+    "candidate_relative_path",
+    "candidate_sha256",
+    "destination_root",
+    "asset_name",
+    "target_longest_extent_cm",
+    "unreal_uniform_scale",
+    "material_strategy",
+    "normals_strategy",
+    "collision_strategy",
+    "authority_scope",
+    "source_scene_sha256",
+    "request_sha256"
+  ],
+  "title": "UnrealMeshAdmissionRequest",
+  "type": "object"
+}

@@ -1,0 +1,23 @@
+{
+  "schema_id": "m10-s2-independent-verification/1",
+  "status": "verified",
+  "provider": "stabilityai/TripoSR",
+  "provider_revision": "f84354eb350eb07a108faf33a6bc564d455f9764",
+  "license_spdx": "MIT",
+  "external_submission_count": 1,
+  "estimated_cost_usd": 0.0,
+  "generation_elapsed_seconds": 8.236468,
+  "glb_size_bytes": 2519740,
+  "preimport_vertices": 63044,
+  "preimport_triangles": 125834,
+  "unreal_vertices": 2413,
+  "unreal_triangles": 4817,
+  "unreal_material_slots": 1,
+  "unreal_simple_collisions": 1,
+  "staged_extent_cm": 179.9999997699387,
+  "hostile_triangle_budget_rejected": true,
+  "project_asset_fallback_tool": "asset.catalog.query",
+  "source_scene_unchanged": true,
+  "duplicate_side_effect_count": 0,
+  "verification_sha256": "9b59aa8443e21bb76b6ef7b88ada5a47dd0d049d7dd976416463572c71ee57bf"
+}

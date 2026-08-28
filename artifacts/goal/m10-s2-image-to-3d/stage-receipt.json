@@ -1,0 +1,26 @@
+{
+  "schema_id": "generated-mesh-stage-receipt/1",
+  "request_sha256": "64a5b7b7f8cf7b25eecbb57c34acc21a911fc909b6c3ae7fd1d3ca709fb5f87a",
+  "admission_receipt_sha256": "c98f1e41aba9253f67a95a66dc68a83a673100ceaaa02fbb63c8008faa87ea21",
+  "status": "reconciled",
+  "candidate_scene_path": "/Game/ArtFlow/Staging/AF_M10_86bcc31c4daa",
+  "actor_label": "ArtFlow_M10_GeneratedAltar",
+  "static_mesh_path": "/Game/ArtFlow/Generated/m10_86bcc31c4daa/altar-triposr/StaticMeshes/SM_AF_GeneratedAltar.SM_AF_GeneratedAltar",
+  "actor_location": [
+    350.0,
+    0.0,
+    74.24413325034512
+  ],
+  "actor_scale": [
+    1.9298939235351062,
+    1.9298939235351062,
+    1.9298939235351062
+  ],
+  "result_longest_extent_cm": 179.9999997699387,
+  "screenshot_sha256": "63658c6b7b09f6da2d8bcad3bdf4d42f9c4abca41ef54a29a401fca1186e773c",
+  "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-08-28T04:41:59.784536Z",
+  "receipt_sha256": "7d6f6d7edab3c06b5b88f8722e1958ed59a9bad2dbeb0068ab8294c7a3e52679"
+}
