@@ -1,0 +1,23 @@
+{
+  "schema_id": "unreal-pbr-import-result/1",
+  "request_id": "pbr-ue-089e29542680f323c87bd657",
+  "request_sha256": "bfc8d102d040b888fb07fad150f295df948b08f57561a9719ada9763fb6b7f8a",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "destination_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+  "target_actor_label": "Editable_Form",
+  "imported_texture_paths": {
+    "base_color": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_BaseColor.T_RuinAltar_BaseColor",
+    "normal": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_NormalDX.T_RuinAltar_NormalDX",
+    "roughness": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Roughness.T_RuinAltar_Roughness",
+    "metallic": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Metallic.T_RuinAltar_Metallic",
+    "ambient_occlusion": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_AO.T_RuinAltar_AO"
+  },
+  "master_material_path": "/Game/ArtFlow/Generated/089e29542680f323/M_ArtFlowPBRMaster.M_ArtFlowPBRMaster",
+  "material_instance_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+  "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_before": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "protected_state_after": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "completed_at": "2026-08-28T03:39:07.573956Z"
+}

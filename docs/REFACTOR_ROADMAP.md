@@ -28,20 +28,23 @@ a lighting + PCG scene delta while source fingerprints remain unchanged.
 
 ### M8 — ComfyUI production graph and PBR material route
 
-Status: in progress from 2026-08-27. M8-S1 is complete; real texture execution and Unreal material
-return remain.
+Status: completed on 2026-08-27.
 
 - **M8-S1 completed:** versioned and probed `ComfyUI-Production-Nodes` through real `/object_info`,
   pinned 19 node-schema fingerprints and compiled only declared slots into one hashed 49-node graph;
-- **M8-S2 active:** execute the reviewed graph, validate real texture artifacts and build the staged
-  Unreal Material Instance with idempotent return evidence;
-- generate or transform one PBR map set and build an Unreal Material Instance in staging;
-- validate channel semantics, texture settings, hashes and same-camera visual effect.
+- **M8-S2 completed:** executed the reviewed graph on RTX 4080, rejected two semantically invalid
+  raw sets, retained the valid AI BaseColor, rebuilt only failed technical-map domains and imported
+  the aligned five-channel set into a real UE 5.8 Material Instance;
+- replay reconciled without duplicate assets, source/protected fingerprints remained unchanged and
+  the same-camera render waited for shader compilation before recording the visible material effect.
 
 Exit evidence: a real Comfy run and real UE material instance are connected by a content-addressed
 receipt; missing nodes or invalid maps fail closed before scene publish.
 
 ### M9 — PCG, lighting and asset closed loop
+
+Status: in progress from 2026-08-27. The detailed contract and slice plan lives in
+[`development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md`](development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md).
 
 - turn a concept target into a dependency graph across lighting, PCG, existing assets and material;
 - prepare independent branches concurrently while serializing Unreal writes;

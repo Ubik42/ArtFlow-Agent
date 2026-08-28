@@ -25,11 +25,17 @@ def main() -> int:
     parser.add_argument("--endpoint", default="http://127.0.0.1:8190")
     parser.add_argument("--production-nodes", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--template", type=Path, default=ROOT / "recipes/pbr-material-v1.template.json"
+    )
+    parser.add_argument(
+        "--workflow", type=Path, default=ROOT / "recipes/pbr-material-v1.workflow.json"
+    )
     args = parser.parse_args()
 
     compiler = PBRWorkflowCompiler(
-        ROOT / "recipes/pbr-material-v1.template.json",
-        ROOT / "recipes/pbr-material-v1.workflow.json",
+        args.template,
+        args.workflow,
     )
     with httpx.Client(base_url=args.endpoint, timeout=20) as client:
         stats_response = client.get("/system_stats")

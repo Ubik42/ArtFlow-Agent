@@ -1,0 +1,159 @@
+{
+  "schema_id": "comfy-capability-snapshot/1",
+  "snapshot_id": "comfy-pbr-f34c66e50bc664a50cfe3122",
+  "captured_at": "2026-08-28T03:24:41.153657Z",
+  "endpoint": "http://127.0.0.1:8190",
+  "comfyui_version": "0.28.0",
+  "python_version": "3.12.13 (main, Mar 24 2026, 22:57:53) [MSC v.1944 64 bit (AMD64)]",
+  "pytorch_version": "2.13.0+cu130",
+  "device_name": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "observed_node_count": 826,
+  "required_nodes": [
+    {
+      "class_type": "CFGGuider",
+      "schema_sha256": "27d1790e7458039635f2951d455544835aa272443aaaef4fba483b00f5e55e42",
+      "python_module": "comfy_extras.nodes_custom_sampler",
+      "output_types": [
+        "GUIDER"
+      ]
+    },
+    {
+      "class_type": "CLIPLoader",
+      "schema_sha256": "4164bade59a60b51149fa8fa56f0e3fb77840de4fa35472f6d6c9bbd324c5d8b",
+      "python_module": "nodes",
+      "output_types": [
+        "CLIP"
+      ]
+    },
+    {
+      "class_type": "CLIPTextEncode",
+      "schema_sha256": "849aac11d0ad125653e74192ea9fc2513dac5843b13223245c6d3e526da8fb6c",
+      "python_module": "nodes",
+      "output_types": [
+        "CONDITIONING"
+      ]
+    },
+    {
+      "class_type": "EmptyFlux2LatentImage",
+      "schema_sha256": "7be74833f6cb7e8830e9e7512233d2701eb23406cf8197de2fbff20da5875d87",
+      "python_module": "comfy_extras.nodes_flux",
+      "output_types": [
+        "LATENT"
+      ]
+    },
+    {
+      "class_type": "Flux2Scheduler",
+      "schema_sha256": "71b5b1ac6a07d97811aa221688936e9e62c5893a2c532c0de97b24bd5899524c",
+      "python_module": "comfy_extras.nodes_flux",
+      "output_types": [
+        "SIGMAS"
+      ]
+    },
+    {
+      "class_type": "GenerationReceipt",
+      "schema_sha256": "692dce1d327a6dab22ffd7bfa67a81c3f6b177b9fca575f7eb7b209e65485d23",
+      "python_module": "custom_nodes.ComfyUI-Production-Nodes",
+      "output_types": [
+        "STRING"
+      ]
+    },
+    {
+      "class_type": "KSamplerSelect",
+      "schema_sha256": "da46dc01b52b3ba3eb1aa6588c3f2ac15280fd66e6351ec7ca02553b112d33d7",
+      "python_module": "comfy_extras.nodes_custom_sampler",
+      "output_types": [
+        "SAMPLER"
+      ]
+    },
+    {
+      "class_type": "LoadImage",
+      "schema_sha256": "fd1a8ae84b30309344e75871553c2192fe455671dfaec8f6afa0e75e669ad89f",
+      "python_module": "nodes",
+      "output_types": [
+        "IMAGE",
+        "MASK"
+      ]
+    },
+    {
+      "class_type": "ProductionConstraintCheck",
+      "schema_sha256": "c0a52bc4a53f7fa35c68e7cd793a2589e0b88ce488379573aaf7d7a5baffa47b",
+      "python_module": "custom_nodes.ComfyUI-Production-Nodes",
+      "output_types": [
+        "BOOLEAN",
+        "STRING"
+      ]
+    },
+    {
+      "class_type": "RandomNoise",
+      "schema_sha256": "40a6bcd5409190e7b28fdaffc348dbd150d1694d91ae366d86ca5cf94bf8bff6",
+      "python_module": "comfy_extras.nodes_custom_sampler",
+      "output_types": [
+        "NOISE"
+      ]
+    },
+    {
+      "class_type": "SamplerCustomAdvanced",
+      "schema_sha256": "0f2bfed2b199c206af73f74d641a10140188309b3badd0fc7d888ff336a4ceb4",
+      "python_module": "comfy_extras.nodes_custom_sampler",
+      "output_types": [
+        "LATENT",
+        "LATENT"
+      ]
+    },
+    {
+      "class_type": "SaveImage",
+      "schema_sha256": "a746fbee22185d1f4339f5ada5e20e6f76e81d2a70ad9827558b44cd92f7ee1d",
+      "python_module": "nodes",
+      "output_types": [
+        "IMAGE"
+      ]
+    },
+    {
+      "class_type": "SplitSigmasDenoise",
+      "schema_sha256": "b92457dc3e87bf16b0874922e092f3c2b4c18a0fc1640b71efa3de76d5ad0664",
+      "python_module": "comfy_extras.nodes_custom_sampler",
+      "output_types": [
+        "SIGMAS",
+        "SIGMAS"
+      ]
+    },
+    {
+      "class_type": "UNETLoader",
+      "schema_sha256": "c55cdfda70b97d09dc6ce6d113a1d98f2ed7364871fd9a6602e8a451d15df4bd",
+      "python_module": "nodes",
+      "output_types": [
+        "MODEL"
+      ]
+    },
+    {
+      "class_type": "VAEDecode",
+      "schema_sha256": "03046e55c2f0caf3d3fbc1e05bb2b94be9113e431a8a764f231555433328259d",
+      "python_module": "nodes",
+      "output_types": [
+        "IMAGE"
+      ]
+    },
+    {
+      "class_type": "VAELoader",
+      "schema_sha256": "a16f7b346ab385320fab863078d856535873a71fc4493fe2f3dfa62ddcba1c87",
+      "python_module": "nodes",
+      "output_types": [
+        "VAE"
+      ]
+    },
+    {
+      "class_type": "WorkflowContractCheck",
+      "schema_sha256": "b744cfa39ca7f465f3b11134ea139dd06a33ddda97411ed1fd84ddb59e185867",
+      "python_module": "custom_nodes.ComfyUI-Production-Nodes",
+      "output_types": [
+        "BOOLEAN",
+        "STRING"
+      ]
+    }
+  ],
+  "missing_nodes": [],
+  "production_nodes_commit": "d102528b8f2418b98551eeb9aa3841116206a61c",
+  "production_nodes_license": "MIT",
+  "production_nodes_license_sha256": "70879b3537d1d8e79a757ef15ac9f6376d47a40e16325a8cdcfb6b8abb3419ad",
+  "snapshot_sha256": "2d5daf11d5751548791d1ad32fc7ce48c450f0f698b8750e09494cc6f27e1daf"
+}

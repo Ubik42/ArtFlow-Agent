@@ -1,0 +1,21 @@
+{
+  "schema_id": "m8-s2-independent-verification/1",
+  "status": "verified",
+  "request_sha256": "bfc8d102d040b888fb07fad150f295df948b08f57561a9719ada9763fb6b7f8a",
+  "receipt_sha256": "ea03d56d88efa1c639bc4a4a7473be8d16dda36b584efa97657f4b527069f1f1",
+  "texture_hashes": {
+    "base_color": "81fcf2c2c48847b609ea9b13b2b5b246f00d5cc4467bc185c0402cf91f3e3fd6",
+    "normal": "54bedbff9e73ba43367b3252a66fdf6bfac9090640c4f4d1d56fc44d8625e7de",
+    "roughness": "4e17e93c570f5f8fa95db9d76021e034cc2df97fb7b651df47df7a066fbcae56",
+    "metallic": "0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91",
+    "ambient_occlusion": "dde5545842606d2dc240e05301557ddda9b0f9e87142bb67d16ee95c80b19881"
+  },
+  "invalid_attempts_rejected": 2,
+  "candidate_render_sha256": "bd928320c9907fc937b9e2b6dfdbcf7e74078f82043e9e0269bf3d48238ea7ae",
+  "target_crop_mean_absolute_delta": 3.246691,
+  "protected_crop_mean_absolute_delta": 0.472945,
+  "target_to_protected_delta_ratio": 6.864845,
+  "source_scene_unchanged": true,
+  "protected_state_unchanged": true,
+  "replay_reconciled": true
+}

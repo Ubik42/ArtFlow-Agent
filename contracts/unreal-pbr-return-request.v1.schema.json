@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "UnrealPBRTextureInput": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "enum": [
+            "base_color",
+            "normal",
+            "roughness",
+            "metallic",
+            "ambient_occlusion"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "color_space": {
+          "enum": [
+            "srgb",
+            "linear"
+          ],
+          "title": "Color Space",
+          "type": "string"
+        },
+        "path": {
+          "pattern": "^artifacts/goal/m8-s2-pbr-material/validated/[A-Za-z0-9_.-]+\\.png$",
+          "title": "Path",
+          "type": "string"
+        },
+        "pixel_format": {
+          "enum": [
+            "rgb8",
+            "gray8"
+          ],
+          "title": "Pixel Format",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel",
+        "path",
+        "sha256",
+        "color_space",
+        "pixel_format"
+      ],
+      "title": "UnrealPBRTextureInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority_scope": {
+      "const": "project_local_unreal_fixture",
+      "title": "Authority Scope",
+      "type": "string"
+    },
+    "destination_root": {
+      "pattern": "^/Game/ArtFlow/Generated/[0-9a-f]{16}$",
+      "title": "Destination Root",
+      "type": "string"
+    },
+    "destination_scene_path": {
+      "const": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "title": "Destination Scene Path",
+      "type": "string"
+    },
+    "generation_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Generation Receipt Sha256",
+      "type": "string"
+    },
+    "material_instance_name": {
+      "pattern": "^MI_[A-Za-z0-9_]{3,64}$",
+      "title": "Material Instance Name",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^pbr-ue-[0-9a-f]{24}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "unreal-pbr-return-request/1",
+      "default": "unreal-pbr-return-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256",
+      "type": "string"
+    },
+    "target_actor_label": {
+      "const": "Editable_Form",
+      "title": "Target Actor Label",
+      "type": "string"
+    },
+    "textures": {
+      "items": {
+        "$ref": "#/$defs/UnrealPBRTextureInput"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Textures",
+      "type": "array"
+    }
+  },
+  "required": [
+    "request_id",
+    "generation_receipt_sha256",
+    "source_scene_sha256",
+    "authority_scope",
+    "destination_scene_path",
+    "destination_root",
+    "target_actor_label",
+    "material_instance_name",
+    "textures",
+    "request_sha256"
+  ],
+  "title": "UnrealPBRReturnRequest",
+  "type": "object"
+}

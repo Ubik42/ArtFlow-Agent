@@ -1,0 +1,49 @@
+{
+  "schema_id": "unreal-pbr-return-request/1",
+  "request_id": "pbr-ue-089e29542680f323c87bd657",
+  "generation_receipt_sha256": "34921c512b5fad7c9b9f91890fe7ff5c2e48529c9c61c4cbeeacba918904a3b4",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "authority_scope": "project_local_unreal_fixture",
+  "destination_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+  "destination_root": "/Game/ArtFlow/Generated/089e29542680f323",
+  "target_actor_label": "Editable_Form",
+  "material_instance_name": "MI_RuinAltarBasalt",
+  "textures": [
+    {
+      "channel": "base_color",
+      "path": "artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_base_color.png",
+      "sha256": "81fcf2c2c48847b609ea9b13b2b5b246f00d5cc4467bc185c0402cf91f3e3fd6",
+      "color_space": "srgb",
+      "pixel_format": "rgb8"
+    },
+    {
+      "channel": "normal",
+      "path": "artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_normal_dx.png",
+      "sha256": "54bedbff9e73ba43367b3252a66fdf6bfac9090640c4f4d1d56fc44d8625e7de",
+      "color_space": "linear",
+      "pixel_format": "rgb8"
+    },
+    {
+      "channel": "roughness",
+      "path": "artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_roughness.png",
+      "sha256": "4e17e93c570f5f8fa95db9d76021e034cc2df97fb7b651df47df7a066fbcae56",
+      "color_space": "linear",
+      "pixel_format": "gray8"
+    },
+    {
+      "channel": "metallic",
+      "path": "artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_metallic.png",
+      "sha256": "0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91",
+      "color_space": "linear",
+      "pixel_format": "gray8"
+    },
+    {
+      "channel": "ambient_occlusion",
+      "path": "artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_ao.png",
+      "sha256": "dde5545842606d2dc240e05301557ddda9b0f9e87142bb67d16ee95c80b19881",
+      "color_space": "linear",
+      "pixel_format": "gray8"
+    }
+  ],
+  "request_sha256": "bfc8d102d040b888fb07fad150f295df948b08f57561a9719ada9763fb6b7f8a"
+}

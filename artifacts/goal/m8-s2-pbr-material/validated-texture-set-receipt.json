@@ -1,0 +1,146 @@
+{
+  "schema_id": "pbr-generation-validation-receipt/1",
+  "prompt_id": "7d90e117-9c5b-4880-8637-4524043b9b74",
+  "request_id": "pbr-b9e856ae833aa6dcc5d9ed86",
+  "workflow_sha256": "5512e542827085d04d43579c83505609b0610c531f0e33f522fc16f8ced30299",
+  "capability_snapshot_sha256": "2d5daf11d5751548791d1ad32fc7ce48c450f0f698b8750e09494cc6f27e1daf",
+  "execution_seconds": 123.723,
+  "artifacts": [
+    {
+      "channel": "base_color",
+      "relative_path": "ruin_altar_basalt_base_color.png",
+      "sha256": "81fcf2c2c48847b609ea9b13b2b5b246f00d5cc4467bc185c0402cf91f3e3fd6",
+      "byte_count": 2406108,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.326965,
+          0.335851,
+          0.315051
+        ],
+        "rgb_stddev": [
+          0.038252,
+          0.034311,
+          0.032407
+        ],
+        "chroma_error": 0.022233,
+        "seam_error": 0.042292,
+        "normal_blue_dominance": -0.016357,
+        "normal_unit_error": 0.395831
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "normal",
+      "relative_path": "ruin_altar_basalt_normal_dx.png",
+      "sha256": "54bedbff9e73ba43367b3252a66fdf6bfac9090640c4f4d1d56fc44d8625e7de",
+      "byte_count": 1937906,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.502557,
+          0.498296,
+          0.960784
+        ],
+        "rgb_stddev": [
+          0.020351,
+          0.025926,
+          0.0
+        ],
+        "chroma_error": 0.474063,
+        "seam_error": 0.028554,
+        "normal_blue_dominance": 0.460358,
+        "normal_unit_error": 0.07606
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "roughness",
+      "relative_path": "ruin_altar_basalt_roughness.png",
+      "sha256": "4e17e93c570f5f8fa95db9d76021e034cc2df97fb7b651df47df7a066fbcae56",
+      "byte_count": 766422,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "L",
+        "rgb_mean": [
+          0.788264,
+          0.788264,
+          0.788264
+        ],
+        "rgb_stddev": [
+          0.030374,
+          0.030374,
+          0.030374
+        ],
+        "chroma_error": 0.0,
+        "seam_error": 0.036389,
+        "normal_blue_dominance": 0.0,
+        "normal_unit_error": 0.08372
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "metallic",
+      "relative_path": "ruin_altar_basalt_metallic.png",
+      "sha256": "0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91",
+      "byte_count": 1097,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "L",
+        "rgb_mean": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "rgb_stddev": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "chroma_error": 0.0,
+        "seam_error": 0.0,
+        "normal_blue_dominance": 0.0,
+        "normal_unit_error": 0.732051
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "ambient_occlusion",
+      "relative_path": "ruin_altar_basalt_ao.png",
+      "sha256": "dde5545842606d2dc240e05301557ddda9b0f9e87142bb67d16ee95c80b19881",
+      "byte_count": 343474,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "L",
+        "rgb_mean": [
+          0.650375,
+          0.650375,
+          0.650375
+        ],
+        "rgb_stddev": [
+          0.046951,
+          0.046951,
+          0.046951
+        ],
+        "chroma_error": 0.0,
+        "seam_error": 0.063411,
+        "normal_blue_dominance": 0.0,
+        "normal_unit_error": 0.479115
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    }
+  ],
+  "status": "validated"
+}

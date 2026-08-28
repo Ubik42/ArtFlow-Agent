@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M8-S2",
+  "status": "completed",
+  "outcome": "A real isolated RTX 4080 ComfyUI run produced five PBR candidates; semantic validation rejected two raw sets, retained the valid AI BaseColor and rebuilt only failed technical-map domains into an aligned validated set. One typed request imported five content-bound textures, a PBR master and Material Instance into the UE 5.8 candidate level. Shader-ready same-camera capture showed the material effect, source/protected fingerprints remained unchanged and exact replay reconciled without duplicate assets.",
+  "evidence": [
+    "docs/evidence/M8_S2_REAL_PBR_UNREAL_RETURN_2026-08-27.md",
+    "src/artflow_agent/pbr_validation.py",
+    "src/artflow_agent/pbr_unreal.py",
+    "recipes/pbr-material-synthesis-v1.template.json",
+    "recipes/pbr-material-synthesis-v1.workflow.json",
+    "artifacts/goal/m8-s2-pbr-material/attempt-002/comfy-history.json",
+    "artifacts/goal/m8-s2-pbr-material/host-lifecycle.json",
+    "artifacts/goal/m8-s2-pbr-material/validated-texture-set-receipt.json",
+    "artifacts/goal/m8-s2-pbr-material/unreal-pbr-return-request.json",
+    "artifacts/goal/m8-s2-pbr-material/unreal-pbr-return-receipt.json",
+    "artifacts/goal/m8-s2-pbr-material/independent-verification.json",
+    "artifacts/goal/m8-s2-pbr-material/candidate-material-beauty.png"
+  ]
+}

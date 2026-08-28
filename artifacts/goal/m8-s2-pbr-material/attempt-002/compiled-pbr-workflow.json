@@ -1,0 +1,586 @@
+{
+  "schema_id": "compiled-pbr-workflow/1",
+  "request_id": "pbr-b9e856ae833aa6dcc5d9ed86",
+  "template_id": "pbr-material-synthesis-v1",
+  "template_version": "1.0.0",
+  "template_sha256": "9b82b893cefa914a59f78d11d0c123770a43535b889a705ce6330f0b322a2295",
+  "capability_snapshot_sha256": "2d5daf11d5751548791d1ad32fc7ce48c450f0f698b8750e09494cc6f27e1daf",
+  "source_sha256": "dfd572e9b5beb29aef906e4e5923dc0bcf66482c05de6f222a098476fb0f1ecc",
+  "workflow_sha256": "5512e542827085d04d43579c83505609b0610c531f0e33f522fc16f8ced30299",
+  "texture_set": {
+    "schema_id": "pbr-texture-set-contract/1",
+    "material_id": "ruin_altar_basalt",
+    "width": 1024,
+    "height": 1024,
+    "tileable": true,
+    "normal_convention": "directx",
+    "channels": [
+      {
+        "channel": "base_color",
+        "filename_suffix": "basecolor",
+        "color_space": "srgb",
+        "pixel_format": "rgb8",
+        "semantic": "Lighting-free visible albedo color."
+      },
+      {
+        "channel": "normal",
+        "filename_suffix": "normal_dx",
+        "color_space": "linear",
+        "pixel_format": "rgb8",
+        "semantic": "DirectX tangent-space surface normal."
+      },
+      {
+        "channel": "roughness",
+        "filename_suffix": "roughness",
+        "color_space": "linear",
+        "pixel_format": "gray8",
+        "semantic": "Per-pixel microsurface roughness."
+      },
+      {
+        "channel": "metallic",
+        "filename_suffix": "metallic",
+        "color_space": "linear",
+        "pixel_format": "gray8",
+        "semantic": "Binary or transitional metallic response."
+      },
+      {
+        "channel": "ambient_occlusion",
+        "filename_suffix": "ao",
+        "color_space": "linear",
+        "pixel_format": "gray8",
+        "semantic": "Local ambient occlusion without cast shadows."
+      }
+    ]
+  },
+  "resolved_slots": {
+    "source_image": "ArtFlow/M7/candidate-beauty.png",
+    "negative_prompt": "文字，水印，透视，相机阴影，烘焙光照，高光，接缝",
+    "seed": 240827,
+    "denoise": 1.0,
+    "width": 1024,
+    "height": 1024,
+    "contract_json": "{\"parameter_ranges\": {\"denoise\": {\"max\": 1.0, \"min\": 0.15}, \"height\": {\"max\": 2048, \"min\": 512}, \"width\": {\"max\": 2048, \"min\": 512}}, \"required_slots\": [\"source_image\", \"material_id\"]}",
+    "workflow_values_json": "{\"parameters\": {\"denoise\": 1.0, \"height\": 1024, \"width\": 1024}, \"slots\": {\"material_id\": \"ruin_altar_basalt\", \"source_image\": \"ArtFlow/M7/candidate-beauty.png\"}}",
+    "receipt_prompt": "风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "prompt_base_color": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable PBR base color texture, flat albedo only, no lighting; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "output_base_color": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_base_color",
+    "prompt_normal": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable DirectX tangent-space normal map, RGB technical texture, dominant blue axis; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "output_normal": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_normal",
+    "prompt_roughness": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale PBR roughness map, white rough black smooth; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "output_roughness": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_roughness",
+    "prompt_metallic": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale PBR metallic mask, white metal black dielectric; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "output_metallic": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_metallic",
+    "prompt_ambient_occlusion": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale ambient occlusion map, white exposed black crevice; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    "output_ambient_occlusion": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_ambient_occlusion"
+  },
+  "workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "flux-2-klein-base-4b-fp8.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen_3_4b.safetensors",
+        "type": "flux2",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "full_encoder_small_decoder.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ArtFlow/M7/candidate-beauty.png"
+      }
+    },
+    "6": {
+      "class_type": "EmptyFlux2LatentImage",
+      "inputs": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "文字，水印，透视，相机阴影，烘焙光照，高光，接缝",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "10": {
+      "class_type": "Flux2Scheduler",
+      "inputs": {
+        "steps": 20,
+        "width": 1024,
+        "height": 1024
+      }
+    },
+    "11": {
+      "class_type": "SplitSigmasDenoise",
+      "inputs": {
+        "sigmas": [
+          "10",
+          0
+        ],
+        "denoise": 1.0
+      }
+    },
+    "12": {
+      "class_type": "ProductionConstraintCheck",
+      "inputs": {
+        "width": 1024,
+        "height": 1024,
+        "batch_size": 1,
+        "denoise": 1.0,
+        "max_megapixels": 4.0,
+        "max_batch_size": 1
+      }
+    },
+    "13": {
+      "class_type": "WorkflowContractCheck",
+      "inputs": {
+        "contract_json": "{\"parameter_ranges\": {\"denoise\": {\"max\": 1.0, \"min\": 0.15}, \"height\": {\"max\": 2048, \"min\": 512}, \"width\": {\"max\": 2048, \"min\": 512}}, \"required_slots\": [\"source_image\", \"material_id\"]}",
+        "workflow_values_json": "{\"parameters\": {\"denoise\": 1.0, \"height\": 1024, \"width\": 1024}, \"slots\": {\"material_id\": \"ruin_altar_basalt\", \"source_image\": \"ArtFlow/M7/candidate-beauty.png\"}}"
+      }
+    },
+    "14": {
+      "class_type": "GenerationReceipt",
+      "inputs": {
+        "workflow_name": "pbr-material-synthesis-v1",
+        "model_name": "flux-2-klein-base-4b-fp8.safetensors",
+        "lora_name": "none",
+        "positive_prompt": "风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "negative_prompt": "文字，水印，透视，相机阴影，烘焙光照，高光，接缝",
+        "seed": 240827
+      }
+    },
+    "20": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable PBR base color texture, flat albedo only, no lighting; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "22": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "20",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "23": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 240827
+      }
+    },
+    "24": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "23",
+          0
+        ],
+        "guider": [
+          "22",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "11",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "25": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "24",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "26": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_base_color",
+        "images": [
+          "25",
+          0
+        ]
+      }
+    },
+    "30": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable DirectX tangent-space normal map, RGB technical texture, dominant blue axis; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "32": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "30",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "33": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 240827
+      }
+    },
+    "34": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "33",
+          0
+        ],
+        "guider": [
+          "32",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "11",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "35": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "34",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "36": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_normal",
+        "images": [
+          "35",
+          0
+        ]
+      }
+    },
+    "40": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale PBR roughness map, white rough black smooth; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "42": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "40",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "43": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 240827
+      }
+    },
+    "44": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "43",
+          0
+        ],
+        "guider": [
+          "42",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "11",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "45": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "44",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "46": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_roughness",
+        "images": [
+          "45",
+          0
+        ]
+      }
+    },
+    "50": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale PBR metallic mask, white metal black dielectric; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "52": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "50",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "53": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 240827
+      }
+    },
+    "54": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "53",
+          0
+        ],
+        "guider": [
+          "52",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "11",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "55": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "54",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "56": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_metallic",
+        "images": [
+          "55",
+          0
+        ]
+      }
+    },
+    "60": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "orthographic square material texture filling the entire frame, no scene, no objects, no horizon, no perspective, seamless tileable grayscale ambient occlusion map, white exposed black crevice; 风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "62": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "60",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "63": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 240827
+      }
+    },
+    "64": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "63",
+          0
+        ],
+        "guider": [
+          "62",
+          0
+        ],
+        "sampler": [
+          "9",
+          0
+        ],
+        "sigmas": [
+          "11",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "65": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "64",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "66": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/PBR/ruin_altar_basalt/ruin_altar_basalt_ambient_occlusion",
+        "images": [
+          "65",
+          0
+        ]
+      }
+    }
+  }
+}

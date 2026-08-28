@@ -29,6 +29,8 @@ from artflow_agent.pbr import (
     PBRTextureSetContract,
     ReviewedPBRTemplate,
 )
+from artflow_agent.pbr_unreal import UnrealPBRReturnReceipt, UnrealPBRReturnRequest
+from artflow_agent.pbr_validation import PBRGenerationValidationReceipt
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = {
@@ -56,6 +58,9 @@ SCHEMAS = {
     "compiled-pbr-workflow.v1.schema.json": CompiledPBRWorkflow.model_json_schema(),
     "pbr-texture-set-contract.v1.schema.json": PBRTextureSetContract.model_json_schema(),
     "reviewed-pbr-template.v1.schema.json": ReviewedPBRTemplate.model_json_schema(),
+    "pbr-generation-validation-receipt.v1.schema.json": PBRGenerationValidationReceipt.model_json_schema(),
+    "unreal-pbr-return-request.v1.schema.json": UnrealPBRReturnRequest.model_json_schema(),
+    "unreal-pbr-return-receipt.v1.schema.json": UnrealPBRReturnReceipt.model_json_schema(),
 }
 
 

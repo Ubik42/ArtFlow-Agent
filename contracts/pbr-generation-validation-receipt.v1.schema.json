@@ -1,0 +1,210 @@
+{
+  "$defs": {
+    "ChannelMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "chroma_error": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Chroma Error",
+          "type": "number"
+        },
+        "height": {
+          "exclusiveMinimum": 0,
+          "title": "Height",
+          "type": "integer"
+        },
+        "normal_blue_dominance": {
+          "maximum": 1,
+          "minimum": -1,
+          "title": "Normal Blue Dominance",
+          "type": "number"
+        },
+        "normal_unit_error": {
+          "minimum": 0,
+          "title": "Normal Unit Error",
+          "type": "number"
+        },
+        "rgb_mean": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Rgb Mean",
+          "type": "array"
+        },
+        "rgb_stddev": {
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Rgb Stddev",
+          "type": "array"
+        },
+        "seam_error": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Seam Error",
+          "type": "number"
+        },
+        "source_mode": {
+          "title": "Source Mode",
+          "type": "string"
+        },
+        "width": {
+          "exclusiveMinimum": 0,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "width",
+        "height",
+        "source_mode",
+        "rgb_mean",
+        "rgb_stddev",
+        "chroma_error",
+        "seam_error",
+        "normal_blue_dominance",
+        "normal_unit_error"
+      ],
+      "title": "ChannelMetrics",
+      "type": "object"
+    },
+    "PBRRawArtifact": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted": {
+          "title": "Accepted",
+          "type": "boolean"
+        },
+        "byte_count": {
+          "exclusiveMinimum": 0,
+          "title": "Byte Count",
+          "type": "integer"
+        },
+        "channel": {
+          "enum": [
+            "base_color",
+            "normal",
+            "roughness",
+            "metallic",
+            "ambient_occlusion"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "metrics": {
+          "$ref": "#/$defs/ChannelMetrics"
+        },
+        "rejection_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Rejection Reasons",
+          "type": "array"
+        },
+        "relative_path": {
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel",
+        "relative_path",
+        "sha256",
+        "byte_count",
+        "metrics",
+        "accepted",
+        "rejection_reasons"
+      ],
+      "title": "PBRRawArtifact",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifacts": {
+      "items": {
+        "$ref": "#/$defs/PBRRawArtifact"
+      },
+      "maxItems": 5,
+      "minItems": 5,
+      "title": "Artifacts",
+      "type": "array"
+    },
+    "capability_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Capability Snapshot Sha256",
+      "type": "string"
+    },
+    "execution_seconds": {
+      "exclusiveMinimum": 0,
+      "title": "Execution Seconds",
+      "type": "number"
+    },
+    "prompt_id": {
+      "minLength": 8,
+      "title": "Prompt Id",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^pbr-[0-9a-f]{24}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "pbr-generation-validation-receipt/1",
+      "default": "pbr-generation-validation-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "validated",
+        "semantic_invalid"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "workflow_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Workflow Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "prompt_id",
+    "request_id",
+    "workflow_sha256",
+    "capability_snapshot_sha256",
+    "execution_seconds",
+    "artifacts",
+    "status"
+  ],
+  "title": "PBRGenerationValidationReceipt",
+  "type": "object"
+}

@@ -25,14 +25,20 @@ def main() -> int:
     parser.add_argument("--snapshot", type=Path, required=True)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--template", type=Path, default=ROOT / "recipes/pbr-material-v1.template.json"
+    )
+    parser.add_argument(
+        "--workflow", type=Path, default=ROOT / "recipes/pbr-material-v1.workflow.json"
+    )
     args = parser.parse_args()
 
     snapshot = ComfyCapabilitySnapshot.model_validate_json(
         args.snapshot.read_text(encoding="utf-8")
     )
     compiler = PBRWorkflowCompiler(
-        ROOT / "recipes/pbr-material-v1.template.json",
-        ROOT / "recipes/pbr-material-v1.workflow.json",
+        args.template,
+        args.workflow,
     )
     request = PBRCompileRequest(
         material_id="ruin_altar_basalt",
@@ -41,7 +47,7 @@ def main() -> int:
         visual_intent="风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
         negative_prompt="文字，水印，透视，相机阴影，烘焙光照，高光，接缝",
         seed=240827,
-        denoise=0.45,
+        denoise=1.0 if compiler.template.template_id == "pbr-material-synthesis-v1" else 0.45,
         width=1024,
         height=1024,
         tileable=True,

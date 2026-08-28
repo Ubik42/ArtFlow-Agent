@@ -1,6 +1,7 @@
 #include "ArtFlowSceneBridgeModule.h"
 
 #include "AssetRegistry/AssetRegistryModule.h"
+#include "AssetCompilingManager.h"
 #include "AssetToolsModule.h"
 #include "BufferVisualizationData.h"
 #include "Camera/CameraActor.h"
@@ -1458,6 +1459,11 @@ bool FinalizeCandidateExecution(bool bReconciled, const FString& SourceHash, con
     const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("Candidates"), FrozenStageId);
     IFileManager::Get().MakeDirectory(*OutputRoot, true);
     const FString BeautyPath = FPaths::Combine(OutputRoot, TEXT("candidate-beauty.png"));
+    // A freshly imported/generated material can still be compiling when the staged
+    // candidate is reopened. Capturing before compilation completes produces UE's
+    // fallback checker material and is not valid visual evidence.
+    FAssetCompilingManager::Get().FinishAllCompilation();
+    FlushRenderingCommands();
     FCaptureRequest Request;
     if (!LoadCaptureRequest(Request, OutError) ||
         !CapturePass(World, Cast<ACameraActor>(Camera), Request, SCS_FinalColorLDR, false, BeautyPath, nullptr, {}, OutError))

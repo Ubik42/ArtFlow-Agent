@@ -1,0 +1,114 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_render_path": {
+      "title": "Candidate Render Path",
+      "type": "string"
+    },
+    "candidate_render_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Render Sha256",
+      "type": "string"
+    },
+    "completed_at": {
+      "title": "Completed At",
+      "type": "string"
+    },
+    "destination_scene_path": {
+      "title": "Destination Scene Path",
+      "type": "string"
+    },
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "imported_texture_paths": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Imported Texture Paths",
+      "type": "object"
+    },
+    "master_material_path": {
+      "title": "Master Material Path",
+      "type": "string"
+    },
+    "material_instance_path": {
+      "title": "Material Instance Path",
+      "type": "string"
+    },
+    "protected_state_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State After",
+      "type": "string"
+    },
+    "protected_state_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State Before",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "unreal-pbr-return-receipt/1",
+      "default": "unreal-pbr-return-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 After",
+      "type": "string"
+    },
+    "source_scene_sha256_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 Before",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "imported",
+        "reconciled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "target_actor_label": {
+      "title": "Target Actor Label",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_sha256",
+    "status",
+    "engine_version",
+    "destination_scene_path",
+    "target_actor_label",
+    "imported_texture_paths",
+    "master_material_path",
+    "material_instance_path",
+    "source_scene_sha256_before",
+    "source_scene_sha256_after",
+    "protected_state_before",
+    "protected_state_after",
+    "candidate_render_path",
+    "candidate_render_sha256",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "UnrealPBRReturnReceipt",
+  "type": "object"
+}

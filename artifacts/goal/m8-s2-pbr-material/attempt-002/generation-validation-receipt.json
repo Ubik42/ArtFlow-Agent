@@ -1,0 +1,148 @@
+{
+  "schema_id": "pbr-generation-validation-receipt/1",
+  "prompt_id": "7d90e117-9c5b-4880-8637-4524043b9b74",
+  "request_id": "pbr-b9e856ae833aa6dcc5d9ed86",
+  "workflow_sha256": "5512e542827085d04d43579c83505609b0610c531f0e33f522fc16f8ced30299",
+  "capability_snapshot_sha256": "2d5daf11d5751548791d1ad32fc7ce48c450f0f698b8750e09494cc6f27e1daf",
+  "execution_seconds": 123.723,
+  "artifacts": [
+    {
+      "channel": "base_color",
+      "relative_path": "ruin_altar_basalt_base_color.png",
+      "sha256": "59114beb4775bbdf4a041e9c823ecc7abde13507ab4b4cac3ca3607517fc0048",
+      "byte_count": 2413772,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.326965,
+          0.335851,
+          0.315051
+        ],
+        "rgb_stddev": [
+          0.038252,
+          0.034311,
+          0.032407
+        ],
+        "chroma_error": 0.022233,
+        "seam_error": 0.042292,
+        "normal_blue_dominance": -0.016357,
+        "normal_unit_error": 0.395831
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "normal",
+      "relative_path": "ruin_altar_basalt_normal.png",
+      "sha256": "ca80a26380bcf24c55f6b6ffec33b93cdefece50e53a5893ddff7644405d299c",
+      "byte_count": 2907840,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.166197,
+          0.421968,
+          0.599214
+        ],
+        "rgb_stddev": [
+          0.049093,
+          0.064114,
+          0.09036
+        ],
+        "chroma_error": 0.433018,
+        "seam_error": 0.084852,
+        "normal_blue_dominance": 0.305132,
+        "normal_unit_error": 0.258513
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "roughness",
+      "relative_path": "ruin_altar_basalt_roughness.png",
+      "sha256": "ac72667d2c51dd1b94d6afa416bc35b18bebfb5c861e4dcdd6f94d696c4e8c5f",
+      "byte_count": 2437897,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.37451,
+          0.384694,
+          0.388744
+        ],
+        "rgb_stddev": [
+          0.067057,
+          0.065652,
+          0.066068
+        ],
+        "chroma_error": 0.019184,
+        "seam_error": 0.067216,
+        "normal_blue_dominance": 0.009142,
+        "normal_unit_error": 0.588004
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    },
+    {
+      "channel": "metallic",
+      "relative_path": "ruin_altar_basalt_metallic.png",
+      "sha256": "353ce7315403179e72603029bca84b6e8cf73f5ed220549cca16816cfb8e905b",
+      "byte_count": 2392009,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.331391,
+          0.35825,
+          0.372125
+        ],
+        "rgb_stddev": [
+          0.053042,
+          0.053132,
+          0.054861
+        ],
+        "chroma_error": 0.041863,
+        "seam_error": 0.057838,
+        "normal_blue_dominance": 0.027305,
+        "normal_unit_error": 0.490896
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "scalar_map_contains_color"
+      ]
+    },
+    {
+      "channel": "ambient_occlusion",
+      "relative_path": "ruin_altar_basalt_ambient_occlusion.png",
+      "sha256": "f852f345509b56d25d5011df33cef13d1d8963a2d8fde698311003aed2a92f45",
+      "byte_count": 2333192,
+      "metrics": {
+        "width": 1024,
+        "height": 1024,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.334993,
+          0.355568,
+          0.355947
+        ],
+        "rgb_stddev": [
+          0.042607,
+          0.041684,
+          0.04156
+        ],
+        "chroma_error": 0.023855,
+        "seam_error": 0.048243,
+        "normal_blue_dominance": 0.010667,
+        "normal_unit_error": 0.477653
+      },
+      "accepted": true,
+      "rejection_reasons": []
+    }
+  ],
+  "status": "semantic_invalid"
+}

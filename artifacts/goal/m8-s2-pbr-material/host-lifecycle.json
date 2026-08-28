@@ -1,0 +1,24 @@
+{
+  "schema_id": "isolated-host-lifecycle/1",
+  "purpose": "M8-S2 real reviewed PBR workflow execution",
+  "shared_host": {
+    "endpoint": "http://127.0.0.1:8188",
+    "listener_pid_after": 49656,
+    "modified": false,
+    "stopped": false
+  },
+  "isolated_host": {
+    "endpoint": "http://127.0.0.1:8190",
+    "owned_by_artflow_run": true,
+    "gpu": "NVIDIA GeForce RTX 4080",
+    "prompt_id": "7d90e117-9c5b-4880-8637-4524043b9b74",
+    "execution_seconds": 123.723,
+    "listener_present_after": false,
+    "stopped_exactly": true
+  },
+  "unreal": {
+    "owned_editor_process_present_after": false,
+    "engine_version": "5.8.1-56057345+++UE5+Release-5.8"
+  },
+  "checked_at": "2026-08-28T03:44:43.3783422Z"
+}

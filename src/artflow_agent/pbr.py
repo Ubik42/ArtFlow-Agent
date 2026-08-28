@@ -155,7 +155,7 @@ class PBRCompileRequest(StrictModel):
     visual_intent: str = Field(min_length=10, max_length=800)
     negative_prompt: str = Field(min_length=1, max_length=500)
     seed: int = Field(ge=0, le=18446744073709551615)
-    denoise: float = Field(ge=0.15, le=0.65)
+    denoise: float = Field(ge=0.15, le=1.0)
     width: int = Field(ge=512, le=2048, multiple_of=8)
     height: int = Field(ge=512, le=2048, multiple_of=8)
     tileable: bool = True
@@ -272,6 +272,11 @@ class PBRWorkflowCompiler:
         request: PBRCompileRequest,
         snapshot: ComfyCapabilitySnapshot,
     ) -> CompiledPBRWorkflow:
+        synthesis_mode = self.template.template_id == "pbr-material-synthesis-v1"
+        if synthesis_mode and request.denoise != 1.0:
+            raise PBRBoundaryError("synthesis template requires full-noise denoise=1.0")
+        if not synthesis_mode and request.denoise > 0.65:
+            raise PBRBoundaryError("reference template denoise cannot exceed 0.65")
         snapshot_nodes = {item.class_type for item in snapshot.required_nodes}
         missing = sorted(set(self.template.required_nodes) - snapshot_nodes)
         if missing:
@@ -289,12 +294,18 @@ class PBRWorkflowCompiler:
         workflow = copy.deepcopy(self.workflow)
         texture_set = default_texture_set(request)
         tile_phrase = "seamless tileable" if request.tileable else "non-tileable unique"
+        technical_prefix = (
+            "orthographic square material texture filling the entire frame, no scene, no objects, "
+            "no horizon, no perspective, "
+            if synthesis_mode
+            else ""
+        )
         prompts = {
-            "base_color": f"{tile_phrase} PBR base color texture, flat albedo only, no lighting; {request.visual_intent}",
-            "normal": f"{tile_phrase} DirectX tangent-space normal map, RGB technical texture; {request.visual_intent}",
-            "roughness": f"{tile_phrase} grayscale PBR roughness map, white rough black smooth; {request.visual_intent}",
-            "metallic": f"{tile_phrase} grayscale PBR metallic mask, white metal black dielectric; {request.visual_intent}",
-            "ambient_occlusion": f"{tile_phrase} grayscale ambient occlusion map, white exposed black crevice; {request.visual_intent}",
+            "base_color": f"{technical_prefix}{tile_phrase} PBR base color texture, flat albedo only, no lighting; {request.visual_intent}",
+            "normal": f"{technical_prefix}{tile_phrase} DirectX tangent-space normal map, RGB technical texture, dominant blue axis; {request.visual_intent}",
+            "roughness": f"{technical_prefix}{tile_phrase} grayscale PBR roughness map, white rough black smooth; {request.visual_intent}",
+            "metallic": f"{technical_prefix}{tile_phrase} grayscale PBR metallic mask, white metal black dielectric; {request.visual_intent}",
+            "ambient_occlusion": f"{technical_prefix}{tile_phrase} grayscale ambient occlusion map, white exposed black crevice; {request.visual_intent}",
         }
         contract_json = json.dumps(
             {
@@ -302,7 +313,7 @@ class PBRWorkflowCompiler:
                 "parameter_ranges": {
                     "width": {"min": 512, "max": 2048},
                     "height": {"min": 512, "max": 2048},
-                    "denoise": {"min": 0.15, "max": 0.65},
+                    "denoise": {"min": 0.15, "max": 1.0 if synthesis_mode else 0.65},
                 },
             },
             ensure_ascii=False,

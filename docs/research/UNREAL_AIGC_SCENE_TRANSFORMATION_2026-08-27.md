@@ -63,9 +63,13 @@ ComfyUI 官方 API 的 workflow JSON 可以由外部应用提交；新 API v2 �
 
 `ComfyUI-Production-Nodes` 当前提供八个生产节点。M8-S1 已在不修改共享安装的隔离宿主中固定其
 Git commit、MIT 许可证和真实 `/object_info`，并把三个门禁/收据节点纳入项目自有 49 节点 PBR
-模板；编译器逐个校验 19 个所需节点的 schema 指纹。这里已实现的是“能力探测 + 受审图编译 +
-提交前失败关闭”，尚未实现真实贴图输出、端到端生成收据和 Unreal Material Instance，后者由
-M8-S2 验证后才能升级能力口径。
+模板；编译器逐个校验 19 个所需节点的 schema 指纹。M8-S2 已进一步完成真实 GPU 生成、两次
+语义无效输出拒绝、失败技术贴图域纠正以及 UE 5.8 Material Instance 回贴。该结果证明 ComfyUI
+可以作为受控材质执行面，但也证明生成器不能自证 Normal/Roughness/Metallic/AO 的技术正确性。
+
+UE 5.8 的新增能力进一步强化了 M9 的路线：PCG Graph Parameters 可分组描述，Graph Instance 是
+组件级参数覆盖入口，Editor/headless generation、缓存与 ISM 复用适合后台执行；非破坏性手工覆盖
+则允许美术师在 Agent 结果上继续编辑。因此运行时应选择受审图并填写参数，而不是动态发明 PCG 图。
 
 ## 图生 3D 社区能力
 

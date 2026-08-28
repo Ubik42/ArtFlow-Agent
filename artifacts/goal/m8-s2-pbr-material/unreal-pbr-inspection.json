@@ -1,0 +1,68 @@
+{
+  "schema_id": "unreal-pbr-inspection/1",
+  "target_actor": "Editable_Form",
+  "component_material": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+  "instance_parent": "/Game/ArtFlow/Generated/089e29542680f323/M_ArtFlowPBRMaster.M_ArtFlowPBRMaster",
+  "master_expression_count": 5,
+  "master_connections": {
+    "base_color": {
+      "node_class": "MaterialExpressionTextureSampleParameter2D",
+      "output": "RGB"
+    },
+    "normal": {
+      "node_class": "MaterialExpressionTextureSampleParameter2D",
+      "output": "RGB"
+    },
+    "roughness": {
+      "node_class": "MaterialExpressionTextureSampleParameter2D",
+      "output": "R"
+    },
+    "metallic": {
+      "node_class": "MaterialExpressionTextureSampleParameter2D",
+      "output": "R"
+    },
+    "ambient_occlusion": {
+      "node_class": "MaterialExpressionTextureSampleParameter2D",
+      "output": "R"
+    }
+  },
+  "parameters": {
+    "BaseColor": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_BaseColor.T_RuinAltar_BaseColor",
+    "Normal": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_NormalDX.T_RuinAltar_NormalDX",
+    "Roughness": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Roughness.T_RuinAltar_Roughness",
+    "Metallic": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Metallic.T_RuinAltar_Metallic",
+    "AmbientOcclusion": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_AO.T_RuinAltar_AO"
+  },
+  "textures": {
+    "base_color": {
+      "path": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_BaseColor.T_RuinAltar_BaseColor",
+      "srgb": true,
+      "compression": "<TextureCompressionSettings.TC_DEFAULT: 0>",
+      "source_sha256": "81fcf2c2c48847b609ea9b13b2b5b246f00d5cc4467bc185c0402cf91f3e3fd6"
+    },
+    "normal": {
+      "path": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_NormalDX.T_RuinAltar_NormalDX",
+      "srgb": false,
+      "compression": "<TextureCompressionSettings.TC_NORMALMAP: 1>",
+      "source_sha256": "54bedbff9e73ba43367b3252a66fdf6bfac9090640c4f4d1d56fc44d8625e7de"
+    },
+    "roughness": {
+      "path": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Roughness.T_RuinAltar_Roughness",
+      "srgb": false,
+      "compression": "<TextureCompressionSettings.TC_MASKS: 2>",
+      "source_sha256": "4e17e93c570f5f8fa95db9d76021e034cc2df97fb7b651df47df7a066fbcae56"
+    },
+    "metallic": {
+      "path": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_Metallic.T_RuinAltar_Metallic",
+      "srgb": false,
+      "compression": "<TextureCompressionSettings.TC_MASKS: 2>",
+      "source_sha256": "0f4b1668d119f77ceb6b86645573f088ab2341d7b284314d5df0be7226ea5d91"
+    },
+    "ambient_occlusion": {
+      "path": "/Game/ArtFlow/Generated/089e29542680f323/T_RuinAltar_AO.T_RuinAltar_AO",
+      "srgb": false,
+      "compression": "<TextureCompressionSettings.TC_MASKS: 2>",
+      "source_sha256": "dde5545842606d2dc240e05301557ddda9b0f9e87142bb67d16ee95c80b19881"
+    }
+  }
+}

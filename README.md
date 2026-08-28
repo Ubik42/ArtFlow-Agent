@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 又在真实 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账以及发布/丢弃。M8 已完成真实 ComfyUI 能力探测和受审 PBR 图编译器；五张贴图的 GPU 生成、UE Material Instance、自动纠正、三维资产生成与 MCP 仍在开发中。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账及发布/丢弃；M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝与失败域纠正、UE Material Instance、Shader-ready 回渲和重复请求对账。当前 M9 正在把材质、固定 PCG 图、灯光和项目资产统一为多域 Scene Delta 闭环；图生 3D、MCP 与新前端仍按后续切片推进。
 
 ## 项目概述
 
@@ -42,6 +42,18 @@ Agent 将场景事实编译成只包含白名单灯光与 PCG 操作的 DAG，�
 
 ![真实 UE 候选关卡：灯光与 PCG 三维变更](artifacts/goal/m7-s2-scene-execution/candidate-beauty.png)
 
+### 场景六：把生成方向变成 Unreal 可编辑 PBR 材质
+
+Agent 在真实 ComfyUI GPU 宿主运行受审材质图，但不会因为“五张文件都生成了”就直接导入。两组
+原始结果因复刻场景、彩色标量图或通道语义错误被技术门禁拒绝；纠正器保留可用的 AI BaseColor，
+只重建失败的 Normal/Roughness/Metallic/AO 域。五图随后以内容哈希绑定的请求进入 UE 5.8，创建
+Master Material 与 Material Instance、绑定候选球体并等待 Shader 编译后同机位回渲。重复执行返回
+`reconciled`，没有新增重复资产，源关卡和保护方块指纹保持不变。
+
+| AI BaseColor | UE 5.8 候选关卡回渲 |
+| --- | --- |
+| ![AI 玄武岩 BaseColor](artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_base_color.png) | ![UE 材质同机位回渲](artifacts/goal/m8-s2-pbr-material/candidate-material-beauty.png) |
+
 ## Agentic 执行流程
 
 ![ArtFlow Agentic 使用流程漫画：从 Unreal 场景理解、双路生成、独立评价到局部修订与验证回流](docs/assets/portfolio/11-agentic-workflow-comic.png)
@@ -77,7 +89,7 @@ Unreal 四 Pass Scene Package
 
 第二条 UE 三维执行证据已验证 `Scene Digital Twin → SceneChangePlan → candidate level → lighting/PCG → same-camera render → reconcile → publish/discard`。它使用独立类型化回执，源关卡在整个执行生命周期中保持零写入。
 
-第三条材质管线已经打通提交前控制面：ArtFlow 从真实 `/object_info` 固定 19 个所需节点的接口指纹，只允许把视觉意图、输入身份、种子、尺寸和输出前缀填入项目自有 49 节点模板。模板被改写、节点同名但接口漂移、路径越界或请求夹带 `class_type` 都会在进入 ComfyUI 队列前失败。该证据只证明图编译与能力门禁；真实 GPU 贴图及 UE 材质回贴属于下一切片。
+第三条材质管线已经完成真实闭环：ArtFlow 从 `/object_info` 固定受审节点接口，只允许把视觉意图、种子、尺寸和输出前缀填入项目模板；真实 RTX 4080 结果逐通道验证，失败域被定向纠正；五个哈希随后创建 UE Texture2D、PBR Master 与 Material Instance。模板篡改、schema 漂移、路径越界、彩色标量图和无效法线都会在发布前失败。完整证据见 [M8-S2 实机记录](docs/evidence/M8_S2_REAL_PBR_UNREAL_RETURN_2026-08-27.md)。
 
 ## 实际运行证据
 

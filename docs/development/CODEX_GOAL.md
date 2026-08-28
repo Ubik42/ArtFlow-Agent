@@ -58,9 +58,10 @@ M7 Scene Digital Twin + Staged Scene Delta Kernel
 ```
 
 M7 已完成扩展场景事实、灯光/PCG dry-run、候选关卡真实执行、同机位回渲、幂等对账以及发布/
-丢弃回执。M8-S1 又通过隔离真实宿主的 `/object_info` 固定了 19 个节点接口指纹，并把项目自有
-49 节点 PBR 模板收敛为有限插槽编译器。当前 M8-S2 只负责真实生成五通道贴图、验证产物并在
-候选关卡创建 Unreal Material Instance；图生 3D、MCP 和新前端仍按后续里程碑推进。
+丢弃回执。M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝、失败技术域纠正、UE 5.8 Material
+Instance、Shader-ready 回渲和重复请求对账。当前进入 M9-S1：先把材质、灯光、固定 PCG 图与项目
+资产复用统一为类型化 Scene Delta DAG 和 dry-run 编排；真实联合写入、多机位纠正、图生 3D、MCP
+和新前端分别保留在后续小切片，避免再次形成不可验证的大爆炸开发。
 
 ## 自主开发与停止边界
 
