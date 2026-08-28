@@ -1,0 +1,124 @@
+{
+  "schema_id": "scene-delta-evaluation/1",
+  "evaluation_id": "m9-eval-c5b8b3c24c325962d668",
+  "unreal_request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded",
+  "unreal_receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+  "authored_render_sha256": "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+  "validation_render_sha256": "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc",
+  "evaluator_versions": {
+    "technical-judge-v1": "1.0.0",
+    "visual-critic-v1": "1.0.0"
+  },
+  "findings": [
+    {
+      "evaluator_id": "technical-judge-v1",
+      "domain": "asset",
+      "verdict": "pass",
+      "hard_failure": true,
+      "metric": "project_owned_asset_binding",
+      "observed": true,
+      "threshold": "must_equal_true",
+      "evidence_sha256": [
+        "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "technical-judge-v1",
+      "domain": "material",
+      "verdict": "pass",
+      "hard_failure": true,
+      "metric": "material_binding_unchanged",
+      "observed": true,
+      "threshold": "must_equal_true",
+      "evidence_sha256": [
+        "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "technical-judge-v1",
+      "domain": "pcg",
+      "verdict": "pass",
+      "hard_failure": true,
+      "metric": "generated_instance_count",
+      "observed": 12,
+      "threshold": "eq_12",
+      "evidence_sha256": [
+        "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "technical-judge-v1",
+      "domain": "lighting",
+      "verdict": "pass",
+      "hard_failure": true,
+      "metric": "key_light_intensity",
+      "observed": 8.0,
+      "threshold": "between_4.5_and_8.5_lux",
+      "evidence_sha256": [
+        "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "visual-critic-v1",
+      "domain": "asset",
+      "verdict": "pass",
+      "hard_failure": false,
+      "metric": "multi_view_spatial_delta",
+      "observed": 57.717595,
+      "threshold": "gte_10",
+      "evidence_sha256": [
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "visual-critic-v1",
+      "domain": "material",
+      "verdict": "pass",
+      "hard_failure": false,
+      "metric": "authored_view_luma_stddev",
+      "observed": 58.814259,
+      "threshold": "gte_20",
+      "evidence_sha256": [
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a"
+      ]
+    },
+    {
+      "evaluator_id": "visual-critic-v1",
+      "domain": "pcg",
+      "verdict": "pass",
+      "hard_failure": false,
+      "metric": "multi_view_layout_visible",
+      "observed": 57.717595,
+      "threshold": "gte_10",
+      "evidence_sha256": [
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+        "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+      ]
+    },
+    {
+      "evaluator_id": "visual-critic-v1",
+      "domain": "lighting",
+      "verdict": "pass",
+      "hard_failure": false,
+      "metric": "authored_view_mean_luma",
+      "observed": 166.661858,
+      "threshold": "gte_145.0",
+      "evidence_sha256": [
+        "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a"
+      ]
+    }
+  ],
+  "failed_domains": [],
+  "status": "verified",
+  "evaluated_at": "2026-08-28T04:08:29.997194Z",
+  "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7"
+}

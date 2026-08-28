@@ -43,7 +43,7 @@ receipt; missing nodes or invalid maps fail closed before scene publish.
 
 ### M9 — PCG, lighting and asset closed loop
 
-Status: in progress from 2026-08-27. The detailed contract and slice plan lives in
+Status: completed on 2026-08-27. The detailed contract and slice plan lives in
 [`development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md`](development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md).
 
 - **M9-S1 completed:** unified material binding, reviewed PCG parameters, bounded lighting and
@@ -54,8 +54,10 @@ Status: in progress from 2026-08-27. The detailed contract and slice plan lives 
   fingerprints; reconciled the four-domain candidate in UE 5.8, captured authored and validation
   cameras after shader compilation, proved 12 instances with zero protected-AABB intrusion and
   exact replay with no duplicate assets;
-- **M9-S3 active:** inject and correct one domain-local failure, then publish or discard the verified
-  Scene Delta with a replayable event and provenance chain.
+- **M9-S3 completed:** injected a real 0.05-lux candidate failure, persisted independent technical
+  and visual lighting verdicts, corrected only lighting to 8.0/4200K while material and 12 PCG
+  instances remained unchanged, reconciled a lost receipt without resubmission and published the
+  verified level through a nine-event content-addressed lifecycle with zero duplicate side effects.
 
 - turn a concept target into a dependency graph across lighting, PCG, existing assets and material;
 - prepare independent branches concurrently while serializing Unreal writes;
@@ -66,6 +68,9 @@ Exit evidence: the project-owned “废墟祭坛视觉开发” demo produces a 
 Chinese screenshot-rich evidence trail, not a preview-plane substitution.
 
 ### M10 — MCP, image-to-3D experiment and public release
+
+Status: in progress from 2026-08-27. M10-S1 starts with the thin MCP boundary; image-to-3D and the
+new Scene Lab remain separate later slices so neither can become a second control plane.
 
 - project the existing runtime through thin MCP resources and narrow tools;
 - integrate one optional GLB-generating Provider and validate it through Interchange;

@@ -1,0 +1,182 @@
+{
+  "$defs": {
+    "DomainFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "domain": {
+          "enum": [
+            "asset",
+            "lighting",
+            "material",
+            "pcg"
+          ],
+          "title": "Domain",
+          "type": "string"
+        },
+        "evaluator_id": {
+          "enum": [
+            "technical-judge-v1",
+            "visual-critic-v1"
+          ],
+          "title": "Evaluator Id",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Evidence Sha256",
+          "type": "array"
+        },
+        "hard_failure": {
+          "title": "Hard Failure",
+          "type": "boolean"
+        },
+        "metric": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Metric",
+          "type": "string"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "integer"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "Observed"
+        },
+        "threshold": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Threshold",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "pass",
+            "fail"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evaluator_id",
+        "domain",
+        "verdict",
+        "hard_failure",
+        "metric",
+        "observed",
+        "threshold",
+        "evidence_sha256"
+      ],
+      "title": "DomainFinding",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authored_render_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authored Render Sha256",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evaluation_id": {
+      "pattern": "^m9-eval-[0-9a-f]{20}$",
+      "title": "Evaluation Id",
+      "type": "string"
+    },
+    "evaluation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Sha256",
+      "type": "string"
+    },
+    "evaluator_versions": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Evaluator Versions",
+      "type": "object"
+    },
+    "failed_domains": {
+      "items": {
+        "enum": [
+          "asset",
+          "lighting",
+          "material",
+          "pcg"
+        ],
+        "type": "string"
+      },
+      "title": "Failed Domains",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/DomainFinding"
+      },
+      "maxItems": 16,
+      "minItems": 8,
+      "title": "Findings",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "scene-delta-evaluation/1",
+      "default": "scene-delta-evaluation/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "correction_required",
+        "verified"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "unreal_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Unreal Receipt Sha256",
+      "type": "string"
+    },
+    "unreal_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Unreal Request Sha256",
+      "type": "string"
+    },
+    "validation_render_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Validation Render Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evaluation_id",
+    "unreal_request_sha256",
+    "unreal_receipt_sha256",
+    "authored_render_sha256",
+    "validation_render_sha256",
+    "evaluator_versions",
+    "findings",
+    "failed_domains",
+    "status",
+    "evaluated_at",
+    "evaluation_sha256"
+  ],
+  "title": "SceneDeltaEvaluation",
+  "type": "object"
+}

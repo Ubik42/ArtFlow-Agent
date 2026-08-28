@@ -1,0 +1,27 @@
+{
+  "schema_id": "m9-s3-independent-verification/1",
+  "status": "verified",
+  "failed_domains_before": [
+    "lighting"
+  ],
+  "failed_domains_after": [],
+  "rerun_domains": [
+    "lighting"
+  ],
+  "preserved_domains": [
+    "asset",
+    "material",
+    "pcg"
+  ],
+  "failure_authored_mean_luma": 117.716133,
+  "corrected_authored_mean_luma": 166.661858,
+  "pcg_instances_before": 12,
+  "pcg_instances_after": 12,
+  "correction_reconcile_external_submissions": 0,
+  "durable_event_count": 9,
+  "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+  "published_scene_sha256": "de5e78828d065bb51453a4ef3c12af12700e79ec57ba8534f2c828b2a3392a2e",
+  "publish_replay_duplicate_side_effects": 0,
+  "source_scene_unchanged": true,
+  "verification_sha256": "0817fca7c296341e141fa6cdf5394c5d3a80ae76bdd0e992470d08cb034a8e44"
+}

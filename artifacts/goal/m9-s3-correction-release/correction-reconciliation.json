@@ -1,0 +1,8 @@
+{
+  "schema_id": "m9-correction-reconciliation/1",
+  "status": "reconciled_without_resubmit",
+  "event_sequence": 5,
+  "request_sha256": "0ebb3289414f5aacf8c4720009baa8e7496f7d70c1b1b911d535fd29d5013711",
+  "receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+  "external_submission_count_during_reconcile": 0
+}

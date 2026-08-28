@@ -1,0 +1,85 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_scene_path": {
+      "pattern": "^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$",
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "candidate_scene_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Scene Sha256",
+      "type": "string"
+    },
+    "correction_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Correction Receipt Sha256",
+      "type": "string"
+    },
+    "disposition": {
+      "enum": [
+        "published",
+        "discarded"
+      ],
+      "title": "Disposition",
+      "type": "string"
+    },
+    "disposition_id": {
+      "pattern": "^m9-disposition-[0-9a-f]{20}$",
+      "title": "Disposition Id",
+      "type": "string"
+    },
+    "evaluation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Sha256",
+      "type": "string"
+    },
+    "idempotency_key": {
+      "pattern": "^m9:disposition:[0-9a-f]{32}$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "published_scene_path": {
+      "anyOf": [
+        {
+          "pattern": "^/Game/ArtFlow/Published/[A-Za-z0-9_.-]+$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published Scene Path"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "verified-scene-disposition-request/1",
+      "default": "verified-scene-disposition-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition_id",
+    "disposition",
+    "evaluation_sha256",
+    "correction_receipt_sha256",
+    "candidate_scene_path",
+    "candidate_scene_sha256",
+    "source_scene_sha256",
+    "idempotency_key",
+    "request_sha256"
+  ],
+  "title": "VerifiedDispositionRequest",
+  "type": "object"
+}

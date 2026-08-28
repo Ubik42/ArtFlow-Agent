@@ -1,0 +1,15 @@
+{
+  "schema_id": "lighting-domain-patch-request/1",
+  "request_id": "m9-light-82dd30c066a1afd768e7",
+  "purpose": "domain_correction",
+  "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "parent_unreal_receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+  "correction_plan_sha256": "aebed0c1ffaec9f7c31ee8ca3d9125f42b20074fe9fd3b8f5b6c5b171208f529",
+  "intensity": 8.0,
+  "temperature_kelvin": 4200.0,
+  "expected_instance_count": 12,
+  "expected_material_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+  "request_sha256": "0ebb3289414f5aacf8c4720009baa8e7496f7d70c1b1b911d535fd29d5013711"
+}

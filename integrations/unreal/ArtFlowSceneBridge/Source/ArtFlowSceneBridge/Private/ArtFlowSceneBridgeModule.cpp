@@ -1337,7 +1337,7 @@ FString ProtectedSemanticFingerprint(AActor* Actor)
     return HashText(Stable);
 }
 
-bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FString& OutSourceHash, FString& OutProtectedHash, FString& OutError)
+bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FString& OutSourceHash, FString& OutProtectedHash, FString& OutError, bool bApplyReviewedDelta = true)
 {
     UWorld* SourceWorld = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
     if (SourceWorld == nullptr || SourceWorld->GetOutermost()->GetName() != TEXT("/Game/ArtFlowDemo"))
@@ -1415,17 +1415,25 @@ bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FStrin
         OutError = TEXT("Candidate targets do not expose the required typed components.");
         return false;
     }
-    OutPCG->SetGraph(ReviewedGraph);
-    OutPCG->Seed = 240827;
-    Light->SetIntensity(5.5f);
-    Light->SetUseTemperature(true);
-    Light->SetTemperature(4200.0f);
+    if (bApplyReviewedDelta)
+    {
+        OutPCG->SetGraph(ReviewedGraph);
+        OutPCG->Seed = 240827;
+        Light->SetIntensity(5.5f);
+        Light->SetUseTemperature(true);
+        Light->SetTemperature(4200.0f);
+    }
     const int32 ExistingInstances = CountGeneratedInstances(CandidateWorld);
     OutReconciled = ExistingInstances == 12;
-    if (!OutReconciled)
+    if (!OutReconciled && bApplyReviewedDelta)
     {
         OutPCG->CleanupLocalImmediate(true, true);
         OutPCG->GenerateLocal(true);
+    }
+    else if (!OutReconciled)
+    {
+        OutError = FString::Printf(TEXT("Capture-only validation found %d instances; expected exactly 12."), ExistingInstances);
+        return false;
     }
     return true;
 }
@@ -1883,6 +1891,7 @@ void FArtFlowSceneBridgeModule::StartupModule()
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCaptureStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
     {
@@ -1975,10 +1984,13 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
         const bool bPublish = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage"));
         bSuccess = ArtFlowSceneBridge::ExecuteStageDisposition(bPublish, ArchivePath, Error);
     }
-    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")))
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCaptureStage")))
     {
         UPCGComponent* Component = nullptr;
-        bSuccess = ArtFlowSceneBridge::StartCandidateExecution(Component, bStageReconciled, StageSourceHash, StageProtectedHash, Error);
+        const bool bCaptureOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCaptureStage"));
+        bSuccess = ArtFlowSceneBridge::StartCandidateExecution(
+            Component, bStageReconciled, StageSourceHash, StageProtectedHash, Error, !bCaptureOnly);
         if (bSuccess)
         {
             StagePCGComponent = Component;

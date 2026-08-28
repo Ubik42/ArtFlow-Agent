@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "LightingCorrection": {
+      "additionalProperties": false,
+      "properties": {
+        "intensity": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        },
+        "temperature_kelvin": {
+          "maximum": 20000,
+          "minimum": 1000,
+          "title": "Temperature Kelvin",
+          "type": "number"
+        }
+      },
+      "required": [
+        "intensity",
+        "temperature_kelvin"
+      ],
+      "title": "LightingCorrection",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "correction_id": {
+      "pattern": "^m9-correction-[0-9a-f]{20}$",
+      "title": "Correction Id",
+      "type": "string"
+    },
+    "evaluation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Sha256",
+      "type": "string"
+    },
+    "failed_domains": {
+      "items": {
+        "enum": [
+          "asset",
+          "lighting",
+          "material",
+          "pcg"
+        ],
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Failed Domains",
+      "type": "array"
+    },
+    "idempotency_key": {
+      "pattern": "^m9:correction:[0-9a-f]{32}$",
+      "title": "Idempotency Key",
+      "type": "string"
+    },
+    "lighting": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LightingCorrection"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "preserved_domain_evidence": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": {
+        "enum": [
+          "asset",
+          "lighting",
+          "material",
+          "pcg"
+        ]
+      },
+      "title": "Preserved Domain Evidence",
+      "type": "object"
+    },
+    "rerun_domains": {
+      "items": {
+        "enum": [
+          "asset",
+          "lighting",
+          "material",
+          "pcg"
+        ],
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 1,
+      "title": "Rerun Domains",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "domain-correction-plan/1",
+      "default": "domain-correction-plan/1",
+      "title": "Schema Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "correction_id",
+    "evaluation_sha256",
+    "failed_domains",
+    "rerun_domains",
+    "preserved_domain_evidence",
+    "idempotency_key",
+    "plan_sha256"
+  ],
+  "title": "DomainCorrectionPlan",
+  "type": "object"
+}

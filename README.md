@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9-S1/S2 已将材质、固定 PCG 图、灯光和项目资产统一为 Scene Delta DAG，并在真实 UE 候选关卡完成四域对账、主/验证双机位回渲、保护区 0 侵入及重复请求零新增。领域纠正/发布、图生 3D、MCP 与新前端仍按后续切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布。图生 3D、MCP 与新版中文 Scene Lab 仍按 M10 独立切片推进。
 
 ## 项目概述
 
@@ -65,6 +65,21 @@ Agent 将项目资产选择、灯光参数、已验证材质和固定 PCG 图编
 | --- | --- |
 | ![M9 四域主机位](artifacts/goal/m9-s2-unreal-multi-domain/authored-camera.png) | ![M9 四域验证机位](artifacts/goal/m9-s2-unreal-multi-domain/validation-camera.png) |
 
+### 场景八：评价失败后只纠正灯光，并可靠发布三维候选
+
+为了验证 Agent 不会“一处失败、整条管线重跑”，测试把真实候选主光从 `5.5` 降至 `0.05 lux`。
+Technical Judge 与 Visual Critic 都只标记 `lighting`；Correction Planner 因而只生成灯光补丁，并把
+已经通过的资产、材质和 PCG 证据锁定。真实 UE 纠正将灯光设为 `8.0 / 4200K`，PCG 始终为 12 个
+实例，材质路径没有变化，也没有再次调用图像生成或材质导入。
+
+| 失败回渲：平均亮度 117.72 | 定向纠正：平均亮度 166.66 |
+| --- | --- |
+| ![M9 灯光失败回渲](artifacts/goal/m9-s3-correction-release/failure-authored-camera.png) | ![M9 灯光纠正回渲](artifacts/goal/m9-s3-correction-release/corrected-authored-camera.png) |
+
+纠正调用在 `reserve / submit` 后模拟回执丢失；新进程从 SQLite ledger 对账现有结果，外部重提次数为
+0。验证后的关卡发布到 `/Game/ArtFlow/Published/AF_M9_b70662c9ce03`，重复发布只返回 `reconciled`，
+源关卡哈希保持不变。完整事件与回执见 [M9-S3 实机记录](docs/evidence/M9_S3_DOMAIN_CORRECTION_PUBLISH_2026-08-27.md)。
+
 ## Agentic 执行流程
 
 ![ArtFlow Agentic 使用流程漫画：从 Unreal 场景理解、双路生成、独立评价到局部修订与验证回流](docs/assets/portfolio/11-agentic-workflow-comic.png)
@@ -101,6 +116,10 @@ Unreal 四 Pass Scene Package
 第二条 UE 三维执行证据已验证 `Scene Digital Twin → SceneChangePlan → candidate level → lighting/PCG → same-camera render → reconcile → publish/discard`。它使用独立类型化回执，源关卡在整个执行生命周期中保持零写入。
 
 第三条材质管线已经完成真实闭环：ArtFlow 从 `/object_info` 固定受审节点接口，只允许把视觉意图、种子、尺寸和输出前缀填入项目模板；真实 RTX 4080 结果逐通道验证，失败域被定向纠正；五个哈希随后创建 UE Texture2D、PBR Master 与 Material Instance。模板篡改、schema 漂移、路径越界、彩色标量图和无效法线都会在发布前失败。完整证据见 [M8-S2 实机记录](docs/evidence/M8_S2_REAL_PBR_UNREAL_RETURN_2026-08-27.md)。
+
+第四条三维 Agent 闭环在同一候选上证明了独立四域评价、仅灯光域重跑、崩溃后无重提对账和真实
+Unreal 发布。发布并非把图片贴到平面，而是复制经过双机位复检的候选关卡；9 个生命周期事件把
+失败评价、纠正、复检和 disposition 串成可重放来源链。
 
 ## 实际运行证据
 
@@ -200,6 +219,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
 | `src/artflow_agent/provenance.py` | UE return、来源清单与独立验证 |
 | `src/artflow_agent/portfolio_release.py` | 确定性发布包与篡改检测 |
 | `src/artflow_agent/pbr.py` | ComfyUI 能力快照、PBR 合同与受审图插槽编译器 |
+| `src/artflow_agent/scene_lifecycle.py` | 多域评价、失败域纠正、持久恢复与发布 ledger |
 | `integrations/unreal/` | 可单独安装的 ArtFlow Scene Bridge 与 UE 5.8 测试宿主 |
 | `web/` | React / TypeScript Scene Lab 与证据控制台 |
 | `artifacts/goal/` | 当前作品集运行、截图、记分卡与 checkpoint |

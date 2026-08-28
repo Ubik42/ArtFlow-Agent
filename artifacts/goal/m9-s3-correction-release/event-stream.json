@@ -1,0 +1,476 @@
+[
+  {
+    "sequence": 1,
+    "event_type": "run_created",
+    "idempotency_key": "m9:run:79d79060738719cb",
+    "payload": {
+      "authored_render_path": "artifacts/goal/m9-s2-unreal-multi-domain/authored-camera.png",
+      "authored_render_sha256": "1f57eae5987da8255078ec473c409fff200d2a8c26e4b8f66853c45fc251744f",
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "completed_at": "2026-08-28T03:57:04.297973Z",
+      "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+      "generated_instance_count": 12,
+      "material_instance_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+      "operation_results": [
+        {
+          "evidence": {
+            "asset_count": 1,
+            "asset_path": "/Game/ArtFlow/Props/SM_ArtFlowRock.SM_ArtFlowRock",
+            "license_project_owned": true
+          },
+          "operation_id": "asset-reuse",
+          "status": "reconciled"
+        },
+        {
+          "evidence": {
+            "intensity": 5.5,
+            "temperature_kelvin": 4200.0,
+            "use_temperature": true
+          },
+          "operation_id": "lighting-patch",
+          "status": "reconciled"
+        },
+        {
+          "evidence": {
+            "material_instance_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+            "pbr_request_sha256": "bfc8d102d040b888fb07fad150f295df948b08f57561a9719ada9763fb6b7f8a",
+            "slot_index": 0
+          },
+          "operation_id": "material-bind",
+          "status": "reconciled"
+        },
+        {
+          "evidence": {
+            "generated_instance_count": 12,
+            "generated_mesh_path": "/Game/ArtFlow/Props/SM_ArtFlowRock.SM_ArtFlowRock",
+            "instances_inside_exclusion": 0,
+            "reviewed_graph_path": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+            "reviewed_graph_sha256": "b7fca3eb700eb408b8ad2f65ee14a218c87cf70370baf8b3d6cb51f5edebeabd",
+            "seed": 240827
+          },
+          "operation_id": "pcg-layout",
+          "status": "reconciled"
+        }
+      ],
+      "pcg_graph_path": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+      "protected_state_after": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+      "protected_state_before": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+      "receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+      "request_id": "m9-ue-79d79060738719cbf0db5f1d",
+      "request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded",
+      "schema_id": "multi-domain-unreal-receipt/1",
+      "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "status": "reconciled",
+      "validation_render_path": "artifacts/goal/m9-s2-unreal-multi-domain/validation-camera.png",
+      "validation_render_sha256": "910d648c75ab068dfddcc5e0b69b071077c6ec3148e6ac660bca29cacbe9a836"
+    },
+    "payload_sha256": "e91b931e37f8165d9f7ee5fe27b2ce870185e411be2322abd8aec24f7b62d693",
+    "occurred_at": "2026-08-28T04:07:03.561361Z"
+  },
+  {
+    "sequence": 2,
+    "event_type": "evaluation_recorded",
+    "idempotency_key": "m9:evaluation:347ded3df8cc153a",
+    "payload": {
+      "authored_render_sha256": "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+      "evaluated_at": "2026-08-28T04:06:47.169658Z",
+      "evaluation_id": "m9-eval-cf1ce3dbea3498714449",
+      "evaluation_sha256": "347ded3df8cc153a0602df5d6334621b41511077be28ed76183d71e1f9782196",
+      "evaluator_versions": {
+        "technical-judge-v1": "1.0.0",
+        "visual-critic-v1": "1.0.0"
+      },
+      "failed_domains": [
+        "lighting"
+      ],
+      "findings": [
+        {
+          "domain": "asset",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "aa557e2b5e13a925356189fa0e0fb645ebcdc2bab2543b83963780b3b8623c3f",
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": true,
+          "metric": "project_owned_asset_binding",
+          "observed": true,
+          "threshold": "must_equal_true",
+          "verdict": "pass"
+        },
+        {
+          "domain": "material",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "aa557e2b5e13a925356189fa0e0fb645ebcdc2bab2543b83963780b3b8623c3f",
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": true,
+          "metric": "material_binding_unchanged",
+          "observed": true,
+          "threshold": "must_equal_true",
+          "verdict": "pass"
+        },
+        {
+          "domain": "pcg",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "aa557e2b5e13a925356189fa0e0fb645ebcdc2bab2543b83963780b3b8623c3f",
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": true,
+          "metric": "generated_instance_count",
+          "observed": 12,
+          "threshold": "eq_12",
+          "verdict": "pass"
+        },
+        {
+          "domain": "lighting",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "aa557e2b5e13a925356189fa0e0fb645ebcdc2bab2543b83963780b3b8623c3f",
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": true,
+          "metric": "key_light_intensity",
+          "observed": 0.05000000074505806,
+          "threshold": "between_4.5_and_8.5_lux",
+          "verdict": "fail"
+        },
+        {
+          "domain": "asset",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": false,
+          "metric": "multi_view_spatial_delta",
+          "observed": 44.519329,
+          "threshold": "gte_10",
+          "verdict": "pass"
+        },
+        {
+          "domain": "material",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1"
+          ],
+          "hard_failure": false,
+          "metric": "authored_view_luma_stddev",
+          "observed": 40.394979,
+          "threshold": "gte_20",
+          "verdict": "pass"
+        },
+        {
+          "domain": "pcg",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+            "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+          ],
+          "hard_failure": false,
+          "metric": "multi_view_layout_visible",
+          "observed": 44.519329,
+          "threshold": "gte_10",
+          "verdict": "pass"
+        },
+        {
+          "domain": "lighting",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1"
+          ],
+          "hard_failure": false,
+          "metric": "authored_view_mean_luma",
+          "observed": 117.716133,
+          "threshold": "gte_145.0",
+          "verdict": "fail"
+        }
+      ],
+      "schema_id": "scene-delta-evaluation/1",
+      "status": "correction_required",
+      "unreal_receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+      "unreal_request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded",
+      "validation_render_sha256": "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395"
+    },
+    "payload_sha256": "dc9762dbf8d527f18e577ba4d5327e595b400c84c51760487592824233fb76bb",
+    "occurred_at": "2026-08-28T04:07:03.981434Z"
+  },
+  {
+    "sequence": 3,
+    "event_type": "correction_reserved",
+    "idempotency_key": "m9:correction:reserve:8lux",
+    "payload": {
+      "correction_id": "m9-correction-bfc82a5306c954763cc5",
+      "evaluation_sha256": "347ded3df8cc153a0602df5d6334621b41511077be28ed76183d71e1f9782196",
+      "failed_domains": [
+        "lighting"
+      ],
+      "idempotency_key": "m9:correction:bfc82a5306c954763cc5a491fce82184",
+      "lighting": {
+        "intensity": 8.0,
+        "temperature_kelvin": 4200.0
+      },
+      "plan_sha256": "aebed0c1ffaec9f7c31ee8ca3d9125f42b20074fe9fd3b8f5b6c5b171208f529",
+      "preserved_domain_evidence": {
+        "asset": "4121cb40bffb97caa82bd9a31c9a7dab28eb58da60d280116e8f4122b747b13f",
+        "material": "678f968f8ffb0b755d3c2c4e759e203664f9c88309504a12ed45ac5bba565a40",
+        "pcg": "afa9fd434901932817879a62bdb9bd6b55c81f29f9eb6fba84e2d7ba0cdeba78"
+      },
+      "rerun_domains": [
+        "lighting"
+      ],
+      "schema_id": "domain-correction-plan/1"
+    },
+    "payload_sha256": "af5c996bddbe85a6e72ee745c7732eff1fd53ce1ba681db62b7553f595d63cc2",
+    "occurred_at": "2026-08-28T04:07:04.401741Z"
+  },
+  {
+    "sequence": 4,
+    "event_type": "correction_submitted",
+    "idempotency_key": "m9:correction:submit:8lux",
+    "payload": {
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "correction_plan_sha256": "aebed0c1ffaec9f7c31ee8ca3d9125f42b20074fe9fd3b8f5b6c5b171208f529",
+      "expected_instance_count": 12,
+      "expected_material_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+      "intensity": 8.0,
+      "parent_unreal_receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+      "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+      "purpose": "domain_correction",
+      "request_id": "m9-light-82dd30c066a1afd768e7",
+      "request_sha256": "0ebb3289414f5aacf8c4720009baa8e7496f7d70c1b1b911d535fd29d5013711",
+      "schema_id": "lighting-domain-patch-request/1",
+      "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "temperature_kelvin": 4200.0
+    },
+    "payload_sha256": "2bdf8f66891d449851f3c44b7468fb69c18b332b338bd945a61e79ac7f9dbfac",
+    "occurred_at": "2026-08-28T04:07:04.789622Z"
+  },
+  {
+    "sequence": 5,
+    "event_type": "correction_receipt_recorded",
+    "idempotency_key": "m9:correction:receipt:6b1839967fd3f4e4",
+    "payload": {
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "completed_at": "2026-08-28T04:07:24.143018Z",
+      "generated_instance_count_after": 12,
+      "generated_instance_count_before": 12,
+      "intensity_after": 8.0,
+      "intensity_before": 0.05000000074505806,
+      "material_path_after": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+      "material_path_before": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+      "protected_state_after": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+      "protected_state_before": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+      "receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+      "request_id": "m9-light-82dd30c066a1afd768e7",
+      "request_sha256": "0ebb3289414f5aacf8c4720009baa8e7496f7d70c1b1b911d535fd29d5013711",
+      "schema_id": "lighting-domain-patch-receipt/1",
+      "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "status": "executed",
+      "temperature_after": 4200.0,
+      "temperature_before": 4200.0
+    },
+    "payload_sha256": "fbf005354b68cf39581e8099f72023788547971f77db31a1fba7512a39dd4902",
+    "occurred_at": "2026-08-28T04:07:51.569939Z"
+  },
+  {
+    "sequence": 6,
+    "event_type": "verification_recorded",
+    "idempotency_key": "m9:verification:2d8abc53c702caf3",
+    "payload": {
+      "authored_render_sha256": "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+      "evaluated_at": "2026-08-28T04:08:29.997194Z",
+      "evaluation_id": "m9-eval-c5b8b3c24c325962d668",
+      "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7",
+      "evaluator_versions": {
+        "technical-judge-v1": "1.0.0",
+        "visual-critic-v1": "1.0.0"
+      },
+      "failed_domains": [],
+      "findings": [
+        {
+          "domain": "asset",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": true,
+          "metric": "project_owned_asset_binding",
+          "observed": true,
+          "threshold": "must_equal_true",
+          "verdict": "pass"
+        },
+        {
+          "domain": "material",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": true,
+          "metric": "material_binding_unchanged",
+          "observed": true,
+          "threshold": "must_equal_true",
+          "verdict": "pass"
+        },
+        {
+          "domain": "pcg",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": true,
+          "metric": "generated_instance_count",
+          "observed": 12,
+          "threshold": "eq_12",
+          "verdict": "pass"
+        },
+        {
+          "domain": "lighting",
+          "evaluator_id": "technical-judge-v1",
+          "evidence_sha256": [
+            "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": true,
+          "metric": "key_light_intensity",
+          "observed": 8.0,
+          "threshold": "between_4.5_and_8.5_lux",
+          "verdict": "pass"
+        },
+        {
+          "domain": "asset",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": false,
+          "metric": "multi_view_spatial_delta",
+          "observed": 57.717595,
+          "threshold": "gte_10",
+          "verdict": "pass"
+        },
+        {
+          "domain": "material",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a"
+          ],
+          "hard_failure": false,
+          "metric": "authored_view_luma_stddev",
+          "observed": 58.814259,
+          "threshold": "gte_20",
+          "verdict": "pass"
+        },
+        {
+          "domain": "pcg",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a",
+            "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+          ],
+          "hard_failure": false,
+          "metric": "multi_view_layout_visible",
+          "observed": 57.717595,
+          "threshold": "gte_10",
+          "verdict": "pass"
+        },
+        {
+          "domain": "lighting",
+          "evaluator_id": "visual-critic-v1",
+          "evidence_sha256": [
+            "305b745cde9b0ffd55c4ceb6782b92116db115373d55263df029c1c7f973915a"
+          ],
+          "hard_failure": false,
+          "metric": "authored_view_mean_luma",
+          "observed": 166.661858,
+          "threshold": "gte_145.0",
+          "verdict": "pass"
+        }
+      ],
+      "schema_id": "scene-delta-evaluation/1",
+      "status": "verified",
+      "unreal_receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+      "unreal_request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded",
+      "validation_render_sha256": "fd06426166111973d31cb6035b310d5dba0eb3c8b34405f391563801d479facc"
+    },
+    "payload_sha256": "fd52d427427f8b68c065a682b7b7aaf242977fdad9085535308d394272f3463c",
+    "occurred_at": "2026-08-28T04:09:22.628156Z"
+  },
+  {
+    "sequence": 7,
+    "event_type": "disposition_reserved",
+    "idempotency_key": "m9:disposition:reserve:verified",
+    "payload": {
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "candidate_scene_sha256": "217fac2a5c446e76d8339986905131e39edafb78e3012c70a85b01a99c6b6326",
+      "correction_receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+      "disposition": "published",
+      "disposition_id": "m9-disposition-b70662c9ce036d85f7ce",
+      "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7",
+      "idempotency_key": "m9:disposition:b70662c9ce036d85f7ce7a8b29a50322",
+      "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+      "request_sha256": "4f32b6c61f0d16b5cd7dc9a4d4ec98b94befe4b3caacd73925481e9bfd921918",
+      "schema_id": "verified-scene-disposition-request/1",
+      "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a"
+    },
+    "payload_sha256": "6c2cf042b62c7155aace7829af947936172acfe825b062c1906e1fc4345d740f",
+    "occurred_at": "2026-08-28T04:09:23.431584Z"
+  },
+  {
+    "sequence": 8,
+    "event_type": "disposition_submitted",
+    "idempotency_key": "m9:disposition:submit:verified",
+    "payload": {
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "candidate_scene_sha256": "217fac2a5c446e76d8339986905131e39edafb78e3012c70a85b01a99c6b6326",
+      "correction_receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+      "disposition": "published",
+      "disposition_id": "m9-disposition-b70662c9ce036d85f7ce",
+      "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7",
+      "idempotency_key": "m9:disposition:b70662c9ce036d85f7ce7a8b29a50322",
+      "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+      "request_sha256": "4f32b6c61f0d16b5cd7dc9a4d4ec98b94befe4b3caacd73925481e9bfd921918",
+      "schema_id": "verified-scene-disposition-request/1",
+      "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a"
+    },
+    "payload_sha256": "6c2cf042b62c7155aace7829af947936172acfe825b062c1906e1fc4345d740f",
+    "occurred_at": "2026-08-28T04:09:23.820636Z"
+  },
+  {
+    "sequence": 9,
+    "event_type": "disposition_receipt_recorded",
+    "idempotency_key": "m9:disposition:receipt:published",
+    "payload": {
+      "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+      "completed_at": "2026-08-28T04:09:42.748087Z",
+      "correction_receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+      "disposition": "published",
+      "disposition_id": "m9-disposition-b70662c9ce036d85f7ce",
+      "duplicate_side_effect_count": 0,
+      "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7",
+      "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+      "published_scene_sha256": "de5e78828d065bb51453a4ef3c12af12700e79ec57ba8534f2c828b2a3392a2e",
+      "receipt_sha256": "cac2ec29465190fc692e023fc5a9d0fff24fb4350a797bc5b88930c169b76e37",
+      "schema_id": "verified-scene-disposition-receipt/1",
+      "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a"
+    },
+    "payload_sha256": "84fe2c0f355589b883512cff21bbd91e5ce2e5f7593f616e818eb135dd1387fb",
+    "occurred_at": "2026-08-28T04:10:29.069130Z"
+  }
+]

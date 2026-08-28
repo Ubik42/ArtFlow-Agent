@@ -1,0 +1,28 @@
+{
+	"schema_id": "multi-view-capture-receipt/1",
+	"request_id": "m9-light-a8a773f822bb04c8fba6",
+	"request_sha256": "c064dc3237fed1fc6d5b127244d53d5d0b7ea8fb3ba78c5df84f3f4a5b5cbed1",
+	"candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+	"authored_camera_label": "ArtFlow_Camera",
+	"authored_render_path": "D:/3D/_tools/ArtFlow-Agent/integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/Candidates/artflow-cb2176a7a45bbad1/candidate-beauty.png",
+	"authored_render_sha256": "f1c51b1dd437f9e7b59e001ffa25e135972a1043477ed9ae1a19e7784b145ee1",
+	"validation_camera_label": "ArtFlow_M9_ValidationCamera",
+	"validation_camera_location": [
+		-620,
+		-650,
+		330
+	],
+	"validation_camera_target": [
+		0,
+		40,
+		105
+	],
+	"validation_render_path": "D:/3D/_tools/ArtFlow-Agent/integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/Candidates/artflow-cb2176a7a45bbad1/candidate-validation-camera.png",
+	"validation_render_sha256": "8aec1f76933e1f74b9969d4ed2f1ef4c953c4905fa91fc2a4aa4a9580668f395",
+	"source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"protected_semantic_fingerprint": "65454d0cdcd4aba6811db0c7668fa65fd4b76abf594cb9ab33e20cd20b12a36f",
+	"generated_instance_count": 12,
+	"asset_and_shader_compilation_finished": true,
+	"created_at": "2026-08-28T04:06:13.723Z"
+}

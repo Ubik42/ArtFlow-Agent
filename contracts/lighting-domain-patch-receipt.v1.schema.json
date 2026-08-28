@@ -1,0 +1,116 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_scene_path": {
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "generated_instance_count_after": {
+      "title": "Generated Instance Count After",
+      "type": "integer"
+    },
+    "generated_instance_count_before": {
+      "title": "Generated Instance Count Before",
+      "type": "integer"
+    },
+    "intensity_after": {
+      "title": "Intensity After",
+      "type": "number"
+    },
+    "intensity_before": {
+      "title": "Intensity Before",
+      "type": "number"
+    },
+    "material_path_after": {
+      "title": "Material Path After",
+      "type": "string"
+    },
+    "material_path_before": {
+      "title": "Material Path Before",
+      "type": "string"
+    },
+    "protected_state_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State After",
+      "type": "string"
+    },
+    "protected_state_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State Before",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "lighting-domain-patch-receipt/1",
+      "default": "lighting-domain-patch-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 After",
+      "type": "string"
+    },
+    "source_scene_sha256_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 Before",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "executed",
+        "reconciled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "temperature_after": {
+      "title": "Temperature After",
+      "type": "number"
+    },
+    "temperature_before": {
+      "title": "Temperature Before",
+      "type": "number"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_sha256",
+    "status",
+    "candidate_scene_path",
+    "intensity_before",
+    "intensity_after",
+    "temperature_before",
+    "temperature_after",
+    "generated_instance_count_before",
+    "generated_instance_count_after",
+    "material_path_before",
+    "material_path_after",
+    "source_scene_sha256_before",
+    "source_scene_sha256_after",
+    "protected_state_before",
+    "protected_state_after",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "LightingPatchReceipt",
+  "type": "object"
+}

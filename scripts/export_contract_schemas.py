@@ -33,6 +33,14 @@ from artflow_agent.pbr import (
 from artflow_agent.pbr_unreal import UnrealPBRReturnReceipt, UnrealPBRReturnRequest
 from artflow_agent.pbr_validation import PBRGenerationValidationReceipt
 from artflow_agent.multi_domain_unreal import MultiDomainUnrealReceipt, MultiDomainUnrealRequest
+from artflow_agent.scene_lifecycle import (
+    DomainCorrectionPlan,
+    LightingPatchReceipt,
+    LightingPatchRequest,
+    SceneDeltaEvaluation,
+    VerifiedDispositionReceipt,
+    VerifiedDispositionRequest,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = {
@@ -66,6 +74,12 @@ SCHEMAS = {
     "unreal-pbr-return-receipt.v1.schema.json": UnrealPBRReturnReceipt.model_json_schema(),
     "multi-domain-unreal-request.v1.schema.json": MultiDomainUnrealRequest.model_json_schema(),
     "multi-domain-unreal-receipt.v1.schema.json": MultiDomainUnrealReceipt.model_json_schema(),
+    "scene-delta-evaluation.v1.schema.json": SceneDeltaEvaluation.model_json_schema(),
+    "domain-correction-plan.v1.schema.json": DomainCorrectionPlan.model_json_schema(),
+    "lighting-domain-patch-request.v1.schema.json": LightingPatchRequest.model_json_schema(),
+    "lighting-domain-patch-receipt.v1.schema.json": LightingPatchReceipt.model_json_schema(),
+    "verified-scene-disposition-request.v1.schema.json": VerifiedDispositionRequest.model_json_schema(),
+    "verified-scene-disposition-receipt.v1.schema.json": VerifiedDispositionReceipt.model_json_schema(),
 }
 
 

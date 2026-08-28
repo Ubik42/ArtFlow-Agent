@@ -1,0 +1,22 @@
+{
+  "schema_id": "domain-correction-plan/1",
+  "correction_id": "m9-correction-bfc82a5306c954763cc5",
+  "evaluation_sha256": "347ded3df8cc153a0602df5d6334621b41511077be28ed76183d71e1f9782196",
+  "failed_domains": [
+    "lighting"
+  ],
+  "rerun_domains": [
+    "lighting"
+  ],
+  "preserved_domain_evidence": {
+    "asset": "4121cb40bffb97caa82bd9a31c9a7dab28eb58da60d280116e8f4122b747b13f",
+    "material": "678f968f8ffb0b755d3c2c4e759e203664f9c88309504a12ed45ac5bba565a40",
+    "pcg": "afa9fd434901932817879a62bdb9bd6b55c81f29f9eb6fba84e2d7ba0cdeba78"
+  },
+  "lighting": {
+    "intensity": 8.0,
+    "temperature_kelvin": 4200.0
+  },
+  "idempotency_key": "m9:correction:bfc82a5306c954763cc5a491fce82184",
+  "plan_sha256": "aebed0c1ffaec9f7c31ee8ca3d9125f42b20074fe9fd3b8f5b6c5b171208f529"
+}

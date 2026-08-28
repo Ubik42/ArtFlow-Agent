@@ -1,0 +1,13 @@
+{
+  "schema_id": "verified-scene-disposition-request/1",
+  "disposition_id": "m9-disposition-b70662c9ce036d85f7ce",
+  "disposition": "published",
+  "evaluation_sha256": "2d8abc53c702caf34278a288219bb57c271b3695a11e18e405ccaac2ef92f4e7",
+  "correction_receipt_sha256": "6b1839967fd3f4e42fd96cd401c88c506054f0dff08ae16df89088d7575adae1",
+  "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+  "candidate_scene_sha256": "217fac2a5c446e76d8339986905131e39edafb78e3012c70a85b01a99c6b6326",
+  "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "idempotency_key": "m9:disposition:b70662c9ce036d85f7ce7a8b29a50322",
+  "request_sha256": "4f32b6c61f0d16b5cd7dc9a4d4ec98b94befe4b3caacd73925481e9bfd921918"
+}

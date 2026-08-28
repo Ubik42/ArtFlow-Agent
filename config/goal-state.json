@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 38,
+  "stateRevision": 39,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M9",
+  "currentMilestone": "M10",
   "milestones": [
     {
       "id": "M0",
@@ -93,7 +93,7 @@
     {
       "id": "M9",
       "title": "PCG lighting and asset scene-transformation closed loop",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M8"],
       "outcome": "One project-owned concept target drives staged lighting, PCG layout and bounded asset/material changes, same-camera rerender evaluation, failed-domain correction and verified publish or discard.",
       "acceptance": [
@@ -105,7 +105,7 @@
     {
       "id": "M10",
       "title": "MCP interoperability image-to-3D experiment and portfolio release",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M9"],
       "outcome": "A thin MCP facade exposes the same bounded resources and tools, one optional image-to-3D provider passes through Interchange validation, and a Chinese screenshot-rich case study truthfully demonstrates the complete Unreal scene-transformation Agent.",
       "acceptance": [
@@ -116,39 +116,38 @@
     }
   ],
   "nextSlice": {
-    "id": "M9-S3",
-    "milestone": "M9",
-    "title": "Domain-local correction, durable recovery and verified disposition",
-    "outcome": "Inject one reproducible failure into the real four-domain candidate, persist the failed-domain decision, correct only that domain without replaying successful branches, rerun technical and multi-view checks, then publish or discard the verified Scene Delta through an idempotent provenance-bound disposition receipt.",
-    "risk": "R4",
-    "evidenceTarget": "A5",
-    "requiresRealHosts": true,
+    "id": "M10-S1",
+    "milestone": "M10",
+    "title": "Thin MCP interoperability over the existing Agent control plane",
+    "outcome": "Expose the verified Scene Digital Twin, lifecycle evidence and a minimal set of bounded planning, judging and disposition capabilities through a local STDIO MCP facade whose handlers call the existing contracts, policy and durable runtime rather than owning parallel state.",
+    "risk": "R3",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": false,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not add image-to-3D, MCP or redesign the frontend before the M9 correction and disposition chain is complete",
+      "Do not add image-to-3D or redesign the frontend before the MCP boundary is proven",
       "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
-      "Do not regenerate valid M8 images or rerun successful material, asset or PCG branches when correcting a lighting-domain failure",
-      "Do not publish a candidate with any technical failure even if the authored-camera image is visually attractive",
-      "Do not add another recovery coordinator or event store",
-      "Do not broaden tests beyond failure classification, replay isolation, disposition idempotency and real host boundaries"
+      "Do not expose arbitrary Python, shell, Blueprint, workflow JSON, file paths or Unreal object mutation",
+      "Do not let MCP own another event store, policy engine, reducer, memory system or disposition authority",
+      "Do not add OAuth or remote HTTP transport to the local STDIO proof",
+      "Do not broaden tests beyond schema parity, capability allowlisting, runtime reuse and protocol interoperability"
     ],
     "acceptance": [
-      "One injected bounded lighting failure produces a persisted technical failure bound to the M9-S2 request and renders while material, asset and PCG branches remain successful",
-      "The correction planner emits one lighting-only patch with a new idempotency key and cites the failed validator; no image generation, material import or PCG generation is replayed",
-      "Real UE execution applies the correction only in staging, captures authored and validation cameras after compilation and passes every technical invariant",
-      "A durable recovery replay reconciles unknown or completed correction state without duplicate side effects",
-      "The verified candidate is published or discarded through a content-addressed disposition receipt while the source level remains unchanged",
-      "Independent verification, focused tests, goal audit and quick validation pass and public docs distinguish corrected/published evidence from planned M10 capabilities"
+      "A stock MCP client can initialize the local server, list resources/tools and read the real M9 Twin and lifecycle evidence",
+      "Every MCP tool input/output schema derives from or validates through existing ArtFlow contracts and unsupported fields fail closed",
+      "Tool handlers call the existing planner, evaluator or lifecycle boundary and create no second source of truth",
+      "No exposed tool accepts arbitrary code, arbitrary workflow JSON, unrestricted paths or raw host commands",
+      "Protocol transcripts, focused tests and an independent boundary audit prove successful calls and hostile rejection cases"
     ],
     "stopConditions": [
-      "Stop before correction if the failure cannot be isolated to one domain or the successful branch receipts are missing",
-      "Stop before disposition if source, protected, material, graph, actor-budget or multi-view evidence is stale or invalid",
-      "Stop if the candidate cannot be published/discarded without overwriting the source scene",
-      "Stop if an existing user change overlaps the candidate, published namespace or disposition Bridge code and cannot be preserved"
+      "Stop if MCP requires a parallel coordinator or weakens an existing policy or idempotency boundary",
+      "Stop if the chosen SDK cannot provide standards-compliant STDIO initialization and schema exposure without network services",
+      "Stop if a resource would disclose prompts, secrets, hidden reasoning or unrestricted local filesystem contents",
+      "Stop if existing user changes overlap the MCP facade and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
+      {"id": "node", "kind": "command", "value": "node", "required": false}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -164,9 +163,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0034.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0035.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M8 remain verified at their prior bounded claims. M9-S1/S2 are complete: one strict v2 Scene Delta binds material, reviewed PCG, lighting and project assets; a typed request rebound the plan to four real Twin actors, source/PBR/graph fingerprints and reconciled all four domains in UE 5.8. Authored and validation cameras were captured after shader compilation; independent checks proved 12 project-owned instances, zero protected-AABB intrusion, unchanged source/protected state and exact replay with seven generated assets and no duplicates. Domain-local correction, durable correction recovery and final publish/discard remain M9-S3; image-to-3D, MCP and redesigned frontend remain planned.",
+  "evidenceCeiling": "M0-M8 remain verified at their prior bounded claims. M9 is complete: a strict four-domain Scene Delta was rebound to real Twin/PBR/PCG facts and executed in UE 5.8; a rendered 0.05-lux failure was independently isolated to lighting, corrected to 8.0/4200K without replaying material, asset or PCG, recovered from a deliberately missing receipt with zero resubmission, passed dual-view checks and published to /Game/ArtFlow/Published/AF_M9_b70662c9ce03. The source/protected state and 12 PCG instances remained invariant, and repeated publish produced zero duplicate side effects. MCP, image-to-3D and redesigned frontend remain planned M10 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

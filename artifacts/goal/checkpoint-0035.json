@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M9-S3",
+  "status": "completed",
+  "outcome": "A reproducible 0.05-lux failure was rendered and independently isolated to lighting; a typed correction reran only that domain, preserved the material and 12 PCG instances, recovered its receipt without resubmission, passed corrected dual-view evaluation and published a content-addressed UE 5.8 level with zero duplicate side effects and no source overwrite.",
+  "evidence": [
+    "docs/evidence/M9_S3_DOMAIN_CORRECTION_PUBLISH_2026-08-27.md",
+    "src/artflow_agent/scene_lifecycle.py",
+    "integrations/unreal/apply_lighting_domain_patch.py",
+    "integrations/unreal/publish_verified_scene_delta.py",
+    "artifacts/goal/m9-s3-correction-release/failure-evaluation.json",
+    "artifacts/goal/m9-s3-correction-release/correction-plan.json",
+    "artifacts/goal/m9-s3-correction-release/correction-lighting-receipt.json",
+    "artifacts/goal/m9-s3-correction-release/corrected-evaluation.json",
+    "artifacts/goal/m9-s3-correction-release/lifecycle.sqlite3",
+    "artifacts/goal/m9-s3-correction-release/event-stream.json",
+    "artifacts/goal/m9-s3-correction-release/disposition-receipt.json",
+    "artifacts/goal/m9-s3-correction-release/verification.json"
+  ]
+}

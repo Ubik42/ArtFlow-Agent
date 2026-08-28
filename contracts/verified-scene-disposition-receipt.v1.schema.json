@@ -1,0 +1,102 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_scene_path": {
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "correction_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Correction Receipt Sha256",
+      "type": "string"
+    },
+    "disposition": {
+      "enum": [
+        "published",
+        "discarded"
+      ],
+      "title": "Disposition",
+      "type": "string"
+    },
+    "disposition_id": {
+      "pattern": "^m9-disposition-[0-9a-f]{20}$",
+      "title": "Disposition Id",
+      "type": "string"
+    },
+    "duplicate_side_effect_count": {
+      "const": 0,
+      "default": 0,
+      "title": "Duplicate Side Effect Count",
+      "type": "integer"
+    },
+    "evaluation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evaluation Sha256",
+      "type": "string"
+    },
+    "published_scene_path": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published Scene Path"
+    },
+    "published_scene_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Published Scene Sha256"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "verified-scene-disposition-receipt/1",
+      "default": "verified-scene-disposition-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 After",
+      "type": "string"
+    },
+    "source_scene_sha256_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 Before",
+      "type": "string"
+    }
+  },
+  "required": [
+    "disposition_id",
+    "disposition",
+    "evaluation_sha256",
+    "correction_receipt_sha256",
+    "candidate_scene_path",
+    "source_scene_sha256_before",
+    "source_scene_sha256_after",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "VerifiedDispositionReceipt",
+  "type": "object"
+}
