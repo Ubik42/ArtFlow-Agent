@@ -613,6 +613,45 @@ def create_app(
         path = _resolve_run_artifact(resolved_runs, run_id, candidate.image_path)
         return FileResponse(path)
 
+    @app.get("/api/showcase/image-to-3d/{asset_name}")
+    @app.get("/api/showcase/production/{asset_name}")
+    def image_to_3d_showcase_asset(asset_name: str) -> Response:
+        """Serve a fixed project-owned proof set without accepting host paths."""
+        goal_root = PROJECT_ROOT / "artifacts" / "goal"
+        evidence_root = goal_root / "m10-s2-image-to-3d"
+        allowed = {
+            "reference": evidence_root / "altar-reference.png",
+            "unreal": evidence_root / "unreal-generated-altar-v3.png",
+            "pbr-source": goal_root
+            / "m8-s2-pbr-material"
+            / "validated"
+            / "ruin_altar_basalt_base_color.png",
+            "pbr-unreal": goal_root
+            / "m8-s2-pbr-material"
+            / "candidate-material-beauty.png",
+            "scene-authored": goal_root
+            / "m9-s2-unreal-multi-domain"
+            / "authored-camera.png",
+            "scene-validation": goal_root
+            / "m9-s2-unreal-multi-domain"
+            / "validation-camera.png",
+            "lighting-failure": goal_root
+            / "m9-s3-correction-release"
+            / "failure-authored-camera.png",
+            "lighting-corrected": goal_root
+            / "m9-s3-correction-release"
+            / "corrected-authored-camera.png",
+        }
+        path = allowed.get(asset_name)
+        if path is None or not path.is_file():
+            raise HTTPException(status_code=404, detail="展示资产不存在")
+        content = path.read_bytes()
+        return Response(
+            content=content,
+            media_type="image/png",
+            headers={"X-Content-SHA256": hashlib.sha256(content).hexdigest()},
+        )
+
     source_web_dist = PROJECT_ROOT / "web" / "dist"
     packaged_web_dist = Path(__file__).resolve().parent / "web"
     web_dist = source_web_dist if source_web_dist.is_dir() else packaged_web_dist

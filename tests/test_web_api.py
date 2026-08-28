@@ -403,3 +403,18 @@ def test_codex_candidate_import_is_bound_idempotent_and_tamper_evident(tmp_path)
 
     (artifact_root / f"{artifact.sha256}.png").write_bytes(b"tampered")
     assert client.get(url).status_code == 409
+
+
+def test_image_to_3d_showcase_exposes_only_fixed_project_assets(tmp_path) -> None:
+    client = TestClient(create_app(runs_dir=tmp_path))
+
+    for name in ("unreal", "pbr-unreal", "scene-validation", "lighting-corrected"):
+        response = client.get(f"/api/showcase/production/{name}")
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "image/png"
+        assert response.headers["x-content-sha256"] == hashlib.sha256(
+            response.content
+        ).hexdigest()
+
+    assert client.get("/api/showcase/image-to-3d/../../config/goal-state.json").status_code == 404
+    assert client.get("/api/showcase/image-to-3d/not-registered").status_code == 404

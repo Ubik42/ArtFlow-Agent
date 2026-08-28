@@ -550,6 +550,24 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
   return response.json();
 }
 const pretty = (value: string) => value.replaceAll("_", " ");
+const stageLabel = (value: string) =>
+  ({
+    execution_succeeded: "执行完成",
+    route_ready: "路线就绪",
+    approved: "已确认",
+    review: "待复检",
+    awaiting_approval: "等待外部确认",
+    failed: "执行失败",
+  })[value] ?? pretty(value);
+const constraintLabel = (value: string) =>
+  ({
+    "camera framing": "相机构图",
+    "protected blockout silhouette": "受保护灰盒轮廓",
+    "ground-plane composition": "地面构图",
+    "new characters": "新增角色",
+    logos: "品牌标识",
+    "protected geometry redesign": "重做受保护几何",
+  })[value] ?? value;
 const shortId = (value: string) =>
   value.length > 18 ? `${value.slice(0, 8)}…${value.slice(-6)}` : value;
 
@@ -742,7 +760,7 @@ export default function App() {
   const context = agent?.scene
     ? {
         title: agent.scene.source_scene,
-        subtitle: agent.scene.art_goal,
+        subtitle: "在保持相机与受保护灰盒轮廓的前提下，探索灯光、材质与场景氛围。",
         stage: agent.status.stage,
       }
     : legacy
@@ -775,13 +793,13 @@ export default function App() {
           </div>
           <div>
             <strong>ARTFLOW</strong>
-            <span>SCENE LAB / AGENT CONTROL PLANE</span>
+            <span>三维场景导演台</span>
           </div>
         </div>
         <div className="mast-context">
           <span className="context-index">01</span>
           <div>
-            <small>ACTIVE SCENE</small>
+            <small>当前场景</small>
             <strong>{context.title}</strong>
           </div>
         </div>
@@ -792,7 +810,7 @@ export default function App() {
             onClick={() => sceneImportRef.current?.click()}
           >
             <Upload size={14} />
-            {busy ? "VERIFYING…" : "IMPORT SCENE .ZIP"}
+            {busy ? "正在校验…" : "导入场景包"}
           </button>
           <input
             ref={sceneImportRef}
@@ -807,13 +825,13 @@ export default function App() {
           <Cpu size={14} />
           <span>
             {health?.reachable
-              ? `${Math.round((health.vram_mb ?? 0) / 1024)} GB · ${health.node_count} nodes`
-              : "runtime sleeping"}
+              ? `${Math.round((health.vram_mb ?? 0) / 1024)} GB 显存 · ${health.node_count} 个节点`
+              : "生成运行时未连接"}
           </span>
           <button
             className="square-button"
             onClick={() => void refresh()}
-            aria-label="Refresh Scene Lab"
+            aria-label="刷新场景导演台"
           >
             <RefreshCw size={15} />
           </button>
@@ -821,7 +839,7 @@ export default function App() {
       </header>
       <aside className="session-dock">
         <div className="dock-label">
-          <span>SCENES</span>
+          <span>运行记录</span>
           <strong>{agentRuns.length + legacyRuns.length}</strong>
         </div>
         <div className="session-list">
@@ -835,9 +853,9 @@ export default function App() {
                 {String(index + 1).padStart(2, "0")}
               </span>
               <span className="session-copy">
-                <small>EVENT RUN · {item.last_sequence} PULSES</small>
+                <small>持久运行 · {item.last_sequence} 个事件</small>
                 <strong>{item.scene_package_id ?? "Awaiting scene"}</strong>
-                <em>{pretty(item.stage)}</em>
+                <em>{stageLabel(item.stage)}</em>
               </span>
               <ChevronRight size={15} />
             </button>
@@ -852,7 +870,7 @@ export default function App() {
                 L{String(index + 1).padStart(2, "0")}
               </span>
               <span className="session-copy">
-                <small>LEGACY EVIDENCE</small>
+                <small>历史运行</small>
                 <strong>{item.brief.project_name}</strong>
                 <em>{pretty(item.status)}</em>
               </span>
@@ -862,7 +880,7 @@ export default function App() {
         </div>
         <div className="dock-foot">
           <Database size={13} />
-          <span>SQLite replay authority</span>
+          <span>SQLite 持久重放</span>
           <i />
         </div>
       </aside>
@@ -870,16 +888,17 @@ export default function App() {
         <section className="scene-heading">
           <div>
             <span className="kicker">
-              <ScanLine size={13} /> LIVE PRODUCTION CONTEXT
+              <ScanLine size={13} /> UE 场景生产上下文
             </span>
             <h1>{context.title}</h1>
             <p>{context.subtitle}</p>
           </div>
           <div className={`stage-badge stage-${context.stage}`}>
             <Activity size={14} />
-            {pretty(context.stage)}
+            {stageLabel(context.stage)}
           </div>
         </section>
+        {agent && <ScenePipelineOverview agent={agent} />}
         {loading ? (
           <LoadingStage />
         ) : error && !agent && !legacy ? (
@@ -894,7 +913,7 @@ export default function App() {
       </main>
       <aside className="evidence-inspector">
         <div className="inspector-head">
-          <span>EVIDENCE LENS</span>
+          <span>决策与证据</span>
           <Fingerprint size={16} />
         </div>
         {agent ? (
@@ -905,8 +924,7 @@ export default function App() {
           <div className="inspector-empty">
             <Eye size={24} />
             <p>
-              Select a durable run to inspect its constraints, authority and
-              evidence.
+              选择一条持久运行，查看场景约束、工具边界和可复核结果。
             </p>
           </div>
         )}
@@ -973,9 +991,9 @@ export default function App() {
             </span>
             <button disabled={agent.pending_decisions.length === 0}>
               <ShieldCheck size={15} />
-              {agent.pending_decisions.length
-                ? "Human decision required"
-                : "Awaiting next typed action"}
+                {agent.pending_decisions.length
+                ? "存在待处理决策"
+                : "等待下一项类型化动作"}
             </button>
           </div>
         ) : actionLabel ? (
@@ -995,6 +1013,164 @@ export default function App() {
         ) : null}
       </footer>
     </div>
+  );
+}
+
+function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
+  const cases = [
+    {
+      id: "image-to-3d",
+      tab: "图生 3D 道具",
+      title: "从概念道具到 Unreal 可审查三维候选",
+      description: "GPT Image 2 提供项目自有参考，TripoSR 生成 GLB。Agent 在写入前检查许可证、外部 URI、扩展、几何和预算，再经 Interchange 放入隔离候选关卡。",
+      before: "/api/showcase/production/reference",
+      beforeAlt: "GPT Image 2 生成的玄武岩祭坛概念参考",
+      beforeLabel: "二维意图",
+      beforeTitle: "玄武岩祭坛概念参考",
+      after: "/api/showcase/production/unreal",
+      afterAlt: "Unreal Engine 候选关卡中的真实三维祭坛",
+      afterLabel: "UE 三维候选",
+      afterTitle: "约 180 cm · 源关卡未改写",
+      transition: "接纳、缩放、碰撞",
+      metricA: "4,817",
+      metricALabel: "UE 构建后三角面",
+      metricB: "1 + 1",
+      metricBLabel: "材质槽 / 简单碰撞",
+      note: "当前为可识别几何和顶点色，不宣称最终 PBR 品质。",
+    },
+    {
+      id: "pbr-return",
+      tab: "PBR 材质回流",
+      title: "把生成方向拆成可验证的 Unreal PBR 材质",
+      description: "受审 ComfyUI 图生成五个材质通道，技术门禁逐通道拒绝彩色标量图和无效法线，只纠正失败域，再创建 UE Master Material 与 Material Instance。",
+      before: "/api/showcase/production/pbr-source",
+      beforeAlt: "通过校验的玄武岩 BaseColor",
+      beforeLabel: "AI 材质输入",
+      beforeTitle: "通过校验的玄武岩 BaseColor",
+      after: "/api/showcase/production/pbr-unreal",
+      afterAlt: "Unreal Engine 中完成 Shader 编译的 PBR 材质回渲",
+      afterLabel: "UE Shader-ready 回渲",
+      afterTitle: "Material Instance 已绑定候选球体",
+      transition: "逐通道校验、纠正、绑定",
+      metricA: "5 / 5",
+      metricALabel: "PBR 通道通过",
+      metricB: "0",
+      metricBLabel: "重复导入资产",
+      note: "BaseColor 来自真实 GPU 生成，失败的技术域由确定性纠正器重建。",
+    },
+    {
+      id: "multi-domain",
+      tab: "场景联合改造",
+      title: "同一计划联合修改材质、PCG、灯光与项目资产",
+      description: "Agent 把四个领域编译为依赖 DAG，非 UE 资产可并行准备，引擎写入严格串行。主机位判断视觉方向，瞬态验证机位复检镜头外空间关系。",
+      before: "/api/showcase/production/scene-authored",
+      beforeAlt: "四域 Scene Delta 的主机位回渲",
+      beforeLabel: "美术主机位",
+      beforeTitle: "视觉方向与构图检查",
+      after: "/api/showcase/production/scene-validation",
+      afterAlt: "四域 Scene Delta 的验证机位回渲",
+      afterLabel: "瞬态验证机位",
+      afterTitle: "空间关系与保护区复检",
+      transition: "同一候选、双机位评价",
+      metricA: "12",
+      metricALabel: "确定性 PCG 实例",
+      metricB: "0",
+      metricBLabel: "保护区侵入",
+      note: "重复执行仍为 12 个实例，源 ArtFlowDemo 关卡哈希保持不变。",
+    },
+    {
+      id: "targeted-correction",
+      tab: "失败域纠正",
+      title: "评价失败后只重做灯光，不重跑整条生成链",
+      description: "测试主动注入 0.05 lux 主光失败。Technical Judge 与 Visual Critic 独立锁定 lighting，Correction Planner 锁住已通过的资产、材质和 PCG 证据。",
+      before: "/api/showcase/production/lighting-failure",
+      beforeAlt: "注入低照度失败的 Unreal 候选",
+      beforeLabel: "失败回渲",
+      beforeTitle: "0.05 lux · 平均亮度 117.72",
+      after: "/api/showcase/production/lighting-corrected",
+      afterAlt: "只纠正灯光后的 Unreal 候选",
+      afterLabel: "定向纠正",
+      afterTitle: "8.0 lux / 4200K · 平均亮度 166.66",
+      transition: "失败分类、灯光补丁、复检",
+      metricA: "1",
+      metricALabel: "实际重跑领域",
+      metricB: "0",
+      metricBLabel: "外部重复提交",
+      note: "材质路径和 12 个 PCG 实例保持不变，丢失回执由新进程对账。",
+    },
+  ] as const;
+  const [caseId, setCaseId] = useState<(typeof cases)[number]["id"]>("image-to-3d");
+  const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
+  const capabilities = [
+    { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },
+    { key: "mesh", label: "三维候选", detail: "GLB / 项目资产", tone: "amber" },
+    { key: "material", label: "材质", detail: "PBR 五通道", tone: "violet" },
+    { key: "layout", label: "场景布局", detail: "PCG / Actor", tone: "lime" },
+    { key: "lighting", label: "灯光", detail: "强度 / 色温", tone: "coral" },
+    { key: "unreal", label: "候选关卡", detail: "UE 5.8 Interchange", tone: "cyan" },
+  ];
+  return (
+    <section className="pipeline-overview" aria-label="二维意图到 Unreal 三维候选">
+      <nav className="case-switcher" aria-label="真实生产案例">
+        {cases.map((item, index) => (
+          <button
+            className={item.id === caseId ? "active" : ""}
+            key={item.id}
+            onClick={() => setCaseId(item.id)}
+            type="button"
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            {item.tab}
+          </button>
+        ))}
+      </nav>
+      <div className="pipeline-story">
+        <div>
+          <span className="pipeline-tag"><Workflow size={14} /> 当前作品集主线</span>
+          <h2>{activeCase.title}</h2>
+          <p>{activeCase.description}</p>
+        </div>
+        <div className="pipeline-run-facts">
+          <span><i className="live-dot" /> 当前运行</span>
+          <strong>{agent.timeline.length} 个持久事件</strong>
+          <small>隐藏思维链不进入界面或回执</small>
+        </div>
+      </div>
+
+      <div className="intent-to-world">
+        <figure>
+          <img src={activeCase.before} alt={activeCase.beforeAlt} />
+          <figcaption><span>{activeCase.beforeLabel}</span><strong>{activeCase.beforeTitle}</strong></figcaption>
+        </figure>
+        <div className="world-transition" aria-hidden="true">
+          <ScanLine size={18} />
+          <span />
+          <ArrowRight size={18} />
+          <small>{activeCase.transition}</small>
+        </div>
+        <figure>
+          <img src={activeCase.after} alt={activeCase.afterAlt} />
+          <figcaption><span>{activeCase.afterLabel}</span><strong>{activeCase.afterTitle}</strong></figcaption>
+        </figure>
+        <aside className="world-verdict">
+          <span><BadgeCheck size={15} /> 实机已验证</span>
+          <strong>{activeCase.metricA}</strong><small>{activeCase.metricALabel}</small>
+          <strong>{activeCase.metricB}</strong><small>{activeCase.metricBLabel}</small>
+          <p>{activeCase.note}</p>
+        </aside>
+      </div>
+
+      <div className="capability-rail" role="list" aria-label="Agent 受限能力轨道">
+        {capabilities.map((item, index) => (
+          <div className={`rail-node tone-${item.tone}`} role="listitem" key={item.key}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <strong>{item.label}</strong>
+            <small>{item.detail}</small>
+            {index < capabilities.length - 1 && <i aria-hidden="true" />}
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
 
@@ -2134,16 +2310,16 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
   const preview = agent.comparison_plan?.operator_preview;
   return (
     <div className="inspector-scroll">
-      <InspectorSection label="Run identity">
-        <Fact label="Run" value={shortId(agent.run_id)} mono />
-        <Fact label="Protocol" value={agent.schema_id} mono />
+      <InspectorSection label="运行身份">
+        <Fact label="运行 ID" value={shortId(agent.run_id)} mono />
+        <Fact label="协议" value={agent.schema_id} mono />
         <Fact
-          label="Route policy"
+          label="路线策略"
           value={
             agent.status.approval === "approved" &&
             agent.pending_decisions.length === 0
-              ? "accepted"
-              : agent.status.approval
+              ? "已接受"
+              : stageLabel(agent.status.approval)
           }
         />
       </InspectorSection>
@@ -2154,23 +2330,23 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
             <div>
               <span>
                 {scene.evidence_class === "real_unreal_capture"
-                  ? "REAL UNREAL EVIDENCE"
-                  : "VERIFIED SCENE ARCHIVE"}
+                  ? "真实 Unreal 场景"
+                  : "已校验场景归档"}
               </span>
               <strong>{scene.source_scene}</strong>
             </div>
           </div>
-          <InspectorSection label="Scene ingress">
+          <InspectorSection label="场景输入">
             <Fact
-              label="Host"
+              label="宿主"
               value={`${scene.source_application} ${scene.source_application_version.split("+++")[0]}`}
             />
-            <Fact label="Archive" value={shortId(scene.archive_sha256)} mono />
+            <Fact label="归档哈希" value={shortId(scene.archive_sha256)} mono />
             <Fact
-              label="Passes"
-              value={`${scene.artifact_count} independently hashed`}
+              label="渲染通道"
+              value={`${scene.artifact_count} 个独立哈希通道`}
             />
-            <Fact label="Mode" value="Read-only import" />
+            <Fact label="模式" value="只读导入" />
           </InspectorSection>
         </>
       )}
@@ -2209,37 +2385,37 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
         </>
       )}
       {agent.route && (
-        <InspectorSection label="Bound route">
+        <InspectorSection label="已绑定路线">
           <Fact label="Provider" value={agent.route.provider_id} mono />
-          <Fact label="Model" value={agent.route.model_id} mono />
-          <Fact label="Privacy" value={pretty(agent.route.privacy_class)} />
+          <Fact label="模型" value={agent.route.model_id} mono />
+          <Fact label="隐私范围" value={pretty(agent.route.privacy_class)} />
           <Fact
-            label="Cost ceiling"
+            label="成本上限"
             value={`$${agent.route.max_cost_usd.toFixed(2)}`}
           />
         </InspectorSection>
       )}
       {attestation && (
-        <InspectorSection label="Observed local runtime">
+        <InspectorSection label="本地运行时实测">
           <div className={`attestation-status ${attestation.status}`}>
-            <span>{attestation.status}</span>
+            <span>{attestation.status === "supported" ? "已支持" : attestation.status === "unsupported" ? "不支持" : "未知"}</span>
             <i />
           </div>
-          <Fact label="Device" value={attestation.device_name ?? "unknown"} />
+          <Fact label="设备" value={attestation.device_name ?? "未知"} />
           <Fact
             label="VRAM"
             value={
               attestation.vram_mb
                 ? `${Math.round(attestation.vram_mb / 1024)} GB`
-                : "unknown"
+                : "未知"
             }
           />
           <Fact
-            label="Nodes / models"
+            label="节点 / 模型"
             value={`${attestation.observed_node_count} / ${attestation.observed_model_count}`}
           />
           <Fact
-            label="Environment"
+            label="环境指纹"
             value={shortId(attestation.environment_sha256)}
             mono
           />
@@ -2248,18 +2424,18 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
       {scene && (
         <>
           <ConstraintList
-            label="Must preserve"
+            label="必须保持"
             values={scene.preserve}
             tone="keep"
           />
           <ConstraintList
-            label="Never introduce"
+            label="禁止引入"
             values={scene.prohibit}
             tone="block"
           />
         </>
       )}
-      <InspectorSection label="Bounded capabilities">
+      <InspectorSection label="受限工具能力">
         {agent.capabilities.map((capability) => (
           <div className="capability" key={capability.capability_id}>
             <div>
@@ -2270,21 +2446,21 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
             <p>{capability.verification_signal}</p>
             <small>
               {capability.authority.writes.length
-                ? `${capability.authority.writes.length} write scopes`
-                : "READ ONLY"}{" "}
+                ? `${capability.authority.writes.length} 个写入域`
+                : "只读"}{" "}
               · {capability.availability}
             </small>
           </div>
         ))}
       </InspectorSection>
-      <InspectorSection label="Content evidence">
+      <InspectorSection label="内容证据">
         <Fact
-          label="Artifacts"
+          label="制品"
           value={String(agent.status.artifact_ids.length)}
         />
-        <Fact label="Failures" value={String(agent.status.failure_count)} />
+        <Fact label="失败" value={String(agent.status.failure_count)} />
         <Fact
-          label="Pending tools"
+          label="待执行工具"
           value={String(agent.status.pending_tool_call_count)}
         />
       </InspectorSection>
@@ -2370,7 +2546,7 @@ function ConstraintList({
         {values.map((value) => (
           <li key={value}>
             <span>{tone === "keep" ? "+" : "−"}</span>
-            {value}
+            {constraintLabel(value)}
           </li>
         ))}
       </ul>
@@ -2383,8 +2559,8 @@ function LoadingStage() {
       <span className="loader-orbit">
         <i />
       </span>
-      <strong>Reconstructing event state</strong>
-      <p>Verifying the durable chain and scene facts…</p>
+      <strong>正在重建持久状态</strong>
+      <p>校验事件链与场景事实…</p>
     </div>
   );
 }
@@ -2392,7 +2568,7 @@ function ErrorStage({ message }: { message: string }) {
   return (
     <div className="empty-stage error">
       <CircleAlert size={28} />
-      <h2>Scene Lab could not verify this state</h2>
+      <h2>场景导演台无法校验当前状态</h2>
       <p>{message}</p>
     </div>
   );
@@ -2401,11 +2577,10 @@ function EmptyStage() {
   return (
     <div className="empty-stage">
       <Aperture size={30} />
-      <span>NO ACTIVE SCENE</span>
-      <h2>Bring facts before pixels.</h2>
+      <span>没有活动场景</span>
+      <h2>先导入事实，再开始生成。</h2>
       <p>
-        Create an Agent run, attach a verified Scene Package, then return here.
-        The interface will never invent a scene or Agent event.
+        创建 Agent 运行并附加已校验的 Scene Package。界面不会虚构场景或 Agent 事件。
       </p>
       <code>artflow create-agent-run → attach-scene-package</code>
     </div>

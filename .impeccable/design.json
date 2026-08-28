@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-28T00:00:00Z",
+  "title": "Design System: ArtFlow Scene Lab",
+  "extensions": {
+    "colorMeta": {
+      "void": {"role": "neutral", "displayName": "虚空黑", "canonical": "#07090C", "tonalRamp": ["#07090C", "#11171E", "#222C36", "#3D4B58", "#687783", "#9BA6AE", "#CDD3D7", "#F2F4F5"]},
+      "signal-cyan": {"role": "primary", "displayName": "信号青", "canonical": "#66DCF0", "tonalRamp": ["#061B20", "#0C3039", "#155361", "#217B8D", "#38A6BB", "#66DCF0", "#AAEFF8", "#E8FBFE"]},
+      "director-amber": {"role": "primary", "displayName": "导演琥珀", "canonical": "#F2B65C", "tonalRamp": ["#211304", "#3A2308", "#654011", "#93631E", "#C48735", "#F2B65C", "#F9DCA3", "#FFF5E6"]},
+      "verified-lime": {"role": "secondary", "displayName": "验证黄绿", "canonical": "#B8ED72", "tonalRamp": ["#111D06", "#21330C", "#3B5817", "#5D8129", "#83AD43", "#B8ED72", "#D9F5B3", "#F3FCE7"]},
+      "fault-coral": {"role": "tertiary", "displayName": "故障珊瑚", "canonical": "#FF7770", "tonalRamp": ["#250807", "#42100E", "#701C19", "#A5322E", "#D84D48", "#FF7770", "#FFB8B4", "#FFF0EF"]}
+    },
+    "typographyMeta": {
+      "headline": {"displayName": "场景标题", "purpose": "当前场景与运行结果"},
+      "body": {"displayName": "中文正文", "purpose": "状态解释与决策摘要"},
+      "label": {"displayName": "操作标签", "purpose": "控件、轨道与状态"}
+    },
+    "shadows": [
+      {"name": "selected", "value": "0 6px 8px rgba(0,0,0,.28)", "purpose": "当前候选和浮层"},
+      {"name": "signal-glow", "value": "0 0 18px rgba(102,220,240,.18)", "purpose": "运行中的扫描和连接"}
+    ],
+    "motion": [
+      {"name": "state", "value": "180ms cubic-bezier(.22,1,.36,1)", "purpose": "高频状态反馈"},
+      {"name": "scene", "value": "420ms cubic-bezier(.16,1,.3,1)", "purpose": "候选和上下文切换"}
+    ],
+    "breakpoints": [
+      {"name": "compact", "value": "900px"},
+      {"name": "narrow", "value": "640px"}
+    ]
+  },
+  "components": [
+    {
+      "name": "主要动作",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "每个工作上下文唯一的推进动作。",
+      "html": "<button class=\"ds-primary\">发布三维候选</button>",
+      "css": ".ds-primary{border:0;border-radius:7px;padding:10px 16px;background:#F2B65C;color:#07090C;font:600 14px Bahnschrift,Microsoft YaHei UI,sans-serif;transition:filter .18s,transform .18s}.ds-primary:hover{filter:brightness(1.08);transform:translateY(-1px)}.ds-primary:focus-visible{outline:2px solid #66DCF0;outline-offset:3px}.ds-primary:active{transform:translateY(0)}"
+    },
+    {
+      "name": "验证状态",
+      "kind": "chip",
+      "refersTo": "status-verified",
+      "description": "只用于有确定性证据的通过状态。",
+      "html": "<span class=\"ds-verified\">✓ 已验证</span>",
+      "css": ".ds-verified{display:inline-flex;align-items:center;gap:6px;border:1px solid #536B3C;border-radius:6px;padding:6px 9px;background:#151C24;color:#B8ED72;font:600 12px Bahnschrift,Microsoft YaHei UI,sans-serif}"
+    },
+    {
+      "name": "能力轨道节点",
+      "kind": "custom",
+      "description": "持久 Scene Delta 中一个受限工具能力。",
+      "html": "<div class=\"ds-rail\"><span>PCG</span><strong>碎石布局</strong><small>12 个实例 · 已对账</small></div>",
+      "css": ".ds-rail{width:220px;border:1px solid #2A3642;border-radius:6px;padding:12px;background:#151C24;color:#F0F4F2;font-family:Aptos,Microsoft YaHei UI,sans-serif}.ds-rail span{color:#66DCF0;font:600 11px Bahnschrift,sans-serif}.ds-rail strong,.ds-rail small{display:block}.ds-rail strong{margin-top:8px;font-size:14px}.ds-rail small{margin-top:5px;color:#9AA8AD;font-size:11px}.ds-rail:hover{border-color:#66DCF0}.ds-rail:focus-within{outline:2px solid #66DCF0}"
+    }
+  ],
+  "narrative": {
+    "northStar": "实时场景导演台",
+    "overview": "真实场景图像占据中心，Agent 的观察、工具轨道和评价沿画面边缘组织。深色来自 UE 工作站的物理环境，颜色用于区分导演选择、观测、验证、推理和失败。",
+    "keyCharacteristics": ["真实场景媒体是第一视觉层级", "能力轨道表达多管线协作", "决策镜头只显示可追溯摘要", "桌面高密度，窄屏改为场景叙事"],
+    "rules": [
+      {"name": "Evidence Color", "body": "验证黄绿只在真实回执或确定性检查通过后出现。", "section": "colors"},
+      {"name": "Chinese First", "body": "面向用户的状态、操作和解释必须是自然简体中文。", "section": "typography"},
+      {"name": "Flat Console", "body": "常驻表面保持平整，辉光只用于运行和选中。", "section": "elevation"}
+    ],
+    "dos": ["Do 让真实 Unreal 画面和概念参考占据首屏最大面积。", "Do 为加载、空、失败、纠正、对账和发布提供完整中文状态。"],
+    "donts": ["Don't 使用通用聊天壳、低代码流程图或自由连线的节点编辑器。", "Don't 让 Approval、Gate、Evidence 等治理词汇占据首屏。", "Don't 把计划能力写成已完成，或把二维贴片描述成三维场景修改。"]
+  }
+}

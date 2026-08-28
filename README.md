@@ -14,7 +14,21 @@ ArtFlow 将这些步骤组织为一条可追踪的 Agentic 生产链。系统把
 
 ArtFlow 已不再以“得到一张更好看的图”为终点：概念图作为目标，Agent 读取真实 Unreal Actor、材质、灯光、PCG 和空间约束，编译类型化 `SceneChangePlan`，在独立候选关卡中重布置和回渲，再发布可回滚的三维场景增量。完整方向与边界见 [产品愿景](docs/PRODUCT_VISION_2026.md) 和 [技术调研](docs/research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md)。
 
-![ArtFlow 最终可验证交付面板](docs/assets/portfolio/09-verified-delivery.png)
+![ArtFlow 三维场景导演台：二维意图、真实 UE 候选与受限能力轨道](artifacts/goal/m10-s3-scene-lab/case-01-image-to-3d.png)
+
+## 四个真实生产案例
+
+新版 Scene Lab 不是通用聊天框或自由连线工作流。它用同一套 Agent 控制平面切换四类生产任务，
+每个案例都读取仓库中的真实 UE / ComfyUI 运行证据，并保留确定性检查、能力边界和来源说明。
+
+| 1. GPT Image 2 参考 → GLB → UE 候选 | 2. ComfyUI PBR → 逐通道校验 → UE 材质 |
+| --- | --- |
+| ![图生 3D 道具接入案例](artifacts/goal/m10-s3-scene-lab/case-01-image-to-3d.png) | ![PBR 材质生成与回流案例](artifacts/goal/m10-s3-scene-lab/case-02-pbr-return.png) |
+| 3. 材质 + PCG + 灯光 + 项目资产联合改造 | 4. 评价失败后只纠正灯光域 |
+| ![多领域 Scene Delta 案例](artifacts/goal/m10-s3-scene-lab/case-03-multi-domain.png) | ![灯光失败域定向纠正案例](artifacts/goal/m10-s3-scene-lab/case-04-targeted-correction.png) |
+
+这些界面截图是对真实运行证据的产品化展示，不替代底层回执。每项数字和能力边界仍可沿链接追溯
+到 `docs/evidence/` 与 `artifacts/goal/`。
 
 ## 典型应用场景
 
@@ -263,6 +277,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
 | `src/artflow_agent/pbr.py` | ComfyUI 能力快照、PBR 合同与受审图插槽编译器 |
 | `src/artflow_agent/scene_lifecycle.py` | 多域评价、失败域纠正、持久恢复与发布 ledger |
 | `src/artflow_agent/mcp_facade.py` | 现有合同与证据之上的内容寻址 MCP 薄适配层 |
+| `src/artflow_agent/image_to_3d.py` | Provider-neutral 图生 3D 合同、GLB 预检与 UE 接纳回执 |
 | `integrations/unreal/` | 可单独安装的 ArtFlow Scene Bridge 与 UE 5.8 测试宿主 |
 | `web/` | React / TypeScript Scene Lab 与证据控制台 |
 | `artifacts/goal/` | 当前作品集运行、截图、记分卡与 checkpoint |
