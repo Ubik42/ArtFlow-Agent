@@ -50,8 +50,12 @@ Status: in progress from 2026-08-27. The detailed contract and slice plan lives 
   project-asset reuse in a strict v2 Scene Delta DAG; optional image-to-3D degraded to project reuse,
   independent preparation waves and one serialized Unreal apply order replayed with 6/6 hostile
   controls rejected before mutation;
-- **M9-S2 active:** bind the v2 plan to the real twin, execute the four-domain candidate change and
-  add same-camera plus validation-camera technical/visual evidence.
+- **M9-S2 completed:** rebound four real Actor identities plus source, PBR receipt and PCG graph
+  fingerprints; reconciled the four-domain candidate in UE 5.8, captured authored and validation
+  cameras after shader compilation, proved 12 instances with zero protected-AABB intrusion and
+  exact replay with no duplicate assets;
+- **M9-S3 active:** inject and correct one domain-local failure, then publish or discard the verified
+  Scene Delta with a replayable event and provenance chain.
 
 - turn a concept target into a dependency graph across lighting, PCG, existing assets and material;
 - prepare independent branches concurrently while serializing Unreal writes;

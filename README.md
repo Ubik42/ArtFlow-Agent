@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账及发布/丢弃；M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝与失败域纠正、UE Material Instance、Shader-ready 回渲和重复请求对账。M9-S1 已将材质、固定 PCG 图、灯光和项目资产统一为可重放 Scene Delta DAG，并验证并行准备、串行 UE 写入、能力降级及 6/6 负对照；真实四域联合执行、多机位纠正、图生 3D、MCP 与新前端仍按后续切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9-S1/S2 已将材质、固定 PCG 图、灯光和项目资产统一为 Scene Delta DAG，并在真实 UE 候选关卡完成四域对账、主/验证双机位回渲、保护区 0 侵入及重复请求零新增。领域纠正/发布、图生 3D、MCP 与新前端仍按后续切片推进。
 
 ## 项目概述
 
@@ -53,6 +53,17 @@ Master Material 与 Material Instance、绑定候选球体并等待 Shader 编�
 | AI BaseColor | UE 5.8 候选关卡回渲 |
 | --- | --- |
 | ![AI 玄武岩 BaseColor](artifacts/goal/m8-s2-pbr-material/validated/ruin_altar_basalt_base_color.png) | ![UE 材质同机位回渲](artifacts/goal/m8-s2-pbr-material/candidate-material-beauty.png) |
+
+### 场景七：跨材质、灯光和 PCG 联合执行后，从第二机位复检
+
+Agent 将项目资产选择、灯光参数、已验证材质和固定 PCG 图编译为一个依赖 DAG。非 UE 资产准备
+可以并行，但引擎写入严格串行。候选完成后不仅回渲原始美术机位，还自动创建瞬态验证机位检查
+镜头外遮挡、保护区和实例空间关系；本次真实结果为 12 个碎石实例、保护区内 0 个，重复执行仍为
+12 个且生成资产保持 7 个。
+
+| 主机位判断视觉方向 | 验证机位检查三维关系 |
+| --- | --- |
+| ![M9 四域主机位](artifacts/goal/m9-s2-unreal-multi-domain/authored-camera.png) | ![M9 四域验证机位](artifacts/goal/m9-s2-unreal-multi-domain/validation-camera.png) |
 
 ## Agentic 执行流程
 

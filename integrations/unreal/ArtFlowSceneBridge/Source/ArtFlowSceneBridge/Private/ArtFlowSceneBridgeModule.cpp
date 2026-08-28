@@ -44,6 +44,7 @@
 #include "Misc/PackageName.h"
 #include "Misc/ScopeExit.h"
 #include "Misc/ScopedSlowTask.h"
+#include "Math/RotationMatrix.h"
 #include "PackageTools.h"
 #include "RenderingThread.h"
 #include "PCGComponent.h"
@@ -1475,6 +1476,59 @@ bool FinalizeCandidateExecution(bool bReconciled, const FString& SourceHash, con
     {
         return false;
     }
+    FString ValidationPath;
+    FString ValidationHash;
+    FString M9RequestId;
+    FString M9RequestSha;
+    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowMultiView")))
+    {
+        const FString M9RequestPath = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_M9_REQUEST"));
+        FString M9RequestText;
+        TSharedPtr<FJsonObject> M9Request;
+        if (M9RequestPath.IsEmpty() ||
+            !FFileHelper::LoadFileToString(M9RequestText, *M9RequestPath) ||
+            !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(M9RequestText), M9Request) ||
+            !M9Request.IsValid() ||
+            !M9Request->TryGetStringField(TEXT("request_id"), M9RequestId) ||
+            !M9Request->TryGetStringField(TEXT("request_sha256"), M9RequestSha) ||
+            M9Request->GetStringField(TEXT("candidate_scene_path")) != CandidatePackage)
+        {
+            OutError = TEXT("M9 multi-view capture requires a valid request bound to the candidate scene.");
+            return false;
+        }
+        const FVector ValidationLocation(-620.0, -650.0, 330.0);
+        const FVector ValidationTarget(0.0, 40.0, 105.0);
+        FActorSpawnParameters SpawnParameters;
+        SpawnParameters.ObjectFlags |= RF_Transient;
+        ACameraActor* ValidationCamera = World->SpawnActor<ACameraActor>(
+            ValidationLocation,
+            FRotationMatrix::MakeFromX(ValidationTarget - ValidationLocation).Rotator(),
+            SpawnParameters);
+        if (ValidationCamera == nullptr)
+        {
+            OutError = TEXT("Could not create the transient M9 validation camera.");
+            return false;
+        }
+        ValidationCamera->SetActorLabel(TEXT("ArtFlow_M9_ValidationCamera"));
+        ValidationCamera->GetCameraComponent()->FieldOfView =
+            Cast<ACameraActor>(Camera)->GetCameraComponent()->FieldOfView;
+        ValidationPath = FPaths::Combine(OutputRoot, TEXT("candidate-validation-camera.png"));
+        const bool bValidationCaptured = CapturePass(
+            World,
+            ValidationCamera,
+            Request,
+            SCS_FinalColorLDR,
+            false,
+            ValidationPath,
+            nullptr,
+            {},
+            OutError);
+        World->DestroyActor(ValidationCamera);
+        if (!bValidationCaptured || !HashFile(ValidationPath, ValidationHash, OutError))
+        {
+            return false;
+        }
+    }
     const FString CandidateFilename = FPackageName::LongPackageNameToFilename(CandidatePackage, FPackageName::GetMapPackageExtension());
     if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, CandidateFilename))
     {
@@ -1487,6 +1541,43 @@ bool FinalizeCandidateExecution(bool bReconciled, const FString& SourceHash, con
     {
         OutError = TEXT("Source level package changed during candidate execution.");
         return false;
+    }
+    if (!ValidationPath.IsEmpty())
+    {
+        TSharedPtr<FJsonObject> MultiView = MakeShared<FJsonObject>();
+        MultiView->SetStringField(TEXT("schema_id"), TEXT("multi-view-capture-receipt/1"));
+        MultiView->SetStringField(TEXT("request_id"), M9RequestId);
+        MultiView->SetStringField(TEXT("request_sha256"), M9RequestSha);
+        MultiView->SetStringField(TEXT("candidate_scene_path"), CandidatePackage);
+        MultiView->SetStringField(TEXT("authored_camera_label"), TEXT("ArtFlow_Camera"));
+        MultiView->SetStringField(TEXT("authored_render_path"), BeautyPath);
+        MultiView->SetStringField(TEXT("authored_render_sha256"), BeautyHash);
+        MultiView->SetStringField(TEXT("validation_camera_label"), TEXT("ArtFlow_M9_ValidationCamera"));
+        MultiView->SetArrayField(
+            TEXT("validation_camera_location"),
+            {MakeShared<FJsonValueNumber>(-620.0), MakeShared<FJsonValueNumber>(-650.0), MakeShared<FJsonValueNumber>(330.0)});
+        MultiView->SetArrayField(
+            TEXT("validation_camera_target"),
+            {MakeShared<FJsonValueNumber>(0.0), MakeShared<FJsonValueNumber>(40.0), MakeShared<FJsonValueNumber>(105.0)});
+        MultiView->SetStringField(TEXT("validation_render_path"), ValidationPath);
+        MultiView->SetStringField(TEXT("validation_render_sha256"), ValidationHash);
+        MultiView->SetStringField(TEXT("source_scene_sha256_before"), SourceHash);
+        MultiView->SetStringField(TEXT("source_scene_sha256_after"), SourceAfter);
+        MultiView->SetStringField(TEXT("protected_semantic_fingerprint"), ProtectedHash);
+        MultiView->SetNumberField(TEXT("generated_instance_count"), InstanceCount);
+        MultiView->SetBoolField(TEXT("asset_and_shader_compilation_finished"), true);
+        MultiView->SetStringField(TEXT("created_at"), FDateTime::UtcNow().ToIso8601());
+        FString MultiViewText;
+        FJsonSerializer::Serialize(MultiView.ToSharedRef(), TJsonWriterFactory<>::Create(&MultiViewText));
+        const FString MultiViewPath = FPaths::Combine(OutputRoot, TEXT("multi-view-capture-receipt.json"));
+        if (!FFileHelper::SaveStringToFile(
+                MultiViewText,
+                *MultiViewPath,
+                FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+        {
+            OutError = TEXT("Could not persist the M9 multi-view capture receipt.");
+            return false;
+        }
     }
 
     TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();

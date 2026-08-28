@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M9-S2",
+  "status": "completed",
+  "outcome": "The M9 v2 plan was rebound to four real Scene Digital Twin actors, the source map, M8 PBR receipt and reviewed PCG graph, then reconciled through a typed UE 5.8 request in the reviewed four-domain order. C++ captured authored and validation cameras after asset/shader compilation. Independent verification proved 12 instances, zero protected-AABB intrusion, unchanged source/protected state and exact replay with seven generated assets and no duplicates.",
+  "evidence": [
+    "docs/evidence/M9_S2_REAL_MULTI_DOMAIN_UNREAL_2026-08-27.md",
+    "src/artflow_agent/multi_domain_unreal.py",
+    "integrations/unreal/apply_multi_domain_delta.py",
+    "contracts/multi-domain-unreal-request.v1.schema.json",
+    "contracts/multi-domain-unreal-receipt.v1.schema.json",
+    "artifacts/goal/m9-s2-unreal-multi-domain/unreal-request.json",
+    "artifacts/goal/m9-s2-unreal-multi-domain/unreal-receipt.json",
+    "artifacts/goal/m9-s2-unreal-multi-domain/verification.json",
+    "artifacts/goal/m9-s2-unreal-multi-domain/authored-camera.png",
+    "artifacts/goal/m9-s2-unreal-multi-domain/validation-camera.png",
+    "artifacts/goal/m9-s2-unreal-multi-domain/host-lifecycle.json"
+  ]
+}

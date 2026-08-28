@@ -1,0 +1,184 @@
+{
+  "$defs": {
+    "MultiDomainOperationResult": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "boolean"
+              }
+            ]
+          },
+          "title": "Evidence",
+          "type": "object"
+        },
+        "operation_id": {
+          "enum": [
+            "asset-reuse",
+            "lighting-patch",
+            "material-bind",
+            "pcg-layout"
+          ],
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "executed",
+            "reconciled"
+          ],
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation_id",
+        "status",
+        "evidence"
+      ],
+      "title": "MultiDomainOperationResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authored_render_path": {
+      "minLength": 1,
+      "title": "Authored Render Path",
+      "type": "string"
+    },
+    "authored_render_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authored Render Sha256",
+      "type": "string"
+    },
+    "candidate_scene_path": {
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "generated_instance_count": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Generated Instance Count",
+      "type": "integer"
+    },
+    "material_instance_path": {
+      "title": "Material Instance Path",
+      "type": "string"
+    },
+    "operation_results": {
+      "items": {
+        "$ref": "#/$defs/MultiDomainOperationResult"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Operation Results",
+      "type": "array"
+    },
+    "pcg_graph_path": {
+      "title": "Pcg Graph Path",
+      "type": "string"
+    },
+    "protected_state_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State After",
+      "type": "string"
+    },
+    "protected_state_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Protected State Before",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "multi-domain-unreal-receipt/1",
+      "default": "multi-domain-unreal-receipt/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_sha256_after": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 After",
+      "type": "string"
+    },
+    "source_scene_sha256_before": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256 Before",
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "staged",
+        "reconciled"
+      ],
+      "title": "Status",
+      "type": "string"
+    },
+    "validation_render_path": {
+      "minLength": 1,
+      "title": "Validation Render Path",
+      "type": "string"
+    },
+    "validation_render_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Validation Render Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "request_sha256",
+    "status",
+    "engine_version",
+    "candidate_scene_path",
+    "operation_results",
+    "material_instance_path",
+    "pcg_graph_path",
+    "generated_instance_count",
+    "source_scene_sha256_before",
+    "source_scene_sha256_after",
+    "protected_state_before",
+    "protected_state_after",
+    "authored_render_path",
+    "authored_render_sha256",
+    "validation_render_path",
+    "validation_render_sha256",
+    "completed_at",
+    "receipt_sha256"
+  ],
+  "title": "MultiDomainUnrealReceipt",
+  "type": "object"
+}

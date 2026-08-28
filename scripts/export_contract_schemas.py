@@ -32,6 +32,7 @@ from artflow_agent.pbr import (
 )
 from artflow_agent.pbr_unreal import UnrealPBRReturnReceipt, UnrealPBRReturnRequest
 from artflow_agent.pbr_validation import PBRGenerationValidationReceipt
+from artflow_agent.multi_domain_unreal import MultiDomainUnrealReceipt, MultiDomainUnrealRequest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = {
@@ -63,6 +64,8 @@ SCHEMAS = {
     "pbr-generation-validation-receipt.v1.schema.json": PBRGenerationValidationReceipt.model_json_schema(),
     "unreal-pbr-return-request.v1.schema.json": UnrealPBRReturnRequest.model_json_schema(),
     "unreal-pbr-return-receipt.v1.schema.json": UnrealPBRReturnReceipt.model_json_schema(),
+    "multi-domain-unreal-request.v1.schema.json": MultiDomainUnrealRequest.model_json_schema(),
+    "multi-domain-unreal-receipt.v1.schema.json": MultiDomainUnrealReceipt.model_json_schema(),
 }
 
 

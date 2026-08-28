@@ -1,0 +1,100 @@
+{
+  "schema_id": "multi-domain-unreal-request/1",
+  "request_id": "m9-ue-79d79060738719cbf0db5f1d",
+  "plan_id": "m9-ruin-altar-dry-run",
+  "plan_sha256": "bfbc36e2c2c4eee433885f1e8ebdd6b1e0bc1a1d9698cde276eebbbb31343df3",
+  "dry_run_receipt_sha256": "3fb05bf22c293fb4244406ef97955b8222d3fea32018873a94b15288f70dd2c0",
+  "twin_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-twin",
+  "twin_sha256": "7604b26e775a4a92b4fddc83338ce8b55e2a79749f3e7710ec43958e606aba82",
+  "source_scene_path": "/Game/ArtFlowDemo",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "candidate_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+  "stage_id": "artflow-m9-dry",
+  "actors": [
+    {
+      "role": "editable",
+      "actor_id": "3fa0497b43ee5f7a52b02f9ebd35573b",
+      "label": "Editable_Form",
+      "source_fingerprint": "f9fa50d516c405c1822898e320cc30cddb527842b7b4abfc5e6fa772b15627e9"
+    },
+    {
+      "role": "protected",
+      "actor_id": "5e5124c6414eac2826f9e9a1eba6c9d9",
+      "label": "Protected_Blockout",
+      "source_fingerprint": "c840399a559a02edb48974263f78e2f30ed4c4a1ad262cb0db7afeae494f1910"
+    },
+    {
+      "role": "key_light",
+      "actor_id": "2fd6e5d1474ecd751f1b8f8729e64ad1",
+      "label": "ArtFlow_KeyLight",
+      "source_fingerprint": "00ea81ac90f62b384255c6a4c0ff1dbcf573017c5875a0e370bddb94bfb60bb1"
+    },
+    {
+      "role": "authored_camera",
+      "actor_id": "b1326d3f4a7b7b51dafc9ca20713c88f",
+      "label": "ArtFlow_Camera",
+      "source_fingerprint": "ccf06a02e708e2f7490f0d2b9d0279711b2bc419a599addcbab64249038b419c"
+    }
+  ],
+  "operation_order": [
+    "asset-reuse",
+    "lighting-patch",
+    "material-bind",
+    "pcg-layout"
+  ],
+  "material": {
+    "target_role": "editable",
+    "slot_index": 0,
+    "material_instance_path": "/Game/ArtFlow/Generated/089e29542680f323/MI_RuinAltarBasalt.MI_RuinAltarBasalt",
+    "pbr_request_sha256": "bfc8d102d040b888fb07fad150f295df948b08f57561a9719ada9763fb6b7f8a",
+    "pbr_receipt_sha256": "ea03d56d88efa1c639bc4a4a7473be8d16dda36b584efa97657f4b527069f1f1"
+  },
+  "asset": {
+    "asset_paths": [
+      "/Game/ArtFlow/Props/SM_ArtFlowRock"
+    ],
+    "license_policy": "project_owned"
+  },
+  "lighting": {
+    "target_role": "key_light",
+    "intensity": 5.5,
+    "temperature_kelvin": 4200.0
+  },
+  "pcg": {
+    "target_role": "editable",
+    "component_id": "3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter",
+    "reviewed_graph_path": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+    "reviewed_graph_sha256": "b7fca3eb700eb408b8ad2f65ee14a218c87cf70370baf8b3d6cb51f5edebeabd",
+    "seed": 240827,
+    "expected_instance_count": 12,
+    "exclusion_bounds": {
+      "minimum": {
+        "x": -110.00000000000001,
+        "y": -260.0,
+        "z": -10.000000000000014
+      },
+      "maximum": {
+        "x": 110.00000000000001,
+        "y": -39.999999999999986,
+        "z": 210.0
+      }
+    }
+  },
+  "render": {
+    "authored_camera_role": "authored_camera",
+    "validation_camera_location": [
+      -620.0,
+      -650.0,
+      330.0
+    ],
+    "validation_camera_target": [
+      0.0,
+      40.0,
+      105.0
+    ],
+    "width": 640,
+    "height": 360
+  },
+  "expected_protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded"
+}

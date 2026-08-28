@@ -1,0 +1,28 @@
+{
+  "schema_id": "m9-s2-independent-verification/1",
+  "status": "verified",
+  "request_sha256": "2dba33e09dc22084a23f29956149ed0a20aedb4c5ed2cbb692723a1348b32ded",
+  "receipt_sha256": "8520cbffd9f666631046f096883e34f205f4ee39398bb1d680114d1e40c212ef",
+  "real_twin_actor_bindings": 4,
+  "operation_order": [
+    "asset-reuse",
+    "lighting-patch",
+    "material-bind",
+    "pcg-layout"
+  ],
+  "operation_statuses": {
+    "asset-reuse": "reconciled",
+    "lighting-patch": "reconciled",
+    "material-bind": "reconciled",
+    "pcg-layout": "reconciled"
+  },
+  "generated_instance_count": 12,
+  "instances_inside_exclusion": 0,
+  "generated_asset_count_after_replay": 7,
+  "source_scene_unchanged": true,
+  "protected_state_unchanged": true,
+  "authored_render_sha256": "1f57eae5987da8255078ec473c409fff200d2a8c26e4b8f66853c45fc251744f",
+  "validation_render_sha256": "910d648c75ab068dfddcc5e0b69b071077c6ec3148e6ac660bca29cacbe9a836",
+  "multi_view_mean_absolute_delta": 56.909078,
+  "verification_sha256": "82025d559a7c806ffb296621b9c6d12b6a648c58acf0a4a311a07725ac9278b7"
+}

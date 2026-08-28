@@ -1,0 +1,19 @@
+{
+  "schema_id": "unreal-host-lifecycle/1",
+  "purpose": "M9-S2 four-domain apply, reconcile and multi-view capture",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "owned_commandlets": [
+    "apply_multi_domain_delta.py",
+    "ArtFlowExecuteStage + ArtFlowMultiView",
+    "apply_multi_domain_delta.py replay"
+  ],
+  "owned_unreal_process_present_after": false,
+  "shared_comfy": {
+    "endpoint": "http://127.0.0.1:8188",
+    "listener_pid_after": 49656,
+    "modified": false,
+    "stopped": false
+  },
+  "isolated_comfy_8190_present_after": false,
+  "checked_at": "2026-08-28T03:58:24.2300415Z"
+}

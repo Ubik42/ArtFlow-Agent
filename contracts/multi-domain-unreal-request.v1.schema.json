@@ -1,0 +1,410 @@
+{
+  "$defs": {
+    "AssetExecutionBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_paths": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Asset Paths",
+          "type": "array"
+        },
+        "license_policy": {
+          "enum": [
+            "project_owned",
+            "redistributable"
+          ],
+          "title": "License Policy",
+          "type": "string"
+        }
+      },
+      "required": [
+        "asset_paths",
+        "license_policy"
+      ],
+      "title": "AssetExecutionBinding",
+      "type": "object"
+    },
+    "BoundSceneActor": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_id": {
+          "pattern": "^[0-9a-f]{32}$",
+          "title": "Actor Id",
+          "type": "string"
+        },
+        "label": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Label",
+          "type": "string"
+        },
+        "role": {
+          "enum": [
+            "editable",
+            "protected",
+            "key_light",
+            "authored_camera"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "source_fingerprint": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Fingerprint",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "actor_id",
+        "label",
+        "source_fingerprint"
+      ],
+      "title": "BoundSceneActor",
+      "type": "object"
+    },
+    "BoundsFact": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum": {
+          "$ref": "#/$defs/Vector3"
+        },
+        "minimum": {
+          "$ref": "#/$defs/Vector3"
+        }
+      },
+      "required": [
+        "minimum",
+        "maximum"
+      ],
+      "title": "BoundsFact",
+      "type": "object"
+    },
+    "LightingExecutionBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "intensity": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Intensity",
+          "type": "number"
+        },
+        "target_role": {
+          "const": "key_light",
+          "default": "key_light",
+          "title": "Target Role",
+          "type": "string"
+        },
+        "temperature_kelvin": {
+          "maximum": 20000,
+          "minimum": 1000,
+          "title": "Temperature Kelvin",
+          "type": "number"
+        }
+      },
+      "required": [
+        "intensity",
+        "temperature_kelvin"
+      ],
+      "title": "LightingExecutionBinding",
+      "type": "object"
+    },
+    "MaterialExecutionBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "material_instance_path": {
+          "pattern": "^/(?:Game|Engine)/[A-Za-z0-9_./-]+$",
+          "title": "Material Instance Path",
+          "type": "string"
+        },
+        "pbr_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pbr Receipt Sha256",
+          "type": "string"
+        },
+        "pbr_request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pbr Request Sha256",
+          "type": "string"
+        },
+        "slot_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Slot Index",
+          "type": "integer"
+        },
+        "target_role": {
+          "const": "editable",
+          "default": "editable",
+          "title": "Target Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "slot_index",
+        "material_instance_path",
+        "pbr_request_sha256",
+        "pbr_receipt_sha256"
+      ],
+      "title": "MaterialExecutionBinding",
+      "type": "object"
+    },
+    "MultiViewRenderBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "authored_camera_role": {
+          "const": "authored_camera",
+          "default": "authored_camera",
+          "title": "Authored Camera Role",
+          "type": "string"
+        },
+        "height": {
+          "maximum": 4096,
+          "minimum": 64,
+          "title": "Height",
+          "type": "integer"
+        },
+        "validation_camera_location": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Validation Camera Location",
+          "type": "array"
+        },
+        "validation_camera_target": {
+          "items": {
+            "type": "number"
+          },
+          "maxItems": 3,
+          "minItems": 3,
+          "title": "Validation Camera Target",
+          "type": "array"
+        },
+        "width": {
+          "maximum": 4096,
+          "minimum": 64,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "validation_camera_location",
+        "validation_camera_target",
+        "width",
+        "height"
+      ],
+      "title": "MultiViewRenderBinding",
+      "type": "object"
+    },
+    "PCGExecutionBinding": {
+      "additionalProperties": false,
+      "properties": {
+        "component_id": {
+          "pattern": "^[0-9a-f]{32}:pcg_[a-z0-9_]+$",
+          "title": "Component Id",
+          "type": "string"
+        },
+        "exclusion_bounds": {
+          "$ref": "#/$defs/BoundsFact"
+        },
+        "expected_instance_count": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Expected Instance Count",
+          "type": "integer"
+        },
+        "reviewed_graph_path": {
+          "pattern": "^/Game/ArtFlow/PCG/[A-Za-z0-9_./-]+$",
+          "title": "Reviewed Graph Path",
+          "type": "string"
+        },
+        "reviewed_graph_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reviewed Graph Sha256",
+          "type": "string"
+        },
+        "seed": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "target_role": {
+          "const": "editable",
+          "default": "editable",
+          "title": "Target Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component_id",
+        "reviewed_graph_path",
+        "reviewed_graph_sha256",
+        "seed",
+        "expected_instance_count",
+        "exclusion_bounds"
+      ],
+      "title": "PCGExecutionBinding",
+      "type": "object"
+    },
+    "Vector3": {
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "title": "X",
+          "type": "number"
+        },
+        "y": {
+          "title": "Y",
+          "type": "number"
+        },
+        "z": {
+          "title": "Z",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x",
+        "y",
+        "z"
+      ],
+      "title": "Vector3",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "actors": {
+      "items": {
+        "$ref": "#/$defs/BoundSceneActor"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Actors",
+      "type": "array"
+    },
+    "asset": {
+      "$ref": "#/$defs/AssetExecutionBinding"
+    },
+    "candidate_scene_path": {
+      "pattern": "^/Game/ArtFlow/Staging/[A-Za-z0-9_.-]+$",
+      "title": "Candidate Scene Path",
+      "type": "string"
+    },
+    "dry_run_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dry Run Receipt Sha256",
+      "type": "string"
+    },
+    "expected_protected_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Protected State Sha256",
+      "type": "string"
+    },
+    "lighting": {
+      "$ref": "#/$defs/LightingExecutionBinding"
+    },
+    "material": {
+      "$ref": "#/$defs/MaterialExecutionBinding"
+    },
+    "operation_order": {
+      "items": {
+        "enum": [
+          "asset-reuse",
+          "lighting-patch",
+          "material-bind",
+          "pcg-layout"
+        ],
+        "type": "string"
+      },
+      "maxItems": 4,
+      "minItems": 4,
+      "title": "Operation Order",
+      "type": "array"
+    },
+    "pcg": {
+      "$ref": "#/$defs/PCGExecutionBinding"
+    },
+    "plan_id": {
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "render": {
+      "$ref": "#/$defs/MultiViewRenderBinding"
+    },
+    "request_id": {
+      "pattern": "^m9-ue-[0-9a-f]{24}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_id": {
+      "const": "multi-domain-unreal-request/1",
+      "default": "multi-domain-unreal-request/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_scene_path": {
+      "pattern": "^/Game/[A-Za-z0-9_./-]+$",
+      "title": "Source Scene Path",
+      "type": "string"
+    },
+    "source_scene_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Scene Sha256",
+      "type": "string"
+    },
+    "stage_id": {
+      "pattern": "^artflow-[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Stage Id",
+      "type": "string"
+    },
+    "twin_id": {
+      "title": "Twin Id",
+      "type": "string"
+    },
+    "twin_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Twin Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "plan_id",
+    "plan_sha256",
+    "dry_run_receipt_sha256",
+    "twin_id",
+    "twin_sha256",
+    "source_scene_path",
+    "source_scene_sha256",
+    "candidate_scene_path",
+    "stage_id",
+    "actors",
+    "operation_order",
+    "material",
+    "asset",
+    "lighting",
+    "pcg",
+    "render",
+    "expected_protected_state_sha256",
+    "request_sha256"
+  ],
+  "title": "MultiDomainUnrealRequest",
+  "type": "object"
+}
