@@ -1,0 +1,656 @@
+{
+  "schema_id": "m10-s1-mcp-protocol-transcript/1",
+  "transport": "stdio-subprocess",
+  "protocol_version": "2026-07-28",
+  "server": {
+    "name": "ArtFlow Agent",
+    "title": "ArtFlow Unreal 场景变更 Agent",
+    "version": "0.10.0",
+    "description": "读取真实场景证据并调用现有有界规划、纠错与发布验证能力。",
+    "website_url": null,
+    "icons": null
+  },
+  "resource_uris": [
+    "artflow://runs/m9/lifecycle",
+    "artflow://runs/m9/verification",
+    "artflow://scene/current/twin"
+  ],
+  "resource_reads": {
+    "artflow://scene/current/twin": {
+      "content_count": 1,
+      "response_sha256": "25d749591d199050335fc089a70289171286b60ed8d180b9ad309aff03c53263"
+    },
+    "artflow://runs/m9/lifecycle": {
+      "content_count": 1,
+      "response_sha256": "7944706e8eed4255b69c2ecd9060fe1a96b15cc3d35ac0719741fc154a56b428"
+    },
+    "artflow://runs/m9/verification": {
+      "content_count": 1,
+      "response_sha256": "790b6f7c3f3af8ea9a1fe41dc098b611b5d60c15f4ce69dfc75d677f41b6d1f6"
+    }
+  },
+  "tools": [
+    {
+      "name": "scene.twin.summarize",
+      "input_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "twin_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Twin Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "twin_sha256"
+        ],
+        "title": "summarize_twinArguments"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {
+            "const": "mcp-scene-twin-summary/1",
+            "default": "mcp-scene-twin-summary/1",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "twin_id": {
+            "title": "Twin Id",
+            "type": "string"
+          },
+          "twin_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Twin Sha256",
+            "type": "string"
+          },
+          "scene_path": {
+            "title": "Scene Path",
+            "type": "string"
+          },
+          "actor_count": {
+            "minimum": 1,
+            "title": "Actor Count",
+            "type": "integer"
+          },
+          "editable_actor_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Editable Actor Ids",
+            "type": "array"
+          },
+          "protected_actor_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Protected Actor Ids",
+            "type": "array"
+          },
+          "light_actor_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Light Actor Ids",
+            "type": "array"
+          },
+          "pcg_component_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pcg Component Ids",
+            "type": "array"
+          },
+          "available_staging_strategies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Available Staging Strategies",
+            "type": "array"
+          },
+          "source_resource_uri": {
+            "const": "artflow://scene/current/twin",
+            "default": "artflow://scene/current/twin",
+            "title": "Source Resource Uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "twin_id",
+          "twin_sha256",
+          "scene_path",
+          "actor_count",
+          "editable_actor_ids",
+          "protected_actor_ids",
+          "light_actor_ids",
+          "pcg_component_ids",
+          "available_staging_strategies"
+        ],
+        "title": "SceneTwinSummary",
+        "type": "object"
+      },
+      "annotations": {
+        "title": null,
+        "read_only_hint": true,
+        "destructive_hint": false,
+        "idempotent_hint": true,
+        "open_world_hint": false
+      }
+    },
+    {
+      "name": "scene.delta.compile_registered",
+      "input_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "plan_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Plan Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_sha256"
+        ],
+        "title": "compile_registered_planArguments"
+      },
+      "output_schema": {
+        "$defs": {
+          "OperationRoute": {
+            "additionalProperties": false,
+            "properties": {
+              "operation_id": {
+                "title": "Operation Id",
+                "type": "string"
+              },
+              "domain": {
+                "enum": [
+                  "material",
+                  "pcg",
+                  "lighting",
+                  "asset"
+                ],
+                "title": "Domain",
+                "type": "string"
+              },
+              "capability_id": {
+                "title": "Capability Id",
+                "type": "string"
+              },
+              "tool_name": {
+                "title": "Tool Name",
+                "type": "string"
+              },
+              "execution_lane": {
+                "enum": [
+                  "parallel_prepare",
+                  "unreal_serial"
+                ],
+                "title": "Execution Lane",
+                "type": "string"
+              }
+            },
+            "required": [
+              "operation_id",
+              "domain",
+              "capability_id",
+              "tool_name",
+              "execution_lane"
+            ],
+            "title": "OperationRoute",
+            "type": "object"
+          }
+        },
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {
+            "const": "multi-domain-dry-run-receipt/1",
+            "default": "multi-domain-dry-run-receipt/1",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "plan_id": {
+            "title": "Plan Id",
+            "type": "string"
+          },
+          "plan_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Plan Sha256",
+            "type": "string"
+          },
+          "stage_id": {
+            "title": "Stage Id",
+            "type": "string"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/$defs/OperationRoute"
+            },
+            "minItems": 1,
+            "title": "Routes",
+            "type": "array"
+          },
+          "preparation_waves": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "minItems": 1,
+            "title": "Preparation Waves",
+            "type": "array"
+          },
+          "unreal_apply_order": {
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "title": "Unreal Apply Order",
+            "type": "array"
+          },
+          "failed_domain_reopen": {
+            "additionalProperties": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "propertyNames": {
+              "enum": [
+                "material",
+                "pcg",
+                "lighting",
+                "asset"
+              ]
+            },
+            "title": "Failed Domain Reopen",
+            "type": "object"
+          },
+          "committed_mutation_count": {
+            "const": 0,
+            "default": 0,
+            "title": "Committed Mutation Count",
+            "type": "integer"
+          },
+          "source_scene_unchanged": {
+            "const": true,
+            "default": true,
+            "title": "Source Scene Unchanged",
+            "type": "boolean"
+          },
+          "receipt_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Receipt Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "plan_id",
+          "plan_sha256",
+          "stage_id",
+          "routes",
+          "preparation_waves",
+          "unreal_apply_order",
+          "failed_domain_reopen",
+          "receipt_sha256"
+        ],
+        "title": "MultiDomainDryRunReceipt",
+        "type": "object"
+      },
+      "annotations": {
+        "title": null,
+        "read_only_hint": true,
+        "destructive_hint": false,
+        "idempotent_hint": true,
+        "open_world_hint": false
+      }
+    },
+    {
+      "name": "scene.correction.inspect",
+      "input_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "evaluation_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evaluation Sha256",
+            "type": "string"
+          }
+        },
+        "required": [
+          "evaluation_sha256"
+        ],
+        "title": "inspect_correctionArguments"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {
+            "const": "mcp-correction-inspection/1",
+            "default": "mcp-correction-inspection/1",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "evaluation_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Evaluation Sha256",
+            "type": "string"
+          },
+          "correction_plan_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Correction Plan Sha256",
+            "type": "string"
+          },
+          "failed_domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Failed Domains",
+            "type": "array"
+          },
+          "rerun_domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Rerun Domains",
+            "type": "array"
+          },
+          "preserved_domains": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Preserved Domains",
+            "type": "array"
+          },
+          "requested_lighting_intensity": {
+            "title": "Requested Lighting Intensity",
+            "type": "number"
+          },
+          "lifecycle_resource_uri": {
+            "const": "artflow://runs/m9/lifecycle",
+            "default": "artflow://runs/m9/lifecycle",
+            "title": "Lifecycle Resource Uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "evaluation_sha256",
+          "correction_plan_sha256",
+          "failed_domains",
+          "rerun_domains",
+          "preserved_domains",
+          "requested_lighting_intensity"
+        ],
+        "title": "CorrectionInspection",
+        "type": "object"
+      },
+      "annotations": {
+        "title": null,
+        "read_only_hint": true,
+        "destructive_hint": false,
+        "idempotent_hint": true,
+        "open_world_hint": false
+      }
+    },
+    {
+      "name": "scene.disposition.verify",
+      "input_schema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "disposition_id": {
+            "pattern": "^m9-disposition-[0-9a-f]{20}$",
+            "title": "Disposition Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "disposition_id"
+        ],
+        "title": "verify_dispositionArguments"
+      },
+      "output_schema": {
+        "additionalProperties": false,
+        "properties": {
+          "schema_id": {
+            "const": "mcp-disposition-verification/1",
+            "default": "mcp-disposition-verification/1",
+            "title": "Schema Id",
+            "type": "string"
+          },
+          "disposition_id": {
+            "title": "Disposition Id",
+            "type": "string"
+          },
+          "status": {
+            "const": "verified",
+            "default": "verified",
+            "title": "Status",
+            "type": "string"
+          },
+          "published_scene_path": {
+            "title": "Published Scene Path",
+            "type": "string"
+          },
+          "published_scene_sha256": {
+            "pattern": "^[0-9a-f]{64}$",
+            "title": "Published Scene Sha256",
+            "type": "string"
+          },
+          "source_scene_unchanged": {
+            "const": true,
+            "default": true,
+            "title": "Source Scene Unchanged",
+            "type": "boolean"
+          },
+          "duplicate_side_effect_count": {
+            "const": 0,
+            "default": 0,
+            "title": "Duplicate Side Effect Count",
+            "type": "integer"
+          },
+          "verification_resource_uri": {
+            "const": "artflow://runs/m9/verification",
+            "default": "artflow://runs/m9/verification",
+            "title": "Verification Resource Uri",
+            "type": "string"
+          }
+        },
+        "required": [
+          "disposition_id",
+          "published_scene_path",
+          "published_scene_sha256"
+        ],
+        "title": "DispositionVerification",
+        "type": "object"
+      },
+      "annotations": {
+        "title": null,
+        "read_only_hint": true,
+        "destructive_hint": false,
+        "idempotent_hint": true,
+        "open_world_hint": false
+      }
+    }
+  ],
+  "golden_calls": {
+    "scene.twin.summarize": {
+      "is_error": false,
+      "structured_content": {
+        "schema_id": "mcp-scene-twin-summary/1",
+        "twin_id": "artflow-ue-367938ea4fff2d57cb2176a7a45bbad1-twin",
+        "twin_sha256": "7604b26e775a4a92b4fddc83338ce8b55e2a79749f3e7710ec43958e606aba82",
+        "scene_path": "/Game/ArtFlowDemo",
+        "actor_count": 21,
+        "editable_actor_ids": [
+          "3fa0497b43ee5f7a52b02f9ebd35573b"
+        ],
+        "protected_actor_ids": [
+          "5e5124c6414eac2826f9e9a1eba6c9d9"
+        ],
+        "light_actor_ids": [
+          "2fd6e5d1474ecd751f1b8f8729e64ad1",
+          "e7545c1c413d3ed27f8899ab7362b5c2"
+        ],
+        "pcg_component_ids": [
+          "3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter"
+        ],
+        "available_staging_strategies": [
+          "candidate_level"
+        ],
+        "source_resource_uri": "artflow://scene/current/twin"
+      },
+      "content_types": [
+        "text"
+      ]
+    },
+    "scene.delta.compile_registered": {
+      "is_error": false,
+      "structured_content": {
+        "schema_id": "multi-domain-dry-run-receipt/1",
+        "plan_id": "m9-ruin-altar-dry-run",
+        "plan_sha256": "bfbc36e2c2c4eee433885f1e8ebdd6b1e0bc1a1d9698cde276eebbbb31343df3",
+        "stage_id": "artflow-m9-dry",
+        "routes": [
+          {
+            "operation_id": "material-bind",
+            "domain": "material",
+            "capability_id": "material.pbr.return.v1",
+            "tool_name": "material.pbr.prepare",
+            "execution_lane": "parallel_prepare"
+          },
+          {
+            "operation_id": "asset-reuse",
+            "domain": "asset",
+            "capability_id": "asset.catalog.reuse.v1",
+            "tool_name": "asset.catalog.query",
+            "execution_lane": "parallel_prepare"
+          },
+          {
+            "operation_id": "lighting-patch",
+            "domain": "lighting",
+            "capability_id": "lighting.rig.patch.v1",
+            "tool_name": "lighting.rig.patch",
+            "execution_lane": "parallel_prepare"
+          },
+          {
+            "operation_id": "pcg-layout",
+            "domain": "pcg",
+            "capability_id": "pcg.reviewed.configure.v1",
+            "tool_name": "pcg.instance.configure",
+            "execution_lane": "parallel_prepare"
+          }
+        ],
+        "preparation_waves": [
+          [
+            "asset-reuse",
+            "lighting-patch",
+            "material-bind"
+          ],
+          [
+            "pcg-layout"
+          ]
+        ],
+        "unreal_apply_order": [
+          "asset-reuse",
+          "lighting-patch",
+          "material-bind",
+          "pcg-layout"
+        ],
+        "failed_domain_reopen": {
+          "material": [
+            "material-bind"
+          ],
+          "pcg": [
+            "pcg-layout"
+          ],
+          "lighting": [
+            "lighting-patch"
+          ],
+          "asset": [
+            "asset-reuse"
+          ]
+        },
+        "committed_mutation_count": 0,
+        "source_scene_unchanged": true,
+        "receipt_sha256": "3fb05bf22c293fb4244406ef97955b8222d3fea32018873a94b15288f70dd2c0"
+      },
+      "content_types": [
+        "text"
+      ]
+    },
+    "scene.correction.inspect": {
+      "is_error": false,
+      "structured_content": {
+        "schema_id": "mcp-correction-inspection/1",
+        "evaluation_sha256": "347ded3df8cc153a0602df5d6334621b41511077be28ed76183d71e1f9782196",
+        "correction_plan_sha256": "aebed0c1ffaec9f7c31ee8ca3d9125f42b20074fe9fd3b8f5b6c5b171208f529",
+        "failed_domains": [
+          "lighting"
+        ],
+        "rerun_domains": [
+          "lighting"
+        ],
+        "preserved_domains": [
+          "asset",
+          "material",
+          "pcg"
+        ],
+        "requested_lighting_intensity": 8.0,
+        "lifecycle_resource_uri": "artflow://runs/m9/lifecycle"
+      },
+      "content_types": [
+        "text"
+      ]
+    },
+    "scene.disposition.verify": {
+      "is_error": false,
+      "structured_content": {
+        "schema_id": "mcp-disposition-verification/1",
+        "disposition_id": "m9-disposition-b70662c9ce036d85f7ce",
+        "status": "verified",
+        "published_scene_path": "/Game/ArtFlow/Published/AF_M9_b70662c9ce03",
+        "published_scene_sha256": "de5e78828d065bb51453a4ef3c12af12700e79ec57ba8534f2c828b2a3392a2e",
+        "source_scene_unchanged": true,
+        "duplicate_side_effect_count": 0,
+        "verification_resource_uri": "artflow://runs/m9/verification"
+      },
+      "content_types": [
+        "text"
+      ]
+    }
+  },
+  "hostile_calls": {
+    "unrestricted_path": {
+      "is_error": true,
+      "structured_content": null,
+      "content_types": [
+        "text"
+      ]
+    },
+    "arbitrary_workflow": {
+      "is_error": true,
+      "structured_content": null,
+      "content_types": [
+        "text"
+      ]
+    },
+    "unknown_evaluation": {
+      "is_error": true,
+      "structured_content": null,
+      "content_types": [
+        "text"
+      ]
+    },
+    "arbitrary_python": {
+      "is_error": true,
+      "structured_content": null,
+      "content_types": [
+        "text"
+      ]
+    }
+  },
+  "transcript_sha256": "db4e2908c94819a0b7c42ef14a00de9cd740380a7c5bac8fa31fe4159f32185e"
+}

@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布。图生 3D、MCP 与新版中文 Scene Lab 仍按 M10 独立切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布；M10-S1 又通过真实 stdio 子进程把同一控制平面投影为 3 个 MCP Resources 和 4 个只读 Tools。图生 3D与新版中文 Scene Lab 仍按 M10 后续独立切片推进。
 
 ## 项目概述
 
@@ -80,6 +80,14 @@ Technical Judge 与 Visual Critic 都只标记 `lighting`；Correction Planner �
 0。验证后的关卡发布到 `/Game/ArtFlow/Published/AF_M9_b70662c9ce03`，重复发布只返回 `reconciled`，
 源关卡哈希保持不变。完整事件与回执见 [M9-S3 实机记录](docs/evidence/M9_S3_DOMAIN_CORRECTION_PUBLISH_2026-08-27.md)。
 
+### 场景九：让外部 Agent 安全检查同一条 Unreal 生产链
+
+Codex、桌面宿主或其他 MCP 客户端可以读取 Scene Digital Twin、生命周期和独立验证报告，并按内容
+哈希调用现有 DAG 编译、失败域检查与发布复核。MCP 只是互操作入口：它不接收本地路径、任意
+workflow、Python、Shell 或 Blueprint，也不另建状态机。真实 stdio 验证中，官方客户端完成 3 个
+资源读取和 4 个正常调用；4 类越权输入全部失败，调用前后 SQLite 仍为 9 条事件，两个 UE 关卡文件
+字节不变。完整协议记录见 [M10-S1 MCP 边界证据](docs/evidence/M10_S1_MCP_FACADE_2026-08-27.md)。
+
 ## Agentic 执行流程
 
 ![ArtFlow Agentic 使用流程漫画：从 Unreal 场景理解、双路生成、独立评价到局部修订与验证回流](docs/assets/portfolio/11-agentic-workflow-comic.png)
@@ -87,6 +95,9 @@ Technical Judge 与 Visual Critic 都只标记 `lighting`；Correction Planner �
 _由 Codex 内置图像生成功能制作的流程说明漫画，用于解释产品使用方式；实际运行结果与验证证据见下文。_
 
 执行期间，SQLite 事件日志、确定性 Reducer、恢复协调器、生产记忆和 OpenTelemetry 共同构成 Agent Harness。模型负责在有限能力中提出下一步行动，控制平面负责验证、执行、复检与持久化；任何模型置信度都不能覆盖确定性失败。
+
+MCP 位于 Harness 外侧，只把已经存在的资源和窄工具投影给兼容宿主；ComfyUI、GPT Image 2、UE
+Bridge 与后续图生 3D Provider 都是可替换能力，不拥有规划、策略、记忆或发布权。
 
 ## 功能架构
 
@@ -183,6 +194,18 @@ cd ..
 
 打开 `http://127.0.0.1:8796`。推荐演示顺序与讲解词见 [演示与复现指南](docs/DEMO_GUIDE.md)。界面读取持久化运行，不会重新调用生成器或消耗 API Token。
 
+用任意兼容 MCP 的本地宿主启动 stdio Server：
+
+```powershell
+uv run python scripts/run_artflow_mcp.py
+```
+
+仓库提供的官方客户端跨进程验证会读取全部资源、调用全部工具、执行越权负对照并检查无副作用：
+
+```powershell
+uv run python scripts/verify_m10_mcp_stdio.py
+```
+
 ## 可验证作品集发布
 
 构建只包含声明过的审阅材料，不包含 prompt、事件数据库、凭据或隐藏推理：
@@ -220,6 +243,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
 | `src/artflow_agent/portfolio_release.py` | 确定性发布包与篡改检测 |
 | `src/artflow_agent/pbr.py` | ComfyUI 能力快照、PBR 合同与受审图插槽编译器 |
 | `src/artflow_agent/scene_lifecycle.py` | 多域评价、失败域纠正、持久恢复与发布 ledger |
+| `src/artflow_agent/mcp_facade.py` | 现有合同与证据之上的内容寻址 MCP 薄适配层 |
 | `integrations/unreal/` | 可单独安装的 ArtFlow Scene Bridge 与 UE 5.8 测试宿主 |
 | `web/` | React / TypeScript Scene Lab 与证据控制台 |
 | `artifacts/goal/` | 当前作品集运行、截图、记分卡与 checkpoint |

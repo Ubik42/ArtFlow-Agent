@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M10-S1",
+  "status": "completed",
+  "outcome": "The official MCP 2.1 client negotiated protocol 2026-07-28 over a real STDIO subprocess, read three fixed ArtFlow resources and invoked four content-addressed read-only tools; four hostile inputs failed closed while the existing nine-event ledger and protected Unreal package bytes remained unchanged.",
+  "evidence": [
+    "docs/evidence/M10_S1_MCP_FACADE_2026-08-27.md",
+    "src/artflow_agent/mcp_facade.py",
+    "scripts/run_artflow_mcp.py",
+    "scripts/verify_m10_mcp_stdio.py",
+    "tests/test_mcp_facade.py",
+    "artifacts/goal/m10-s1-mcp-facade/protocol-transcript.json",
+    "artifacts/goal/m10-s1-mcp-facade/boundary-audit.json"
+  ]
+}

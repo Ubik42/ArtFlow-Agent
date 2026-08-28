@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 39,
+  "stateRevision": 40,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -116,38 +116,42 @@
     }
   ],
   "nextSlice": {
-    "id": "M10-S1",
+    "id": "M10-S2",
     "milestone": "M10",
-    "title": "Thin MCP interoperability over the existing Agent control plane",
-    "outcome": "Expose the verified Scene Digital Twin, lifecycle evidence and a minimal set of bounded planning, judging and disposition capabilities through a local STDIO MCP facade whose handlers call the existing contracts, policy and durable runtime rather than owning parallel state.",
-    "risk": "R3",
+    "title": "Provider-neutral image-to-3D candidate and Unreal Interchange admission",
+    "outcome": "Turn one project-owned concept reference into a content-addressed GLB candidate through a replaceable provider boundary, then admit or reject it with recorded license, format, geometry, material, scale, collision, namespace and budget evidence before any staged Unreal placement.",
+    "risk": "R4",
     "evidenceTarget": "A4",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not add image-to-3D or redesign the frontend before the MCP boundary is proven",
-      "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
-      "Do not expose arbitrary Python, shell, Blueprint, workflow JSON, file paths or Unreal object mutation",
-      "Do not let MCP own another event store, policy engine, reducer, memory system or disposition authority",
-      "Do not add OAuth or remote HTTP transport to the local STDIO proof",
-      "Do not broaden tests beyond schema parity, capability allowlisting, runtime reuse and protocol interoperability"
+      "Do not make the main PCG, lighting, material and project-asset route depend on image-to-3D availability or quality",
+      "Do not place a generated mesh directly into the source level or bypass the existing candidate-level staging boundary",
+      "Do not accept a provider URL, archive or GLB without content hashing, declared provenance and bounded local inspection",
+      "Do not execute scripts, extensions or arbitrary import instructions embedded in a generated asset",
+      "Do not build a general 3D DCC editor, train a foundation model or redesign the Scene Lab in this slice",
+      "Do not modify shared Unreal, ComfyUI or model installations outside project-owned integration and evidence paths",
+      "Do not hide provider unavailability or a rejected candidate; a truthful rejection receipt is a valid experiment result"
     ],
     "acceptance": [
-      "A stock MCP client can initialize the local server, list resources/tools and read the real M9 Twin and lifecycle evidence",
-      "Every MCP tool input/output schema derives from or validates through existing ArtFlow contracts and unsupported fields fail closed",
-      "Tool handlers call the existing planner, evaluator or lifecycle boundary and create no second source of truth",
-      "No exposed tool accepts arbitrary code, arbitrary workflow JSON, unrestricted paths or raw host commands",
-      "Protocol transcripts, focused tests and an independent boundary audit prove successful calls and hostile rejection cases"
+      "A strict provider-neutral request and receipt bind the source reference, provider/model identity, terms or license evidence, generation parameters, GLB bytes and costs without exposing provider-specific state to the planner",
+      "A bounded pre-import inspector rejects traversal, external URI dependencies, unsupported extensions, malformed geometry, missing materials, invalid scale and declared triangle or texture-budget violations",
+      "A real generated GLB candidate passes through Unreal Interchange in the project-owned UE 5.8 host and produces an admission or rejection receipt with asset paths, geometry, material, collision and namespace evidence",
+      "Any admitted mesh is placed only in the existing candidate level through a typed Scene Delta operation and independently checked from authored and validation cameras; rejected candidates produce zero scene mutation",
+      "The established project-asset fallback still compiles and executes when the provider is unavailable or the generated candidate is rejected",
+      "Focused hostile fixtures and one real host transcript prove the boundary without spending time on broad quality benchmarking"
     ],
     "stopConditions": [
-      "Stop if MCP requires a parallel coordinator or weakens an existing policy or idempotency boundary",
-      "Stop if the chosen SDK cannot provide standards-compliant STDIO initialization and schema exposure without network services",
-      "Stop if a resource would disclose prompts, secrets, hidden reasoning or unrestricted local filesystem contents",
-      "Stop if existing user changes overlap the MCP facade and cannot be preserved"
+      "Stop a candidate immediately if its license or portfolio-use terms cannot be recorded",
+      "Stop before import if the GLB references external or escaping files, embeds executable extensions, exceeds declared budgets or cannot be parsed deterministically",
+      "Stop before placement if Unreal Interchange cannot produce inspectable mesh, material and collision facts in the project-owned namespace",
+      "Degrade to the project-asset route if the selected provider requires unavailable credentials, a prohibited upload or shared-install mutation",
+      "Stop if existing user changes overlap the image-to-3D or Interchange boundary and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "node", "kind": "command", "value": "node", "required": false}
+      {"id": "unreal_editor", "kind": "path", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
+      {"id": "image_to_3d_provider", "kind": "capability", "value": "replaceable local or hosted GLB generation surface", "required": false}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -163,9 +167,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0035.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0036.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M8 remain verified at their prior bounded claims. M9 is complete: a strict four-domain Scene Delta was rebound to real Twin/PBR/PCG facts and executed in UE 5.8; a rendered 0.05-lux failure was independently isolated to lighting, corrected to 8.0/4200K without replaying material, asset or PCG, recovered from a deliberately missing receipt with zero resubmission, passed dual-view checks and published to /Game/ArtFlow/Published/AF_M9_b70662c9ce03. The source/protected state and 12 PCG instances remained invariant, and repeated publish produced zero duplicate side effects. MCP, image-to-3D and redesigned frontend remain planned M10 work.",
+  "evidenceCeiling": "M0-M9 remain verified at their prior bounded claims. M10-S1 is complete: the official MCP 2.1 client negotiated protocol 2026-07-28 through a real STDIO subprocess, read three fixed resources and invoked four content-addressed read-only tools. Four hostile inputs failed closed, all input schemas are closed, the existing nine-event ledger and protected Unreal package bytes remained unchanged, and no arbitrary execution surface was exposed. Image-to-3D and the redesigned frontend remain planned M10 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

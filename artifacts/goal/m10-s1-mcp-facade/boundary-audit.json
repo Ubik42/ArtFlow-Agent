@@ -1,0 +1,18 @@
+{
+  "schema_id": "m10-s1-mcp-boundary-audit/1",
+  "status": "verified",
+  "protocol_version": "2026-07-28",
+  "transport": "stdio-subprocess",
+  "resource_count": 3,
+  "tool_count": 4,
+  "golden_call_count": 4,
+  "hostile_rejection_count": 4,
+  "all_inputs_closed": true,
+  "all_tools_read_only": true,
+  "arbitrary_execution_surface_count": 0,
+  "durable_events_before": 9,
+  "durable_events_after": 9,
+  "protected_bytes_unchanged": true,
+  "duplicate_side_effect_count": 0,
+  "audit_sha256": "3a71c57077aca6cd1d406073e47828701d701507774e68f0c68d182519cdd2b4"
+}

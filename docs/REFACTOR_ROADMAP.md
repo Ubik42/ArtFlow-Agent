@@ -69,10 +69,12 @@ Chinese screenshot-rich evidence trail, not a preview-plane substitution.
 
 ### M10 — MCP, image-to-3D experiment and public release
 
-Status: in progress from 2026-08-27. M10-S1 starts with the thin MCP boundary; image-to-3D and the
+Status: in progress from 2026-08-27. M10-S1 completed the thin MCP boundary; image-to-3D and the
 new Scene Lab remain separate later slices so neither can become a second control plane.
 
-- project the existing runtime through thin MCP resources and narrow tools;
+- **M10-S1 completed:** the official MCP 2.1 client negotiated protocol `2026-07-28` over a real
+  stdio subprocess, read three fixed resources and invoked four content-addressed read-only tools;
+  four hostile inputs failed closed while the nine-event ledger and protected UE bytes stayed fixed;
 - integrate one optional GLB-generating Provider and validate it through Interchange;
 - prove the main PCG/lighting route still works when 3D generation is unavailable or rejected;
 - redesign the Chinese Scene Lab around the stable 3D event contract and publish the case study.
