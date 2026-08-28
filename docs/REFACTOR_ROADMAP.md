@@ -14,7 +14,7 @@ the exact current slice lives in `config/goal-state.json`.
 
 ### M7 — Scene Digital Twin and staged Scene Delta kernel
 
-Status: in progress from 2026-08-27.
+Status: completed on 2026-08-27.
 
 - **M7-S1** extends the real UE package with actors, bounds, materials, lights, PCG, Data Layers and
   protection fingerprints; it adds a DAG contract limited to lighting and approved-PCG dry runs.
@@ -28,8 +28,13 @@ a lighting + PCG scene delta while source fingerprints remain unchanged.
 
 ### M8 — ComfyUI production graph and PBR material route
 
-- version and probe `ComfyUI-Production-Nodes` through real `/object_info` evidence;
-- compile only reviewed subgraphs with typed slots and normalized receipts;
+Status: in progress from 2026-08-27. M8-S1 is complete; real texture execution and Unreal material
+return remain.
+
+- **M8-S1 completed:** versioned and probed `ComfyUI-Production-Nodes` through real `/object_info`,
+  pinned 19 node-schema fingerprints and compiled only declared slots into one hashed 49-node graph;
+- **M8-S2 active:** execute the reviewed graph, validate real texture artifacts and build the staged
+  Unreal Material Instance with idempotent return evidence;
 - generate or transform one PBR map set and build an Unreal Material Instance in staging;
 - validate channel semantics, texture settings, hashes and same-camera visual effect.
 

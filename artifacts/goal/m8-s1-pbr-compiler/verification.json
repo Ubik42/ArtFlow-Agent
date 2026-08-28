@@ -1,0 +1,21 @@
+{
+  "schema_id": "pbr-compilation-verification/1",
+  "verified": true,
+  "snapshot_sha256": "d09efa515007c2c6cd93eb9b9911aaa1ad74aca69c6c8acb27aa80774f64650f",
+  "workflow_sha256": "997d7fb60b8d619b8a98c0afb75ed011aee9e2aafefbbab00eeaf34737b6c85e",
+  "node_count": 826,
+  "required_node_count": 19,
+  "texture_channel_count": 5,
+  "negative_controls": {
+    "path_escape_and_class_injection_rejected": true,
+    "tampered_topology_rejected": true,
+    "node_schema_drift_rejected": true
+  },
+  "shared_host_node_count": 1301,
+  "production_nodes_missing_on_shared_host": [
+    "GenerationReceipt",
+    "ProductionConstraintCheck",
+    "WorkflowContractCheck"
+  ],
+  "compiled_artifact_sha256": "333c431065ea3f6fa12712b354983f544608ba508772a36b179854b5df88ea57"
+}

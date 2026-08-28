@@ -1,0 +1,195 @@
+{
+  "$defs": {
+    "PBRChannelContract": {
+      "additionalProperties": false,
+      "properties": {
+        "channel": {
+          "enum": [
+            "base_color",
+            "normal",
+            "roughness",
+            "metallic",
+            "ambient_occlusion"
+          ],
+          "title": "Channel",
+          "type": "string"
+        },
+        "color_space": {
+          "enum": [
+            "srgb",
+            "linear"
+          ],
+          "title": "Color Space",
+          "type": "string"
+        },
+        "filename_suffix": {
+          "pattern": "^[a-z0-9_]{2,32}$",
+          "title": "Filename Suffix",
+          "type": "string"
+        },
+        "pixel_format": {
+          "enum": [
+            "rgb8",
+            "gray8"
+          ],
+          "title": "Pixel Format",
+          "type": "string"
+        },
+        "semantic": {
+          "maxLength": 300,
+          "minLength": 10,
+          "title": "Semantic",
+          "type": "string"
+        }
+      },
+      "required": [
+        "channel",
+        "filename_suffix",
+        "color_space",
+        "pixel_format",
+        "semantic"
+      ],
+      "title": "PBRChannelContract",
+      "type": "object"
+    },
+    "PBRTextureSetContract": {
+      "additionalProperties": false,
+      "properties": {
+        "channels": {
+          "items": {
+            "$ref": "#/$defs/PBRChannelContract"
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "title": "Channels",
+          "type": "array"
+        },
+        "height": {
+          "maximum": 2048,
+          "minimum": 512,
+          "multipleOf": 8,
+          "title": "Height",
+          "type": "integer"
+        },
+        "material_id": {
+          "pattern": "^[a-z0-9][a-z0-9._-]{2,63}$",
+          "title": "Material Id",
+          "type": "string"
+        },
+        "normal_convention": {
+          "const": "directx",
+          "default": "directx",
+          "title": "Normal Convention",
+          "type": "string"
+        },
+        "schema_id": {
+          "const": "pbr-texture-set-contract/1",
+          "default": "pbr-texture-set-contract/1",
+          "title": "Schema Id",
+          "type": "string"
+        },
+        "tileable": {
+          "title": "Tileable",
+          "type": "boolean"
+        },
+        "width": {
+          "maximum": 2048,
+          "minimum": 512,
+          "multipleOf": 8,
+          "title": "Width",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "material_id",
+        "width",
+        "height",
+        "tileable",
+        "channels"
+      ],
+      "title": "PBRTextureSetContract",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "capability_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Capability Snapshot Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "pattern": "^pbr-[0-9a-f]{24}$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "resolved_slots": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string"
+          },
+          {
+            "type": "integer"
+          },
+          {
+            "type": "number"
+          }
+        ]
+      },
+      "title": "Resolved Slots",
+      "type": "object"
+    },
+    "schema_id": {
+      "const": "compiled-pbr-workflow/1",
+      "default": "compiled-pbr-workflow/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "template_id": {
+      "title": "Template Id",
+      "type": "string"
+    },
+    "template_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Template Sha256",
+      "type": "string"
+    },
+    "template_version": {
+      "title": "Template Version",
+      "type": "string"
+    },
+    "texture_set": {
+      "$ref": "#/$defs/PBRTextureSetContract"
+    },
+    "workflow": {
+      "additionalProperties": true,
+      "title": "Workflow",
+      "type": "object"
+    },
+    "workflow_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Workflow Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_id",
+    "template_id",
+    "template_version",
+    "template_sha256",
+    "capability_snapshot_sha256",
+    "source_sha256",
+    "workflow_sha256",
+    "texture_set",
+    "resolved_slots",
+    "workflow"
+  ],
+  "title": "CompiledPBRWorkflow",
+  "type": "object"
+}

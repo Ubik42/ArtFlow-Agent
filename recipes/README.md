@@ -15,6 +15,10 @@ Bundled recipes:
   live environment and graph-schema preflight passed.
 - `masked-refinement-v1` v1.1: FLUX.2 Klein mask-bounded local revision; live environment and
   graph-schema preflight passed, with visual GPU validation still pending.
+- `pbr-material-v1` v1.0: five-channel PBR material candidate compiler. It derives reviewed
+  BaseColor / DirectX Normal / Roughness / Metallic / AO branches from one bounded material
+  intent and binds Production-Nodes constraint, contract and receipt nodes. Compilation and
+  live `/object_info` compatibility are verified; GPU output quality remains an M8-S2 claim.
 
 The `*.recipe.json` manifest is the trust boundary. Only its declared slots can be changed by
 the agent. The adjacent `*.workflow.json` file is an API-format ComfyUI graph; changes to graph

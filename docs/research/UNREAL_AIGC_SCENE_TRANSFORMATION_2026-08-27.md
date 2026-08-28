@@ -61,9 +61,11 @@ ComfyUI 官方 API 的 workflow JSON 可以由外部应用提交；新 API v2 �
 2. ArtFlow `Workflow Compiler` 根据能力 manifest 选择子图并填充类型化插槽；
 3. Comfy Adapter 负责上传、提交、轮询/订阅、对账和规范化 receipt。
 
-`ComfyUI-Production-Nodes` 的七个生产节点可以作为第三层的运行时门禁与收据节点，但必须完成：
-版本固定、ArtFlow 依赖声明、真实 `/object_info` 可见性、图模板引用、端到端收据验证。当前项目尚未
-满足这些条件，因此调研报告不把它列为已实现能力。
+`ComfyUI-Production-Nodes` 当前提供八个生产节点。M8-S1 已在不修改共享安装的隔离宿主中固定其
+Git commit、MIT 许可证和真实 `/object_info`，并把三个门禁/收据节点纳入项目自有 49 节点 PBR
+模板；编译器逐个校验 19 个所需节点的 schema 指纹。这里已实现的是“能力探测 + 受审图编译 +
+提交前失败关闭”，尚未实现真实贴图输出、端到端生成收据和 Unreal Material Instance，后者由
+M8-S2 验证后才能升级能力口径。
 
 ## 图生 3D 社区能力
 

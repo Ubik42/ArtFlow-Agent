@@ -58,8 +58,9 @@ M7 Scene Digital Twin + Staged Scene Delta Kernel
 ```
 
 M7 已完成扩展场景事实、灯光/PCG dry-run、候选关卡真实执行、同机位回渲、幂等对账以及发布/
-丢弃回执。当前进入 M8：先通过真实 `/object_info` 固定 ComfyUI 能力清单和项目自有 PBR 模板，
-再生成并验证贴图与 Unreal Material Instance；图生 3D、MCP 和新前端仍按后续里程碑推进。
+丢弃回执。M8-S1 又通过隔离真实宿主的 `/object_info` 固定了 19 个节点接口指纹，并把项目自有
+49 节点 PBR 模板收敛为有限插槽编译器。当前 M8-S2 只负责真实生成五通道贴图、验证产物并在
+候选关卡创建 Unreal Material Instance；图生 3D、MCP 和新前端仍按后续里程碑推进。
 
 ## 自主开发与停止边界
 

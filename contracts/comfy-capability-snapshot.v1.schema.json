@@ -1,0 +1,142 @@
+{
+  "$defs": {
+    "NodeSchemaFingerprint": {
+      "additionalProperties": false,
+      "properties": {
+        "class_type": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Class Type",
+          "type": "string"
+        },
+        "output_types": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Output Types",
+          "type": "array"
+        },
+        "python_module": {
+          "maxLength": 300,
+          "minLength": 1,
+          "title": "Python Module",
+          "type": "string"
+        },
+        "schema_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Schema Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "class_type",
+        "schema_sha256",
+        "python_module"
+      ],
+      "title": "NodeSchemaFingerprint",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "comfyui_version": {
+      "minLength": 1,
+      "title": "Comfyui Version",
+      "type": "string"
+    },
+    "device_name": {
+      "minLength": 1,
+      "title": "Device Name",
+      "type": "string"
+    },
+    "endpoint": {
+      "pattern": "^http://127\\.0\\.0\\.1:[0-9]{2,5}$",
+      "title": "Endpoint",
+      "type": "string"
+    },
+    "missing_nodes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Missing Nodes",
+      "type": "array"
+    },
+    "observed_node_count": {
+      "minimum": 1,
+      "title": "Observed Node Count",
+      "type": "integer"
+    },
+    "production_nodes_commit": {
+      "pattern": "^[0-9a-f]{7,40}$",
+      "title": "Production Nodes Commit",
+      "type": "string"
+    },
+    "production_nodes_license": {
+      "const": "MIT",
+      "default": "MIT",
+      "title": "Production Nodes License",
+      "type": "string"
+    },
+    "production_nodes_license_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Nodes License Sha256",
+      "type": "string"
+    },
+    "python_version": {
+      "minLength": 1,
+      "title": "Python Version",
+      "type": "string"
+    },
+    "pytorch_version": {
+      "minLength": 1,
+      "title": "Pytorch Version",
+      "type": "string"
+    },
+    "required_nodes": {
+      "items": {
+        "$ref": "#/$defs/NodeSchemaFingerprint"
+      },
+      "minItems": 1,
+      "title": "Required Nodes",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "comfy-capability-snapshot/1",
+      "default": "comfy-capability-snapshot/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Snapshot Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "captured_at",
+    "endpoint",
+    "comfyui_version",
+    "python_version",
+    "pytorch_version",
+    "device_name",
+    "observed_node_count",
+    "required_nodes",
+    "production_nodes_commit",
+    "production_nodes_license_sha256",
+    "snapshot_sha256"
+  ],
+  "title": "ComfyCapabilitySnapshot",
+  "type": "object"
+}

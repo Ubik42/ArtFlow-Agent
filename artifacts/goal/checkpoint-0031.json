@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M8-S1",
+  "status": "completed",
+  "outcome": "A real isolated ComfyUI 0.28.0 host loaded the pinned MIT Production-Nodes commit, exposed all 19 reviewed node interfaces, and validated a deterministic 49-node five-channel PBR workflow compiler. Requests cannot add graph fields or escape project input paths; workflow tamper and same-name node schema drift fail before submission. The shared host remained unchanged and the isolated host was stopped cleanly.",
+  "evidence": [
+    "docs/evidence/M8_S1_PBR_COMPILER_2026-08-27.md",
+    "src/artflow_agent/pbr.py",
+    "recipes/pbr-material-v1.template.json",
+    "recipes/pbr-material-v1.workflow.json",
+    "contracts/comfy-capability-snapshot.v1.schema.json",
+    "contracts/compiled-pbr-workflow.v1.schema.json",
+    "contracts/pbr-texture-set-contract.v1.schema.json",
+    "contracts/reviewed-pbr-template.v1.schema.json",
+    "artifacts/goal/m8-s1-pbr-compiler/comfy-capability-snapshot.json",
+    "artifacts/goal/m8-s1-pbr-compiler/compiled-pbr-workflow.json",
+    "artifacts/goal/m8-s1-pbr-compiler/verification.json",
+    "artifacts/goal/m8-s1-pbr-compiler/host-lifecycle.json"
+  ]
+}

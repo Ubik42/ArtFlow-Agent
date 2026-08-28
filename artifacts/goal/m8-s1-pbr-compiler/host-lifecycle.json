@@ -1,0 +1,17 @@
+{
+  "schema_id": "isolated-comfy-host-lifecycle/1",
+  "endpoint": "http://127.0.0.1:8190",
+  "launch_mode": "project-local-base-directory, CPU capability probe, custom-node allowlist",
+  "database": "project-local sqlite:///D:/3D/_tools/ArtFlow-Agent/artifacts/runtime/m8-comfy-host/user/comfyui-m8.db",
+  "isolated_launcher_pid": 14156,
+  "isolated_listener_pid": 47284,
+  "isolated_node_count": 826,
+  "isolated_required_node_count": 19,
+  "isolated_port_empty_after_stop": true,
+  "isolated_processes_alive_after_stop": false,
+  "shared_endpoint": "http://127.0.0.1:8188",
+  "shared_parent_pid_before_and_after": 39904,
+  "shared_listener_pid_before_and_after": 49656,
+  "shared_node_count": 1301,
+  "shared_installation_modified": false
+}

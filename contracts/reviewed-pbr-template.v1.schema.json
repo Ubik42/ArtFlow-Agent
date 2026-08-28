@@ -1,0 +1,101 @@
+{
+  "$defs": {
+    "PBRSlotTarget": {
+      "additionalProperties": false,
+      "properties": {
+        "input_name": {
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$",
+          "title": "Input Name",
+          "type": "string"
+        },
+        "node_id": {
+          "pattern": "^[0-9]+$",
+          "title": "Node Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "node_id",
+        "input_name"
+      ],
+      "title": "PBRSlotTarget",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "required_models": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Required Models",
+      "type": "array"
+    },
+    "required_node_schema_sha256": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "minProperties": 1,
+      "title": "Required Node Schema Sha256",
+      "type": "object"
+    },
+    "required_nodes": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Required Nodes",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "reviewed-pbr-template/1",
+      "default": "reviewed-pbr-template/1",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "slot_targets": {
+      "additionalProperties": {
+        "items": {
+          "$ref": "#/$defs/PBRSlotTarget"
+        },
+        "type": "array"
+      },
+      "minProperties": 1,
+      "title": "Slot Targets",
+      "type": "object"
+    },
+    "template_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Template Id",
+      "type": "string"
+    },
+    "version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "title": "Version",
+      "type": "string"
+    },
+    "workflow_file": {
+      "pattern": "^[A-Za-z0-9_.-]+\\.json$",
+      "title": "Workflow File",
+      "type": "string"
+    },
+    "workflow_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Workflow Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "template_id",
+    "version",
+    "workflow_file",
+    "workflow_sha256",
+    "required_nodes",
+    "required_node_schema_sha256",
+    "required_models",
+    "slot_targets"
+  ],
+  "title": "ReviewedPBRTemplate",
+  "type": "object"
+}

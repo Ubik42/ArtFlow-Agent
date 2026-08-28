@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 又在真实 UE 5.8 中完成 21 Actor Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账以及发布/丢弃。PBR、自动纠正、三维资产生成与 MCP 仍在开发中。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 又在真实 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账以及发布/丢弃。M8 已完成真实 ComfyUI 能力探测和受审 PBR 图编译器；五张贴图的 GPU 生成、UE Material Instance、自动纠正、三维资产生成与 MCP 仍在开发中。
 
 ## 项目概述
 
@@ -76,6 +76,8 @@ Unreal 四 Pass Scene Package
 这条主运行包含 **25 个 append-only 事件**，刷新和重启均可由 SQLite Reducer 重建，且不存在待处理的人工审批。候选采用、局部修订、UE 回流和最终发布均由 Codex 编排器依据已持久化证据完成；预览界面承担结果检查与过程解释，不参与改变执行权限。
 
 第二条 UE 三维执行证据已验证 `Scene Digital Twin → SceneChangePlan → candidate level → lighting/PCG → same-camera render → reconcile → publish/discard`。它使用独立类型化回执，源关卡在整个执行生命周期中保持零写入。
+
+第三条材质管线已经打通提交前控制面：ArtFlow 从真实 `/object_info` 固定 19 个所需节点的接口指纹，只允许把视觉意图、输入身份、种子、尺寸和输出前缀填入项目自有 49 节点模板。模板被改写、节点同名但接口漂移、路径越界或请求夹带 `class_type` 都会在进入 ComfyUI 队列前失败。该证据只证明图编译与能力门禁；真实 GPU 贴图及 UE 材质回贴属于下一切片。
 
 ## 实际运行证据
 
@@ -174,6 +176,7 @@ powershell -ExecutionPolicy Bypass -File scripts\validate.ps1 -Tier quick
 | `src/artflow_agent/production_memory.py` | 来源绑定生产记忆治理 |
 | `src/artflow_agent/provenance.py` | UE return、来源清单与独立验证 |
 | `src/artflow_agent/portfolio_release.py` | 确定性发布包与篡改检测 |
+| `src/artflow_agent/pbr.py` | ComfyUI 能力快照、PBR 合同与受审图插槽编译器 |
 | `integrations/unreal/` | 可单独安装的 ArtFlow Scene Bridge 与 UE 5.8 测试宿主 |
 | `web/` | React / TypeScript Scene Lab 与证据控制台 |
 | `artifacts/goal/` | 当前作品集运行、截图、记分卡与 checkpoint |

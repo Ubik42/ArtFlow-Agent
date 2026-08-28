@@ -23,6 +23,12 @@ from artflow_agent.contracts import (
 )
 from artflow_agent.hosted_execution import CompiledHostedRequest, HostedAuthorityPacket
 from artflow_agent.live_run import LiveRunAuthorizationDossier
+from artflow_agent.pbr import (
+    ComfyCapabilitySnapshot,
+    CompiledPBRWorkflow,
+    PBRTextureSetContract,
+    ReviewedPBRTemplate,
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 SCHEMAS = {
@@ -46,6 +52,10 @@ SCHEMAS = {
     "scene-dry-run-receipt.v1.schema.json": SceneDryRunReceipt.model_json_schema(),
     "scene-execution-receipt.v1.schema.json": SceneExecutionReceipt.model_json_schema(),
     "scene-disposition-receipt.v1.schema.json": SceneDispositionReceipt.model_json_schema(),
+    "comfy-capability-snapshot.v1.schema.json": ComfyCapabilitySnapshot.model_json_schema(),
+    "compiled-pbr-workflow.v1.schema.json": CompiledPBRWorkflow.model_json_schema(),
+    "pbr-texture-set-contract.v1.schema.json": PBRTextureSetContract.model_json_schema(),
+    "reviewed-pbr-template.v1.schema.json": ReviewedPBRTemplate.model_json_schema(),
 }
 
 

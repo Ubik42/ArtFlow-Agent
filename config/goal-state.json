@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 34,
+  "stateRevision": 35,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -116,33 +116,34 @@
     }
   ],
   "nextSlice": {
-    "id": "M8-S1",
+    "id": "M8-S2",
     "milestone": "M8",
-    "title": "Capability-gated ComfyUI PBR graph compiler",
-    "outcome": "Inspect the real local ComfyUI host and ComfyUI-Production-Nodes capabilities, define a typed PBR TextureSet contract and compile one reviewed material-generation template into a bounded ComfyUI prompt whose slots, node versions, model inputs and output identities are validated before submission.",
-    "risk": "R3",
+    "title": "Real PBR generation and staged Unreal material return",
+    "outcome": "Execute the M8-S1 reviewed workflow on the real local GPU, normalize and validate five generated PBR artifacts, then import them through one idempotent typed Unreal tool into a project-owned Material Instance applied only to the staged candidate level and prove the visual/material effect by same-camera rerender.",
+    "risk": "R4",
     "evidenceTarget": "A5",
     "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not implement image-to-3D, MCP, final scene correction or a frontend redesign in this slice",
+      "Do not implement image-to-3D, MCP, final multi-domain scene correction or a frontend redesign in this slice",
       "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
-      "Do not submit model-authored arbitrary ComfyUI workflow JSON; only compile declared slots into one reviewed project-owned template",
+      "Do not add arbitrary workflow construction, arbitrary Unreal Python or a generic material graph editor",
       "Do not add LangGraph, Temporal, a vector database or a second runtime state machine",
-      "Do not install or update custom nodes in the shared ComfyUI host",
-      "Do not claim Unreal material integration until a real texture set and Material Instance pass host validation"
+      "Do not install or update custom nodes in the shared ComfyUI host; use an owned isolated runtime or an exact reversible launch overlay",
+      "Do not expand the slice merely to improve image aesthetics after one technically valid texture set and rerender exist"
     ],
     "acceptance": [
-      "A real /object_info snapshot records the installed ComfyUI core and Production-Nodes required capabilities without changing the host",
-      "A strict PBR TextureSet contract defines BaseColor, Normal, Roughness, Metallic and AO channel semantics, dimensions, color spaces, hashes and lineage",
-      "The compiler accepts only declared visual-intent slots and emits a deterministic prompt bound to reviewed workflow and node-version fingerprints",
-      "Unknown nodes, missing capabilities, arbitrary class_type injection, path escape and undeclared slot values fail closed before provider submission",
-      "One local fixture compilation and one negative-control workflow are independently verified with focused tests, goal audit and quick validation"
+      "One real RTX 4080 run submits only the M8-S1 reviewed workflow and persists a normalized receipt bound to request, capability snapshot, workflow and output hashes",
+      "BaseColor, DirectX Normal, Roughness, Metallic and AO files pass exact dimensions, decodability, channel mode, color-space intent, finite statistics, naming and lineage checks",
+      "At least one deliberately invalid channel fixture is rejected before Unreal import and cannot be hidden by a visual score",
+      "One typed idempotent Unreal request imports the five hashes under /Game/ArtFlow/Generated/<run>, creates a Material Instance and binds it only in the candidate level",
+      "A same-camera Unreal rerender visibly reflects the material, source/protected fingerprints remain unchanged, and replay reconciles without duplicate imports or actors",
+      "Focused tests, independent artifact verification, goal audit and quick validation pass without turning broad test expansion into the milestone"
     ],
     "stopConditions": [
-      "Stop if the detected ComfyUI endpoint is not the known local host or capability inspection would require changing its installation",
-      "Stop if required custom-node code has no inspectable license or exposes an unavoidable arbitrary host-code slot",
-      "Stop if a reviewed graph cannot be represented as repository-owned immutable data with a finite slot allowlist",
+      "Stop before submission if live node schema fingerprints or required model identities differ from the reviewed M8-S1 evidence",
+      "Stop before Unreal import if any generated channel is missing, undecodable, semantically invalid or not bound to the recorded generation receipt",
+      "Stop if isolation cannot prevent changes to the shared ComfyUI installation or the source Unreal level",
       "Stop if an existing user change overlaps the same contracts or reviewed workflow and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -163,9 +164,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0030.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0031.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M6 remain verified at their prior bounded claims. M7 is complete: a real UE 5.8 Twin and typed lighting/PCG DAG passed zero-write dry-run, then a content-addressed candidate changed only the frozen light and generated 12 visible instances through one reviewed PCG graph. Same-camera render, semantic protected fingerprint, 12-to-12 reconcile, typed publish and exact discard all passed; the source ArtFlowDemo SHA-256 remained 620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a throughout. PBR generation, automated correction, mesh generation and MCP remain planned.",
+  "evidenceCeiling": "M0-M7 remain verified at their prior bounded claims. M8-S1 is complete: an isolated real ComfyUI 0.28.0 host loaded the MIT Production-Nodes commit d102528b8f2418b98551eeb9aa3841116206a61c, exposed 826 nodes and matched all 19 reviewed node-schema fingerprints. A project-owned 49-node template deterministically compiled five typed PBR output branches; path/class injection, topology tamper and node-schema drift all failed before submission. The shared 8188 installation was unchanged and the isolated 8190 processes were stopped. No GPU texture output or Unreal Material Instance is claimed yet; those, automated correction, mesh generation and MCP remain planned.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
