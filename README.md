@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账及发布/丢弃；M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝与失败域纠正、UE Material Instance、Shader-ready 回渲和重复请求对账。当前 M9 正在把材质、固定 PCG 图、灯光和项目资产统一为多域 Scene Delta 闭环；图生 3D、MCP 与新前端仍按后续切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、受限计划 DAG、候选关卡灯光/PCG 执行、同机位回渲、12→12 幂等对账及发布/丢弃；M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝与失败域纠正、UE Material Instance、Shader-ready 回渲和重复请求对账。M9-S1 已将材质、固定 PCG 图、灯光和项目资产统一为可重放 Scene Delta DAG，并验证并行准备、串行 UE 写入、能力降级及 6/6 负对照；真实四域联合执行、多机位纠正、图生 3D、MCP 与新前端仍按后续切片推进。
 
 ## 项目概述
 

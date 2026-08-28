@@ -59,9 +59,10 @@ M7 Scene Digital Twin + Staged Scene Delta Kernel
 
 M7 已完成扩展场景事实、灯光/PCG dry-run、候选关卡真实执行、同机位回渲、幂等对账以及发布/
 丢弃回执。M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝、失败技术域纠正、UE 5.8 Material
-Instance、Shader-ready 回渲和重复请求对账。当前进入 M9-S1：先把材质、灯光、固定 PCG 图与项目
-资产复用统一为类型化 Scene Delta DAG 和 dry-run 编排；真实联合写入、多机位纠正、图生 3D、MCP
-和新前端分别保留在后续小切片，避免再次形成不可验证的大爆炸开发。
+Instance、Shader-ready 回渲和重复请求对账。M9-S1 又把材质、灯光、固定 PCG 图与项目资产复用
+统一为类型化 Scene Delta DAG，验证了三路并行准备、单路 UE 写入、可选生成能力降级和 6/6 负对照。
+当前 M9-S2 只负责把同一计划绑定真实 Twin、执行候选关卡四域变更并增加验证机位；纠正/发布、
+图生 3D、MCP 和新前端分别保留在后续小切片，避免再次形成不可验证的大爆炸开发。
 
 ## 自主开发与停止边界
 

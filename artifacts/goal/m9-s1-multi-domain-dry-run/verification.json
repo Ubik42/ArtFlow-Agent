@@ -1,0 +1,55 @@
+{
+  "schema_id": "m9-s1-independent-verification/1",
+  "status": "verified",
+  "plan_sha256": "bfbc36e2c2c4eee433885f1e8ebdd6b1e0bc1a1d9698cde276eebbbb31343df3",
+  "receipt_sha256": "3fb05bf22c293fb4244406ef97955b8222d3fea32018873a94b15288f70dd2c0",
+  "domains": [
+    "asset",
+    "lighting",
+    "material",
+    "pcg"
+  ],
+  "parallel_preparation_waves": [
+    [
+      "asset-reuse",
+      "lighting-patch",
+      "material-bind"
+    ],
+    [
+      "pcg-layout"
+    ]
+  ],
+  "serialized_unreal_apply_order": [
+    "asset-reuse",
+    "lighting-patch",
+    "material-bind",
+    "pcg-layout"
+  ],
+  "selected_asset_fallback": "asset.catalog.reuse.v1",
+  "failed_domain_reopen": {
+    "material": [
+      "material-bind"
+    ],
+    "pcg": [
+      "pcg-layout"
+    ],
+    "lighting": [
+      "lighting-patch"
+    ],
+    "asset": [
+      "asset-reuse"
+    ]
+  },
+  "negative_controls": {
+    "arbitrary_code_field": true,
+    "protected_actor_target": true,
+    "dependency_cycle": true,
+    "budget_overflow": true,
+    "stale_fingerprint": true,
+    "unreviewed_pcg_graph": true
+  },
+  "negative_controls_passed": 6,
+  "negative_controls_total": 6,
+  "committed_mutation_count": 0,
+  "verification_sha256": "76f55ac8ef783ed80d369c603ac46bf223727fcd790931f5cf746830a2922e03"
+}

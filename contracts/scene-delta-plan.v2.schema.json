@@ -1,0 +1,860 @@
+{
+  "$defs": {
+    "BindPBRMaterial": {
+      "additionalProperties": false,
+      "properties": {
+        "budget": {
+          "$ref": "#/$defs/OperationBudget"
+        },
+        "capability_preferences": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Capability Preferences",
+          "type": "array"
+        },
+        "compensation": {
+          "enum": [
+            "restore_staged_properties",
+            "delete_generated_actors",
+            "delete_generated_assets"
+          ],
+          "title": "Compensation",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Depends On",
+          "type": "array"
+        },
+        "domain": {
+          "const": "material",
+          "default": "material",
+          "title": "Domain",
+          "type": "string"
+        },
+        "expected_source_fingerprints": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 128,
+          "minProperties": 1,
+          "title": "Expected Source Fingerprints",
+          "type": "object"
+        },
+        "idempotency_key": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{7,199}$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "material_instance_path": {
+          "pattern": "^/(?:Game|Engine)/[A-Za-z0-9_./-]+$",
+          "title": "Material Instance Path",
+          "type": "string"
+        },
+        "minimal_change_rank": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Minimal Change Rank",
+          "type": "integer"
+        },
+        "operation_id": {
+          "pattern": "^[a-z][a-z0-9._-]{2,119}$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "const": "bind_pbr_material",
+          "default": "bind_pbr_material",
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "slot_index": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Slot Index",
+          "type": "integer"
+        },
+        "target_actor_id": {
+          "maxLength": 160,
+          "minLength": 3,
+          "title": "Target Actor Id",
+          "type": "string"
+        },
+        "texture_set_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Texture Set Receipt Sha256",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Uncertainty",
+          "type": "number"
+        },
+        "uncertainty_reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Uncertainty Reason",
+          "type": "string"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/$defs/OperationValidator"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Validators",
+          "type": "array"
+        },
+        "write_scope": {
+          "$ref": "#/$defs/WriteScope"
+        }
+      },
+      "required": [
+        "operation_id",
+        "expected_source_fingerprints",
+        "write_scope",
+        "idempotency_key",
+        "budget",
+        "validators",
+        "uncertainty",
+        "uncertainty_reason",
+        "minimal_change_rank",
+        "capability_preferences",
+        "compensation",
+        "target_actor_id",
+        "material_instance_path",
+        "texture_set_receipt_sha256",
+        "slot_index"
+      ],
+      "title": "BindPBRMaterial",
+      "type": "object"
+    },
+    "ConfigureReviewedPCG": {
+      "additionalProperties": false,
+      "properties": {
+        "budget": {
+          "$ref": "#/$defs/OperationBudget"
+        },
+        "capability_preferences": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Capability Preferences",
+          "type": "array"
+        },
+        "compensation": {
+          "enum": [
+            "restore_staged_properties",
+            "delete_generated_actors",
+            "delete_generated_assets"
+          ],
+          "title": "Compensation",
+          "type": "string"
+        },
+        "component_id": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{2,159}$",
+          "title": "Component Id",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Depends On",
+          "type": "array"
+        },
+        "domain": {
+          "const": "pcg",
+          "default": "pcg",
+          "title": "Domain",
+          "type": "string"
+        },
+        "expected_source_fingerprints": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 128,
+          "minProperties": 1,
+          "title": "Expected Source Fingerprints",
+          "type": "object"
+        },
+        "graph_parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              }
+            ]
+          },
+          "maxProperties": 64,
+          "minProperties": 1,
+          "title": "Graph Parameters",
+          "type": "object"
+        },
+        "idempotency_key": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{7,199}$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "minimal_change_rank": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Minimal Change Rank",
+          "type": "integer"
+        },
+        "operation_id": {
+          "pattern": "^[a-z][a-z0-9._-]{2,119}$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "const": "configure_reviewed_pcg",
+          "default": "configure_reviewed_pcg",
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "reviewed_graph_path": {
+          "pattern": "^/Game/ArtFlow/PCG/[A-Za-z0-9_./-]+$",
+          "title": "Reviewed Graph Path",
+          "type": "string"
+        },
+        "reviewed_graph_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reviewed Graph Sha256",
+          "type": "string"
+        },
+        "seed": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "target_actor_id": {
+          "maxLength": 160,
+          "minLength": 3,
+          "title": "Target Actor Id",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Uncertainty",
+          "type": "number"
+        },
+        "uncertainty_reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Uncertainty Reason",
+          "type": "string"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/$defs/OperationValidator"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Validators",
+          "type": "array"
+        },
+        "write_scope": {
+          "$ref": "#/$defs/WriteScope"
+        }
+      },
+      "required": [
+        "operation_id",
+        "expected_source_fingerprints",
+        "write_scope",
+        "idempotency_key",
+        "budget",
+        "validators",
+        "uncertainty",
+        "uncertainty_reason",
+        "minimal_change_rank",
+        "capability_preferences",
+        "compensation",
+        "target_actor_id",
+        "component_id",
+        "reviewed_graph_path",
+        "reviewed_graph_sha256",
+        "graph_parameters",
+        "seed"
+      ],
+      "title": "ConfigureReviewedPCG",
+      "type": "object"
+    },
+    "OperationBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "max_actor_mutations": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Max Actor Mutations",
+          "type": "integer"
+        },
+        "max_duration_seconds": {
+          "maximum": 3600,
+          "minimum": 1,
+          "title": "Max Duration Seconds",
+          "type": "integer"
+        },
+        "max_spawned_actors": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Max Spawned Actors",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_actor_mutations",
+        "max_spawned_actors",
+        "max_duration_seconds"
+      ],
+      "title": "OperationBudget",
+      "type": "object"
+    },
+    "OperationValidator": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "protected_fingerprint",
+            "bounds",
+            "no_collision",
+            "actor_budget",
+            "pcg_graph_allowlist",
+            "light_parameter_bounds",
+            "zero_source_mutations"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "required": {
+          "default": true,
+          "title": "Required",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "kind"
+      ],
+      "title": "OperationValidator",
+      "type": "object"
+    },
+    "PatchLightingRig": {
+      "additionalProperties": false,
+      "properties": {
+        "budget": {
+          "$ref": "#/$defs/OperationBudget"
+        },
+        "capability_preferences": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Capability Preferences",
+          "type": "array"
+        },
+        "compensation": {
+          "enum": [
+            "restore_staged_properties",
+            "delete_generated_actors",
+            "delete_generated_assets"
+          ],
+          "title": "Compensation",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Depends On",
+          "type": "array"
+        },
+        "domain": {
+          "const": "lighting",
+          "default": "lighting",
+          "title": "Domain",
+          "type": "string"
+        },
+        "expected_source_fingerprints": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 128,
+          "minProperties": 1,
+          "title": "Expected Source Fingerprints",
+          "type": "object"
+        },
+        "idempotency_key": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{7,199}$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "intensity": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Intensity"
+        },
+        "minimal_change_rank": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Minimal Change Rank",
+          "type": "integer"
+        },
+        "operation_id": {
+          "pattern": "^[a-z][a-z0-9._-]{2,119}$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "const": "patch_lighting_rig",
+          "default": "patch_lighting_rig",
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "rotation": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Rotator"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "target_light_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 32,
+          "minItems": 1,
+          "title": "Target Light Ids",
+          "type": "array"
+        },
+        "temperature_kelvin": {
+          "anyOf": [
+            {
+              "maximum": 20000,
+              "minimum": 1000,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Temperature Kelvin"
+        },
+        "uncertainty": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Uncertainty",
+          "type": "number"
+        },
+        "uncertainty_reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Uncertainty Reason",
+          "type": "string"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/$defs/OperationValidator"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Validators",
+          "type": "array"
+        },
+        "write_scope": {
+          "$ref": "#/$defs/WriteScope"
+        }
+      },
+      "required": [
+        "operation_id",
+        "expected_source_fingerprints",
+        "write_scope",
+        "idempotency_key",
+        "budget",
+        "validators",
+        "uncertainty",
+        "uncertainty_reason",
+        "minimal_change_rank",
+        "capability_preferences",
+        "compensation",
+        "target_light_ids"
+      ],
+      "title": "PatchLightingRig",
+      "type": "object"
+    },
+    "PlanBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "max_operations": {
+          "maximum": 64,
+          "minimum": 1,
+          "title": "Max Operations",
+          "type": "integer"
+        },
+        "max_parallel_preparations": {
+          "maximum": 8,
+          "minimum": 1,
+          "title": "Max Parallel Preparations",
+          "type": "integer"
+        },
+        "max_total_actor_mutations": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Max Total Actor Mutations",
+          "type": "integer"
+        },
+        "max_total_duration_seconds": {
+          "maximum": 7200,
+          "minimum": 1,
+          "title": "Max Total Duration Seconds",
+          "type": "integer"
+        },
+        "max_total_spawned_actors": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Max Total Spawned Actors",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "max_operations",
+        "max_total_actor_mutations",
+        "max_total_spawned_actors",
+        "max_total_duration_seconds",
+        "max_parallel_preparations"
+      ],
+      "title": "PlanBudget",
+      "type": "object"
+    },
+    "ReuseProjectAssets": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_paths": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "minItems": 1,
+          "title": "Asset Paths",
+          "type": "array"
+        },
+        "budget": {
+          "$ref": "#/$defs/OperationBudget"
+        },
+        "capability_preferences": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 8,
+          "minItems": 1,
+          "title": "Capability Preferences",
+          "type": "array"
+        },
+        "compensation": {
+          "enum": [
+            "restore_staged_properties",
+            "delete_generated_actors",
+            "delete_generated_assets"
+          ],
+          "title": "Compensation",
+          "type": "string"
+        },
+        "depends_on": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 64,
+          "title": "Depends On",
+          "type": "array"
+        },
+        "domain": {
+          "const": "asset",
+          "default": "asset",
+          "title": "Domain",
+          "type": "string"
+        },
+        "expected_source_fingerprints": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "maxProperties": 128,
+          "minProperties": 1,
+          "title": "Expected Source Fingerprints",
+          "type": "object"
+        },
+        "idempotency_key": {
+          "pattern": "^[a-z0-9][a-z0-9._:-]{7,199}$",
+          "title": "Idempotency Key",
+          "type": "string"
+        },
+        "license_policy": {
+          "enum": [
+            "project_owned",
+            "redistributable"
+          ],
+          "title": "License Policy",
+          "type": "string"
+        },
+        "minimal_change_rank": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Minimal Change Rank",
+          "type": "integer"
+        },
+        "operation_id": {
+          "pattern": "^[a-z][a-z0-9._-]{2,119}$",
+          "title": "Operation Id",
+          "type": "string"
+        },
+        "operation_type": {
+          "const": "reuse_project_assets",
+          "default": "reuse_project_assets",
+          "title": "Operation Type",
+          "type": "string"
+        },
+        "spawn_count": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Spawn Count",
+          "type": "integer"
+        },
+        "target_actor_id": {
+          "maxLength": 160,
+          "minLength": 3,
+          "title": "Target Actor Id",
+          "type": "string"
+        },
+        "uncertainty": {
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Uncertainty",
+          "type": "number"
+        },
+        "uncertainty_reason": {
+          "maxLength": 400,
+          "minLength": 1,
+          "title": "Uncertainty Reason",
+          "type": "string"
+        },
+        "validators": {
+          "items": {
+            "$ref": "#/$defs/OperationValidator"
+          },
+          "maxItems": 16,
+          "minItems": 1,
+          "title": "Validators",
+          "type": "array"
+        },
+        "write_scope": {
+          "$ref": "#/$defs/WriteScope"
+        }
+      },
+      "required": [
+        "operation_id",
+        "expected_source_fingerprints",
+        "write_scope",
+        "idempotency_key",
+        "budget",
+        "validators",
+        "uncertainty",
+        "uncertainty_reason",
+        "minimal_change_rank",
+        "capability_preferences",
+        "compensation",
+        "target_actor_id",
+        "asset_paths",
+        "spawn_count",
+        "license_policy"
+      ],
+      "title": "ReuseProjectAssets",
+      "type": "object"
+    },
+    "Rotator": {
+      "additionalProperties": false,
+      "properties": {
+        "pitch": {
+          "title": "Pitch",
+          "type": "number"
+        },
+        "roll": {
+          "title": "Roll",
+          "type": "number"
+        },
+        "yaw": {
+          "title": "Yaw",
+          "type": "number"
+        }
+      },
+      "required": [
+        "pitch",
+        "yaw",
+        "roll"
+      ],
+      "title": "Rotator",
+      "type": "object"
+    },
+    "WriteScope": {
+      "additionalProperties": false,
+      "properties": {
+        "asset_root": {
+          "pattern": "^/Game/ArtFlow/Generated/[a-z0-9][a-z0-9._-]{2,119}$",
+          "title": "Asset Root",
+          "type": "string"
+        },
+        "stage_id": {
+          "pattern": "^artflow-[a-z0-9][a-z0-9._-]{2,119}$",
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "target_actor_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 128,
+          "minItems": 1,
+          "title": "Target Actor Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "stage_id",
+        "asset_root",
+        "target_actor_ids"
+      ],
+      "title": "WriteScope",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "budget": {
+      "$ref": "#/$defs/PlanBudget"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "minimal_change_policy": {
+      "const": "parameters_then_project_assets_then_generated_assets",
+      "default": "parameters_then_project_assets_then_generated_assets",
+      "title": "Minimal Change Policy",
+      "type": "string"
+    },
+    "operations": {
+      "items": {
+        "discriminator": {
+          "mapping": {
+            "bind_pbr_material": "#/$defs/BindPBRMaterial",
+            "configure_reviewed_pcg": "#/$defs/ConfigureReviewedPCG",
+            "patch_lighting_rig": "#/$defs/PatchLightingRig",
+            "reuse_project_assets": "#/$defs/ReuseProjectAssets"
+          },
+          "propertyName": "operation_type"
+        },
+        "oneOf": [
+          {
+            "$ref": "#/$defs/BindPBRMaterial"
+          },
+          {
+            "$ref": "#/$defs/ConfigureReviewedPCG"
+          },
+          {
+            "$ref": "#/$defs/PatchLightingRig"
+          },
+          {
+            "$ref": "#/$defs/ReuseProjectAssets"
+          }
+        ]
+      },
+      "maxItems": 64,
+      "minItems": 1,
+      "title": "Operations",
+      "type": "array"
+    },
+    "plan_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Plan Id",
+      "type": "string"
+    },
+    "protected_actor_ids": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 1024,
+      "minItems": 1,
+      "title": "Protected Actor Ids",
+      "type": "array"
+    },
+    "schema_id": {
+      "const": "scene-delta-plan/2",
+      "default": "scene-delta-plan/2",
+      "title": "Schema Id",
+      "type": "string"
+    },
+    "twin_id": {
+      "pattern": "^[a-z0-9][a-z0-9._-]{2,119}$",
+      "title": "Twin Id",
+      "type": "string"
+    },
+    "twin_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Twin Sha256",
+      "type": "string"
+    },
+    "visual_intent": {
+      "maxLength": 2000,
+      "minLength": 8,
+      "title": "Visual Intent",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_id",
+    "twin_id",
+    "twin_sha256",
+    "visual_intent",
+    "protected_actor_ids",
+    "budget",
+    "created_at",
+    "operations"
+  ],
+  "title": "MultiDomainSceneDeltaPlan",
+  "type": "object"
+}

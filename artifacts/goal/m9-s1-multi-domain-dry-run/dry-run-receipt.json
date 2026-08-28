@@ -1,0 +1,69 @@
+{
+  "schema_id": "multi-domain-dry-run-receipt/1",
+  "plan_id": "m9-ruin-altar-dry-run",
+  "plan_sha256": "bfbc36e2c2c4eee433885f1e8ebdd6b1e0bc1a1d9698cde276eebbbb31343df3",
+  "stage_id": "artflow-m9-dry",
+  "routes": [
+    {
+      "operation_id": "material-bind",
+      "domain": "material",
+      "capability_id": "material.pbr.return.v1",
+      "tool_name": "material.pbr.prepare",
+      "execution_lane": "parallel_prepare"
+    },
+    {
+      "operation_id": "asset-reuse",
+      "domain": "asset",
+      "capability_id": "asset.catalog.reuse.v1",
+      "tool_name": "asset.catalog.query",
+      "execution_lane": "parallel_prepare"
+    },
+    {
+      "operation_id": "lighting-patch",
+      "domain": "lighting",
+      "capability_id": "lighting.rig.patch.v1",
+      "tool_name": "lighting.rig.patch",
+      "execution_lane": "parallel_prepare"
+    },
+    {
+      "operation_id": "pcg-layout",
+      "domain": "pcg",
+      "capability_id": "pcg.reviewed.configure.v1",
+      "tool_name": "pcg.instance.configure",
+      "execution_lane": "parallel_prepare"
+    }
+  ],
+  "preparation_waves": [
+    [
+      "asset-reuse",
+      "lighting-patch",
+      "material-bind"
+    ],
+    [
+      "pcg-layout"
+    ]
+  ],
+  "unreal_apply_order": [
+    "asset-reuse",
+    "lighting-patch",
+    "material-bind",
+    "pcg-layout"
+  ],
+  "failed_domain_reopen": {
+    "material": [
+      "material-bind"
+    ],
+    "pcg": [
+      "pcg-layout"
+    ],
+    "lighting": [
+      "lighting-patch"
+    ],
+    "asset": [
+      "asset-reuse"
+    ]
+  },
+  "committed_mutation_count": 0,
+  "source_scene_unchanged": true,
+  "receipt_sha256": "3fb05bf22c293fb4244406ef97955b8222d3fea32018873a94b15288f70dd2c0"
+}

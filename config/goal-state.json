@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 36,
+  "stateRevision": 37,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -116,35 +116,35 @@
     }
   ],
   "nextSlice": {
-    "id": "M9-S1",
+    "id": "M9-S2",
     "milestone": "M9",
-    "title": "Multi-domain Scene Delta contract and dry-run orchestration",
-    "outcome": "Unify the verified material route, reviewed PCG graph parameters, bounded lighting patches and project asset reuse behind one typed dependency DAG. Prove that specialists can prepare independent artifacts concurrently while the durable coordinator preserves budgets, prerequisites, failed-domain identity and one serialized Unreal staging write path.",
-    "risk": "R3",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": false,
+    "title": "Real four-domain Unreal candidate execution and multi-view judgment",
+    "outcome": "Bind the M9-S1 Scene Delta to the real UE 5.8 Scene Digital Twin and execute its material, project-asset, lighting and reviewed-PCG operations through one idempotent serialized staging request. Capture the authored camera and one validation camera after assets and shaders are ready, then record independent spatial and visual evidence without publishing the candidate.",
+    "risk": "R4",
+    "evidenceTarget": "A5",
+    "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "contracts/**", "contract-tests/**", "recipes/**", "examples/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not execute the final multi-domain Unreal mutation, publish a scene, add image-to-3D, expose MCP or redesign the frontend in this slice",
+      "Do not publish or merge the candidate, implement final failed-domain correction, add image-to-3D, expose MCP or redesign the frontend in this slice",
       "Do not modify shared Unreal or ComfyUI installations, sibling repositories or unrelated user projects",
-      "Do not accept arbitrary PCG graphs, ComfyUI workflows, Blueprint, Python, Shell, C++ or material-graph source from a model",
-      "Do not add LangGraph, Temporal, a vector database, a message broker or a second runtime state machine",
-      "Do not conflate Specialist roles with free-form multi-Agent conversation; roles exchange typed immutable artifacts only",
-      "Do not increase test breadth beyond the contracts, policy, dependency, replay and hostile-boundary cases required by this slice"
+      "Do not create arbitrary PCG, material or Blueprint graphs; execute only the reviewed identities bound by M9-S1",
+      "Do not rerun image generation when the M8 content-bound material remains valid",
+      "Do not add a second orchestration framework or state machine",
+      "Do not broaden tests beyond the real write boundary, replay, multi-view evidence and hostile precondition cases"
     ],
     "acceptance": [
-      "A discriminated Scene Delta contract represents material binding, reviewed PCG parameterization, bounded lighting changes and project asset reuse as one acyclic dependency graph",
-      "The planner records uncertainty, minimal-change preference, operation budget, protected scope, precondition fingerprints, compensation and domain-specific validation for every operation",
-      "A capability router selects only attested tools and reviewed graph identities; unavailable optional providers degrade to project asset reuse without changing authoritative state",
-      "One frozen ruin-altar dry run proves independent material/PCG/lighting preparation, a serialized Unreal apply order and correction routing that reopens only failed domains",
-      "Negative controls reject arbitrary code fields, unreviewed graph paths, protected actor targets, dependency cycles, stale fingerprints and budget overflow before any host mutation",
-      "Focused tests, schema export, independent dry-run verification, goal audit and quick validation pass"
+      "The frozen v2 plan is rebound to current real actor, PCG graph, material receipt and source scene fingerprints before mutation",
+      "One typed Unreal request applies all four domains only to the content-addressed candidate level in the deterministic M9-S1 order",
+      "The existing M8 Material Instance is reused by hash, the reviewed PCG graph produces its bounded instance count and the bounded light patch is visible",
+      "Authored-camera and validation-camera renders are captured only after asset and shader compilation and are bound to one execution receipt",
+      "Technical checks prove protected actors, source level, walkable exclusion, actor budget, graph identity and material identity; visual evidence cannot override a failed check",
+      "Exact replay reconciles with no duplicate texture, material, actor or PCG instance and focused tests plus quick validation pass"
     ],
     "stopConditions": [
-      "Stop before implementation if the new contract would duplicate rather than extend the existing SceneChangePlan or durable event state machine",
-      "Stop before accepting a tool if its write scope, idempotency key, verifier or compensation path cannot be represented explicitly",
-      "Stop if the design requires arbitrary host code or a model-authored graph to express the frozen demo",
-      "Stop if an existing user change overlaps the same scene contracts and cannot be preserved"
+      "Stop before execution if the real source, protected actor, reviewed PCG graph or M8 material receipt fingerprint differs from the rebound plan",
+      "Stop if the candidate staging package cannot be isolated from the source level",
+      "Stop before evidence capture if asset or shader compilation is incomplete or a required validation camera cannot be created in staging",
+      "Stop if an existing user change overlaps the same candidate scene or Unreal Bridge source and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
@@ -164,9 +164,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0032.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0033.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M7 remain verified at their prior bounded claims. M8 is complete: an isolated RTX 4080 ComfyUI run executed only a capability-pinned reviewed graph, two semantically invalid raw map sets were rejected, the valid AI BaseColor was retained while failed technical-map domains were deterministically rebuilt and the aligned five-channel set was imported into a real UE 5.8 PBR Master and Material Instance. The shader-ready same-camera rerender visibly changed the target, source and protected fingerprints remained unchanged, and exact replay reconciled without duplicate assets. Multi-domain joint planning/execution, image-to-3D, MCP and the redesigned frontend remain planned.",
+  "evidenceCeiling": "M0-M8 remain verified at their prior bounded claims. M9-S1 is complete: material binding, reviewed PCG parameters, bounded lighting and project asset reuse share one strict scene-delta-plan/2 DAG with per-operation uncertainty, minimal-change rank, preconditions, budgets, validators, idempotency and compensation. The frozen ruin-altar dry run scheduled three independent preparations, one dependent PCG preparation and one deterministic serialized Unreal apply order; unavailable image-to-3D degraded to project reuse and 6/6 hostile controls failed before mutation. No real four-domain UE execution, multi-view judgment, final correction/publish, image-to-3D, MCP or redesigned frontend is claimed yet.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

@@ -46,6 +46,13 @@ receipt; missing nodes or invalid maps fail closed before scene publish.
 Status: in progress from 2026-08-27. The detailed contract and slice plan lives in
 [`development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md`](development/M9_MULTI_DOMAIN_ORCHESTRATION_2026-08-27.md).
 
+- **M9-S1 completed:** unified material binding, reviewed PCG parameters, bounded lighting and
+  project-asset reuse in a strict v2 Scene Delta DAG; optional image-to-3D degraded to project reuse,
+  independent preparation waves and one serialized Unreal apply order replayed with 6/6 hostile
+  controls rejected before mutation;
+- **M9-S2 active:** bind the v2 plan to the real twin, execute the four-domain candidate change and
+  add same-camera plus validation-camera technical/visual evidence.
+
 - turn a concept target into a dependency graph across lighting, PCG, existing assets and material;
 - prepare independent branches concurrently while serializing Unreal writes;
 - enforce protected actors, walkable bounds, collision, actor-count and rendering budgets;

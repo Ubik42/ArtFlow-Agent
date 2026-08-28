@@ -23,9 +23,17 @@ from .scene_delta import (
     SceneExecutionReceipt,
     SetLightingRig,
 )
+from .multi_domain_delta import (
+    BindPBRMaterial,
+    ConfigureReviewedPCG,
+    MultiDomainSceneDeltaPlan,
+    PatchLightingRig,
+    ReuseProjectAssets,
+)
 
 __all__ = [
     "ApplyPCGLayout",
+    "BindPBRMaterial",
     "ApprovalGrant",
     "CodexImageCandidateReceipt",
     "CodexImageCandidateRecord",
@@ -34,10 +42,14 @@ __all__ = [
     "ProviderExecutionReceipt",
     "ProviderModelCapability",
     "ProviderSelection",
+    "ConfigureReviewedPCG",
+    "MultiDomainSceneDeltaPlan",
+    "PatchLightingRig",
     "ReceiptArtifact",
     "RejectedProviderAlternative",
     "RouteDecision",
     "RouteExecutionIntent",
+    "ReuseProjectAssets",
     "SceneChangePlan",
     "SceneConstraintPackage",
     "SceneDigitalTwin",

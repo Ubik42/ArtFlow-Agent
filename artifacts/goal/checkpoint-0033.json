@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M9-S1",
+  "status": "completed",
+  "outcome": "Material binding, reviewed PCG parameters, bounded lighting and project asset reuse now share one strict scene-delta-plan/2 DAG. A frozen ruin-altar dry run routed attested capabilities, degraded unavailable image-to-3D to project asset reuse, scheduled three independent preparations before dependent PCG work and emitted one deterministic serialized Unreal apply order. Six hostile controls failed before mutation and correction identity is isolated by domain.",
+  "evidence": [
+    "docs/evidence/M9_S1_MULTI_DOMAIN_DRY_RUN_2026-08-27.md",
+    "src/artflow_agent/contracts/multi_domain_delta.py",
+    "src/artflow_agent/scene_orchestration.py",
+    "contracts/scene-delta-plan.v2.schema.json",
+    "examples/m9-ruin-altar-scene-delta-plan.json",
+    "examples/m9-capability-attestations.json",
+    "artifacts/goal/m9-s1-multi-domain-dry-run/dry-run-receipt.json",
+    "artifacts/goal/m9-s1-multi-domain-dry-run/verification.json"
+  ]
+}
