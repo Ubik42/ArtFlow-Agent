@@ -1,0 +1,31 @@
+{
+  "schema_id": "m10-s3-scene-lab-verification/1",
+  "status": "verified",
+  "desktop_case_count": 4,
+  "desktop_dimensions": [
+    1920,
+    1080
+  ],
+  "narrow_dimensions": [
+    430,
+    932
+  ],
+  "horizontal_overflow_px": 0,
+  "console_error_count": 0,
+  "blocking_permission_dialog_count": 0,
+  "case_screenshot_sha256": {
+    "image_to_3d": "4197b31839267562aa15270f29520c88b6c4cc85c015d4dd822961383c78ca1a",
+    "pbr_return": "3695681178ef37bb83af336626a1881618abb1462a18ffd7fadd323dead372ba",
+    "multi_domain": "a30160130eb4719c230a1e98e4023279df2d39c498194bf072016a799ad5edcd",
+    "targeted_correction": "61b7be07b861925a143d469e13d79cb7e5e4ef8ecdbdb9fa78ee0c34293bb323"
+  },
+  "narrow_screenshot_sha256": "f37762edf3f7a9a5eaa43d0e15c49648118a7352d6e11db90322e10989598c89",
+  "source_evidence": {
+    "pbr": "ea03d56d88efa1c639bc4a4a7473be8d16dda36b584efa97657f4b527069f1f1",
+    "multi_domain": "82025d559a7c806ffb296621b9c6d12b6a648c58acf0a4a311a07725ac9278b7",
+    "correction": "0817fca7c296341e141fa6cdf5394c5d3a80ae76bdd0e992470d08cb034a8e44",
+    "mcp": "3a71c57077aca6cd1d406073e47828701d701507774e68f0c68d182519cdd2b4",
+    "image_to_3d": "9b59aa8443e21bb76b6ef7b88ada5a47dd0d049d7dd976416463572c71ee57bf"
+  },
+  "verification_sha256": "7b16ff93bf04a3aff27260890a0c3d2ccf5f394a9f6f08399611c45fb55baf42"
+}

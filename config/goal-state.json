@@ -1,10 +1,10 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 41,
+  "stateRevision": 42,
   "strategyVersion": "3.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
-  "status": "active",
+  "status": "complete",
   "currentMilestone": "M10",
   "milestones": [
     {
@@ -105,7 +105,7 @@
     {
       "id": "M10",
       "title": "MCP interoperability image-to-3D experiment and portfolio release",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M9"],
       "outcome": "A thin MCP facade exposes the same bounded resources and tools, one optional image-to-3D provider passes through Interchange validation, and a Chinese screenshot-rich case study truthfully demonstrates the complete Unreal scene-transformation Agent.",
       "acceptance": [
@@ -165,9 +165,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0037.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0038.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M9 remain verified at their prior bounded claims. M10-S1 is complete at its recorded MCP boundary. M10-S2 is complete as an experiment: one GPT Image 2 project reference produced a real TripoSR GLB under a pinned MIT revision in 8.236468 seconds with one external submission and zero estimated cost. Pre-import inspection recorded 63,044 vertices and 125,834 triangles with no external URI; a 100,000-triangle negative control failed closed. UE 5.8 Interchange admitted the candidate into an isolated namespace, built a 2,413-vertex/4,817-triangle mesh with one project-owned material slot and one simple collision, and staged it at approximately 180 cm while the source level bytes remained unchanged and duplicate side effects stayed zero. The result is recognizable experimental geometry with vertex color, not final PBR production quality. The redesigned frontend and final portfolio release remain M10-S3 work.",
+  "evidenceCeiling": "M0-M9 remain verified at their prior bounded claims. M10-S1 exposes exactly 3 fixed resources and 4 narrow tools through MCP; 4 hostile input classes fail closed and arbitrary host execution remains zero. M10-S2 remains an experimental image-to-3D route: one project-owned GPT Image 2 reference produced a real TripoSR GLB under a pinned MIT revision in 8.236468 seconds; UE 5.8 Interchange built a 2,413-vertex/4,817-triangle candidate with one material slot and one simple collision, while a 100,000-triangle negative control failed closed. It is recognizable vertex-color geometry, not final PBR production quality. M10-S3 presents four evidence-backed production cases in a Chinese Scene Lab. Four 1920x1080 screenshots and one 430x932 screenshot verify zero horizontal overflow, zero console errors and zero blocking permission dialogs. The content-addressed portfolio archive verifies 36/36 files and binds Harness 20/20, recovery 6/6 with zero duplicates, memory 6/6, provenance 9/9 unsigned boundary, PBR 5/5, four-domain Scene Delta with 12 instances and zero protected incursions, lighting-only correction with zero resubmission, MCP boundaries and the image-to-3D negative control.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

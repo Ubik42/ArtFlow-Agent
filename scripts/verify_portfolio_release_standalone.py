@@ -95,6 +95,66 @@ def verify(path: Path) -> dict:
                     "provenance_9_of_9_unsigned_boundary",
                 ]
             )
+            if summary.get("schema_id") == "artflow-portfolio-summary/2":
+                pbr = json.loads(archive.read("evidence/m8-pbr-verification.json"))
+                multi_domain = json.loads(
+                    archive.read("evidence/m9-multi-domain-verification.json")
+                )
+                correction = json.loads(
+                    archive.read("evidence/m9-correction-publish-verification.json")
+                )
+                mcp = json.loads(archive.read("evidence/m10-mcp-boundary-audit.json"))
+                image_to_3d = json.loads(
+                    archive.read("evidence/m10-image-to-3d-verification.json")
+                )
+                if (
+                    pbr.get("status") != "verified"
+                    or len(pbr.get("texture_hashes", {})) != 5
+                    or pbr.get("invalid_attempts_rejected") != 2
+                    or not pbr.get("source_scene_unchanged")
+                ):
+                    failures.append("pbr_verification_mismatch")
+                if (
+                    multi_domain.get("status") != "verified"
+                    or multi_domain.get("generated_instance_count") != 12
+                    or multi_domain.get("instances_inside_exclusion") != 0
+                    or set(multi_domain.get("operation_statuses", {}).values())
+                    != {"reconciled"}
+                ):
+                    failures.append("multi_domain_verification_mismatch")
+                if (
+                    correction.get("status") != "verified"
+                    or correction.get("rerun_domains") != ["lighting"]
+                    or correction.get("correction_reconcile_external_submissions")
+                    != 0
+                    or correction.get("publish_replay_duplicate_side_effects") != 0
+                ):
+                    failures.append("correction_verification_mismatch")
+                if (
+                    mcp.get("status") != "verified"
+                    or (mcp.get("resource_count"), mcp.get("tool_count")) != (3, 4)
+                    or mcp.get("hostile_rejection_count") != 4
+                    or mcp.get("arbitrary_execution_surface_count") != 0
+                ):
+                    failures.append("mcp_boundary_mismatch")
+                if (
+                    image_to_3d.get("status") != "verified"
+                    or image_to_3d.get("unreal_triangles") != 4_817
+                    or image_to_3d.get("unreal_material_slots") != 1
+                    or image_to_3d.get("unreal_simple_collisions") != 1
+                    or not image_to_3d.get("hostile_triangle_budget_rejected")
+                    or not image_to_3d.get("source_scene_unchanged")
+                ):
+                    failures.append("image_to_3d_verification_mismatch")
+                checks.extend(
+                    [
+                        "pbr_5_channels_2_invalid_attempts_rejected",
+                        "multi_domain_4_reconciled_12_instances_zero_incursions",
+                        "lighting_only_correction_zero_resubmission",
+                        "mcp_3_resources_4_tools_4_hostile_rejections",
+                        "image_to_3d_interchange_and_budget_negative_control",
+                    ]
+                )
     except (OSError, KeyError, ValueError, zipfile.BadZipFile) as exc:
         if not failures:
             failures.append(f"invalid_release:{type(exc).__name__}")

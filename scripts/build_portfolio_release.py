@@ -7,7 +7,7 @@ from artflow_agent.portfolio_release import build_release_archive, canonical_jso
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_ROOT = ROOT / "artifacts/goal/m3-s11-local-run"
-OUTPUT_ROOT = ROOT / "artifacts/goal/m6-s2-release"
+OUTPUT_ROOT = ROOT / "artifacts/goal/m10-s3-release"
 RUN_ID = "local-artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6-130c94284deb"
 
 
@@ -32,6 +32,8 @@ def main() -> None:
     provider_root = "artifacts/goal/m3-s11-local-run/.agent-artifacts/provider-outputs"
     sources = [
         source("README.md", "docs/README.md", "product_readme"),
+        source("PRODUCT.md", "docs/PRODUCT.md", "product_definition"),
+        source("DESIGN.md", "docs/DESIGN.md", "design_system"),
         source("docs/portfolio-story.md", "docs/case-study.md", "portfolio_case_study"),
         source("docs/DEMO_GUIDE.md", "docs/demo-guide.md", "demo_guide"),
         source(
@@ -78,6 +80,31 @@ def main() -> None:
             "artifacts/goal/m4-s2-negative-control/multimodal-tribunal-report.json",
             "evidence/multimodal-tribunal-report.json",
             "multimodal_tribunal",
+        ),
+        source(
+            "artifacts/goal/m8-s2-pbr-material/independent-verification.json",
+            "evidence/m8-pbr-verification.json",
+            "pbr_unreal_verification",
+        ),
+        source(
+            "artifacts/goal/m9-s2-unreal-multi-domain/verification.json",
+            "evidence/m9-multi-domain-verification.json",
+            "multi_domain_verification",
+        ),
+        source(
+            "artifacts/goal/m9-s3-correction-release/verification.json",
+            "evidence/m9-correction-publish-verification.json",
+            "correction_publish_verification",
+        ),
+        source(
+            "artifacts/goal/m10-s1-mcp-facade/boundary-audit.json",
+            "evidence/m10-mcp-boundary-audit.json",
+            "mcp_boundary_audit",
+        ),
+        source(
+            "artifacts/goal/m10-s2-image-to-3d/verification.json",
+            "evidence/m10-image-to-3d-verification.json",
+            "image_to_3d_verification",
         ),
         source(
             "artifacts/goal/m3-s10-cross-language/passes/beauty.png",
@@ -129,10 +156,35 @@ def main() -> None:
             "media/10-recovery-ui.png",
             "recovery_ui",
         ),
+        source(
+            "artifacts/goal/m10-s3-scene-lab/case-01-image-to-3d.png",
+            "media/11-case-image-to-3d.png",
+            "scene_lab_case_image_to_3d",
+        ),
+        source(
+            "artifacts/goal/m10-s3-scene-lab/case-02-pbr-return.png",
+            "media/12-case-pbr-return.png",
+            "scene_lab_case_pbr_return",
+        ),
+        source(
+            "artifacts/goal/m10-s3-scene-lab/case-03-multi-domain.png",
+            "media/13-case-multi-domain.png",
+            "scene_lab_case_multi_domain",
+        ),
+        source(
+            "artifacts/goal/m10-s3-scene-lab/case-04-targeted-correction.png",
+            "media/14-case-targeted-correction.png",
+            "scene_lab_case_targeted_correction",
+        ),
+        source(
+            "artifacts/goal/m10-s3-scene-lab/narrow-cases.png",
+            "media/15-scene-lab-narrow.png",
+            "responsive_scene_lab",
+        ),
     ]
     delivery = state.verified_delivery
     summary = {
-        "schema_id": "artflow-portfolio-summary/1",
+        "schema_id": "artflow-portfolio-summary/2",
         "product": "ArtFlow Agent",
         "run_id": RUN_ID,
         "event_count": state.last_sequence,
@@ -152,6 +204,11 @@ def main() -> None:
             "recovery": "6/6 cases; 0 duplicate side effects",
             "memory": "6/6 governance cases",
             "provenance": "9/9 file bindings; unsigned sidecar",
+            "pbr": "5/5 channels; 2 invalid attempts rejected",
+            "scene_delta": "4 domains; 12 PCG instances; 0 protected incursions",
+            "correction": "lighting only; 0 external resubmissions",
+            "mcp": "3 resources; 4 tools; 4 hostile inputs rejected",
+            "image_to_3d": "1 GLB; 4,817 UE triangles; 1 material; 1 collision",
         },
         "privacy": {
             "prompts_included": False,
@@ -160,7 +217,7 @@ def main() -> None:
             "hidden_reasoning_included": False,
         },
     }
-    verify_doc = """# 独立验证\n\n无需启动 Unreal、ComfyUI 或 Web UI。解压后使用 Python 3.11+：\n\n```powershell\npython tools/verify_release.py <发布包.zip>\n```\n\n验证器重新打开原 ZIP，检查清单内容哈希、每个文件、Run/Event 身份、20/20 Harness、6/6 恢复、6/6 记忆和 9/9 unsigned provenance 边界。退出码 0 表示通过，任何内容篡改返回非零。\n"""
+    verify_doc = """# 独立验证\n\n无需启动 Unreal、ComfyUI 或 Web UI。使用 Python 3.11+：\n\n```powershell\npython tools/verify_release.py <发布包.zip>\n```\n\n验证器重新打开原 ZIP，检查清单与每个文件哈希，并复核二维闭环、PBR、四域 Scene Delta、灯光单域纠正、MCP 边界和图生 3D 接纳证据。退出码 0 表示通过，任何已声明内容被修改都会返回非零。\n"""
     target, manifest = build_release_archive(
         output_root=OUTPUT_ROOT,
         release_id=f"artflow-agent-{delivery.delivery_sha256[:20]}",
@@ -183,12 +240,19 @@ def main() -> None:
             "duplicate_side_effects": "0/5 side-effect cases",
             "memory_governance": "6/6 frozen cases",
             "provenance_bindings": "9/9 local files",
+            "pbr_channels": "5/5 verified channels",
+            "multi_domain_scene_delta": "4/4 reconciled domains",
+            "pcg_protected_incursions": "0/12 instances",
+            "correction_rerun_scope": "1/4 domains (lighting only)",
+            "mcp_hostile_inputs": "4/4 rejected",
+            "image_to_3d_triangle_negative_control": "1/1 rejected",
             "fixture_external_cost": "$0/20 Harness cases",
         },
         limitations=[
             "The C2PA-compatible JSON sidecar is unsigned; no cryptographic C2PA credential is claimed.",
             "Frozen Harness latency is local fixture latency, not provider production latency.",
             "The release omits prompts, the SQLite event database, credentials and hidden reasoning.",
+            "The TripoSR candidate is experimental geometry with vertex color, not a final production PBR asset.",
         ],
     )
     print(

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M10-S3",
+  "status": "completed",
+  "outcome": "A polished Chinese Scene Lab now presents four real production cases for image-to-3D, PBR material return, multi-domain Scene Delta and failed-domain correction without blocking approval gates; desktop and narrow browser evidence pass, and a 36-file content-addressed portfolio release independently verifies the complete M8-M10 evidence chain.",
+  "evidence": [
+    "docs/evidence/M10_S3_CHINESE_SCENE_LAB_RELEASE_2026-08-28.md",
+    "artifacts/goal/m10-s3-scene-lab/verification.json",
+    "artifacts/goal/m10-s3-scene-lab/case-01-image-to-3d.png",
+    "artifacts/goal/m10-s3-scene-lab/case-02-pbr-return.png",
+    "artifacts/goal/m10-s3-scene-lab/case-03-multi-domain.png",
+    "artifacts/goal/m10-s3-scene-lab/case-04-targeted-correction.png",
+    "artifacts/goal/m10-s3-scene-lab/narrow-cases.png",
+    "artifacts/goal/m10-s3-release/artflow-agent-portfolio-2428f9ce692c32bf.zip",
+    "artifacts/goal/m10-s3-release/verification.json"
+  ]
+}

@@ -2,7 +2,7 @@
 
 > 面向 Unreal Engine 美术生产的受约束 AIGC Agent：以二维概念图为视觉意图，规划并验证材质、资产、PCG、灯光等三维场景变更。
 
-> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布；M10 已验证受限 MCP 互操作，以及真实 TripoSR GLB 经确定性预检、UE 5.8 Interchange 和候选关卡接纳。新版中文 Scene Lab 与最终作品集发布仍按后续切片推进。
+> **当前能力口径：** M0–M6 已真实验证 Unreal 四 Pass、双生成面、独立评价、持久恢复和二维结果回流；M7 在 UE 5.8 中完成 Scene Digital Twin、候选关卡灯光/PCG 执行及发布/丢弃；M8 完成真实 RTX 4080 PBR 生成、逐通道拒绝与纠正、UE Material Instance 和 Shader-ready 回渲；M9 已完成材质、固定 PCG 图、灯光和项目资产的联合 Scene Delta、双机位评价、灯光单域纠正、崩溃对账与内容寻址发布；M10 已验证受限 MCP 互操作，以及真实 TripoSR GLB 经确定性预检、UE 5.8 Interchange 和候选关卡接纳。新版中文 Scene Lab 已用四个生产案例统一呈现上述能力，并提供可独立验证的作品集发布包。
 
 ## 项目概述
 
@@ -246,7 +246,7 @@ uv run python scripts/verify_m10_mcp_stdio.py
 ```powershell
 .\.venv\Scripts\python scripts\build_portfolio_release.py
 .\.venv\Scripts\python scripts\verify_portfolio_release.py `
-  artifacts\goal\m6-s2-release\artflow-agent-portfolio-<manifest>.zip
+  artifacts\goal\m10-s3-release\artflow-agent-portfolio-<manifest>.zip
 ```
 
 ZIP 内同时附带仅依赖 Python 标准库的 `tools/verify_release.py`。验证器重新打开发布包，检查所有文件哈希、Run 与事件头、20/20 Harness、6/6 恢复、6/6 记忆和 9/9 unsigned provenance 边界；任何已声明文件被修改都会返回非零退出码。

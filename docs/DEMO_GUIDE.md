@@ -2,7 +2,7 @@
 
 ## 用途
 
-这份指南用于作品集面试、技术演示和代码审阅。演示读取已经完成且有内容哈希的主运行，不重新运行 ComfyUI、GPT Image 或 Unreal，避免网络、GPU 和模型波动破坏叙事。
+这份指南用于作品集面试、技术演示和代码审阅。Scene Lab 读取已经完成且有内容哈希的真实运行，不重新运行 ComfyUI、GPT Image 2、图生 3D Provider 或 Unreal，避免网络、GPU 和模型波动破坏叙事。界面没有批准弹窗；案例采用、定向纠正和发布状态由编排器依据持久证据给出。
 
 ## 启动
 
@@ -12,40 +12,49 @@ cd D:\3D\_tools\ArtFlow-Agent
   artifacts\goal\m3-s11-local-run --port 8796
 ```
 
-打开 `http://127.0.0.1:8796`。预期看到 `ArtFlowDemo`，事件序列为 25，没有待处理决策。
+打开 `http://127.0.0.1:8796`。预期首先看到中文 Scene Lab 与四个案例切换项，页面无横向滚动、无阻塞权限门禁。
 
 ## 五分钟黄金路径
 
-### 0:00–0:40：真实输入，不是 prompt demo
+### 0:00–1:40：四个真实生产案例
+
+- **图生 3D 道具**：GPT Image 2 项目参考经 TripoSR 生成 GLB，先做许可证、外部 URI、面数和比例预检，再由 UE 5.8 Interchange 导入候选关卡。强调当前是实验几何与顶点色，不冒充最终 PBR。
+- **PBR 材质回流**：ComfyUI 受审图生成五通道材质；彩色标量图、无效法线等失败域被单独重建，验证后创建 Material Instance 并等待 Shader-ready 回渲。
+- **四域场景改造**：项目资产、材质、固定 PCG 图和灯光被编译为类型化 DAG，在候选关卡串行写入，并用第二机位复查空间关系。
+- **定向纠正与发布**：评价只标记 `lighting`，Correction Planner 因而仅重跑灯光域；资产、材质、PCG 不重提，崩溃后对账并内容寻址发布。
+
+以下旧主运行可作为 Agent Harness 深挖路线，而不是开场主线。
+
+### 1:40–2:10：真实输入，不是 prompt demo
 
 - 指向 UE 5.8 来源、640×360 相机、四个 Pass。
 - 展开 protected / editable 区域，说明模型不能任意修改场景。
 
-### 0:40–1:30：同源候选与能力路由
+### 2:10–2:40：同源候选与能力路由
 
 - 对比本地 ComfyUI 和 Codex Image 候选。
 - 说明本地路线先经过真实节点、模型和 RTX 4080 attestation；两路 receipt 绑定同一个 Scene Package 与 art intent hash。
 
-### 1:30–2:20：独立 Tribunal 与负对照
+### 2:40–3:15：独立 Tribunal 与负对照
 
 - 展示 deterministic claims 与多模态视觉评价。
 - 切到 attractive-invalid control：视觉更吸引人，但改变相机/结构，因硬门禁被拒绝。
 - Visual Critic 不能覆盖 deterministic failure，分歧被保留。
 
-### 2:20–3:05：自主采用与局部纠正
+### 3:15–3:45：自主采用与局部纠正
 
 - 展示 `codex-orchestrator` 按 `hard-eligible-then-visual-direction-v1` 采用合格候选。
 - 拖动 before/after；展示 mask、父图和 composite hash。
 - 蒙版外 1,530,358 像素中变化为 0，蒙版内 42,803 像素变化。
 
-### 3:05–4:10：证明 Harness
+### 3:45–4:25：证明 Harness
 
 - Recovery 6/6，五个副作用场景重复次数 0。
 - episodic / semantic / procedural 三类生产记忆，治理 6/6。
 - Frozen Harness 20/20；Context 3/3、路由/策略 5/5、误打断 0/1、重复副作用 0/5、外部 fixture 成本 $0。
 - 主动说明延迟是本地 fixture，不是 provider SLA；20/20 不代表开放域生图质量。
 
-### 4:10–5:00：回到 Unreal
+### 4:25–5:00：回到 Unreal
 
 - 展示绿色交付面板：真实 UE 视口、目标关卡、引擎版本、事件序列与 delivery identity。
 - 来源绑定 9/9 通过；验证器独立于前端。
@@ -64,7 +73,7 @@ cd D:\3D\_tools\ArtFlow-Agent
 ```powershell
 .\.venv\Scripts\python scripts\build_portfolio_release.py
 .\.venv\Scripts\python scripts\verify_portfolio_release.py `
-  artifacts\goal\m6-s2-release\artflow-agent-portfolio-<manifest>.zip
+  artifacts\goal\m10-s3-release\artflow-agent-portfolio-<manifest>.zip
 ```
 
 也可解压 ZIP 使用包内 `tools/verify_release.py`，它只依赖 Python 标准库。修改任何已声明文件后应得到 `file_hash_mismatch:*` 和非零退出码。
@@ -79,8 +88,8 @@ cd D:\3D\_tools\ArtFlow-Agent
 
 ## 录屏前检查
 
-- 浏览器宽度 1440，缩放 100%。
+- 浏览器宽度 1920×1080，缩放 100%；另检查 430×932 窄屏。
 - 先运行 `npm run build`，再启动 fixture server。
 - 所有图片加载完成、控制台 0 error / 0 warning、页面无横向滚动。
-- 主运行事件数为 25，最终交付面板显示 9/9 和 unsigned C2PA 限制。
+- 四个案例均可切换，页面无批准弹窗；主运行事件数为 25，最终交付面板显示 9/9 和 unsigned C2PA 限制。
 - 演示结束后关闭本地 fixture server；不需要登录外部账户。

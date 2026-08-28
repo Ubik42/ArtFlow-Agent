@@ -2,7 +2,16 @@
 
 ## 一句话
 
-ArtFlow 把 Unreal 场景事实和美术意图编译成有界生成任务，能够从失败中恢复、拒绝漂亮但生产不可用的结果，并把证据选中的资产带着可验证来源回流 Unreal。
+ArtFlow 是面向 Unreal 美术生产的受约束场景 Agent：它把二维视觉意图、引擎场景事实和项目资产编译为可验证的材质、模型、PCG 与灯光变更，并在隔离候选关卡中评价、纠正、发布。
+
+## 四个可演示生产案例
+
+1. GPT Image 2 概念参考 → TripoSR GLB → 确定性预检 → UE 5.8 Interchange 候选。
+2. ComfyUI PBR 五通道生成 → 逐通道拒绝与定向重建 → Material Instance → Shader-ready 回渲。
+3. 项目资产 + 材质 + 固定 PCG 图 + 灯光联合 Scene Delta → 双机位空间复检。
+4. Tribunal 标记失败域 → 只重跑灯光 → 丢失回执后对账 → 内容寻址发布。
+
+这四个案例共用同一个 Scene Digital Twin、Capability Registry、持久状态机、独立评价与来源链；它们不是四段互不相干的展示脚本。
 
 ## 问题与判断
 
@@ -32,7 +41,7 @@ Human Art Direction + Unreal Scene Facts
 
 这是一个 durable coordinator 加有界角色，不是开放式多 Agent 聊天室。Provider Executor 不能参与评价或采用；Visual Critic 不能覆盖确定性失败；Codex Orchestrator 不能删除 dissent。
 
-## 黄金路径
+## Agent Harness 深挖路径
 
 1. UE 5.8 Bridge 从 `ArtFlowDemo` 捕获 beauty、depth、world normal 和 object ID，记录相机、保护/编辑对象与逐文件 SHA-256。
 2. Context Assembler 保留硬约束与状态栏，只注入最近观察和同项目精确命中的生产记忆。
@@ -64,6 +73,12 @@ Human Art Direction + Unreal Scene Facts
 | 局部修订越界 | 蒙版外 1,530,358 像素 | 0 个变化 |
 | 来源文件绑定 | 当前项目本地来源链 | 9/9 |
 | Harness 外部成本 | 20 个本地冻结夹具案例 | $0 |
+| PBR 通道接纳 | BaseColor / Normal / Roughness / Metallic / AO | 5/5 |
+| 四域 Scene Delta | asset / material / PCG / lighting | 4/4 |
+| PCG 保护区侵入 | 12 个真实实例 | 0/12 |
+| 定向纠正 | 评价失败后重跑领域 | 仅 lighting，1/4 |
+| MCP 越权输入 | 本地路径、任意工作流、Python、Shell/Blueprint | 4/4 拒绝 |
+| 图生 3D 面数负对照 | 100,000 三角面上限 | 1/1 拒绝 |
 
 这些数字不代表开放域生图质量或生产 provider 延迟。视觉采用是一个真实项目样例，不被包装成统计意义上的 human adoption rate。
 

@@ -545,11 +545,91 @@ async function request<T>(url: string, init?: RequestInit): Promise<T> {
     const payload = await response
       .json()
       .catch(() => ({ detail: response.statusText }));
-    throw new Error(payload.detail ?? "Request failed");
+    throw new Error(payload.detail ?? "请求失败");
   }
   return response.json();
 }
-const pretty = (value: string) => value.replaceAll("_", " ");
+const UI_TRANSLATIONS: Record<string, string> = {
+  local_only: "仅本地",
+  available: "可用",
+  unavailable: "不可用",
+  integrity_guard: "完整性检查",
+  composition_guard: "构图检查",
+  artifact_hash_match: "制品哈希匹配",
+  aspect_ratio_drift: "画幅比例漂移",
+  coarse_edge_layout_similarity: "粗粒度边缘布局相似度",
+  protected_geometry_redesign: "重做受保护几何",
+  sphere_relocation: "球体位置变化",
+  camera_framing_change: "相机构图变化",
+  ground_plane_composition_change: "地面构图变化",
+  source_constraint_compliance: "来源约束符合度",
+  protected_geometry_preservation: "受保护几何保持度",
+  camera_composition_preservation: "相机构图保持度",
+};
+const pretty = (value: string) =>
+  UI_TRANSLATIONS[value.toLowerCase()] ?? value.replaceAll("_", " ");
+const evidenceText = (value: string) =>
+  ({
+    "Authenticates bytes and binding only; it does not judge visual quality.":
+      "仅验证文件字节与身份绑定，不评价视觉质量。",
+    "Detects framing-ratio drift, not camera-pose or object-geometry changes.":
+      "仅检测画幅比例漂移，不能证明相机姿态或物体几何未变化。",
+    "A low-resolution appearance proxy; it cannot prove semantic geometry preservation.":
+      "这是低分辨率外观代理指标，不能证明语义几何得到保持。",
+    "Output must exactly match the event-reduced scene package.":
+      "输出必须与事件归约后的场景包完全一致。",
+    "The image visibly replaces the two-object graybox arrangement with a portal complex and centered floating sphere.":
+      "画面将双物体灰盒布局明显替换为传送门组合与居中的悬浮球体。",
+    "The protected rectangular block silhouette is replaced by curved rings and tall asymmetric fins.":
+      "受保护矩形块轮廓被弧形环与高耸不对称结构替换。",
+    "The wide eye-level view becomes a portrait low-angle close shot; the sphere moves to the central upper field.":
+      "宽幅平视镜头变为纵向低角度近景，球体移动到画面上方中央。",
+  })[value] ?? value;
+const timelineText = (value: string) =>
+  ({
+    "Agent run created": "Agent 运行已创建",
+    "Durable event stream opened": "持久事件流已开启",
+    "Scene package verified": "场景包已验证",
+    "Content hashes and constraints bound": "内容哈希与场景约束已绑定",
+    "Local route accepted": "本地路线已接纳",
+    "Bounded local compute passed policy without an approval interrupt": "有界本地计算通过策略检查，无需人工批准",
+    "Runtime attested": "运行时已实测",
+    "Observed capability facts were content-bound": "实测能力事实已按内容哈希绑定",
+    "Execution reserved": "执行身份已预留",
+    "Idempotency and the fingerprinted route were persisted before submission": "提交前已持久化幂等键与路线指纹",
+    "Provider accepted request": "生成服务已接收请求",
+    "The external request identity was bound to the durable ledger": "外部请求身份已绑定持久账本",
+    "Provider receipt verified": "生成回执已验证",
+    "Identity, route fingerprint, and artifact hashes were independently checked": "身份、路线指纹和制品哈希已独立检查",
+    "Codex candidate normalized": "Codex 候选已标准化",
+    "Built-in image output was source-bound, hashed and persisted without an approval interrupt": "内置生图结果已绑定来源、计算哈希并直接持久化",
+    "Independent tribunal recorded": "独立评价已记录",
+    "Typed integrity and composition claims were replayably aggregated without adoption": "类型化完整性与构图结论已聚合，尚未触发采用",
+    "Attractive-invalid control captured": "高吸引力无效对照已捕获",
+    "A real built-in image was isolated as test evidence, never a production candidate": "真实内置生图结果被隔离为测试证据，不进入生产候选",
+    "Multimodal critic reconciled": "多模态评价已对账",
+    "Aesthetic appeal and constraint failures were persisted with hard-gate precedence": "审美吸引力与约束失败均已持久化，硬门禁优先",
+    "Production candidate adopted": "生产候选已自动采用",
+    "Codex selected one eligible artifact from persisted tribunal evidence without an interrupt": "Codex 依据持久评价证据自动选中唯一合格制品",
+    "Bounded revision sealed": "有界修订请求已封存",
+    "Parent, prompt, editable mask and protected regions were persisted before generation": "生成前已持久化父图、意图、可编辑遮罩和保护区域",
+    "Bounded revision verified": "有界修订已验证",
+    "The real image edit was composited with zero changed pixels outside the mask": "真实图像修订完成合成，遮罩外变化为零像素",
+    "Revision seam corrected": "修订接缝已纠正",
+    "The first hard-edge composite was preserved and superseded by an inside-mask feathered result": "首个硬边结果已保留，并由遮罩内羽化结果替代",
+    "Exactly-once recovery verified": "Exactly-once 恢复已验证",
+    "The frozen failure matrix passed with no duplicate side effects": "冻结故障矩阵通过，重复副作用为零",
+    "Production memory proposed": "生产记忆已提出",
+    "A typed project memory cited durable source events before policy review": "类型化项目记忆在策略复核前引用了持久来源事件",
+    "Production memory activated": "生产记忆已激活",
+    "Deterministic scope, source, version and conflict checks passed": "作用域、来源、版本与冲突确定性检查通过",
+    "Memory governance verified": "记忆治理已验证",
+    "The frozen conflict and retrieval suite passed with exact citations": "冻结冲突与检索套件通过，引用精确可追溯",
+    "Agent Harness evaluation verified": "Agent Harness 评估已验证",
+    "Context, routing, policy, recovery and memory cases were aggregated with frozen denominators": "上下文、路由、策略、恢复与记忆案例已按冻结分母聚合",
+    "Verified Unreal delivery recorded": "Unreal 可验证交付已记录",
+    "Return receipt and provenance hash chain persisted": "回流回执与来源哈希链已持久化",
+  })[value] ?? value;
 const stageLabel = (value: string) =>
   ({
     execution_succeeded: "执行完成",
@@ -679,59 +759,6 @@ export default function App() {
       setBusy(false);
     }
   };
-  const resolveAgentApproval = async (
-    decisionId: string,
-    resolution: "approved" | "rejected",
-  ) => {
-    if (!agent) return;
-    setBusy(true);
-    setError(null);
-    try {
-      await request(`/api/agent/runs/${agent.run_id}/approvals/${decisionId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resolution }),
-      });
-      await open({ kind: "agent", id: agent.run_id });
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
-  const authorizeComparison = async (approvedBy: string) => {
-    if (!agent) return;
-    setBusy(true);
-    setError(null);
-    try {
-      const next = await request<AgentProjection>(
-        `/api/agent/runs/${agent.run_id}/comparison/authorize`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ approved_by: approvedBy }),
-        },
-      );
-      setAgent(next);
-      setAgentRuns((runs) =>
-        runs.map((run) =>
-          run.run_id === next.run_id
-            ? {
-                ...run,
-                stage: next.status.stage,
-                last_sequence:
-                  next.timeline.at(-1)?.sequence ?? run.last_sequence,
-                pending_decision_count: next.pending_decisions.length,
-              }
-            : run,
-        ),
-      );
-    } catch (reason) {
-      setError(reason instanceof Error ? reason.message : String(reason));
-    } finally {
-      setBusy(false);
-    }
-  };
   const importScenePackage = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
@@ -770,18 +797,18 @@ export default function App() {
           stage: legacy.status,
         }
       : {
-          title: "No scene attached",
+          title: "尚未附加场景",
           subtitle:
-            "Import a verified Scene Package to begin a durable Agent run.",
+            "导入已校验的 Scene Package，开始一条持久 Agent 运行。",
           stage: "empty",
         };
   const actionLabel =
     legacy?.status === "awaiting_approval"
-      ? "Approve exact plan"
+      ? "记录既定方案"
       : legacy?.status === "approved" || legacy?.status === "running"
-        ? "Run approved directions"
+        ? "执行既定方向"
         : legacy?.status === "review"
-          ? "Build contact sheet"
+          ? "生成候选联系表"
           : null;
 
   return (
@@ -854,7 +881,7 @@ export default function App() {
               </span>
               <span className="session-copy">
                 <small>持久运行 · {item.last_sequence} 个事件</small>
-                <strong>{item.scene_package_id ?? "Awaiting scene"}</strong>
+                <strong>{item.scene_package_id ?? "等待场景"}</strong>
                 <em>{stageLabel(item.stage)}</em>
               </span>
               <ChevronRight size={15} />
@@ -935,22 +962,6 @@ export default function App() {
           </div>
         )}
       </aside>
-      {agent?.pending_decisions[0]?.kind === "comparison_authorization" &&
-      agent.comparison_plan ? (
-        <ComparisonApprovalSheet
-          decision={agent.pending_decisions[0]}
-          plan={agent.comparison_plan}
-          busy={busy}
-          onAuthorize={authorizeComparison}
-        />
-      ) : agent?.pending_decisions[0] ? (
-        <ApprovalSheet
-          decision={agent.pending_decisions[0]}
-          route={agent.route}
-          busy={busy}
-          onResolve={resolveAgentApproval}
-        />
-      ) : null}
       <footer
         className={`command-deck ${agent?.verified_delivery ? "delivery-complete" : ""}`}
       >
@@ -976,25 +987,25 @@ export default function App() {
         {agent ? (
           <div className="budget-readout">
             <span>
-              ITER{" "}
+              迭代{" "}
               <b>
                 {agent.status.budgets.used_iterations}/
                 {agent.status.budgets.max_iterations}
               </b>
             </span>
             <span>
-              TOOLS{" "}
+              工具{" "}
               <b>
                 {agent.status.budgets.used_tool_calls}/
                 {agent.status.budgets.max_tool_calls}
               </b>
             </span>
-            <button disabled={agent.pending_decisions.length === 0}>
+            <span className="run-readiness">
               <ShieldCheck size={15} />
-                {agent.pending_decisions.length
-                ? "存在待处理决策"
+              {agent.pending_decisions.length
+                ? "待处理条件已记录，不阻塞浏览"
                 : "等待下一项类型化动作"}
-            </button>
+            </span>
           </div>
         ) : actionLabel ? (
           <button
@@ -1007,7 +1018,7 @@ export default function App() {
             ) : (
               <Play size={16} />
             )}
-            {busy ? "Working…" : actionLabel}
+            {busy ? "正在处理…" : actionLabel}
             <ArrowUpRight size={14} />
           </button>
         ) : null}
@@ -1193,18 +1204,18 @@ function AgentCanvas({ agent }: { agent: AgentProjection }) {
       <section className="constraint-viewport">
         <div className="viewport-tools">
           <span>
-            <Box size={13} /> VERIFIED SCENE FIELD
+            <Box size={13} /> 已校验场景范围
           </span>
           <span>{scene.camera_resolution.join(" × ")}</span>
         </div>
         <div
           className="terrain-map real-scene-map"
-          aria-label="Verified beauty pass from the imported Scene Package"
+          aria-label="从 Scene Package 导入的已校验 Beauty 通道"
         >
           <img
             className="scene-beauty"
             src={beautyUrl}
-            alt={`Beauty pass captured from ${scene.source_scene}`}
+            alt={`从 ${scene.source_scene} 捕获的 Beauty 通道`}
           />
           <div className="scene-vignette" />
           <div className="scan-beam" />
@@ -1232,15 +1243,15 @@ function AgentCanvas({ agent }: { agent: AgentProjection }) {
             <div>
               <small>
                 {scene.evidence_class === "real_unreal_capture"
-                  ? "REAL UNREAL CAPTURE"
-                  : "VERIFIED SCENE ARCHIVE"}
+                  ? "真实 Unreal 捕获"
+                  : "已校验场景归档"}
               </small>
-              <strong>SHA-256 intact</strong>
+              <strong>SHA-256 完整</strong>
             </div>
           </div>
           <div className="object-id-peek">
-            <span>OBJECT ID</span>
-            <img src={objectIdUrl} alt="Verified object-ID pass" />
+            <span>对象 ID</span>
+            <img src={objectIdUrl} alt="已校验对象 ID 通道" />
           </div>
           <div className="viewport-caption">
             <strong>
@@ -1314,24 +1325,24 @@ function MatchedExecutionCanvas({
         <div className="local-result-head">
           <div>
             <span>
-              <Workflow size={14} /> MATCHED REAL CANDIDATES
+              <Workflow size={14} /> 同约束真实候选
             </span>
-            <h2>One Unreal source. Two independently executed directions.</h2>
+            <h2>同一个 Unreal 来源，两条独立执行的生成方向</h2>
           </div>
           <div className="local-success">
             <BadgeCheck size={15} />
-            <span>{codex ? "2 RECEIPTS VERIFIED" : "RECEIPT VERIFIED"}</span>
+            <span>{codex ? "2 份回执已校验" : "回执已校验"}</span>
           </div>
         </div>
         {codex && (
-          <div className="candidate-lanes" aria-label="Real candidate lanes">
+          <div className="candidate-lanes" aria-label="真实候选路线">
             <button
               className={lane === "local" ? "active local" : "local"}
               onClick={() => setLane("local")}
             >
               <HardDrive size={15} />
               <span>
-                <small>LANE A · LOCAL GPU</small>
+                <small>路线 A · 本地 GPU</small>
                 <strong>ComfyUI / {execution.model_id}</strong>
                 <code>{shortId(localArtifact.sha256)}</code>
               </span>
@@ -1342,7 +1353,7 @@ function MatchedExecutionCanvas({
             >
               <Sparkles size={15} />
               <span>
-                <small>LANE B · CODEX BUILT-IN</small>
+                <small>路线 B · Codex 内置</small>
                 <strong>GPT Image 2</strong>
                 <code>{shortId(codex.receipt.artifact.sha256)}</code>
               </span>
@@ -1353,7 +1364,7 @@ function MatchedExecutionCanvas({
           <img
             className="compare-source"
             src={sourceUrl}
-            alt="Verified Unreal beauty source"
+            alt="已校验 Unreal Beauty 来源"
           />
           <div
             className="compare-candidate"
@@ -1363,14 +1374,14 @@ function MatchedExecutionCanvas({
               src={candidateUrl}
               alt={
                 lane === "codex"
-                  ? "Real Codex GPT Image 2 candidate"
-                  : "Real local ComfyUI candidate"
+                  ? "真实 Codex GPT Image 2 候选"
+                  : "真实本地 ComfyUI 候选"
               }
             />
           </div>
-          <span className="compare-label source">UE SOURCE</span>
+          <span className="compare-label source">UE 来源</span>
           <span className={`compare-label result ${lane}`}>
-            {lane === "codex" ? "GPT IMAGE 2 CANDIDATE" : "COMFY CANDIDATE"}
+            {lane === "codex" ? "GPT IMAGE 2 候选" : "COMFYUI 候选"}
           </span>
           <div className="split-line" style={{ left: `${split}%` }}>
             <i>
@@ -1386,45 +1397,45 @@ function MatchedExecutionCanvas({
             max="100"
             value={split}
             onChange={(event) => setSplit(Number(event.target.value))}
-            aria-label="Compare Unreal source and selected real candidate"
+            aria-label="比较 Unreal 来源与当前真实候选"
           />
           <span>B</span>
-          <strong>{100 - split}% candidate</strong>
+          <strong>候选占比 {100 - split}%</strong>
         </div>
         <div className="local-receipt-strip">
           <div>
-            <small>EXECUTION SURFACE</small>
+            <small>执行面</small>
             <strong>{provider}</strong>
             <code>{model}</code>
           </div>
           <div>
-            <small>{lane === "codex" ? "REQUEST BINDING" : "PROMPT ID"}</small>
+            <small>{lane === "codex" ? "请求绑定" : "提示词 ID"}</small>
             <strong>{shortId(requestIdentity)}</strong>
             <code>
               {lane === "codex"
-                ? "beauty only · local passes withheld"
-                : "durable ledger"}
+                ? "只发送 Beauty · 本地通道未上传"
+                : "持久事件账本"}
             </code>
           </div>
           <div>
-            <small>OUTPUT SHA-256</small>
+            <small>输出 SHA-256</small>
             <strong>{shortId(artifact.sha256)}</strong>
             <code>{artifact.media_type}</code>
           </div>
           <div>
-            <small>ADOPTION</small>
+            <small>采用状态</small>
             <strong>
               {agent.adoption_decision?.selected_role ===
               (lane === "codex" ? "codex_image" : "local_comfy")
-                ? "ADOPTED"
-                : "NOT SELECTED"}
+                ? "已采用"
+                : "未选择"}
             </strong>
             <code>
               {agent.adoption_decision
-                ? `Codex evidence · ${shortId(agent.adoption_decision.decision_id)}`
+                ? `Codex 证据 · ${shortId(agent.adoption_decision.decision_id)}`
                 : tribunalResult
-                  ? "independent verdicts recorded"
-                  : "tribunal pending"}
+                  ? "已记录独立裁决"
+                  : "等待独立评价"}
             </code>
           </div>
         </div>
@@ -1432,14 +1443,14 @@ function MatchedExecutionCanvas({
           <section className="tribunal-panel">
             <div className="tribunal-head">
               <span>
-                <ShieldCheck size={14} /> INDEPENDENT TRIBUNAL
+                <ShieldCheck size={14} /> 独立评价 Tribunal
               </span>
               <strong
                 className={tribunalResult.eligible ? "eligible" : "ineligible"}
               >
                 {tribunalResult.eligible
-                  ? "ELIGIBLE · NOT ADOPTED"
-                  : "INELIGIBLE"}
+                  ? "可采用 · 尚未采用"
+                  : "不可采用"}
               </strong>
               <code>{shortId(agent.tribunal_report!.dossier_sha256)}</code>
             </div>
@@ -1449,7 +1460,7 @@ function MatchedExecutionCanvas({
                   <div>
                     <small>
                       {pretty(claim.evaluator_id)} ·{" "}
-                      {claim.hard_failure ? "HARD GATE" : "PROXY"}
+                      {claim.hard_failure ? "硬约束" : "代理指标"}
                     </small>
                     <strong>{pretty(claim.metric_name)}</strong>
                   </div>
@@ -1459,7 +1470,7 @@ function MatchedExecutionCanvas({
                       {claim.comparator} {claim.threshold}
                     </em>
                   </b>
-                  <p>{claim.limitation}</p>
+                  <p>{evidenceText(claim.limitation)}</p>
                 </article>
               ))}
             </div>
@@ -1525,47 +1536,47 @@ function NegativeControlPanel({
       <div className="negative-control-head">
         <div>
           <span>
-            <CircleAlert size={14} /> EVALUATION-ONLY NEGATIVE CONTROL
+            <CircleAlert size={14} /> 仅用于评价的负对照
           </span>
-          <h3>Beautiful enough to tempt. Invalid enough to reject.</h3>
+          <h3>视觉上足够诱人，但违反约束，必须拒绝。</h3>
         </div>
-        <strong>REJECTED · HARD GATE</strong>
+        <strong>已拒绝 · 硬约束</strong>
       </div>
       <div className="negative-control-grid">
         <div className="negative-control-image">
           <img
             src={imageUrl}
-            alt="Attractive but constraint-invalid negative control"
+            alt="视觉表现较强但违反场景约束的负对照"
           />
-          <span>NOT A PRODUCTION CANDIDATE</span>
+          <span>不能进入生产候选</span>
         </div>
         <div className="negative-control-evidence">
           <div className="appeal-vs-policy">
             <div>
-              <small>MULTIMODAL AESTHETIC</small>
+              <small>多模态视觉评价</small>
               <strong>
-                PASS · {Math.round((aesthetic?.confidence ?? 0) * 100)}%
+                通过 · {Math.round((aesthetic?.confidence ?? 0) * 100)}%
               </strong>
             </div>
             <ArrowRight size={18} />
             <div>
-              <small>DETERMINISTIC ELIGIBILITY</small>
-              <strong>FAIL · PRECEDENCE</strong>
+              <small>确定性资格检查</small>
+              <strong>失败 · 优先裁决</strong>
             </div>
           </div>
           <div className="negative-metrics">
             <Fact
-              label="Aspect drift"
+              label="画幅漂移"
               value={`${aspect?.observed.toFixed(3)} > ${aspect?.threshold}`}
               mono
             />
             <Fact
-              label="Edge-layout proxy"
+              label="边缘布局代理指标"
               value={`${layout?.observed.toFixed(3)} < ${layout?.threshold}`}
               mono
             />
-            <Fact label="Artifact" value={shortId(artifact.sha256)} mono />
-            <Fact label="Critic reasoning" value="excluded" />
+            <Fact label="制品" value={shortId(artifact.sha256)} mono />
+            <Fact label="Critic 隐藏推理" value="不记录" />
           </div>
           <div className="violation-tags">
             {record.request.intended_violations.map((item) => (
@@ -1578,16 +1589,15 @@ function NegativeControlPanel({
               .map((claim) => (
                 <p key={claim.claim_id}>
                   <b>{pretty(claim.dimension)}</b>
-                  {claim.observation}
+                  {evidenceText(claim.observation)}
                 </p>
               ))}
           </div>
           <div className="hard-precedence">
             <ShieldCheck size={14} />
             <p>
-              <strong>Aesthetic confidence cannot override eligibility.</strong>{" "}
-              This control is permanently isolated; the later production
-              decision can select only an eligible lane.
+              <strong>视觉置信度不能覆盖确定性资格失败。</strong>{" "}
+              该负对照被永久隔离，后续生产决策只能从满足硬约束的路线中选择。
             </p>
           </div>
         </div>
@@ -1885,7 +1895,7 @@ function HarnessPanel({ scorecard }: { scorecard: HarnessScorecard }) {
       <div className="harness-heading">
         <div>
           <span>
-            <ScanLine size={14} /> FROZEN AGENT HARNESS · 飞行记录仪
+            <ScanLine size={14} /> 冻结 AGENT HARNESS · 飞行记录仪
           </span>
           <h3>不是一段漂亮演示，是可重放的 Agent 能力证据。</h3>
           <p>
@@ -1905,7 +1915,7 @@ function HarnessPanel({ scorecard }: { scorecard: HarnessScorecard }) {
             <small>0{index + 1}</small>
             <span>{name}</span>
             <strong>{countByDomain[domain]}</strong>
-            <i>PASS</i>
+            <i>通过</i>
           </article>
         ))}
       </div>
@@ -2060,12 +2070,11 @@ function ComparisonLaunchCanvas({
         <div className="launch-head">
           <div>
             <span>
-              <Workflow size={14} /> MATCHED PROVIDER RUN
+              <Workflow size={14} /> 同约束双 Provider 运行
             </span>
-            <h2>One scene. Two sealed execution lanes.</h2>
+            <h2>同一个场景，两条相互隔离的执行路线</h2>
             <p>
-              The visual brief is shared; identity, authority and recovery never
-              are.
+              两条路线共享视觉目标，但执行身份、权限与恢复状态完全独立。
             </p>
           </div>
           <div
@@ -2079,7 +2088,7 @@ function ComparisonLaunchCanvas({
           </div>
         </div>
         <div className="shared-origin">
-          <span>SCENE CONSTRAINT PACKAGE</span>
+          <span>场景约束包</span>
           <strong>{plan.scene_package_id}</strong>
           <code>{shortId(plan.scene_package_sha256)}</code>
           <div className="origin-pulse" />
@@ -2094,14 +2103,14 @@ function ComparisonLaunchCanvas({
                 key={child.role}
               >
                 <div className="rail-index">
-                  {isLocal ? "A / LOCAL" : "B / HOSTED"}
+                  {isLocal ? "A / 本地" : "B / 托管"}
                 </div>
                 <div className="provider-mark">
                   {isLocal ? <HardDrive size={21} /> : <Cloud size={21} />}
                 </div>
                 <div className="provider-copy">
                   <small>
-                    {isLocal ? "PRIVATE GPU ROUTE" : "METERED IMAGE EDIT"}
+                    {isLocal ? "本地 GPU 路线" : "计费图像编辑"}
                   </small>
                   <h3>{child.provider_id}</h3>
                   <p>{child.model_id}</p>
@@ -2116,7 +2125,7 @@ function ComparisonLaunchCanvas({
                 <div className="authority-seal">
                   <LockKeyhole size={14} />
                   <div>
-                    <small>SEPARATE AUTHORITY</small>
+                    <small>独立执行边界</small>
                     <strong>{pretty(child.authority_kind)}</strong>
                   </div>
                 </div>
@@ -2140,34 +2149,34 @@ function ComparisonLaunchCanvas({
         <div className="launch-metrics">
           <div>
             <Gauge size={16} />
-            <span>HOSTED ESTIMATE</span>
+            <span>托管调用估算</span>
             <strong>${preview.estimated_hosted_cost_usd.toFixed(2)}</strong>
             <small>
-              ${preview.maximum_hosted_cost_usd.toFixed(2)} owner ceiling
+              最高 ${preview.maximum_hosted_cost_usd.toFixed(2)}
             </small>
           </div>
           <div>
             <ShieldCheck size={16} />
-            <span>REMOTE ALLOWLIST</span>
+            <span>远程上传白名单</span>
             <strong>{preview.hosted_uploads.join(" + ")}</strong>
-            <small>evaluation passes stay local</small>
+            <small>评价通道保持本地</small>
           </div>
           <div>
             <Fingerprint size={16} />
-            <span>PRIVACY POSTURE</span>
+            <span>隐私范围</span>
             <strong>{pretty(preview.hosted_privacy_class)}</strong>
-            <small>cost cap not provider-enforced</small>
+            <small>成本上限由控制平面执行</small>
           </div>
         </div>
         <div className="launch-truth">
           <CircleAlert size={15} />
           <p>
-            <strong>No winner has been chosen.</strong>
+            <strong>尚未采用任何候选。</strong>
             {agent.comparison_manifest
-              ? ` The persisted comparison is ${pretty(agent.comparison_manifest.status)}.`
+              ? ` 持久化比较状态为 ${stageLabel(agent.comparison_manifest.status)}。`
               : authorized
-                ? " Approval is recorded; execution remains a separate one-use action."
-                : " Opening this review does not authorize either provider."}
+                ? " 执行条件已记录，实际调用仍是独立的一次性动作。"
+                : " 打开比较界面不会触发任何 Provider。"}
           </p>
         </div>
       </section>
@@ -2180,9 +2189,9 @@ function Timeline({ items }: { items: AgentProjection["timeline"] }) {
     <section className="event-river">
       <div className="river-head">
         <span>
-          <Workflow size={14} /> AGENT PULSE
+          <Workflow size={14} /> AGENT 事件脉冲
         </span>
-        <small>REPLAYED, NOT INFERRED</small>
+        <small>来自事件重放，不是界面推测</small>
       </div>
       <div className="event-track">
         {items.map((item) => (
@@ -2195,8 +2204,8 @@ function Timeline({ items }: { items: AgentProjection["timeline"] }) {
             </span>
             <i />
             <div>
-              <strong>{item.label}</strong>
-              <p>{item.detail}</p>
+              <strong>{timelineText(item.label)}</strong>
+              <p>{timelineText(item.detail)}</p>
               <code>{item.event_type}</code>
             </div>
           </article>
@@ -2225,15 +2234,15 @@ function LegacyCanvas({ run }: { run: LegacyRun }) {
       <section className="comparison-main">
         <div className="viewport-tools">
           <span>
-            <Eye size={13} /> SOURCE / CANDIDATE COMPARE
+            <Eye size={13} /> 来源 / 候选比较
           </span>
-          <span>READ ONLY · NO SELECTION RECORDED</span>
+          <span>只读 · 尚未记录选择</span>
         </div>
         <div className="comparison-stage">
           <img
             className="compare-source"
             src={`/api/runs/${run.run_id}/source`}
-            alt="Source composition"
+            alt="来源构图"
           />
           <div
             className="compare-candidate"
@@ -2241,8 +2250,8 @@ function LegacyCanvas({ run }: { run: LegacyRun }) {
           >
             <img src={candidateUrl} alt={active.direction.visual_goal} />
           </div>
-          <span className="compare-label source">SOURCE</span>
-          <span className="compare-label result">CANDIDATE</span>
+          <span className="compare-label source">来源</span>
+          <span className="compare-label result">候选</span>
           <div className="split-line" style={{ left: `${split}%` }}>
             <i>
               <ChevronRight size={12} />
@@ -2257,16 +2266,16 @@ function LegacyCanvas({ run }: { run: LegacyRun }) {
             max="100"
             value={split}
             onChange={(event) => setSplit(Number(event.target.value))}
-            aria-label="Source and candidate comparison split"
+            aria-label="来源与候选分屏比较"
           />
           <span>B</span>
-          <strong>{split}% candidate</strong>
+          <strong>候选占比 {split}%</strong>
         </div>
       </section>
       <section className="direction-switcher">
         <div className="river-head">
           <span>
-            <Layers3 size={14} /> CAPTURED DIRECTIONS
+            <Layers3 size={14} /> 已捕获方向
           </span>
           <small>
             {run.candidates.length}/{run.plan.directions.length}
@@ -2287,7 +2296,7 @@ function LegacyCanvas({ run }: { run: LegacyRun }) {
               <div>
                 <strong>{item.direction.visual_goal}</strong>
                 <p>{item.direction.prompt_delta}</p>
-                <em>{index === activeIndex ? "ON STAGE" : "COMPARE"}</em>
+                <em>{index === activeIndex ? "当前展示" : "加入比较"}</em>
               </div>
             </button>
           ))}
@@ -2295,9 +2304,8 @@ function LegacyCanvas({ run }: { run: LegacyRun }) {
         <div className="comparison-truth">
           <CircleAlert size={14} />
           <p>
-            <strong>Human selection is still open.</strong>This historical run
-            remains in review; changing the comparison does not adopt a
-            candidate.
+            <strong>该历史运行尚未记录采用结果。</strong>
+            切换比较视图不会改变持久状态，也不会自动采用候选。
           </p>
         </div>
       </section>
@@ -2353,29 +2361,29 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
       {preview && (
         <>
           <div className="comparison-inspector-signal">
-            <span>DUAL PROVIDER CONTROL</span>
+            <span>双 Provider 控制</span>
             <strong>
               {agent.comparison_manifest
                 ? pretty(agent.comparison_manifest.status)
                 : agent.comparison_authorization
-                  ? "authorized"
-                  : "awaiting owner"}
+                  ? "已记录执行条件"
+                  : "等待执行条件"}
             </strong>
           </div>
-          <InspectorSection label="Hosted consequence">
+          <InspectorSection label="托管调用影响">
             <Fact label="Endpoint" value={preview.hosted_endpoint} mono />
-            <Fact label="Model" value={preview.hosted_model} mono />
-            <Fact label="Upload" value={preview.hosted_uploads.join(", ")} />
+            <Fact label="模型" value={preview.hosted_model} mono />
+            <Fact label="上传内容" value={preview.hosted_uploads.join(", ")} />
             <Fact
-              label="Estimate / max"
+              label="估算 / 上限"
               value={`$${preview.estimated_hosted_cost_usd.toFixed(2)} / $${preview.maximum_hosted_cost_usd.toFixed(2)}`}
             />
             <Fact
-              label="Retention"
+              label="保留策略"
               value={pretty(preview.hosted_privacy_class)}
             />
           </InspectorSection>
-          <InspectorSection label="Unresolved facts">
+          <InspectorSection label="尚未确认的宿主事实">
             <ul className="unresolved-list">
               {preview.unresolved_real_host_facts.map((fact) => (
                 <li key={fact}>{fact}</li>
@@ -2443,12 +2451,12 @@ function AgentInspector({ agent }: { agent: AgentProjection }) {
               <strong>{capability.capability_id}</strong>
               <span>{capability.risk}</span>
             </div>
-            <p>{capability.verification_signal}</p>
+            <p>{evidenceText(capability.verification_signal)}</p>
             <small>
               {capability.authority.writes.length
                 ? `${capability.authority.writes.length} 个写入域`
                 : "只读"}{" "}
-              · {capability.availability}
+              · {pretty(capability.availability)}
             </small>
           </div>
         ))}
@@ -2477,26 +2485,25 @@ function LegacyInspector({
   return (
     <div className="inspector-scroll">
       <div className="legacy-notice">
-        <span>LEGACY EVIDENCE</span>
+        <span>历史运行证据</span>
         <p>
-          This real RTX 4080 run is preserved as recorded. It is not presented
-          as an event-sourced Agent run.
+          这条真实 RTX 4080 运行按原始状态保留，不把它包装成事件溯源 Agent 运行。
         </p>
       </div>
       <ConstraintList
-        label="Must preserve"
+        label="必须保持"
         values={run.brief.preserve}
         tone="keep"
       />
-      <ConstraintList label="Avoid" values={run.brief.avoid} tone="block" />
-      <InspectorSection label="Runtime facts">
-        <Fact label="Run" value={shortId(run.run_id)} mono />
-        <Fact label="Task" value={pretty(run.brief.task_type)} />
+      <ConstraintList label="避免" values={run.brief.avoid} tone="block" />
+      <InspectorSection label="运行事实">
+        <Fact label="运行 ID" value={shortId(run.run_id)} mono />
+        <Fact label="任务" value={pretty(run.brief.task_type)} />
         <Fact
           label="ComfyUI"
-          value={health?.reachable ? "reachable" : "offline"}
+          value={health?.reachable ? "已连接" : "离线"}
         />
-        <Fact label="Candidates" value={String(run.candidates.length)} />
+        <Fact label="候选" value={String(run.candidates.length)} />
       </InspectorSection>
     </div>
   );
@@ -2583,209 +2590,6 @@ function EmptyStage() {
         创建 Agent 运行并附加已校验的 Scene Package。界面不会虚构场景或 Agent 事件。
       </p>
       <code>artflow create-agent-run → attach-scene-package</code>
-    </div>
-  );
-}
-function ComparisonApprovalSheet({
-  decision,
-  plan,
-  busy,
-  onAuthorize,
-}: {
-  decision: AgentProjection["pending_decisions"][number];
-  plan: ComparisonPlan;
-  busy: boolean;
-  onAuthorize: (approvedBy: string) => Promise<void>;
-}) {
-  const [approvedBy, setApprovedBy] = useState("");
-  const preview = plan.operator_preview;
-  return (
-    <div className="approval-scrim comparison-scrim" role="presentation">
-      <section
-        className="approval-sheet comparison-approval"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="comparison-approval-title"
-      >
-        <div className="approval-signal">
-          <span>HUMAN OWNER / DUAL AUTHORITY</span>
-          <i />
-        </div>
-        <div className="approval-title">
-          <div>
-            <LockKeyhole size={22} />
-            <span>EXTERNAL SIDE-EFFECT REVIEW</span>
-          </div>
-          <h2 id="comparison-approval-title">
-            Two actions. One exact fingerprint.
-          </h2>
-          <p>{decision.summary}</p>
-        </div>
-        <div className="approval-lanes">
-          <div>
-            <HardDrive size={18} />
-            <span>LOCAL GPU</span>
-            <strong>ComfyUI · {preview.local_uploads.join(", ")}</strong>
-            <small>One reviewed workflow · one output</small>
-          </div>
-          <div>
-            <Cloud size={18} />
-            <span>HOSTED / METERED</span>
-            <strong>
-              OpenAI · ${preview.estimated_hosted_cost_usd.toFixed(2)} est.
-            </strong>
-            <small>
-              {pretty(preview.hosted_privacy_class)} · $
-              {preview.maximum_hosted_cost_usd.toFixed(2)} max
-            </small>
-          </div>
-        </div>
-        <div className="approval-facts">
-          <Fact
-            label="Output"
-            value={`${preview.output_count_per_provider} each · ${preview.output_size}`}
-          />
-          <Fact
-            label="Remote upload"
-            value={preview.hosted_uploads.join(", ")}
-          />
-          <Fact label="Endpoint" value={preview.hosted_endpoint} mono />
-          <Fact
-            label="Fingerprint"
-            value={
-              decision.fingerprint ? shortId(decision.fingerprint) : "missing"
-            }
-            mono
-          />
-        </div>
-        <label className="owner-field">
-          <span>Human owner identity</span>
-          <input
-            value={approvedBy}
-            onChange={(event) => setApprovedBy(event.target.value)}
-            placeholder="Your name or review handle"
-            autoComplete="name"
-          />
-          <small>
-            This value is persisted with the authorization event. The Agent
-            cannot fill it for you.
-          </small>
-        </label>
-        <div className="approval-note">
-          <CircleAlert size={14} />
-          <p>
-            Approval records both exact action scopes. It does not start either
-            provider, authorize Unreal return, or select a winner.
-          </p>
-        </div>
-        <div className="approval-actions">
-          <button
-            className="approve-command"
-            disabled={busy || !approvedBy.trim()}
-            onClick={() => void onAuthorize(approvedBy.trim())}
-          >
-            <Check size={15} />
-            {busy ? "Binding decision…" : "Authorize both exact actions"}
-          </button>
-        </div>
-      </section>
-    </div>
-  );
-}
-function ApprovalSheet({
-  decision,
-  route,
-  busy,
-  onResolve,
-}: {
-  decision: AgentProjection["pending_decisions"][number];
-  route: AgentProjection["route"];
-  busy: boolean;
-  onResolve: (
-    decisionId: string,
-    resolution: "approved" | "rejected",
-  ) => Promise<void>;
-}) {
-  return (
-    <div className="approval-scrim" role="presentation">
-      <section
-        className="approval-sheet"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="approval-title"
-      >
-        <div className="approval-signal">
-          <span>HUMAN INTERRUPT</span>
-          <i />
-        </div>
-        <div className="approval-title">
-          <div>
-            <ShieldCheck size={22} />
-            <span>ROUTE / APPROVAL</span>
-          </div>
-          <h2 id="approval-title">The Agent is waiting at the boundary.</h2>
-          <p>{decision.summary}</p>
-        </div>
-        <div className="approval-facts">
-          <Fact label="Decision" value={decision.decision_id} mono />
-          <Fact
-            label="Fingerprint"
-            value={
-              decision.fingerprint
-                ? shortId(decision.fingerprint)
-                : "not supplied"
-            }
-            mono
-          />
-          {route ? (
-            <>
-              <Fact
-                label="Provider / model"
-                value={`${route.provider_id} / ${route.model_id}`}
-                mono
-              />
-              <Fact label="Privacy" value={pretty(route.privacy_class)} />
-              <Fact
-                label="Cost ceiling"
-                value={`$${route.max_cost_usd.toFixed(2)}`}
-              />
-              <Fact
-                label="Controls"
-                value={route.required_controls.join(", ")}
-              />
-            </>
-          ) : (
-            <>
-              <Fact label="Authority" value="Human only" />
-              <Fact label="State effect" value="Append event" />
-            </>
-          )}
-        </div>
-        <div className="approval-note">
-          <CircleAlert size={14} />
-          <p>
-            This action records only your decision. It does not start GPU work,
-            call a provider or adopt an output.
-          </p>
-        </div>
-        <div className="approval-actions">
-          <button
-            className="reject-command"
-            disabled={busy}
-            onClick={() => void onResolve(decision.decision_id, "rejected")}
-          >
-            Reject route
-          </button>
-          <button
-            className="approve-command"
-            disabled={busy}
-            onClick={() => void onResolve(decision.decision_id, "approved")}
-          >
-            <Check size={15} />
-            {busy ? "Recording…" : "Approve this fingerprint"}
-          </button>
-        </div>
-      </section>
     </div>
   );
 }

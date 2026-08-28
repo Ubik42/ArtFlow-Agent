@@ -1486,7 +1486,7 @@ button:focus-visible {
 .budget-readout b {
   color: #c5ced2;
 }
-.budget-readout button,
+.run-readiness,
 .primary-command {
   display: flex;
   align-items: center;
@@ -1497,6 +1497,11 @@ button:focus-visible {
   color: #7f8b94;
   background: #12181e;
   font-size: 9px;
+}
+.run-readiness {
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
 .primary-command {
   border-color: #8aac52;
@@ -2537,7 +2542,7 @@ button:focus-visible {
     width: 100%;
     justify-content: space-between;
   }
-  .budget-readout button {
+  .run-readiness {
     display: none;
   }
   .primary-command {
