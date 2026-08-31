@@ -1,95 +1,87 @@
 # ArtFlow Agent 演示与复现指南
 
-## 用途
+## 快速启动
 
-这份指南用于作品集面试、技术演示和代码审阅。Scene Lab 读取已经完成且有内容哈希的真实运行，不重新运行 ComfyUI、GPT Image 2、图生 3D Provider 或 Unreal，避免网络、GPU 和模型波动破坏叙事。界面没有批准弹窗；案例采用、定向纠正和发布状态由编排器依据持久证据给出。
-
-## 启动
+在仓库根目录运行：
 
 ```powershell
-cd D:\3D\_tools\ArtFlow-Agent
-.\.venv\Scripts\python scripts\serve_agent_fixture.py `
-  artifacts\goal\m3-s11-local-run --port 8796
+.\scripts\start_showcase.ps1
 ```
 
-打开 `http://127.0.0.1:8796`。预期首先看到中文 Scene Lab 与四个案例切换项，页面无横向滚动、无阻塞权限门禁。
+脚本会构建当前前端，在本机 `127.0.0.1:8798` 启动只读展示，并在服务就绪后打开浏览器。它读取
+已经冻结且经过内容哈希绑定的 UE 5.8、ComfyUI 与 Codex Image 运行，不重新调用生成服务，不需要
+登录态，也不会写入 Unreal 源关卡。使用 `-NoBrowser` 可只启动服务。
 
-## 五分钟黄金路径
+## 五分钟展示路线
 
-### 0:00–1:40：四个真实生产案例
+### 0:00–0:45：产品问题
 
-- **图生 3D 道具**：GPT Image 2 项目参考经 TripoSR 生成 GLB，先做许可证、外部 URI、面数和比例预检，再由 UE 5.8 Interchange 导入候选关卡。强调当前是实验几何与顶点色，不冒充最终 PBR。
-- **PBR 材质回流**：ComfyUI 受审图生成五通道材质；彩色标量图、无效法线等失败域被单独重建，验证后创建 Material Instance 并等待 Shader-ready 回渲。
-- **四域场景改造**：项目资产、材质、固定 PCG 图和灯光被编译为类型化 DAG，在候选关卡串行写入，并用第二机位复查空间关系。
-- **定向纠正与发布**：评价只标记 `lighting`，Correction Planner 因而仅重跑灯光域；资产、材质、PCG 不重提，崩溃后对账并内容寻址发布。
+从 README 首图或 Scene Lab 的“场景变更谱”开始。ArtFlow 解决的不是再做一个生图界面，而是把
+二维视觉意图落实为 Unreal 内可编辑、可复检的材质、资产、PCG 和灯光变更。模型只能调用注册过
+的有限工具，所有写入先进入隔离候选关卡。
 
-以下旧主运行可作为 Agent Harness 深挖路线，而不是开场主线。
+### 0:45–2:00：雨后庭院全管线
 
-### 1:40–2:10：真实输入，不是 prompt demo
+选择“雨后庭院 · 全管线”。源机位的相机、灰盒和保护区先被锁定；Agent 再把 ComfyUI PBR、
+项目资产、固定 PCG 图和灯光编译成同一份 Candidate Plan。指出界面中的 `12` 个实例、`0` 次源
+关卡改写，以及新 UE 进程对账时没有重复调用 Provider 或重新导入。
 
-- 指向 UE 5.8 来源、640×360 相机、四个 Pass。
-- 展开 protected / editable 区域，说明模型不能任意修改场景。
+### 2:00–3:20：晴光庭院定向纠正
 
-### 2:10–2:40：同源候选与能力路由
+选择“晴光庭院 · 定向纠正”。依次展示三个镜头：GPT Image 2 视觉目标、故意注入错误主光的 UE
+候选、只修正灯光后的 UE 候选。评价器只返回 `lighting` 失败；图像、材质、资产与 PCG 四个成功
+域的证据哈希被锁定，Correction Planner 只下发 `unreal.lighting.rig.patch`。
 
-- 对比本地 ComfyUI 和 Codex Image 候选。
-- 说明本地路线先经过真实节点、模型和 RTX 4080 attestation；两路 receipt 绑定同一个 Scene Package 与 art intent hash。
+实测主光由 `0.05 / 6500K` 改为 `5.5 / 4200K`，12 个 PCG 实例、材质路径、项目资产集合和保护
+对象状态均未变化。修正后的 UE 新进程返回 `reconciled=true`，外部重复提交为 0。
 
-### 2:40–3:15：独立 Tribunal 与负对照
+### 3:20–4:10：Agent 工程能力
 
-- 展示 deterministic claims 与多模态视觉评价。
-- 切到 attractive-invalid control：视觉更吸引人，但改变相机/结构，因硬门禁被拒绝。
-- Visual Critic 不能覆盖 deterministic failure，分歧被保留。
+沿能力轨道说明五个工程要点：
 
-### 3:15–3:45：自主采用与局部纠正
+1. Scene Digital Twin 将相机、Actor、材质、灯光、PCG、边界和保护对象变成可引用事实；
+2. Planner 生成带依赖和内容身份的类型化 Scene Delta，而不是自由编写宿主脚本；
+3. Capability Router 在 GPT Image、ComfyUI、项目资产与 Unreal 工具之间选择真实可用路线；
+4. Technical Judge 与 Visual Critic 独立于生成器，硬约束不能被模型自评分覆盖；
+5. append-only 事件、reserve / submit / reconcile 和失败域纠正避免重复生成与重复导入。
 
-- 展示 `codex-orchestrator` 按 `hard-eligible-then-visual-direction-v1` 采用合格候选。
-- 拖动 before/after；展示 mask、父图和 composite hash。
-- 蒙版外 1,530,358 像素中变化为 0，蒙版内 42,803 像素变化。
+### 4:10–5:00：回到 Unreal 与证据
 
-### 3:45–4:25：证明 Harness
+展示 `Tools > ArtFlow > 启动 ArtFlow 场景任务`：插件导出当前已保存关卡并向 localhost Agent 发起
+握手，回执进入项目 `Saved/ArtFlowSceneBridge/SceneSessions/`。强调“候选已执行”不等于“已发布”；
+当前两个 M13 案例都停在隔离候选，没有覆盖源 `ArtFlowDemo.umap`。
 
-- Recovery 6/6，五个副作用场景重复次数 0。
-- episodic / semantic / procedural 三类生产记忆，治理 6/6。
-- Frozen Harness 20/20；Context 3/3、路由/策略 5/5、误打断 0/1、重复副作用 0/5、外部 fixture 成本 $0。
-- 主动说明延迟是本地 fixture，不是 provider SLA；20/20 不代表开放域生图质量。
+最后打开 `docs/evidence/M13_S1_RAIN_WET_CROSS_PIPELINE_2026-08-30.md` 与
+`docs/evidence/M13_S2_SUNLIT_IMAGE_ROUTE_CORRECTION_2026-08-30.md`，说明 README 数字都能定位到
+计划、回执、固定分母和真实截图。
 
-### 4:25–5:00：回到 Unreal
+## Unreal 实际入口
 
-- 展示绿色交付面板：真实 UE 视口、目标关卡、引擎版本、事件序列与 delivery identity。
-- 来源绑定 9/9 通过；验证器独立于前端。
-- 主动指出当前是 unsigned C2PA sidecar，没有签名证书。
-
-## 失败路径复现
+若要从示例宿主真实发起新 Session：
 
 ```powershell
-.\.venv\Scripts\python scripts\run_recovery_matrix.py
+uv run python scripts\serve_agent_fixture.py runs --port 8798
 ```
 
-预期 `6/6`、`duplicate_side_effect_count=0`。每个案例使用独立 fixture 和 trace，不修改主运行。
+保存关卡，选中一个 CameraActor 和带 `ArtFlow.Protected` / `ArtFlow.Editable` Tag 的 Actor，然后在
+Unreal 菜单选择 `Tools > ArtFlow > 启动 ArtFlow 场景任务`。完整配置和边界见
+[`integrations/unreal/README.md`](../integrations/unreal/README.md)。
 
 ## 发布包验证
 
 ```powershell
-.\.venv\Scripts\python scripts\build_portfolio_release.py
-.\.venv\Scripts\python scripts\verify_portfolio_release.py `
-  artifacts\goal\m10-s3-release\artflow-agent-portfolio-<manifest>.zip
+uv run python scripts\build_portfolio_release.py
+uv run python scripts\verify_portfolio_release.py `
+  artifacts\goal\m14-s1-release\artflow-agent-portfolio-<manifest>.zip
 ```
 
-也可解压 ZIP 使用包内 `tools/verify_release.py`，它只依赖 Python 标准库。修改任何已声明文件后应得到 `file_hash_mismatch:*` 和非零退出码。
-
-## 演示中的禁语
-
-- 不说“完整 C2PA 已签名”；只能说“C2PA 2.4 vocabulary-compatible unsigned sidecar，哈希链可验证”。
-- 不把 20/20 说成通用模型准确率；它是 20 个命名冻结案例。
-- 不说“人工采用率 100%”；当前采用由 Codex 编排器依据一次真实项目 Tribunal 证据完成。
-- 不把 fixture latency 说成 ComfyUI 或 GPT Image 生产延迟。
-- 不展示 prompt、密钥、隐藏推理或 SQLite 原始内容。
+也可解压 ZIP 使用包内 `tools/verify_release.py`。验证器只依赖 Python 标准库；任何已声明文件被
+修改都会返回非零退出码。发布包不包含 prompt、凭据、SQLite 事件数据库、隐藏推理或候选运行时。
 
 ## 录屏前检查
 
-- 浏览器宽度 1920×1080，缩放 100%；另检查 430×932 窄屏。
-- 先运行 `npm run build`，再启动 fixture server。
-- 所有图片加载完成、控制台 0 error / 0 warning、页面无横向滚动。
-- 四个案例均可切换，页面无批准弹窗；主运行事件数为 25，最终交付面板显示 9/9 和 unsigned C2PA 限制。
-- 演示结束后关闭本地 fixture server；不需要登录外部账户。
+- 桌面使用 1920×1080；另检查 760×1080 窄屏；
+- 两个案例均能切换，所有图片加载完成；
+- 控制台 0 error / 0 warning，无权限弹窗和阻塞遮罩；
+- 不把固定场景的 5/5、12 个实例或 Harness 20/20 描述为开放域模型准确率；
+- 不声称候选已发布，不展示 prompt、密钥、SQLite 原始内容或本机私有路径。

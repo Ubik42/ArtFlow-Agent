@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-release-verification/1",
+  "status": "passed",
+  "verified_files": 49,
+  "total_files": 49,
+  "run_id": "local-artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6-130c94284deb",
+  "event_count": 25,
+  "checks": [
+    "all_packaged_files_content_addressed",
+    "run_and_event_identity_bound",
+    "harness_20_of_20",
+    "recovery_6_of_6_zero_duplicates",
+    "memory_6_of_6",
+    "provenance_9_of_9_unsigned_boundary",
+    "pbr_5_channels_2_invalid_attempts_rejected",
+    "multi_domain_4_reconciled_12_instances_zero_incursions",
+    "lighting_only_correction_zero_resubmission",
+    "mcp_3_resources_4_tools_4_hostile_rejections",
+    "image_to_3d_interchange_and_budget_negative_control"
+  ],
+  "failures": [],
+  "manifest_sha256": "29eb651ceec19a82a4f1410d99cc7ff7b3f752a7e318325840018db52e11447d"
+}

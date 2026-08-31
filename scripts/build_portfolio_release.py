@@ -7,7 +7,7 @@ from artflow_agent.portfolio_release import build_release_archive, canonical_jso
 
 ROOT = Path(__file__).resolve().parents[1]
 RUN_ROOT = ROOT / "artifacts/goal/m3-s11-local-run"
-OUTPUT_ROOT = ROOT / "artifacts/goal/m10-s3-release"
+OUTPUT_ROOT = ROOT / "artifacts/goal/m14-s1-release"
 RUN_ID = "local-artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6-130c94284deb"
 
 
@@ -36,6 +36,21 @@ def main() -> None:
         source("DESIGN.md", "docs/DESIGN.md", "design_system"),
         source("docs/portfolio-story.md", "docs/case-study.md", "portfolio_case_study"),
         source("docs/DEMO_GUIDE.md", "docs/demo-guide.md", "demo_guide"),
+        source(
+            "integrations/unreal/README.md",
+            "docs/unreal-integration.md",
+            "unreal_integration_guide",
+        ),
+        source(
+            "docs/evidence/M13_S1_RAIN_WET_CROSS_PIPELINE_2026-08-30.md",
+            "docs/evidence/m13-rain-wet-cross-pipeline.md",
+            "m13_case_evidence",
+        ),
+        source(
+            "docs/evidence/M13_S2_SUNLIT_IMAGE_ROUTE_CORRECTION_2026-08-30.md",
+            "docs/evidence/m13-sunlit-domain-correction.md",
+            "m13_case_evidence",
+        ),
         source(
             "scripts/verify_portfolio_release_standalone.py",
             "tools/verify_release.py",
@@ -105,6 +120,41 @@ def main() -> None:
             "artifacts/goal/m10-s2-image-to-3d/verification.json",
             "evidence/m10-image-to-3d-verification.json",
             "image_to_3d_verification",
+        ),
+        source(
+            "artifacts/goal/m13-s1-rain-wet-courtyard/candidate-execution-receipt-reconciled.json",
+            "evidence/m13-rain-candidate-reconcile.json",
+            "m13_unreal_receipt",
+        ),
+        source(
+            "artifacts/goal/m13-s1-rain-wet-courtyard/technical-evaluation.json",
+            "evidence/m13-rain-technical-evaluation.json",
+            "m13_domain_evaluation",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/codex-image-target-receipt.json",
+            "evidence/m13-sunlit-image-target.json",
+            "m13_image_target_receipt",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/failure-domain-evaluation.json",
+            "evidence/m13-sunlit-failure-evaluation.json",
+            "m13_domain_evaluation",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/lighting-correction-plan.json",
+            "evidence/m13-sunlit-correction-plan.json",
+            "m13_correction_plan",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/corrected-execution-receipt.json",
+            "evidence/m13-sunlit-corrected-reconcile.json",
+            "m13_unreal_receipt",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/corrected-domain-evaluation.json",
+            "evidence/m13-sunlit-corrected-evaluation.json",
+            "m13_domain_evaluation",
         ),
         source(
             "artifacts/goal/m3-s10-cross-language/passes/beauty.png",
@@ -181,6 +231,21 @@ def main() -> None:
             "media/15-scene-lab-narrow.png",
             "responsive_scene_lab",
         ),
+        source(
+            "docs/assets/showcase/m13-scene-lab-rain.png",
+            "media/16-m13-rain-cross-pipeline.png",
+            "current_scene_lab_case",
+        ),
+        source(
+            "docs/assets/showcase/m13-scene-lab-sunlit-correction.png",
+            "media/17-m13-sunlit-correction.png",
+            "current_scene_lab_case",
+        ),
+        source(
+            "artifacts/goal/m13-s2-sunlit-overgrown/ui-narrow-sunlit-correction.png",
+            "media/18-m13-sunlit-correction-narrow.png",
+            "responsive_scene_lab",
+        ),
     ]
     delivery = state.verified_delivery
     summary = {
@@ -209,6 +274,9 @@ def main() -> None:
             "correction": "lighting only; 0 external resubmissions",
             "mcp": "3 resources; 4 tools; 4 hostile inputs rejected",
             "image_to_3d": "1 GLB; 4,817 UE triangles; 1 material; 1 collision",
+            "m13_cross_pipeline": "2 routes; ComfyUI PBR and GPT Image 2 visual target",
+            "m13_correction": "lighting only; 4/4 successful-domain evidence hashes preserved",
+            "m13_unreal_reconcile": "12 PCG instances; 0 repeated external submissions; source unchanged",
         },
         "privacy": {
             "prompts_included": False,
@@ -217,7 +285,7 @@ def main() -> None:
             "hidden_reasoning_included": False,
         },
     }
-    verify_doc = """# 独立验证\n\n无需启动 Unreal、ComfyUI 或 Web UI。使用 Python 3.11+：\n\n```powershell\npython tools/verify_release.py <发布包.zip>\n```\n\n验证器重新打开原 ZIP，检查清单与每个文件哈希，并复核二维闭环、PBR、四域 Scene Delta、灯光单域纠正、MCP 边界和图生 3D 接纳证据。退出码 0 表示通过，任何已声明内容被修改都会返回非零。\n"""
+    verify_doc = """# 独立验证\n\n无需启动 Unreal、ComfyUI 或 Web UI。使用 Python 3.11+：\n\n```powershell\npython tools/verify_release.py <发布包.zip>\n```\n\n验证器重新打开原 ZIP，检查清单与每个文件哈希，并复核二维闭环、PBR、四域 Scene Delta、灯光单域纠正、MCP 边界和图生 3D 接纳证据。M13 的两条当前生产案例同时以计划、评价、UE 回执和截图进入同一内容清单。退出码 0 表示通过，任何已声明内容被修改都会返回非零。\n"""
     target, manifest = build_release_archive(
         output_root=OUTPUT_ROOT,
         release_id=f"artflow-agent-{delivery.delivery_sha256[:20]}",
@@ -247,12 +315,16 @@ def main() -> None:
             "mcp_hostile_inputs": "4/4 rejected",
             "image_to_3d_triangle_negative_control": "1/1 rejected",
             "fixture_external_cost": "$0/20 Harness cases",
+            "m13_production_routes": "2/2 frozen real-host cases",
+            "m13_preserved_success_domains": "4/4 content hashes unchanged",
+            "m13_repeated_external_submissions": "0",
         },
         limitations=[
             "The C2PA-compatible JSON sidecar is unsigned; no cryptographic C2PA credential is claimed.",
             "Frozen Harness latency is local fixture latency, not provider production latency.",
             "The release omits prompts, the SQLite event database, credentials and hidden reasoning.",
             "The TripoSR candidate is experimental geometry with vertex color, not a final production PBR asset.",
+            "The M13 candidates remain isolated Unreal candidate levels and are not presented as published source-level changes.",
         ],
     )
     print(

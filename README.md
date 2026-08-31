@@ -162,15 +162,12 @@ cd ArtFlow-Agent
 python -m venv .venv
 .\.venv\Scripts\python -m pip install -e ".[dev]"
 
-cd web
-npm install
-npm run build
-cd ..
-
-.\.venv\Scripts\python scripts\run_showcase.py --port 8796
+.\scripts\start_showcase.ps1
 ```
 
-浏览器打开 `http://127.0.0.1:8796`。演示读取已经完成且经过哈希绑定的运行，不会重新调用图像或三维生成服务。推荐讲解顺序见 [演示与复现指南](docs/DEMO_GUIDE.md)。
+脚本会安装缺失的前端依赖、构建当前界面，并在服务就绪后打开 `http://127.0.0.1:8798`。
+演示读取已经完成且经过哈希绑定的运行，不会重新调用图像或三维生成服务。推荐讲解顺序见
+[演示与复现指南](docs/DEMO_GUIDE.md)。
 
 Unreal Bridge 的安装与宿主入口见 [Unreal 集成说明](integrations/unreal/README.md)。
 

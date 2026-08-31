@@ -19,12 +19,14 @@ Bridge 的能力不依赖这个示例项目，实际项目可以使用相同入�
 4. 启动本地 ArtFlow 服务：
 
    ```powershell
-   .\.venv\Scripts\python scripts\serve_agent_fixture.py runs --port 8796
+   uv run python scripts\serve_agent_fixture.py runs --port 8798
    ```
 
 5. 在 Unreal 顶部菜单选择 `Tools > ArtFlow > 启动 ArtFlow 场景任务`。
 
-插件会完成 Scene Package 导出、localhost 握手、Scene Session 建立和候选请求验证。成功回执保存到：
+如项目配置仍使用其他端口，可在启动编辑器时追加
+`-ArtFlowEndpoint=http://127.0.0.1:8798`。插件会完成 Scene Package 导出、localhost 握手、
+Scene Session 建立和候选请求验证。成功回执保存到：
 
 ```text
 <Project>/Saved/ArtFlowSceneBridge/SceneSessions/
@@ -33,6 +35,9 @@ Bridge 的能力不依赖这个示例项目，实际项目可以使用相同入�
 该动作不弹出权限确认，也不修改或保存源关卡。当前编辑器菜单先建立候选请求；Agent 后续可将
 本次已经就绪的 PCG 与灯光域编译为 Candidate Plan，在请求派生的候选关卡中执行并保存回执。
 候选执行仍不等于发布，源关卡不会被覆盖。
+
+作品集只读演示无需启动 Unreal，直接在仓库根目录运行 `scripts\start_showcase.ps1`。它读取冻结
+回执，不会把演示点击写回 UE 项目，也不需要任何账户登录态。
 
 ## 配置
 
