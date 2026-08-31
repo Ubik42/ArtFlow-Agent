@@ -1,86 +1,63 @@
 # ArtFlow Agent 持续开发目标
 
-## 当前总目标
+## 当前目标
 
-将 ArtFlow 持续开发为 **Unreal 原生的二维视觉意图到三维场景变更 Agent**。二维生成图只是
-目标和证据，最终产物是 Unreal 中经过暂存、回渲、评价、纠正和验证的 `Scene Delta`。
+ArtFlow 是 **Unreal 原生的二维视觉意图到可验证三维场景变更 Agent**。当前开发从已经验证的
+技术底座进入产品化阶段：把只读案例与证据界面推进为真正可操作的实时 Scene Session，让用户
+从引擎场景发起任务，编排受限管线，并在候选关卡完成执行、评价、纠正和发布。
 
-已完成的 M0–M6（场景四 Pass、持久 Harness、Provider 路由、独立评价、恢复、记忆、来源和
-作品集交付）作为可信底座保留，不重复重构。M7 起集中补齐三维事实、三维计划和三维执行。
+M0–M10 已建立持久事件、类型化工具、真实 Unreal Scene Digital Twin、ComfyUI PBR、四域 Scene
+Delta、失败域纠正、MCP 边界、实验图生 3D 和第一版中文作品集证据。这些能力作为稳定底座保留，
+后续不重复造轮子，也不再以历史审批/证据控制台作为产品主叙事。
 
-## 稳定完成定义
-
-1. Scene Package 扩展为 Scene Digital Twin，包含相机、多 Pass、Actor、边界、材质、灯光、
-   PCG、Data Layer、保护关系和预算；
-2. 模型只产出版本化 `SceneChangePlan`，不能产出或执行任意 Blueprint、Python、Shell、C++ 或
-   ComfyUI 图；
-3. 至少支持灯光/后处理、PCG 布局、材质实例和三维资产候选四类场景操作，每类都有类型化合同、
-   前置条件、幂等、验证和回滚语义；
-4. 所有场景写入先进入 `ArtFlow_<run_id>` 隔离暂存层，源关卡不原地覆盖；Unreal 写入串行并
-   使用事务，非 UE 资产准备可按依赖图并行；
-5. 同机位回渲视觉评价与确定性三维技术检查并列；视觉分数不能覆盖保护对象、碰撞、边界、资源
-   完整性和性能失败；
-6. 纠正器只重做失败域，事件存储能从中断点恢复，外部执行结果未知时先对账而不是盲目重试；
-7. ComfyUI 通过能力探测、已审阅子图目录和插槽编译器接入；`ComfyUI-Production-Nodes` 必须有
-   真实 `/object_info` 和运行收据后才算集成；
-8. 图生 3D 是可替换的实验资产 Provider；主闭环不依赖它，生成网格必须经过 Interchange、比例、
-   面数、材质、碰撞、许可证和命名空间检查；
-9. MCP 仅为现有类型化工具和资源提供薄适配，不拥有 Agent 状态机，不暴露任意代码执行；
-10. 至少一条项目自有 UE 5.8 演示完成“概念图 → 灯光 + PCG 三维变更 → 同机位回渲 → 自动纠正
-    → 发布”，并保留中文界面、流程截图、宿主证据和可重放收据；
-11. 每个公开指标都给出数据集、分母和证据路径；规划中的能力与已验证能力严格区分；
-12. 唯一下一切片、允许路径、停止条件和证据上限由 `config/goal-state.json` 决定。
-
-## 持久编排结构
+## 产品闭环
 
 ```text
-Scene Analyst（只读事实）
-  -> Visual Director（目标拆解）
-  -> Scene Delta Planner（类型化 DAG）
-  -> Material / Asset / PCG / Lighting Specialists（受限候选）
-  -> Unreal Staging Executor（唯一写入通道）
-  -> Visual Critic + Technical Judge（独立评价）
-  -> Correction Planner（只修失败域）
-  -> Publisher / Reconciler（发布、恢复、来源）
+Unreal 当前场景
+  → Scene Session（场景事实 + 美术意图 + 可修改域）
+  → Scene Change Spectrum（能力就绪度、依赖和边界）
+  → Typed Scene Delta（材质 / 资产 / PCG / 灯光 / 图像目标）
+  → Unreal Candidate Stage（唯一串行写入通道）
+  → Same-camera Rerender + Technical Judge + Visual Critic
+  → Failed-domain Correction
+  → Reconciled Publish + Provenance
 ```
 
-角色不是多个 Agent 自由聊天。每个角色只接收必要上下文，只能调用声明过的工具，并把结果写成
-不可变事件或内容寻址 artifact。PydanticAI 可以承担类型化模型交互，但项目自己的 reducer、策略、
-工具注册、恢复和评价仍是控制平面。
+## 阶段路线
 
-## 阶段顺序
+- **M11 · Live Scene Session and Scene Change Spectrum**：把真实场景、意图和域选择编译成确定性、
+  内容寻址的只读草案，并形成 ArtFlow 自有的“场景变更谱”交互语言；随后持久化 Session 并生成
+  候选暂存请求。
+- **M12 · Unreal editor session bridge and candidate execution**：从 UE 编辑器发起 Session，在项目
+  自有候选关卡执行注册工具、回渲并对账，证明重启与重试没有重复副作用。
+- **M13 · Cross-pipeline transformation and correction**：将审阅过的 ComfyUI、GPT Image 2 开发编排、
+  PBR、项目/生成资产、PCG 与灯光纳入同一计划，用多个真实生产案例证明路由和失败域纠正。
+- **M14 · Embedded delivery and portfolio release**：完成 Unreal-facing 入口、中文产品界面、多个可复现
+  案例、流程截图、教学文档和可验证发布包。
 
-```text
-M7 Scene Digital Twin + Staged Scene Delta Kernel
-  -> M8 ComfyUI Production Graph + PBR Material Route
-  -> M9 PCG / Lighting / Asset Closed Loop
-  -> M10 MCP Interoperability + Image-to-3D Experiment + Portfolio Release
-```
+具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 
-M7 已完成扩展场景事实、灯光/PCG dry-run、候选关卡真实执行、同机位回渲、幂等对账以及发布/
-丢弃回执。M8 又完成真实 RTX 4080 PBR 生成、逐通道拒绝、失败技术域纠正、UE 5.8 Material
-Instance、Shader-ready 回渲和重复请求对账。M9-S1 又把材质、灯光、固定 PCG 图与项目资产复用
-统一为类型化 Scene Delta DAG，验证了三路并行准备、单路 UE 写入、可选生成能力降级和 6/6 负对照。
-M9-S2 又将同一计划绑定到真实 Twin、M8 回执和 PCG graph 指纹，在 UE 5.8 候选关卡完成四域对账、
-主/验证双机位回渲、12 实例与保护区 0 侵入检查，并证明重复请求不增加资产或实例。M9-S3 已真实
-注入 0.05-lux 灯光失败，让技术与视觉评价独立锁定同一失败域，只纠正灯光而保持材质和 12 个 PCG
-实例不变；丢失回执由新进程对账且不重提，最终候选发布到内容寻址关卡。M10-S1 已完成现有控制
-平面的薄 MCP 投影：官方客户端经真实 stdio 子进程读取 3 个固定资源、调用 4 个只读工具，4 类越权
-输入全部失败，事件与 UE 字节不变。M10-S2 又将 GPT Image 2 项目参考经固定 revision 的 TripoSR
-生成真实 GLB，在写入前完成许可证、外部 URI、扩展、几何、比例、材质表示和预算检查，再经 UE
-5.8 Interchange 导入内容寻址命名空间并放入独立候选关卡；100,000 面负对照被拒绝，源关卡字节
-不变，项目资产 fallback 仍可编译。M10-S3 已完成中文 Scene Lab：四个真实生产案例、桌面与窄屏
-截图、无阻塞权限门禁，以及包含 M8–M10 原始回执的 36 文件可独立验证作品集发布包均已落盘。
+## 完成定义
 
-## 自主开发与停止边界
+1. 用户能从项目自有 UE 5.8 演示场景直接创建 Scene Session，而非先操作内部测试夹具。
+2. Agent 从 Scene Digital Twin 与显式意图生成版本化 Scene Delta；模型不能生成宿主代码或任意图。
+3. Image、Material、Asset、PCG、Lighting 至少四类能力能按真实就绪度路由；ComfyUI 通过审阅子图
+   和版本化节点能力接入，图生 3D 可缺席而不阻塞主闭环。
+4. 所有写入先进入项目自有候选层，源关卡不原地覆盖；外部结果未知时先对账，不盲目重试。
+5. 同机位视觉评价与确定性三维检查相互独立；保护对象、碰撞、边界、资源和预算失败不可被覆盖。
+6. 至少两个差异明显的模拟真实生产案例完成“意图 → 多域变更 → 回渲 → 评价 → 纠正/发布”，且
+   其中一个真实注入失败并只重做失败域。
+7. UI 以中文“场景变更谱”和真实媒体构成可辨识的导演工具，不是聊天、节点画布、AI 仪表盘或
+   伪终端；桌面与窄屏均完成目标尺寸验收。
+8. README、使用文档和发布包以克制的作品集语言呈现，包含大量真实流程截图，所有能力与数字都
+   能定位到冻结回执、任务分母和复现命令。
 
-项目内候选选择、暂存层创建、项目自有演示场景修改、Codex 内置图像生成、同机位回渲、验证、
-本地发布和已授权 GitHub 仓库更新由 Codex 负责，不设置人为权限门禁，也不要求用户代选结果。
+## 开发纪律
 
-只有以下情况允许停止并请求方向：目标会越出 ArtFlow 仓库或项目自有 UE 测试宿主；需要公开上传
-未授权资产；会修改共享安装或无关用户数据；许可证不允许作品集用途；或唯一外部能力真实缺失且
-没有项目内替代路线。正常测试失败、宿主启动、截图和候选质量波动都由开发循环自行处理。
-
-测试优先覆盖合同、策略、重放、恢复和宿主边界，约占实现投入的 15–25%；不为追求测试数量延迟
-真实 UE 闭环。前端在三维事件合同稳定后重做，必须中文、场景化、截图丰富，并展示真实状态而非
-隐藏推理链。
+- 一次只完成一个最短真实纵向切片；75–85% 实现，15–25% 高价值验证。
+- 测试重点是合同、非法状态迁移、幂等、未知完成、恢复与宿主边界；不追覆盖率或浏览器矩阵。
+- 本仓、项目自有 UE 宿主、候选采用、Codex GPT Image 2 开发生图、截图、打包和已配置 GitHub
+  更新属于自主开发范围。真正的外部费用、隐私和共享安装边界由策略处理，不制造虚假权限门禁。
+- Planner、Specialist、Judge、Critic、Recovery 与 Publisher 仅按真实权限/上下文隔离；所有协作
+  通过不可变事件和类型化 artifact，不通过表演式多 Agent 对话。
+- 每轮从 goal-state 和 checkpoint 恢复。接受条件满足后立即记录证据并切换下一切片，避免目标漂移。

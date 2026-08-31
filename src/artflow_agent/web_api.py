@@ -38,6 +38,11 @@ from .recipes import RecipeCatalog
 from .review import create_contact_sheet
 from .run_store import RunStateError, RunStore
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
+from .scene_session import (
+    SceneSessionDraft,
+    SceneSessionDraftRequest,
+    compile_scene_session_draft,
+)
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -151,6 +156,18 @@ def create_app(
         try:
             return project_agent_run(agent_store, run_id)
         except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-session/draft",
+        response_model=SceneSessionDraft,
+    )
+    def draft_scene_session(run_id: str, payload: SceneSessionDraftRequest):
+        try:
+            state = agent_store.load(run_id)
+            return compile_scene_session_draft(state, payload)
+        except (AgentRuntimeError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

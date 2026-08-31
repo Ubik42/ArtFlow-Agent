@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "artflow-agent"
 version = "0.1.0"
-description = "Agent-orchestrated ComfyUI pipeline for reproducible game art iteration."
+description = "Unreal-native Agent for verified multi-pipeline scene transformation."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -150,6 +150,69 @@ def test_scene_package_import_rejects_tamper_before_creating_run(tmp_path) -> No
     assert client.get("/api/agent/runs").json() == []
 
 
+def test_scene_session_draft_compiles_selected_domains_without_side_effects(
+    tmp_path: Path,
+) -> None:
+    payload = _scene_archive(tmp_path).read_bytes()
+    runs_dir = tmp_path / "runs"
+    client = TestClient(create_app(runs_dir=runs_dir))
+    imported = client.post(
+        "/api/agent/scene-packages/import",
+        content=payload,
+        headers={"Content-Type": "application/zip"},
+    ).json()
+    run_id = imported["run_id"]
+    before = client.get(f"/api/agent/runs/{run_id}").json()["timeline"]
+
+    response = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/draft",
+        json={
+            "intent": "将遗迹场景调整为雨后清晨，并保持相机和灰盒主体关系。",
+            "domains": ["lighting", "image", "pcg"],
+        },
+    )
+
+    assert response.status_code == 200
+    draft = response.json()
+    assert draft["schema_id"] == "artflow-scene-session-draft/1"
+    assert [node["domain"] for node in draft["nodes"]] == [
+        "image",
+        "pcg",
+        "lighting",
+    ]
+    assert draft["ready_domain_count"] == 1
+    assert draft["guarded_domain_count"] == 2
+    assert draft["can_stage"] is False
+    assert len(draft["draft_sha256"]) == 64
+    replay = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/draft",
+        json={
+            "intent": "将遗迹场景调整为雨后清晨，并保持相机和灰盒主体关系。",
+            "domains": ["pcg", "lighting", "image"],
+        },
+    ).json()
+    assert replay["draft_sha256"] == draft["draft_sha256"]
+    after = client.get(f"/api/agent/runs/{run_id}").json()["timeline"]
+    assert after == before
+
+
+def test_scene_session_draft_rejects_duplicate_domains(tmp_path) -> None:
+    payload = _scene_archive(tmp_path).read_bytes()
+    client = TestClient(create_app(runs_dir=tmp_path / "runs"))
+    run_id = client.post(
+        "/api/agent/scene-packages/import",
+        content=payload,
+        headers={"Content-Type": "application/zip"},
+    ).json()["run_id"]
+
+    response = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/draft",
+        json={"intent": "保持原始构图并调整场景材质方向。", "domains": ["image", "image"]},
+    )
+
+    assert response.status_code == 422
+
+
 def test_verified_provider_artifact_is_served_by_receipt_hash(tmp_path) -> None:
     preview = ScenePackageArchive().inspect(_scene_archive(tmp_path))
     database = tmp_path / "agent-events.sqlite3"

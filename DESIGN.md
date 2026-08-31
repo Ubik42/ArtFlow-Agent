@@ -1,6 +1,6 @@
 ---
-name: ArtFlow Scene Lab
-description: 面向 Unreal 三维场景生产的 Agent 导演台
+name: ArtFlow Scene Director
+description: 以场景变更谱为核心的 Unreal 三维场景导演工具
 colors:
   void: "#07090C"
   stage: "#0D1218"
@@ -8,11 +8,11 @@ colors:
   line: "#2A3642"
   text: "#F0F4F2"
   muted: "#9AA8AD"
-  signal-cyan: "#66DCF0"
-  director-amber: "#F2B65C"
+  signal-cyan: "#73B9C1"
+  director-amber: "#D59658"
   verified-lime: "#B8ED72"
   fault-coral: "#FF7770"
-  reasoning-violet: "#9B8CFF"
+  planning-slate: "#8291A3"
 typography:
   headline:
     fontFamily: "Bahnschrift, Aptos, Microsoft YaHei UI, sans-serif"
@@ -62,16 +62,16 @@ components:
     padding: "6px 9px"
 ---
 
-# Design System: ArtFlow Scene Lab
+# Design System: ArtFlow Scene Director
 
 ## Overview
 
-**Creative North Star: “实时场景导演台”**
+**Creative North Star: “场景变更谱”**
 
-界面像一张可操作的虚拟制作导演台：场景图像占据中心，Agent 的观察、工具轨道和评价沿画面边缘
-组织，使用者一眼看到“当前场景变成了什么”，随后再追查“为什么”和“由哪个工具完成”。深色来自
-UE 工作站的物理环境，不是通用 AI 产品皮肤；琥珀色表示正在导演的选择，青色表示观测，黄绿色
-只用于已经验证的结果。
+界面借鉴调色台、混音台和虚拟制片 call sheet：场景图像占据中心，五条变更域像谱带一样呈现
+强弱、依赖和就绪度。使用者先看到“哪些方面将改变、当前能不能执行”，随后再追查工具、评价和
+回执。深色来自 UE 工作站的物理环境；略带纸张和氧化铜质感的琥珀/灰蓝信号形成 ArtFlow 的
+识别度，不使用常见 AI 产品的紫蓝霓虹和玻璃卡片。
 
 系统拒绝通用聊天壳、自由连线节点画布、门禁词汇主导的仪表盘、同尺寸卡片墙和伪终端英文。
 界面可以有电影式空间感与光效，但业务状态必须比装饰更清楚。
@@ -79,7 +79,7 @@ UE 工作站的物理环境，不是通用 AI 产品皮肤；琥珀色表示正�
 **Key Characteristics:**
 
 - 真实场景媒体是第一视觉层级。
-- 横向“能力轨道”表达多管线协作，类型化连接不可任意改线。
+- 横向“场景变更谱”表达多管线协作，类型化连接不可任意改线。
 - 右侧决策镜头只显示可追溯摘要与证据，不显示隐藏思维链。
 - 平面分区为主，运行、选中和交付时才产生提升、辉光和动效。
 - 桌面高密度，窄屏切换为场景叙事顺序，而不是整体缩小。
@@ -91,12 +91,12 @@ UE 工作站的物理环境，不是通用 AI 产品皮肤；琥珀色表示正�
 ### Primary
 
 - **导演琥珀**：当前选择、主要动作和被采用路线，不能用于普通装饰。
-- **信号青**：场景观测、扫描、输入事实和实时连接。
+- **信号灰蓝**：场景观测、扫描、输入事实和实时连接；饱和度保持低于场景媒体。
 
 ### Secondary
 
 - **验证黄绿**：已验证、已对账、可发布结果。
-- **推理紫**：Agent 计划、评价分歧和跨工具编排。
+- **计划石板灰**：计划、评价分歧和跨工具编排，不把“AI 推理”做成装饰色。
 
 ### Tertiary
 
@@ -179,10 +179,11 @@ UE 工作站的物理环境，不是通用 AI 产品皮肤；琥珀色表示正�
 顶部只保留产品、当前场景、运行状态和全局动作。场景列表在桌面为窄轨，在窄屏折叠为可横滑的
 运行选择器。活动项使用导演琥珀定位标记和更高文本对比。
 
-### Scene Rail
+### Scene Change Spectrum
 
-能力轨道是标志性组件。Image、Material、Asset、PCG、Lighting、UE 与 MCP 以类型、状态、输入输出
-和依赖关系排列；连接是持久计划的投影，用户不能任意连线制造未验证工作流。
+场景变更谱是标志性组件。Image、Material、Asset、PCG、Lighting 以五条固定谱带排列，用刻度、
+短杆、纸签式说明和状态文字表达作用强度、前置条件与依赖。UE 是场景宿主，MCP 是接口边界，
+不与生产域并列成“Agent 节点”。用户可以选择域和约束，但不能任意连线制造未验证工作流。
 
 ## Do's and Don'ts
 

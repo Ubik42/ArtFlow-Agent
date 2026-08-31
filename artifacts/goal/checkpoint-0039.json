@@ -1,0 +1,12 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M11-S1",
+  "status": "completed",
+  "outcome": "A real persisted Unreal run now compiles scene intent and selected image, material, asset, PCG and lighting domains into a deterministic content-addressed side-effect-free Scene Session draft, presented through the distinctive Chinese Scene Change Spectrum interface with dead approval UI removed and the long-term product goal resumed at M11.",
+  "evidence": [
+    "docs/evidence/M11_S1_SCENE_SESSION_SPECTRUM_2026-08-30.md",
+    "artifacts/goal/m11-s1-scene-change-spectrum.png",
+    "artifacts/goal/m11-s1-scene-change-spectrum-compiled.png"
+  ]
+}

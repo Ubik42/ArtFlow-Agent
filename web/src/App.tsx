@@ -504,6 +504,33 @@ type AgentProjection = {
   };
   comparison_manifest: ComparisonManifest | null;
 };
+type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
+type SceneSpectrumNode = {
+  domain: SceneDomain;
+  label: string;
+  readiness: "ready" | "guarded" | "experimental";
+  action: string;
+  reason: string;
+  verification: string;
+  depends_on: SceneDomain[];
+};
+type SceneSessionDraft = {
+  schema_id: "artflow-scene-session-draft/1";
+  draft_id: string;
+  draft_sha256: string;
+  run_id: string;
+  source_scene: string;
+  scene_package_sha256: string;
+  intent: string;
+  preserve: string[];
+  prohibit: string[];
+  nodes: SceneSpectrumNode[];
+  ready_domain_count: number;
+  guarded_domain_count: number;
+  experimental_domain_count: number;
+  can_stage: boolean;
+  next_action: string;
+};
 type LegacyRun = {
   run_id: string;
   status:
@@ -925,6 +952,7 @@ export default function App() {
             {stageLabel(context.stage)}
           </div>
         </section>
+        {agent && <SceneChangeSpectrum agent={agent} />}
         {agent && <ScenePipelineOverview agent={agent} />}
         {loading ? (
           <LoadingStage />
@@ -940,7 +968,7 @@ export default function App() {
       </main>
       <aside className="evidence-inspector">
         <div className="inspector-head">
-          <span>决策与证据</span>
+          <span>场景检查器</span>
           <Fingerprint size={16} />
         </div>
         {agent ? (
@@ -972,15 +1000,15 @@ export default function App() {
           <div>
             <strong>
               {agent
-                ? "Reducer 状态为唯一事实"
+                ? "场景运行已同步"
                 : legacy
                   ? "历史工作流仍可读取"
                   : "Scene Lab 已就绪"}
             </strong>
             <span>
               {agent
-                ? `${agent.timeline.length} 个持久事件 · ${agent.status.artifact_ids.length} 个内容寻址制品`
-                : "界面不显示也不存储隐藏思维链。"}
+                ? `${agent.timeline.length} 个执行事件 · ${agent.status.artifact_ids.length} 个关联制品`
+                : "选择场景后开始编排。"}
             </span>
           </div>
         </div>
@@ -1024,6 +1052,162 @@ export default function App() {
         ) : null}
       </footer>
     </div>
+  );
+}
+
+const SCENE_DOMAIN_OPTIONS: Array<{
+  domain: SceneDomain;
+  label: string;
+  index: string;
+}> = [
+  { domain: "image", label: "视觉参考", index: "01" },
+  { domain: "material", label: "材质", index: "02" },
+  { domain: "asset", label: "三维资产", index: "03" },
+  { domain: "pcg", label: "空间布局", index: "04" },
+  { domain: "lighting", label: "灯光", index: "05" },
+];
+
+function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
+  const initialIntent = agent.scene?.art_goal ?? "";
+  const [intent, setIntent] = useState(initialIntent);
+  const [domains, setDomains] = useState<SceneDomain[]>([
+    "image",
+    "material",
+    "asset",
+    "pcg",
+    "lighting",
+  ]);
+  const [draft, setDraft] = useState<SceneSessionDraft | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const compileDraft = useCallback(async () => {
+    if (intent.trim().length < 10 || domains.length === 0) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<SceneSessionDraft>(
+        `/api/agent/runs/${agent.run_id}/scene-session/draft`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ intent: intent.trim(), domains }),
+        },
+      );
+      setDraft(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, domains, intent]);
+
+  useEffect(() => {
+    setIntent(initialIntent);
+    setDraft(null);
+    setError(null);
+  }, [agent.run_id, initialIntent]);
+
+  const toggleDomain = (domain: SceneDomain) => {
+    setDraft(null);
+    setDomains((current) =>
+      current.includes(domain)
+        ? current.filter((item) => item !== domain)
+        : SCENE_DOMAIN_OPTIONS.filter(
+            (item) => item.domain === domain || current.includes(item.domain),
+          ).map((item) => item.domain),
+    );
+  };
+  const nodes = new Map(draft?.nodes.map((node) => [node.domain, node]));
+
+  return (
+    <section className="scene-spectrum" aria-label="场景变更谱">
+      <header className="spectrum-head">
+        <div>
+          <span><Aperture size={14} /> 场景变更谱</span>
+          <h2>先定变化范围，再进入候选关卡</h2>
+        </div>
+        <button
+          type="button"
+          disabled={busy || intent.trim().length < 10 || domains.length === 0}
+          onClick={() => void compileDraft()}
+        >
+          <ScanLine size={15} />
+          {busy ? "正在编译…" : draft ? "重新编译" : "编译场景草案"}
+        </button>
+      </header>
+      <div className="spectrum-intent">
+        <label>
+          <span>本轮美术意图</span>
+          <textarea
+            value={intent}
+            maxLength={600}
+            onChange={(event) => {
+              setIntent(event.target.value);
+              setDraft(null);
+            }}
+            aria-label="本轮美术意图"
+          />
+        </label>
+        <div className="spectrum-constraints">
+          <span>保持</span>
+          <strong>{agent.scene?.preserve.slice(0, 2).join(" · ") || "按场景包约束"}</strong>
+          <small>{intent.trim().length} / 600 字</small>
+        </div>
+      </div>
+      <div className="spectrum-track" role="list" aria-label="可编排场景领域">
+        {SCENE_DOMAIN_OPTIONS.map((option, index) => {
+          const selected = domains.includes(option.domain);
+          const node = nodes.get(option.domain);
+          const readiness = node?.readiness ?? "uncompiled";
+          return (
+            <button
+              type="button"
+              role="listitem"
+              key={option.domain}
+              className={`spectrum-node ${selected ? "selected" : ""} state-${readiness}`}
+              onClick={() => toggleDomain(option.domain)}
+              aria-pressed={selected}
+            >
+              <span className="spectrum-index">{option.index}</span>
+              <i style={{ height: `${30 + index * 7}px` }} />
+              <strong>{option.label}</strong>
+              <small>
+                {!selected
+                  ? "本轮不修改"
+                  : node?.readiness === "ready"
+                    ? "可以进入计划"
+                    : node?.readiness === "experimental"
+                      ? "实验候选"
+                      : node?.readiness === "guarded"
+                        ? "需要补齐事实"
+                        : "等待编译"}
+              </small>
+            </button>
+          );
+        })}
+      </div>
+      <footer className={`spectrum-result ${draft ? "visible" : ""}`}>
+        {error ? (
+          <span className="spectrum-error"><CircleAlert size={14} /> {error}</span>
+        ) : draft ? (
+          <>
+            <div>
+              <span>{draft.can_stage ? <Check size={14} /> : <LockKeyhole size={14} />}</span>
+              <strong>{draft.next_action}</strong>
+            </div>
+            <div className="spectrum-counts">
+              <span>{draft.ready_domain_count} 项可执行</span>
+              <span>{draft.guarded_domain_count} 项待补齐</span>
+              <span>{draft.experimental_domain_count} 项实验能力</span>
+            </div>
+            <code>{shortId(draft.draft_sha256)}</code>
+          </>
+        ) : (
+          <span>选择本轮会改变的领域，编译后查看执行准备度与依赖。</span>
+        )}
+      </footer>
+    </section>
   );
 }
 
@@ -1137,14 +1321,14 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       </nav>
       <div className="pipeline-story">
         <div>
-          <span className="pipeline-tag"><Workflow size={14} /> 当前作品集主线</span>
+          <span className="pipeline-tag"><Workflow size={14} /> 当前场景路线</span>
           <h2>{activeCase.title}</h2>
           <p>{activeCase.description}</p>
         </div>
         <div className="pipeline-run-facts">
-          <span><i className="live-dot" /> 当前运行</span>
-          <strong>{agent.timeline.length} 个持久事件</strong>
-          <small>隐藏思维链不进入界面或回执</small>
+          <span><i className="live-dot" /> 运行追踪</span>
+          <strong>{agent.timeline.length} 个场景事件</strong>
+          <small>输入、变更与回执已绑定</small>
         </div>
       </div>
 
@@ -1353,7 +1537,7 @@ function MatchedExecutionCanvas({
             >
               <Sparkles size={15} />
               <span>
-                <small>路线 B · Codex 内置</small>
+                <small>路线 B · GPT Image 2</small>
                 <strong>GPT Image 2</strong>
                 <code>{shortId(codex.receipt.artifact.sha256)}</code>
               </span>
@@ -2189,9 +2373,9 @@ function Timeline({ items }: { items: AgentProjection["timeline"] }) {
     <section className="event-river">
       <div className="river-head">
         <span>
-          <Workflow size={14} /> AGENT 事件脉冲
+          <Workflow size={14} /> 场景演进记录
         </span>
-        <small>来自事件重放，不是界面推测</small>
+        <small>按实际执行顺序记录</small>
       </div>
       <div className="event-track">
         {items.map((item) => (
