@@ -41,6 +41,11 @@ from .recipes import RecipeCatalog
 from .review import create_contact_sheet
 from .run_store import RunStateError, RunStore
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
+from .scene_candidate_work import (
+    SceneCandidateWorkClaimRequest,
+    SceneCandidateWorkProgressRequest,
+    compile_scene_candidate_work,
+)
 from .scene_session import (
     SceneSessionDraft,
     SceneSessionDraftRequest,
@@ -49,6 +54,7 @@ from .scene_session import (
     SceneStageRequest,
     SceneStageRequestInput,
     build_scene_session_handshake_receipt,
+    compile_scene_candidate_plan,
     compile_scene_session_draft,
     compile_scene_stage_request,
 )
@@ -63,6 +69,16 @@ from .scene_variant_lifecycle import (
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+
+def _require_loopback(request: Request, detail: str) -> None:
+    client_host = request.client.host if request.client is not None else ""
+    try:
+        if ipaddress.ip_address(client_host).is_loopback:
+            return
+    except ValueError:
+        pass
+    raise HTTPException(status_code=403, detail=detail)
 
 
 class ExecuteRequest(BaseModel):
@@ -336,6 +352,80 @@ def create_app(
             )
             return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-candidate-work/queue",
+        response_model=AgentRunProjection,
+    )
+    def queue_scene_candidate_work(run_id: str):
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_candidate_work is not None:
+                return project_agent_run(agent_store, run_id)
+            session = state.scene_sessions[-1] if state.scene_sessions else None
+            if session is None:
+                raise AgentRuntimeError("candidate work requires a persisted Scene Session")
+            stage_request = compile_scene_stage_request(
+                state,
+                expected_draft_sha256=session.draft.draft_sha256,
+            )
+            candidate_plan = compile_scene_candidate_plan(
+                state,
+                expected_stage_request_sha256=stage_request.request_sha256,
+            )
+            definition = compile_scene_candidate_work(
+                run_id,
+                session.session_sha256,
+                stage_request,
+                candidate_plan,
+            )
+            agent_store.queue_scene_candidate_work(run_id, definition)
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-candidate-work/claim",
+        response_model=AgentRunProjection,
+    )
+    def claim_scene_candidate_work(
+        run_id: str,
+        payload: SceneCandidateWorkClaimRequest,
+        request: Request,
+    ):
+        _require_loopback(request, "Unreal 候选工作项仅允许本机领取")
+        try:
+            state = agent_store.load(run_id)
+            work = state.scene_candidate_work
+            if work is None or work.definition.session_sha256 != payload.session_sha256:
+                raise AgentRuntimeError("candidate work claim references another Scene Session")
+            agent_store.claim_scene_candidate_work(
+                run_id,
+                work_sha256=payload.work_sha256,
+                worker_id=payload.worker_id,
+            )
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-candidate-work/progress",
+        response_model=AgentRunProjection,
+    )
+    def progress_scene_candidate_work(
+        run_id: str,
+        payload: SceneCandidateWorkProgressRequest,
+        request: Request,
+    ):
+        _require_loopback(request, "Unreal 候选进度仅允许本机回传")
+        try:
+            agent_store.progress_scene_candidate_work(run_id, payload)
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

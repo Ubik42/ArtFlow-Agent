@@ -27,6 +27,7 @@ from .negative_control import NegativeControlRecord
 from .production_memory import MemoryRecord, MemoryScorecard
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
+from .scene_candidate_work import SceneCandidateWorkState
 from .scene_session import SceneSession
 from .scene_variant_review import SceneVariantLineage
 from .tribunal import TribunalReport
@@ -96,6 +97,7 @@ class AgentRunProjection(BaseModel):
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
+    scene_candidate_work: SceneCandidateWorkState | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -122,6 +124,7 @@ class AgentStreamSnapshot(BaseModel):
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
+    scene_candidate_work: SceneCandidateWorkState | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -258,6 +261,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
             else None
         ),
         scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
+        scene_candidate_work=state.scene_candidate_work,
         scene_variant_lineage=(
             state.scene_variant_review.lineage if state.scene_variant_review else None
         ),
@@ -305,6 +309,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
                 else None
             ),
             scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
+            scene_candidate_work=state.scene_candidate_work,
             scene_variant_lineage=(
                 state.scene_variant_review.lineage if state.scene_variant_review else None
             ),
@@ -437,6 +442,21 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
         "scene_session_started": (
             "Scene Session started",
             "Intent, selected domains and scene identity entered the durable ledger",
+            "active",
+        ),
+        "scene_candidate_work_queued": (
+            "候选工作项已进入 Unreal 队列",
+            "当前 Session、Stage Request 与 Candidate Plan 已按内容身份封存",
+            "active",
+        ),
+        "scene_candidate_work_claimed": (
+            "Unreal 已领取候选工作项",
+            "单一编辑器写入者取得本轮候选执行权",
+            "active",
+        ),
+        "scene_candidate_work_progressed": (
+            "Unreal 候选执行状态已更新",
+            "执行、对账与结果继续写入同一 Scene Session 事件流",
             "active",
         ),
         "scene_candidate_evaluated": (

@@ -34,6 +34,11 @@ from .production_memory import (
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
 from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
+from .scene_candidate_work import (
+    SceneCandidateWorkDefinition,
+    SceneCandidateWorkProgressRequest,
+    SceneCandidateWorkState,
+)
 from .scene_session import (
     SceneSession,
     SceneSessionDraft,
@@ -86,6 +91,9 @@ AgentEventType = Literal[
     "comparison_authorized",
     "comparison_manifest_recorded",
     "scene_session_started",
+    "scene_candidate_work_queued",
+    "scene_candidate_work_claimed",
+    "scene_candidate_work_progressed",
     "scene_candidate_evaluated",
     "scene_candidate_adopted",
     "scene_variant_published",
@@ -218,6 +226,7 @@ class AgentRunState(BaseModel):
     comparison_authorization: dict[str, Any] | None = None
     comparison_manifest: dict[str, Any] | None = None
     scene_sessions: list[SceneSession] = Field(default_factory=list)
+    scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
     scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_publication: SceneVariantPublishRecord | None = None
@@ -395,6 +404,19 @@ class _SceneSessionStarted(BaseModel):
     session: SceneSession
 
 
+class _SceneCandidateWorkQueued(BaseModel):
+    definition: SceneCandidateWorkDefinition
+
+
+class _SceneCandidateWorkClaimed(BaseModel):
+    work_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    worker_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$")
+
+
+class _SceneCandidateWorkProgressed(BaseModel):
+    progress: SceneCandidateWorkProgressRequest
+
+
 class _SceneCandidateEvaluated(BaseModel):
     record: SceneCandidateEvaluationRecord
 
@@ -518,6 +540,50 @@ class AgentEventStore:
             "scene_candidate_evaluated",
             _SceneCandidateEvaluated(record=record).model_dump(mode="json"),
             idempotency_key=f"scene_candidate_evaluated:{action_id}",
+        )
+        return self.load(run_id)
+
+    def queue_scene_candidate_work(
+        self,
+        run_id: str,
+        definition: SceneCandidateWorkDefinition,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_work_queued",
+            _SceneCandidateWorkQueued(definition=definition).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_work_queued:{definition.work_id}",
+        )
+        return self.load(run_id)
+
+    def claim_scene_candidate_work(
+        self,
+        run_id: str,
+        *,
+        work_sha256: str,
+        worker_id: str,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_work_claimed",
+            _SceneCandidateWorkClaimed(
+                work_sha256=work_sha256,
+                worker_id=worker_id,
+            ).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_work_claimed:{work_sha256}",
+        )
+        return self.load(run_id)
+
+    def progress_scene_candidate_work(
+        self,
+        run_id: str,
+        progress: SceneCandidateWorkProgressRequest,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_work_progressed",
+            _SceneCandidateWorkProgressed(progress=progress).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_work_progressed:{progress.action_id}",
         )
         return self.load(run_id)
 
@@ -1499,6 +1565,57 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             if any(item.session_id == session.session_id for item in state.scene_sessions):
                 raise AgentRuntimeError("scene_session_started duplicates a persisted session")
             state.scene_sessions.append(session)
+            state.scene_candidate_work = None
+        elif event.event_type == "scene_candidate_work_queued":
+            if state.scene is None or not state.scene_sessions:
+                raise AgentRuntimeError("candidate work requires a current Scene Session")
+            if state.scene_candidate_work is not None:
+                raise AgentRuntimeError("current Scene Session already has candidate work")
+            definition = _SceneCandidateWorkQueued.model_validate(event.data).definition
+            session = state.scene_sessions[-1]
+            if (
+                definition.run_id != state.run_id
+                or definition.session_sha256 != session.session_sha256
+                or definition.stage_request.scene_package_sha256
+                != state.scene.archive_sha256
+                or definition.candidate_plan.basis_sequence != event.sequence - 1
+            ):
+                raise AgentRuntimeError("candidate work is stale or references another Session")
+            state.scene_candidate_work = SceneCandidateWorkState(definition=definition)
+        elif event.event_type == "scene_candidate_work_claimed":
+            work = state.scene_candidate_work
+            if work is None:
+                raise AgentRuntimeError("candidate work claim requires queued work")
+            claim = _SceneCandidateWorkClaimed.model_validate(event.data)
+            if work.status != "queued":
+                raise AgentRuntimeError("candidate work is no longer available")
+            if claim.work_sha256 != work.definition.work_sha256:
+                raise AgentRuntimeError("candidate work claim references another work item")
+            work.status = "claimed"
+            work.worker_id = claim.worker_id
+            work.message = "Unreal 已领取候选工作项"
+        elif event.event_type == "scene_candidate_work_progressed":
+            work = state.scene_candidate_work
+            if work is None or work.worker_id is None:
+                raise AgentRuntimeError("candidate work progress requires a claimed work item")
+            progress = _SceneCandidateWorkProgressed.model_validate(event.data).progress
+            if (
+                progress.work_sha256 != work.definition.work_sha256
+                or progress.worker_id != work.worker_id
+            ):
+                raise AgentRuntimeError("candidate work progress references another work item or worker")
+            allowed = {
+                "claimed": {"executing", "failed"},
+                "executing": {"reconciling", "succeeded", "failed"},
+                "reconciling": {"succeeded", "failed"},
+            }
+            if progress.status not in allowed.get(work.status, set()):
+                raise AgentRuntimeError(
+                    f"candidate work cannot move from {work.status} to {progress.status}"
+                )
+            work.status = progress.status
+            work.outcome_sha256 = progress.outcome_sha256
+            work.message = progress.message
         elif event.event_type == "scene_candidate_evaluated":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("scene candidate evaluation requires a Scene Session")

@@ -507,6 +507,7 @@ type AgentProjection = {
   };
   comparison_manifest: ComparisonManifest | null;
   scene_session: SceneSession | null;
+  scene_candidate_work: SceneCandidateWorkState | null;
   scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
@@ -571,6 +572,25 @@ type SceneStageRequest = {
     verification: string;
     depends_on: SceneDomain[];
   }>;
+};
+type SceneCandidateWorkState = {
+  definition: {
+    schema_id: "artflow-scene-candidate-work/1";
+    work_id: string;
+    work_sha256: string;
+    run_id: string;
+    session_sha256: string;
+    stage_request: SceneStageRequest;
+    candidate_plan: {
+      plan_id: string;
+      plan_sha256: string;
+      operations: Array<{ kind: string; operation_id: string }>;
+    };
+  };
+  status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
+  worker_id: string | null;
+  outcome_sha256: string | null;
+  message: string | null;
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
@@ -1257,6 +1277,33 @@ function SceneChangeSpectrum({
     }
   }, [agent.run_id, draft, isPersisted]);
 
+  const queueCandidateWork = useCallback(async () => {
+    if (!stageRequest) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-candidate-work/queue`,
+        { method: "POST" },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, onAgentChange, stageRequest]);
+
+  const work = agent.scene_candidate_work;
+  const workLabels: Record<SceneCandidateWorkState["status"], string> = {
+    queued: "等待 Unreal 领取",
+    claimed: "Unreal 已领取",
+    executing: "候选关卡正在生成",
+    reconciling: "正在核对引擎结果",
+    succeeded: "候选关卡已经就绪",
+    failed: "执行停止，可按提示恢复",
+  };
+
   return (
     <section className="scene-spectrum" aria-label="场景变更谱">
       <header className="spectrum-head">
@@ -1334,7 +1381,9 @@ function SceneChangeSpectrum({
             <div>
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
-                {stageRequest
+                {work
+                  ? workLabels[work.status]
+                  : stageRequest
                   ? "候选关卡请求已封存，尚未交给 Unreal 执行"
                   : isPersisted
                     ? "Scene Session 已进入持久账本"
@@ -1346,8 +1395,8 @@ function SceneChangeSpectrum({
               <span>{draft.guarded_domain_count} 项待补齐</span>
               <span>{draft.experimental_domain_count} 项实验能力</span>
             </div>
-            <code title={stageRequest?.candidate_destination}>
-              {shortId(stageRequest?.request_sha256 ?? draft.draft_sha256)}
+            <code title={work?.definition.work_id ?? stageRequest?.candidate_destination}>
+              {shortId(work?.definition.work_sha256 ?? stageRequest?.request_sha256 ?? draft.draft_sha256)}
             </code>
             <div className="spectrum-actions">
               {!isPersisted ? (
@@ -1358,8 +1407,16 @@ function SceneChangeSpectrum({
                 <button type="button" disabled={busy} onClick={() => void createStageRequest()}>
                   <Layers3 size={13} /> 生成候选请求
                 </button>
-              ) : stageRequest ? (
-                <span className="stage-request-path">{stageRequest.candidate_destination}</span>
+              ) : stageRequest && !work ? (
+                <button type="button" disabled={busy} onClick={() => void queueCandidateWork()}>
+                  <Layers3 size={13} /> 交给 Unreal 执行
+                </button>
+              ) : work ? (
+                <div className={`candidate-work-pulse state-${work.status}`}>
+                  <span />
+                  <b>{workLabels[work.status]}</b>
+                  <small>{work.worker_id ? `写入者 ${work.worker_id}` : "已锁定当前 Session 与候选计划"}</small>
+                </div>
               ) : null}
             </div>
           </>
