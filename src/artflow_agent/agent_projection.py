@@ -30,6 +30,7 @@ from .production_memory import MemoryRecord, MemoryScorecard
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
 from .scene_candidate_work import SceneCandidateWorkState
+from .scene_correction_work import SceneCorrectionWorkState
 from .scene_session import SceneSession
 from .scene_variant_review import SceneVariantLineage
 from .tribunal import TribunalReport
@@ -102,6 +103,7 @@ class AgentRunProjection(BaseModel):
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
+    scene_correction_work: SceneCorrectionWorkState | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -131,6 +133,7 @@ class AgentStreamSnapshot(BaseModel):
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
+    scene_correction_work: SceneCorrectionWorkState | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -270,6 +273,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
         scene_candidate_work=state.scene_candidate_work,
         scene_candidate_intake=state.scene_candidate_intake,
         scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
+        scene_correction_work=state.scene_correction_work,
         scene_variant_lineage=(
             state.scene_variant_review.lineage if state.scene_variant_review else None
         ),
@@ -320,6 +324,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
             scene_candidate_work=state.scene_candidate_work,
             scene_candidate_intake=state.scene_candidate_intake,
             scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
+            scene_correction_work=state.scene_correction_work,
             scene_variant_lineage=(
                 state.scene_variant_review.lineage if state.scene_variant_review else None
             ),
@@ -478,6 +483,21 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "当前候选已完成视觉裁决",
             "独立视觉观察与技术审查已按硬失败优先级聚合为领域结果",
             "warning",
+        ),
+        "scene_correction_work_queued": (
+            "灯光纠正工作已封存",
+            "通过域证据保持不变，仅 lighting 参数进入 Unreal 队列",
+            "active",
+        ),
+        "scene_correction_work_claimed": (
+            "Unreal 已领取灯光纠正",
+            "单一写入者取得当前候选的 lighting 修正权",
+            "active",
+        ),
+        "scene_correction_work_progressed": (
+            "灯光纠正状态已更新",
+            "执行、对账与新回渲继续写入当前 Scene Session",
+            "active",
         ),
         "scene_candidate_evaluated": (
             "场景候选已评价",

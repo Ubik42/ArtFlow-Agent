@@ -53,6 +53,11 @@ from .scene_candidate_work import (
     SceneCandidateWorkProgressRequest,
     compile_scene_candidate_work,
 )
+from .scene_correction_work import (
+    SceneCorrectionWorkClaimRequest,
+    SceneCorrectionWorkProgressRequest,
+    compile_current_correction_work,
+)
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
     SceneSessionDraft,
@@ -496,6 +501,64 @@ def create_app(
             )
             return FileResponse(path, media_type="image/png")
         except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/queue",
+        response_model=AgentRunProjection,
+    )
+    def queue_scene_correction_work(run_id: str):
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_correction_work is not None:
+                return project_agent_run(agent_store, run_id)
+            definition = compile_current_correction_work(state)
+            agent_store.queue_scene_correction_work(run_id, definition)
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/claim",
+        response_model=AgentRunProjection,
+    )
+    def claim_scene_correction_work(
+        run_id: str,
+        payload: SceneCorrectionWorkClaimRequest,
+        request: Request,
+    ):
+        _require_loopback(request, "Unreal 灯光纠正工作仅允许本机领取")
+        try:
+            state = agent_store.load(run_id)
+            work = state.scene_correction_work
+            if work is None or work.definition.session_sha256 != payload.session_sha256:
+                raise AgentRuntimeError("correction claim references another Scene Session")
+            agent_store.claim_scene_correction_work(
+                run_id,
+                work_sha256=payload.work_sha256,
+                worker_id=payload.worker_id,
+            )
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/progress",
+        response_model=AgentRunProjection,
+    )
+    def progress_scene_correction_work(
+        run_id: str,
+        payload: SceneCorrectionWorkProgressRequest,
+        request: Request,
+    ):
+        _require_loopback(request, "Unreal 灯光纠正进度仅允许本机回传")
+        try:
+            agent_store.progress_scene_correction_work(run_id, payload)
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

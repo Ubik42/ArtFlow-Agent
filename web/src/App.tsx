@@ -510,6 +510,7 @@ type AgentProjection = {
   scene_candidate_work: SceneCandidateWorkState | null;
   scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
   scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
+  scene_correction_work: SceneCorrectionWorkState | null;
   scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
@@ -639,6 +640,25 @@ type CurrentCandidateDomainVerdictRecord = {
       reason: string;
     }>;
   };
+};
+type SceneCorrectionWorkState = {
+  definition: {
+    work_id: string;
+    work_sha256: string;
+    session_sha256: string;
+    correction_plan: {
+      correction_sha256: string;
+      failed_domains: SceneDomain[];
+      rerun_domains: SceneDomain[];
+      preserved_evidence_sha256s: Partial<Record<SceneDomain, string>>;
+      lighting_intensity: number;
+      lighting_temperature_kelvin: number;
+    };
+  };
+  status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
+  worker_id: string | null;
+  outcome_sha256: string | null;
+  message: string | null;
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
@@ -1358,9 +1378,26 @@ function SceneChangeSpectrum({
     }
   }, [agent.run_id, onAgentChange]);
 
+  const queueCorrectionWork = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-correction-work/queue`,
+        { method: "POST" },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, onAgentChange]);
+
   const work = agent.scene_candidate_work;
   const intake = agent.scene_candidate_intake;
   const visualVerdict = agent.scene_candidate_visual_verdict;
+  const correctionWork = agent.scene_correction_work;
   const workLabels: Record<SceneCandidateWorkState["status"], string> = {
     queued: "等待 Unreal 领取",
     claimed: "Unreal 已领取",
@@ -1447,7 +1484,11 @@ function SceneChangeSpectrum({
             <div>
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
-                {visualVerdict
+                {correctionWork
+                  ? correctionWork.status === "succeeded"
+                    ? "灯光纠正完成，等待同机位复评"
+                    : `灯光纠正：${workLabels[correctionWork.status]}`
+                  : visualVerdict
                   ? visualVerdict.domain_evaluation.status === "accepted"
                     ? "当前候选已通过技术与视觉评价"
                     : `只需修正：${visualVerdict.domain_evaluation.failed_domains.join("、")}`
@@ -1474,7 +1515,17 @@ function SceneChangeSpectrum({
             </code>
             <div className="spectrum-actions">
               {work ? (
-                visualVerdict ? (
+                correctionWork ? (
+                  <div className={`candidate-work-pulse state-${correctionWork.status}`}>
+                    <span />
+                    <b>{correctionWork.status === "succeeded" ? "灯光纠正回渲已就绪" : `只重做 lighting · ${workLabels[correctionWork.status]}`}</b>
+                    <small>{correctionWork.worker_id ? `写入者 ${correctionWork.worker_id}` : `保留 ${Object.keys(correctionWork.definition.correction_plan.preserved_evidence_sha256s).join("、")}`}</small>
+                  </div>
+                ) : visualVerdict?.domain_evaluation.status === "correction_required" ? (
+                  <button type="button" disabled={busy} onClick={() => void queueCorrectionWork()}>
+                    <ScanLine size={13} /> 封存灯光补丁
+                  </button>
+                ) : visualVerdict ? (
                   <div className={`candidate-work-pulse state-${visualVerdict.domain_evaluation.status === "accepted" ? "succeeded" : "failed"}`}>
                     <span />
                     <b>{visualVerdict.domain_evaluation.status === "accepted" ? "候选评价通过" : "视觉方向需要单域修正"}</b>

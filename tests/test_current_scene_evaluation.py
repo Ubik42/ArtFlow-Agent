@@ -228,3 +228,78 @@ def test_visual_observation_cannot_override_rejected_technical_intake(
     response = client.post(f"{base}/visual-observation", json=payload)
     assert response.status_code == 409
     assert "rejected technical intake" in response.json()["detail"]
+
+
+def test_lighting_only_correction_work_preserves_passed_evidence_and_replays(
+    tmp_path: Path,
+) -> None:
+    client, database, _ = _succeeded_work(tmp_path)
+    candidate_base = f"/api/agent/runs/{RUN_ID}/scene-candidate-work"
+    intake = client.post(f"{candidate_base}/evaluate").json()[
+        "scene_candidate_intake"
+    ]
+    observation = _lighting_failure_observation(intake)
+    verdict_response = client.post(
+        f"{candidate_base}/visual-observation", json=observation
+    )
+    assert verdict_response.status_code == 200
+    verdict = verdict_response.json()["scene_candidate_visual_verdict"]
+
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    queued = client.post(f"{base}/queue")
+    replay = client.post(f"{base}/queue")
+    assert queued.status_code == replay.status_code == 200
+    work = queued.json()["scene_correction_work"]
+    assert work == replay.json()["scene_correction_work"]
+    plan = work["definition"]["correction_plan"]
+    assert plan["failed_domains"] == plan["rerun_domains"] == ["lighting"]
+    assert set(plan["preserved_evidence_sha256s"]) == {"image", "pcg"}
+    findings = {
+        item["domain"]: item["evidence_sha256"]
+        for item in verdict["domain_evaluation"]["findings"]
+    }
+    assert plan["preserved_evidence_sha256s"] == {
+        "image": findings["image"],
+        "pcg": findings["pcg"],
+    }
+    assert plan["lighting_intensity"] == 5.5
+    assert plan["lighting_temperature_kelvin"] == 4200.0
+
+    definition = work["definition"]
+    claim = {
+        "schema_id": "artflow-scene-correction-claim/1",
+        "work_sha256": definition["work_sha256"],
+        "session_sha256": definition["session_sha256"],
+        "worker_id": "ue-editor-correction",
+    }
+    assert client.post(f"{base}/claim", json=claim).status_code == 200
+    assert client.post(
+        f"{base}/claim", json={**claim, "worker_id": "ue-editor-other"}
+    ).status_code == 409
+    for status in ("executing", "reconciling"):
+        assert client.post(
+            f"{base}/progress",
+            json={
+                "schema_id": "artflow-scene-correction-progress/1",
+                "work_sha256": definition["work_sha256"],
+                "worker_id": "ue-editor-correction",
+                "status": status,
+                "action_id": f"m20-correction-{status}",
+            },
+        ).status_code == 200
+    succeeded = client.post(
+        f"{base}/progress",
+        json={
+            "schema_id": "artflow-scene-correction-progress/1",
+            "work_sha256": definition["work_sha256"],
+            "worker_id": "ue-editor-correction",
+            "status": "succeeded",
+            "action_id": "m20-correction-succeeded",
+            "outcome_sha256": "8" * 64,
+        },
+    )
+    assert succeeded.status_code == 200
+    restored = AgentEventStore(database).load(RUN_ID).scene_correction_work
+    assert restored is not None
+    assert restored.status == "succeeded"
+    assert restored.outcome_sha256 == "8" * 64

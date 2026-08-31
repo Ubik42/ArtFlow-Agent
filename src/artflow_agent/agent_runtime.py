@@ -40,6 +40,11 @@ from .scene_candidate_work import (
     SceneCandidateWorkProgressRequest,
     SceneCandidateWorkState,
 )
+from .scene_correction_work import (
+    SceneCorrectionWorkDefinition,
+    SceneCorrectionWorkProgressRequest,
+    SceneCorrectionWorkState,
+)
 from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
 from .scene_session import (
     SceneSession,
@@ -98,6 +103,9 @@ AgentEventType = Literal[
     "scene_candidate_work_progressed",
     "scene_candidate_intake_evaluated",
     "scene_candidate_visual_evaluated",
+    "scene_correction_work_queued",
+    "scene_correction_work_claimed",
+    "scene_correction_work_progressed",
     "scene_candidate_evaluated",
     "scene_candidate_adopted",
     "scene_variant_published",
@@ -233,6 +241,7 @@ class AgentRunState(BaseModel):
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
+    scene_correction_work: SceneCorrectionWorkState | None = None
     scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
     scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_publication: SceneVariantPublishRecord | None = None
@@ -435,6 +444,19 @@ class _SceneCandidateVisualEvaluated(BaseModel):
     record: CurrentCandidateDomainVerdictRecord
 
 
+class _SceneCorrectionWorkQueued(BaseModel):
+    definition: SceneCorrectionWorkDefinition
+
+
+class _SceneCorrectionWorkClaimed(BaseModel):
+    work_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    worker_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$")
+
+
+class _SceneCorrectionWorkProgressed(BaseModel):
+    progress: SceneCorrectionWorkProgressRequest
+
+
 class _SceneCandidateAdopted(BaseModel):
     record: SceneCandidateAdoptionRecord
 
@@ -584,6 +606,41 @@ class AgentEventStore:
             "scene_candidate_visual_evaluated",
             _SceneCandidateVisualEvaluated(record=record).model_dump(mode="json"),
             idempotency_key=f"scene_candidate_visual_evaluated:{action_id}",
+        )
+        return self.load(run_id)
+
+    def queue_scene_correction_work(
+        self, run_id: str, definition: SceneCorrectionWorkDefinition
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_correction_work_queued",
+            _SceneCorrectionWorkQueued(definition=definition).model_dump(mode="json"),
+            idempotency_key=f"scene_correction_work_queued:{definition.work_id}",
+        )
+        return self.load(run_id)
+
+    def claim_scene_correction_work(
+        self, run_id: str, *, work_sha256: str, worker_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_correction_work_claimed",
+            _SceneCorrectionWorkClaimed(
+                work_sha256=work_sha256, worker_id=worker_id
+            ).model_dump(mode="json"),
+            idempotency_key=f"scene_correction_work_claimed:{work_sha256}",
+        )
+        return self.load(run_id)
+
+    def progress_scene_correction_work(
+        self, run_id: str, progress: SceneCorrectionWorkProgressRequest
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_correction_work_progressed",
+            _SceneCorrectionWorkProgressed(progress=progress).model_dump(mode="json"),
+            idempotency_key=f"scene_correction_work_progressed:{progress.action_id}",
         )
         return self.load(run_id)
 
@@ -1612,6 +1669,7 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             state.scene_candidate_work = None
             state.scene_candidate_intake = None
             state.scene_candidate_visual_verdict = None
+            state.scene_correction_work = None
         elif event.event_type == "scene_candidate_work_queued":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("candidate work requires a current Scene Session")
@@ -1701,6 +1759,56 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             ):
                 raise AgentRuntimeError("visual verdict references another current candidate")
             state.scene_candidate_visual_verdict = record
+        elif event.event_type == "scene_correction_work_queued":
+            verdict = state.scene_candidate_visual_verdict
+            parent = state.scene_candidate_work
+            if verdict is None or parent is None or parent.outcome_sha256 is None:
+                raise AgentRuntimeError("correction work requires current evaluated candidate")
+            if state.scene_correction_work is not None:
+                raise AgentRuntimeError("current Scene Session already has correction work")
+            definition = _SceneCorrectionWorkQueued.model_validate(event.data).definition
+            if (
+                definition.run_id != state.run_id
+                or definition.session_sha256 != state.scene_sessions[-1].session_sha256
+                or definition.parent_work_sha256 != parent.definition.work_sha256
+                or definition.parent_outcome_sha256 != parent.outcome_sha256
+                or definition.evaluation_sha256
+                != verdict.domain_evaluation.evaluation_sha256
+            ):
+                raise AgentRuntimeError("correction work references another current candidate")
+            state.scene_correction_work = SceneCorrectionWorkState(definition=definition)
+        elif event.event_type == "scene_correction_work_claimed":
+            work = state.scene_correction_work
+            if work is None or work.status != "queued":
+                raise AgentRuntimeError("correction work is no longer available")
+            claim = _SceneCorrectionWorkClaimed.model_validate(event.data)
+            if claim.work_sha256 != work.definition.work_sha256:
+                raise AgentRuntimeError("correction claim references another work item")
+            work.status = "claimed"
+            work.worker_id = claim.worker_id
+            work.message = "Unreal 已领取灯光纠正工作项"
+        elif event.event_type == "scene_correction_work_progressed":
+            work = state.scene_correction_work
+            if work is None or work.worker_id is None:
+                raise AgentRuntimeError("correction progress requires a claimed work item")
+            progress = _SceneCorrectionWorkProgressed.model_validate(event.data).progress
+            if (
+                progress.work_sha256 != work.definition.work_sha256
+                or progress.worker_id != work.worker_id
+            ):
+                raise AgentRuntimeError("correction progress references another work item or worker")
+            allowed = {
+                "claimed": {"executing", "failed"},
+                "executing": {"reconciling", "succeeded", "failed"},
+                "reconciling": {"succeeded", "failed"},
+            }
+            if progress.status not in allowed.get(work.status, set()):
+                raise AgentRuntimeError(
+                    f"correction work cannot move from {work.status} to {progress.status}"
+                )
+            work.status = progress.status
+            work.outcome_sha256 = progress.outcome_sha256
+            work.message = progress.message
         elif event.event_type == "scene_candidate_evaluated":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("scene candidate evaluation requires a Scene Session")
