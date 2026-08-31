@@ -39,6 +39,13 @@ Scene Session 建立和候选请求验证。成功回执保存到：
 作品集只读演示无需启动 Unreal，直接在仓库根目录运行 `scripts\start_showcase.ps1`。它读取冻结
 回执，不会把演示点击写回 UE 项目，也不需要任何账户登录态。
 
+## 审阅已发布场景版本
+
+`review_published_variant.py` 是固定的 Published 版本审阅入口。它读取
+`artflow-scene-variant-review-request/1`，要求编辑器当前打开的关卡、磁盘关卡哈希、采用决定和
+技术事实全部一致，然后输出 `artflow-scene-variant-review-receipt/1`。重复审阅会从项目 Saved
+目录对账，但仍重新检查当前关卡；脚本不保存源关卡，也不接受任意包路径或任意 Python 内容。
+
 ## 配置
 
 项目配置位于 `Config/ArtFlowSceneBridge.json`：

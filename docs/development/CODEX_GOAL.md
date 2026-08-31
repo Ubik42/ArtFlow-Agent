@@ -11,8 +11,9 @@ Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session �
 真实 UE 5.8 编辑器握手、请求派生候选关卡、注册 PCG/灯光工具执行、同机位回渲和新进程对账，
 并证明源关卡字节不变。M13 已完成 ComfyUI PBR 全管线案例和 GPT Image 2 视觉目标案例，后者
 真实验证了只纠正 lighting、四个成功域证据哈希不变。M15 已把通过复检的精确候选正式采用并
-发布为内容寻址 Unreal 场景变体，新进程对账没有重复关卡包。这些能力作为稳定底座保留，后续
-不重复造轮子，也不再以历史审批/证据控制台作为产品主叙事。
+发布为内容寻址 Unreal 场景变体，新进程对账没有重复关卡包。M16 已把纠正、采用、发布与 UE
+审阅组织成六段场景变体谱系，并完成桌面与窄屏实测。这些能力作为稳定底座保留，后续不重复
+造轮子，也不再以历史审批/证据控制台作为产品主叙事。
 
 ## 产品闭环
 
@@ -39,9 +40,12 @@ Unreal 当前场景
   启动，两条当前案例、Unreal 入口、流程截图、教学文档和 49 文件可验证发布包已对齐。
 - **M15 · Evidence-bound disposition and versioned Unreal publish（已完成）**：由编排器基于持久评价
   证据决定采用，把合格候选发布为版本化 Unreal 场景变体，并在新进程完成幂等对账。
-- **M16 · Scene Variant Ledger and embedded Unreal review（进行中）**：把评价、定向纠正、采用与
+- **M16 · Scene Variant Ledger and embedded Unreal review（已完成）**：把评价、定向纠正、采用与
   发布组织为“场景变体谱系”，并提供只指向精确 Published 版本的 Unreal 审阅入口。界面延续领域
   光谱，但加入空间化场景框、版本胶片和明确发布刻度，避免聊天框、节点画布和通用 AI 仪表盘。
+- **M17 · Durable live scene-variant lifecycle（进行中）**：把候选评价、纠正、采用、发布和审阅
+  纳入现有 append-only Scene Session 事件与 Reducer，使实时工作区直接投影当前运行的变体状态，
+  不再依赖冻结展示数据作为权威状态。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

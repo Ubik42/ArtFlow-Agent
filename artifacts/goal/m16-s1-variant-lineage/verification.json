@@ -1,0 +1,36 @@
+{
+  "schema_id": "artflow-m16-s1-verification/1",
+  "status": "passed",
+  "lineage": {
+    "content_identity_sha256": "baeeeb76ada98df5ecb44ead82b0ca9efb080024a198ecd7214283a69e8b48e3",
+    "step_count": 6,
+    "retained_domain_count": 4,
+    "corrected_domain": "lighting",
+    "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9"
+  },
+  "unreal_review": {
+    "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+    "first_process_status": "inspected",
+    "fresh_process_status": "reconciled",
+    "generated_instance_count": 12,
+    "source_save_count": 0,
+    "source_level_unchanged": true,
+    "published_level_sha256": "88177f197a9b727525dabf2c9132f2b9e7aa7af3ad89ffc674ab1e8bf03e1cf2"
+  },
+  "browser": {
+    "desktop_viewport": "1600x1000",
+    "desktop_capture": "1020x872",
+    "narrow_viewport": "720x1200",
+    "narrow_capture": "676x2546",
+    "page_horizontal_overflow": false,
+    "narrow_lineage_horizontal_overflow": false,
+    "visible_lineage_steps": 6,
+    "console_errors": 0,
+    "console_warnings": 0
+  },
+  "screenshots": {
+    "desktop_sha256": "6858fc5731e5a18793dd45746a9cf8960f3c27d6cbcd8abe50b038d9683a77a4",
+    "narrow_sha256": "d503303d1561967e910e28f75931b5bb67354ea1878fa6531260e2d2e75b4ccd"
+  },
+  "focused_contract_tests": "3 passed"
+}

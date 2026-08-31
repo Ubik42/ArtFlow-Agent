@@ -1,0 +1,72 @@
+{
+  "schema_id": "artflow-scene-variant-lineage/1",
+  "case_id": "sunlit-overgrown",
+  "status": "published",
+  "source_scene": "/Game/ArtFlowDemo",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+  "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9",
+  "content_identity_sha256": "baeeeb76ada98df5ecb44ead82b0ca9efb080024a198ecd7214283a69e8b48e3",
+  "published_level_sha256": "88177f197a9b727525dabf2c9132f2b9e7aa7af3ad89ffc674ab1e8bf03e1cf2",
+  "correction_domain": "lighting",
+  "retained_domains": [
+    "image",
+    "material",
+    "asset",
+    "pcg"
+  ],
+  "generated_instance_count": 12,
+  "duplicate_side_effect_count": 0,
+  "source_level_unchanged": true,
+  "review_status": "reconciled",
+  "review_id": "scene-review-e9f219a423c22c8c",
+  "steps": [
+    {
+      "index": 1,
+      "kind": "target",
+      "label": "视觉目标",
+      "state": "retained",
+      "detail": "GPT Image 2 构图与保持项已绑定",
+      "identity": "eccb2b2731be"
+    },
+    {
+      "index": 2,
+      "kind": "candidate",
+      "label": "初次候选",
+      "state": "failed",
+      "detail": "灯光域未通过，其他四域保留",
+      "identity": "3d3cbf0c00bf"
+    },
+    {
+      "index": 3,
+      "kind": "correction",
+      "label": "定向纠正",
+      "state": "corrected",
+      "detail": "只重做 lighting，5.5 / 4200K",
+      "identity": "90932f54c99f"
+    },
+    {
+      "index": 4,
+      "kind": "adoption",
+      "label": "Codex 采用",
+      "state": "adopted",
+      "detail": "五域通过，锁定候选内容身份",
+      "identity": "a9d761a38175"
+    },
+    {
+      "index": 5,
+      "kind": "publish",
+      "label": "版本发布",
+      "state": "published",
+      "detail": "写入唯一 Published 场景变体",
+      "identity": "baeeeb76ada9"
+    },
+    {
+      "index": 6,
+      "kind": "review",
+      "label": "Unreal 审阅",
+      "state": "inspected",
+      "detail": "新进程加载复检，源关卡未保存",
+      "identity": "e9f219a423c2"
+    }
+  ]
+}

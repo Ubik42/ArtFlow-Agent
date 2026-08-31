@@ -629,3 +629,17 @@ def test_image_to_3d_showcase_exposes_only_fixed_project_assets(tmp_path) -> Non
 
     assert client.get("/api/showcase/image-to-3d/../../config/goal-state.json").status_code == 404
     assert client.get("/api/showcase/image-to-3d/not-registered").status_code == 404
+
+
+def test_showcase_projects_the_frozen_published_variant_lineage(tmp_path) -> None:
+    client = TestClient(create_app(runs_dir=tmp_path))
+
+    response = client.get("/api/showcase/scene-variant-lineage")
+
+    assert response.status_code == 200
+    lineage = response.json()
+    assert lineage["status"] == "published"
+    assert lineage["review_status"] == "reconciled"
+    assert lineage["retained_domains"] == ["image", "material", "asset", "pcg"]
+    assert lineage["duplicate_side_effect_count"] == 0
+    assert lineage["steps"][-1]["kind"] == "review"

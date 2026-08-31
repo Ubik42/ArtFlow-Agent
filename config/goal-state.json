@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 51,
+  "stateRevision": 52,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M16",
+  "currentMilestone": "M17",
   "milestones": [
     {
       "id": "M0",
@@ -174,7 +174,7 @@
     {
       "id": "M16",
       "title": "Scene Variant Ledger and embedded Unreal review",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M15"],
       "outcome": "The Scene Change Spectrum presents evaluation, correction, adoption and versioned publish as one legible scene-variant lineage, while a registered Unreal review action opens the exact published map and returns a typed inspection receipt without exposing arbitrary paths or host execution.",
       "acceptance": [
@@ -182,37 +182,49 @@
         "A reviewer can inspect the exact content-addressed published variant from the Unreal-facing entry while the source level remains untouched",
         "Desktop and narrow screenshots demonstrate a recognizable scene-directing interface rather than a chat shell, node canvas or generic AI dashboard"
       ]
+    },
+    {
+      "id": "M17",
+      "title": "Durable live scene-variant lifecycle",
+      "status": "in_progress",
+      "dependsOn": ["M16"],
+      "outcome": "Evaluation, failed-domain correction, Codex adoption, Unreal publish and review become first-class append-only Scene Session events, so the live workspace projects the current run's real variant lifecycle instead of depending on frozen showcase data.",
+      "acceptance": [
+        "Typed lifecycle events bind every evaluation, correction, adoption, publish and review transition to one Scene Session, stage request and candidate identity",
+        "Loopback Unreal receipts append exactly once and restart reconstructs the same current variant without a parallel state machine",
+        "The Scene Change Spectrum renders live projected lifecycle state for a real editor-originated Session while frozen showcase data remains an explicit demo fallback only"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M16-S1",
-    "milestone": "M16",
-    "title": "Published variant lineage and Unreal review handoff",
-    "outcome": "Turn the frozen M13 correction and M15 publication into a product-facing variant lineage inside the Scene Change Spectrum: show which domains passed, why lighting was corrected, which exact candidate Codex adopted, and where Unreal published it. Add one fixed Unreal review handoff that validates the content-addressed scene and records inspection, then capture current Chinese desktop and narrow portfolio screenshots.",
-    "risk": "R2",
-    "evidenceTarget": "A3",
+    "id": "M17-S1",
+    "milestone": "M17",
+    "title": "Append-only Session variant lifecycle and live projection",
+    "outcome": "Add the smallest durable lifecycle slice that records a bound candidate evaluation, Codex adoption, Unreal publish and review receipt as idempotent Agent events; reconstruct them through the existing reducer and expose the current Session lineage in AgentRunProjection. Ingest the frozen M16 receipt through the same loopback contract as a real migration case, then switch the Scene Change Spectrum to live projection for that run while preserving a clearly labeled showcase fallback.",
+    "risk": "R3",
+    "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not rerun GPT Image, ComfyUI, material generation, PCG or candidate publication",
-      "Do not add chat, a free-form node canvas, a generic activity feed or decorative agent-role theater",
-      "Do not expose arbitrary Unreal package paths, Python, Shell, Blueprint or console execution",
-      "Do not rebuild unrelated historical evidence pages or establish a generalized design system",
-      "Do not spend time on broad browser or engine matrices, exhaustive accessibility auditing or full test coverage"
+      "Do not rerun GPT Image, ComfyUI, material generation, PCG, lighting correction or Unreal publication",
+      "Do not create a second lifecycle database, workflow engine, event bus or MCP-owned state machine",
+      "Do not generalize receipt ingestion to arbitrary schemas, paths or host scripts",
+      "Do not redesign the page again or expand into multi-user collaboration, source control or packaged distribution",
+      "Do not spend time on broad test matrices, full event coverage or cosmetic screenshot expansion"
     ],
     "acceptance": [
-      "The interface reads M13 and M15 frozen artifacts and renders a compact correction-to-publish lineage with exact real states and no fabricated live progress",
-      "The visual language combines the existing domain spectrum with scene-oriented variant strips, spatial framing and decisive publish markers, using restrained Chinese product copy",
-      "A fixed Unreal review request accepts only the published scene from the signed M15 request, opens or inspects that exact map and persists a typed receipt",
-      "The review handoff cannot mutate ArtFlowDemo, cannot select an arbitrary map and reconciles safely when repeated",
-      "Current desktop and narrow screenshots contain the real published lineage, readable primary controls and no overflow, console error or blocking prompt"
+      "New typed events reject a lifecycle artifact whose run, Session, stage request, candidate, evaluation, decision or publish identity differs from persisted state",
+      "Appending the same lifecycle action or Unreal receipt twice creates one event and changed input under the same action identity is rejected",
+      "Closing and reopening AgentEventStore reconstructs the exact candidate evaluation, adoption, Published version and review state",
+      "A loopback-only API accepts the registered M16 publish/review artifacts, returns the projected live lineage and exposes no arbitrary local path",
+      "ScenePipelineOverview prefers the current AgentRunProjection lineage and labels frozen showcase lineage as demonstration data when no live lifecycle exists"
     ],
     "stopConditions": [
-      "Stop if the M13 correction and M15 publish artifacts do not validate to the same candidate identity",
-      "Stop if the UI would need to invent state absent from frozen receipts",
-      "Stop if the Unreal review action could open an arbitrary package or save the source level",
-      "Stop if real published content cannot be restored from the frozen M15 runtime artifact with the verified hash",
-      "Stop if project-owned UI or UE host changes overlap unknown user edits and cannot be preserved"
+      "Stop if the current event schema cannot bind lifecycle state without changing or invalidating historical events",
+      "Stop if the M16 artifacts cannot be linked to one persisted Session and stage request without inventing identity",
+      "Stop if receipt ingestion would require accepting a filesystem path from the caller or a non-loopback request",
+      "Stop if reducer replay and event idempotency cannot remain deterministic",
+      "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
@@ -233,9 +245,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0046.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0047.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M15 are complete. Two current M13 routes bind real ComfyUI PBR and Codex GPT Image 2 work to isolated UE 5.8 candidates, including lighting-only correction with four successful-domain evidence hashes preserved, 12 PCG instances and zero repeated external submission. The Codex orchestrator has now adopted the accepted corrected candidate and UE 5.8 published exactly one content-addressed scene variant at /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9; a fresh process reconciled it with zero duplicate package while source ArtFlowDemo.umap SHA-256 620e4814... remained unchanged. The existing Chinese Scene Change Spectrum and release archive predate this published lineage and do not yet expose an embedded Unreal review handoff.",
+  "evidenceCeiling": "M0-M16 are complete. The Chinese Scene Change Spectrum now presents the real GPT Image 2 target, lighting-only failure, four retained domains, correction, Codex adoption, content-addressed publish and Unreal review as a six-step variant lineage. Two independent UE 5.8.1 processes inspected then reconciled /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9 with 12 PCG instances, zero source saves and byte-identical ArtFlowDemo content. Desktop 1600x1000 and narrow 720x1200 captures show all six states with no page or lineage overflow and no browser console error. This lineage is still projected from frozen portfolio artifacts rather than first-class events in the current live Scene Session reducer.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

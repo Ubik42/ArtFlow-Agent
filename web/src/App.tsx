@@ -10,6 +10,7 @@ import {
   ChevronRight,
   CircleAlert,
   Cloud,
+  Copy,
   Cpu,
   Database,
   Eye,
@@ -20,6 +21,7 @@ import {
   LockKeyhole,
   Play,
   RefreshCw,
+  Route,
   ScanLine,
   ShieldCheck,
   Sparkles,
@@ -567,6 +569,31 @@ type SceneStageRequest = {
     action: string;
     verification: string;
     depends_on: SceneDomain[];
+  }>;
+};
+type SceneVariantLineage = {
+  schema_id: "artflow-scene-variant-lineage/1";
+  case_id: "sunlit-overgrown";
+  status: "published";
+  source_scene: string;
+  candidate_scene: string;
+  published_scene: string;
+  content_identity_sha256: string;
+  published_level_sha256: string;
+  correction_domain: SceneDomain;
+  retained_domains: SceneDomain[];
+  generated_instance_count: number;
+  duplicate_side_effect_count: 0;
+  source_level_unchanged: true;
+  review_status: "inspected" | "reconciled";
+  review_id: string;
+  steps: Array<{
+    index: number;
+    kind: "target" | "candidate" | "correction" | "adoption" | "publish" | "review";
+    label: string;
+    state: "retained" | "failed" | "corrected" | "adopted" | "published" | "inspected";
+    detail: string;
+    identity: string;
   }>;
 };
 type LegacyRun = {
@@ -1344,6 +1371,20 @@ function SceneChangeSpectrum({
 }
 
 function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
+  const [lineage, setLineage] = useState<SceneVariantLineage | null>(null);
+  useEffect(() => {
+    let active = true;
+    void request<SceneVariantLineage>("/api/showcase/scene-variant-lineage")
+      .then((next) => {
+        if (active) setLineage(next);
+      })
+      .catch(() => {
+        if (active) setLineage(null);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const cases = [
     {
       id: "rain-wet-courtyard",
@@ -1427,6 +1468,10 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
         ))}
       </div>
 
+      {activeCase.id === "sunlit-overgrown" && lineage && (
+        <SceneVariantLedger lineage={lineage} />
+      )}
+
       <div className={`intent-to-world frames-${activeCase.frames.length}`}>
         {activeCase.frames.map((frame, index) => (
           <Fragment key={frame.src}>
@@ -1462,6 +1507,64 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
           </div>
         ))}
       </div>
+    </section>
+  );
+}
+
+function SceneVariantLedger({ lineage }: { lineage: SceneVariantLineage }) {
+  const [copied, setCopied] = useState(false);
+  const copyPublishedPath = async () => {
+    await navigator.clipboard.writeText(lineage.published_scene);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+  return (
+    <section className="variant-lineage" aria-label="晴光庭院场景变体谱系">
+      <header className="lineage-header">
+        <div>
+          <span><Route size={14} /> 场景变体谱系</span>
+          <strong>一次失败，只改变一条支线；采用结果已进入 Unreal 版本</strong>
+        </div>
+        <div className="lineage-identity">
+          <small>内容身份</small>
+          <code>{lineage.content_identity_sha256.slice(0, 12)}</code>
+          <i />
+          <span>UE 5.8 已复检</span>
+        </div>
+      </header>
+      <div className="variant-film" role="list" aria-label="候选到发布的六段谱系">
+        {lineage.steps.map((step) => (
+          <article
+            className={`variant-frame state-${step.state}`}
+            key={step.kind}
+            role="listitem"
+          >
+            <span className="frame-index">{String(step.index).padStart(2, "0")}</span>
+            <i className="frame-pulse" />
+            <div>
+              <strong>{step.label}</strong>
+              <p>{step.detail}</p>
+            </div>
+            <code>{step.identity}</code>
+          </article>
+        ))}
+      </div>
+      <footer className="lineage-publish-bar">
+        <div>
+          <span>正式场景版本</span>
+          <code title={lineage.published_scene}>{lineage.published_scene}</code>
+        </div>
+        <dl>
+          <div><dt>保留领域</dt><dd>{lineage.retained_domains.length} / 4</dd></div>
+          <div><dt>PCG 实例</dt><dd>{lineage.generated_instance_count}</dd></div>
+          <div><dt>重复副作用</dt><dd>{lineage.duplicate_side_effect_count}</dd></div>
+          <div><dt>源关卡保存</dt><dd>{lineage.source_level_unchanged ? "0" : "—"}</dd></div>
+        </dl>
+        <button type="button" onClick={() => void copyPublishedPath()}>
+          {copied ? <Check size={13} /> : <Copy size={13} />}
+          {copied ? "路径已复制" : "复制 Unreal 版本路径"}
+        </button>
+      </footer>
     </section>
   );
 }

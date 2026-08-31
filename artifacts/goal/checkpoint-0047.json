@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M16-S1",
+  "status": "completed",
+  "outcome": "The Chinese Scene Change Spectrum now renders the real M13 lighting-only correction, M15 Codex adoption, content-addressed publish and M16 Unreal inspection as one six-step scene-variant lineage. A fixed review request opens only /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9, and two independent UE 5.8.1 processes reported inspected then reconciled with 12 PCG instances, zero source saves and byte-identical source content. Desktop and narrow browser captures show all states with no page overflow, console error or warning.",
+  "evidence": [
+    "docs/evidence/M16_S1_SCENE_VARIANT_LINEAGE_2026-08-30.md",
+    "docs/assets/showcase/m16-scene-variant-lineage-desktop.png",
+    "docs/assets/showcase/m16-scene-variant-lineage-narrow.png",
+    "artifacts/goal/m16-s1-variant-lineage/review-request.json",
+    "artifacts/goal/m16-s1-variant-lineage/review-receipt.json",
+    "artifacts/goal/m16-s1-variant-lineage/review-reconcile-receipt.json",
+    "artifacts/goal/m16-s1-variant-lineage/lineage.json",
+    "artifacts/goal/m16-s1-variant-lineage/verification.json"
+  ]
+}

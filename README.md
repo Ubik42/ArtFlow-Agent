@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow Scene Lab：雨后庭院跨管线候选](docs/assets/showcase/m13-scene-lab-rain.png)
+![ArtFlow Scene Lab：从定向纠正到 Unreal 场景版本](docs/assets/showcase/m16-scene-variant-lineage-desktop.png)
 
 ## 项目定位
 
@@ -55,6 +55,8 @@ Codex GPT Image 2 先依据源机位生成晴光、轻度植被覆盖的视觉�
 ![晴光庭院视觉目标与定向纠正](docs/assets/showcase/m13-scene-lab-sunlit-correction.png)
 
 修正前后保持 12 个 PCG 实例、同一材质路径和同一项目资产集合；四个成功领域的证据哈希完全一致，外部重复提交为 0。通过复检后，编排器将精确候选发布为内容寻址场景变体；新 UE 进程对账没有创建第二个关卡包，源 `ArtFlowDemo.umap` 字节始终未变化。
+
+Scene Lab 将视觉目标、失败候选、定向纠正、Codex 采用、版本发布与 Unreal 审阅组织成一条场景变体谱系。审阅入口只打开采用决定绑定的 Published 关卡；本次 UE 5.8.1 实测首次返回 `inspected`，新进程返回 `reconciled`，两次检查均未保存源关卡。
 
 ## 工作流程
 
@@ -141,6 +143,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | M13 修正后 UE 对账 | `reconciled=true`，外部重复提交 0 |
 | 版本化场景发布 | 1 个内容寻址关卡包，源关卡字节变化 0 |
 | 新进程发布对账 | `reconciled`，重复关卡包 0 |
+| Published 版本 Unreal 审阅 | UE 5.8.1，12 个 PCG 实例，源关卡保存 0 |
+| 新进程审阅对账 | `reconciled`，Published 关卡哈希一致 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
@@ -208,6 +212,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 | `src/artflow_agent/scene_lifecycle.py` | 多域执行、纠正、恢复与发布 |
 | `src/artflow_agent/scene_session.py` | Scene Session 草案、持久身份与候选关卡请求 |
 | `src/artflow_agent/scene_disposition.py` | 证据绑定的候选采用与版本化发布合同 |
+| `src/artflow_agent/scene_variant_review.py` | 版本谱系投影与固定 Unreal 审阅合同 |
 | `src/artflow_agent/pbr.py` | PBR 合同、通道验证与受审图编译 |
 | `src/artflow_agent/image_to_3d.py` | 图生 3D 合同、GLB 预检与 UE 接纳 |
 | `src/artflow_agent/mcp_facade.py` | 内容寻址 MCP 薄适配层 |

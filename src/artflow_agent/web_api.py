@@ -52,6 +52,7 @@ from .scene_session import (
     compile_scene_session_draft,
     compile_scene_stage_request,
 )
+from .scene_variant_review import SceneVariantLineage
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -785,6 +786,27 @@ def create_app(
             raise HTTPException(status_code=404, detail="Candidate not found")
         path = _resolve_run_artifact(resolved_runs, run_id, candidate.image_path)
         return FileResponse(path)
+
+    @app.get(
+        "/api/showcase/scene-variant-lineage",
+        response_model=SceneVariantLineage,
+    )
+    def get_scene_variant_lineage():
+        """Project the fixed correction-to-Unreal lineage from frozen host receipts."""
+        path = (
+            PROJECT_ROOT
+            / "artifacts"
+            / "goal"
+            / "m16-s1-variant-lineage"
+            / "lineage.json"
+        )
+        try:
+            return SceneVariantLineage.model_validate_json(path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise HTTPException(
+                status_code=409,
+                detail="场景变体谱系未冻结或未通过合同验证",
+            ) from exc
 
     @app.get("/api/showcase/image-to-3d/{asset_name}")
     @app.get("/api/showcase/production/{asset_name}")
