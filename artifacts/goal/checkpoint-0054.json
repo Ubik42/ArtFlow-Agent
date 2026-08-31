@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M20-S4",
+  "status": "completed",
+  "outcome": "The exact current correction passed seven technical checks, but a fresh visual observation still rejected only lighting. Image and PCG evidence remained byte-identical, and no accepted evaluation, adoption or publish event was appended.",
+  "evidence": [
+    "artifacts/goal/m20-s4-current-adoption/verification.json",
+    "artifacts/goal/m20-s4-current-adoption/live-projection.json",
+    "artifacts/goal/m20-s4-current-adoption/source-beauty.png",
+    "artifacts/goal/m20-s4-current-adoption/corrected-beauty.png",
+    "artifacts/goal/m20-s4-current-adoption/live-correction-reevaluation-desktop.png",
+    "artifacts/goal/m20-s4-current-adoption/live-correction-reevaluation-narrow.png",
+    "docs/evidence/M20_S4_CORRECTION_REEVALUATION_2026-08-30.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

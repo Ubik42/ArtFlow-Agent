@@ -21,6 +21,10 @@ from .contracts import (
     SceneConstraintPackage,
     SceneDigitalTwin,
 )
+from .current_correction_evaluation import (
+    CurrentCorrectionDomainVerdictRecord,
+    CurrentCorrectionEvaluationRecord,
+)
 from .current_scene_evaluation import CurrentCandidateEvaluationRecord
 from .current_visual_critic import CurrentCandidateDomainVerdictRecord
 from .harness_contracts import HarnessScorecard
@@ -106,6 +110,8 @@ AgentEventType = Literal[
     "scene_correction_work_queued",
     "scene_correction_work_claimed",
     "scene_correction_work_progressed",
+    "scene_correction_intake_evaluated",
+    "scene_correction_visual_evaluated",
     "scene_candidate_evaluated",
     "scene_candidate_adopted",
     "scene_variant_published",
@@ -242,6 +248,8 @@ class AgentRunState(BaseModel):
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
+    scene_correction_intake: CurrentCorrectionEvaluationRecord | None = None
+    scene_correction_visual_verdict: CurrentCorrectionDomainVerdictRecord | None = None
     scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
     scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_publication: SceneVariantPublishRecord | None = None
@@ -457,6 +465,14 @@ class _SceneCorrectionWorkProgressed(BaseModel):
     progress: SceneCorrectionWorkProgressRequest
 
 
+class _SceneCorrectionIntakeEvaluated(BaseModel):
+    record: CurrentCorrectionEvaluationRecord
+
+
+class _SceneCorrectionVisualEvaluated(BaseModel):
+    record: CurrentCorrectionDomainVerdictRecord
+
+
 class _SceneCandidateAdopted(BaseModel):
     record: SceneCandidateAdoptionRecord
 
@@ -656,6 +672,36 @@ class AgentEventStore:
             "scene_correction_work_progressed",
             _SceneCorrectionWorkProgressed(progress=progress).model_dump(mode="json"),
             idempotency_key=f"scene_correction_work_progressed:{progress.action_id}",
+        )
+        return self.load(run_id)
+
+    def record_current_correction_intake(
+        self,
+        run_id: str,
+        record: CurrentCorrectionEvaluationRecord,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_correction_intake_evaluated",
+            _SceneCorrectionIntakeEvaluated(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_correction_intake_evaluated:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_current_correction_visual_verdict(
+        self,
+        run_id: str,
+        record: CurrentCorrectionDomainVerdictRecord,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_correction_visual_evaluated",
+            _SceneCorrectionVisualEvaluated(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_correction_visual_evaluated:{action_id}",
         )
         return self.load(run_id)
 
@@ -1685,6 +1731,12 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             state.scene_candidate_intake = None
             state.scene_candidate_visual_verdict = None
             state.scene_correction_work = None
+            state.scene_correction_intake = None
+            state.scene_correction_visual_verdict = None
+            state.scene_candidate_evaluation = None
+            state.scene_candidate_adoption = None
+            state.scene_variant_publication = None
+            state.scene_variant_review = None
         elif event.event_type == "scene_candidate_work_queued":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("candidate work requires a current Scene Session")
@@ -1832,6 +1884,43 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             work.status = progress.status
             work.outcome_sha256 = progress.outcome_sha256
             work.message = progress.message
+        elif event.event_type == "scene_correction_intake_evaluated":
+            work = state.scene_correction_work
+            if work is None or work.status != "succeeded" or work.outcome_sha256 is None:
+                raise AgentRuntimeError("correction intake requires succeeded correction work")
+            if state.scene_correction_intake is not None:
+                raise AgentRuntimeError("current correction intake is already persisted")
+            record = _SceneCorrectionIntakeEvaluated.model_validate(event.data).record
+            evaluation_input = record.evaluation_input
+            if (
+                evaluation_input.run_id != state.run_id
+                or evaluation_input.session_sha256
+                != state.scene_sessions[-1].session_sha256
+                or evaluation_input.correction_work_sha256
+                != work.definition.work_sha256
+                or evaluation_input.correction_outcome_sha256 != work.outcome_sha256
+                or evaluation_input.prior_evaluation_sha256
+                != work.definition.evaluation_sha256
+            ):
+                raise AgentRuntimeError("correction intake references another work outcome")
+            state.scene_correction_intake = record
+        elif event.event_type == "scene_correction_visual_evaluated":
+            intake = state.scene_correction_intake
+            if intake is None:
+                raise AgentRuntimeError("corrected visual verdict requires technical intake")
+            if state.scene_correction_visual_verdict is not None:
+                raise AgentRuntimeError("current correction visual verdict is already persisted")
+            record = _SceneCorrectionVisualEvaluated.model_validate(event.data).record
+            if (
+                record.technical_intake_sha256
+                != intake.evaluation_input.input_sha256
+                or record.domain_evaluation.plan_sha256
+                != intake.evaluation_input.plan_sha256
+                or record.domain_evaluation.candidate_scene
+                != intake.evaluation_input.candidate_scene
+            ):
+                raise AgentRuntimeError("corrected visual verdict references another intake")
+            state.scene_correction_visual_verdict = record
         elif event.event_type == "scene_candidate_evaluated":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("scene candidate evaluation requires a Scene Session")

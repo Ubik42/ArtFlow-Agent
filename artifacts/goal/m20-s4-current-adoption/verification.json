@@ -1,0 +1,46 @@
+{
+  "schema_id": "artflow-m20-correction-reevaluation-verification/1",
+  "status": "verified_correction_required",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "event_count": 26,
+  "technical_check_count": 7,
+  "technical_pass_count": 7,
+  "technical_evaluation_sha256": "3beaaa66b6cfe90d23ced635f5f501fcb5bf7ec4bc1fdd7e01dc8f0ddeeb42ff",
+  "visual_observation_sha256": "c1c6b5b5cb5a2134b85737f01e0a1f0a16419085f241c555f601329060f0b4b6",
+  "domain_evaluation_sha256": "5364ef0fa0426a4f1ec61b385a2d5ce126da83fb7c8b077569f95d0ff5f6de12",
+  "evaluation_status": "correction_required",
+  "failed_domains": [
+    "lighting"
+  ],
+  "preserved_finding_identity": {
+    "image": true,
+    "pcg": true
+  },
+  "source_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+  "corrected_beauty_sha256": "9babc1282044ce9148915c647c80aca0ff0840c6357fc7d1d1c27272f0e2b13e",
+  "candidate_evaluation_appended": false,
+  "candidate_adoption_appended": false,
+  "candidate_publication_appended": false,
+  "screenshots": [
+    {
+      "path": "artifacts/goal/m20-s4-current-adoption/live-correction-reevaluation-desktop.png",
+      "size": [
+        1600,
+        1000
+      ],
+      "sha256": "c0e0a01566a935e57b4dd740df19c5e09e01e908d0694b329c5d073985ef1e23"
+    },
+    {
+      "path": "artifacts/goal/m20-s4-current-adoption/live-correction-reevaluation-narrow.png",
+      "size": [
+        412,
+        915
+      ],
+      "sha256": "1aed3bb34f9672b48882348f17cf0f264cfb07d3f31c94e179676030e31c1e53"
+    }
+  ],
+  "browser_console_error_count": 0,
+  "broken_image_count": 0,
+  "horizontal_overflow_px": 0,
+  "targeted_test_result": "7 passed"
+}

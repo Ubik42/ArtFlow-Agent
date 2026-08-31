@@ -197,6 +197,20 @@ def canonical_sha256(payload: object) -> str:
 def resolve_current_correction_beauty(
     project_root: Path, state: AgentRunState
 ) -> Path:
+    receipt_path, receipt = resolve_current_correction_receipt(project_root, state)
+    beauty = Path(receipt.corrected_beauty_path).resolve()
+    try:
+        beauty.relative_to(receipt_path.parent)
+    except ValueError as exc:
+        raise ValueError("corrected rerender escaped its registered work directory") from exc
+    if not beauty.is_file() or file_sha256(beauty) != receipt.corrected_beauty_sha256:
+        raise ValueError("corrected rerender content does not match its Unreal receipt")
+    return beauty
+
+
+def resolve_current_correction_receipt(
+    project_root: Path, state: AgentRunState
+) -> tuple[Path, UnrealLightingCorrectionReceipt]:
     work = state.scene_correction_work
     if work is None or work.status != "succeeded" or work.outcome_sha256 is None:
         raise ValueError("current lighting correction has no succeeded Unreal receipt")
@@ -231,14 +245,7 @@ def resolve_current_correction_beauty(
         != receipt.generated_instance_count_after
     ):
         raise ValueError("lighting correction receipt widened or changed a preserved domain")
-    beauty = Path(receipt.corrected_beauty_path).resolve()
-    try:
-        beauty.relative_to(receipt_path.parent)
-    except ValueError as exc:
-        raise ValueError("corrected rerender escaped its registered work directory") from exc
-    if not beauty.is_file() or file_sha256(beauty) != receipt.corrected_beauty_sha256:
-        raise ValueError("corrected rerender content does not match its Unreal receipt")
-    return beauty
+    return receipt_path, receipt
 
 
 def file_sha256(path: Path) -> str:

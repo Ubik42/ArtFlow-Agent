@@ -36,6 +36,12 @@ from .comparison import (
     ComparisonAuthorizationDecision,
     ProviderComparisonPlan,
 )
+from .current_correction_evaluation import (
+    compile_corrected_domain_verdict,
+    compile_current_adoption_record,
+    compile_current_evaluation_record,
+    evaluate_current_correction,
+)
 from .current_scene_evaluation import (
     evaluate_current_candidate,
     resolve_current_candidate_beauty,
@@ -532,6 +538,90 @@ def create_app(
                 resolved_project_root, agent_store.load(run_id)
             )
             return FileResponse(path, media_type="image/png")
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/evaluate",
+        response_model=AgentRunProjection,
+    )
+    def evaluate_scene_correction_work(run_id: str):
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_correction_intake is not None:
+                return project_agent_run(agent_store, run_id)
+            record = evaluate_current_correction(resolved_project_root, state)
+            agent_store.record_current_correction_intake(
+                run_id,
+                record,
+                action_id=(
+                    "correction-intake-"
+                    f"{record.technical_evaluation.evaluation_sha256[:16]}"
+                ),
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/visual-observation",
+        response_model=AgentRunProjection,
+    )
+    def record_scene_correction_visual_observation(
+        run_id: str,
+        payload: CurrentCandidateVisualObservation,
+        request: Request,
+    ):
+        _require_loopback(request, "纠正候选视觉观察仅允许本机 Agent 回传")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_correction_visual_verdict is not None:
+                if state.scene_correction_visual_verdict.visual_observation != payload:
+                    raise AgentRuntimeError(
+                        "current correction already has a different visual observation"
+                    )
+                return project_agent_run(agent_store, run_id)
+            verdict = compile_corrected_domain_verdict(state, payload)
+            agent_store.record_current_correction_visual_verdict(
+                run_id,
+                verdict,
+                action_id=f"correction-visual-{payload.observation_sha256[:16]}",
+            )
+            if verdict.domain_evaluation.status == "accepted":
+                current = agent_store.load(run_id)
+                evaluation = compile_current_evaluation_record(current)
+                agent_store.record_scene_candidate_evaluation(
+                    run_id,
+                    evaluation,
+                    action_id=(
+                        "current-evaluation-"
+                        f"{evaluation.corrected_evaluation.evaluation_sha256[:16]}"
+                    ),
+                )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-correction-work/adopt",
+        response_model=AgentRunProjection,
+    )
+    def adopt_current_scene_correction(run_id: str, request: Request):
+        _require_loopback(request, "当前候选采用仅允许本机 Codex 编排器执行")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_candidate_adoption is not None:
+                return project_agent_run(agent_store, run_id)
+            record = compile_current_adoption_record(resolved_project_root, state)
+            agent_store.record_scene_candidate_adoption(
+                run_id,
+                record,
+                action_id=f"current-adoption-{record.decision.decision_sha256[:16]}",
+            )
+            return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc

@@ -1,0 +1,913 @@
+{
+  "schema_id": "agent-run-projection/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "status": {
+    "stage": "route_ready",
+    "scene_package_id": "artflow-ue-89ac07a74988b8dd2fca9295e141a6fd",
+    "approval": "none",
+    "pending_decision_count": 0,
+    "pending_tool_call_count": 0,
+    "failure_count": 0,
+    "budgets": {
+      "max_iterations": 12,
+      "used_iterations": 0,
+      "max_tool_calls": 24,
+      "used_tool_calls": 0,
+      "max_retries": 3,
+      "used_retries": 0,
+      "max_cost_usd": null
+    },
+    "artifact_ids": [
+      "archive:sha256:ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+      "passes/beauty.png:sha256:7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+      "passes/depth.exr:sha256:1d614fa55d26a034097a1410274d47930f2f588b3fe36dcd8a7af366ae7a56e2",
+      "passes/world-normal.exr:sha256:6b34ed5ef94ed4a49cc097230e168347a3c066582e65d8ffb8f79f7aeb2498a5",
+      "passes/object-id.png:sha256:2dbe1eaaaa36c8f7eded91c129ab491469a11d9317ed41b9f0a377a251bc2de9",
+      "scene-digital-twin.json:sha256:790c75c278b459dc7d52f1bc89bea5c1668eff27dca08c2ec6cabbb1648dbfc9",
+      "scene-change-plan.json:sha256:972f9160c81d3f3730da19b7705cd504ca75f6ea459a1b9f756e0416403883f7",
+      "scene-dry-run-receipt.json:sha256:f7807c49096806bacfbec313dd48538d48906396a4fcf88b89c5c32d6c5ef50c"
+    ],
+    "route_decision_id": null,
+    "route_provider": null,
+    "route_model": null,
+    "route_fingerprint": null,
+    "capability_attestation_count": 0,
+    "local_provider_status": null,
+    "execution_status": null,
+    "provider_request_id": null
+  },
+  "scene": {
+    "package_id": "artflow-ue-89ac07a74988b8dd2fca9295e141a6fd",
+    "source_application": "Unreal Engine",
+    "source_application_version": "5.8.1-56057345+++UE5+Release-5.8",
+    "source_scene": "/Game/ArtFlowDemo",
+    "archive_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+    "artifact_count": 7,
+    "evidence_class": "real_unreal_capture",
+    "art_goal": "在保持相机构图与受保护灰盒轮廓的前提下，探索雨后清晨的灯光、材质与空间层次。",
+    "preserve": [
+      "相机构图",
+      "受保护灰盒轮廓",
+      "地面空间关系"
+    ],
+    "prohibit": [
+      "新增角色",
+      "品牌标识",
+      "重设计受保护几何体"
+    ],
+    "protected_regions": [
+      "protected-selection"
+    ],
+    "editable_regions": [
+      "editable-selection"
+    ],
+    "pass_kinds": [
+      "beauty",
+      "depth",
+      "world_normal",
+      "object_id"
+    ],
+    "camera_resolution": [
+      640,
+      360
+    ]
+  },
+  "pending_decisions": [],
+  "timeline": [
+    {
+      "sequence": 1,
+      "event_id": "event-f1429c4fdd394763b6e8911a22d8787b",
+      "event_type": "run_created",
+      "occurred_at": "2026-08-31T04:26:22.230836Z",
+      "label": "Agent run created",
+      "detail": "Durable event stream opened",
+      "tone": "neutral"
+    },
+    {
+      "sequence": 2,
+      "event_id": "event-60c93ad143074bf8bf77b163ac039e12",
+      "event_type": "scene_attached",
+      "occurred_at": "2026-08-31T04:26:22.250867Z",
+      "label": "Scene package verified",
+      "detail": "Content hashes and constraints bound",
+      "tone": "success"
+    },
+    {
+      "sequence": 3,
+      "event_id": "event-9418b03650234554bb0e2efec143cfc4",
+      "event_type": "scene_session_started",
+      "occurred_at": "2026-08-31T04:26:22.287510Z",
+      "label": "Scene Session started",
+      "detail": "Intent, selected domains and scene identity entered the durable ledger",
+      "tone": "active"
+    },
+    {
+      "sequence": 4,
+      "event_id": "event-a6d523c70d314cd0a96c294a4a80eb07",
+      "event_type": "scene_candidate_work_queued",
+      "occurred_at": "2026-08-31T04:26:36.870810Z",
+      "label": "候选工作项已进入 Unreal 队列",
+      "detail": "当前 Session、Stage Request 与 Candidate Plan 已按内容身份封存",
+      "tone": "active"
+    },
+    {
+      "sequence": 5,
+      "event_id": "event-8c61c30e05114dd7b0028b9dc62d1ffd",
+      "event_type": "scene_candidate_work_claimed",
+      "occurred_at": "2026-08-31T04:27:05.635940Z",
+      "label": "Unreal 已领取候选工作项",
+      "detail": "单一编辑器写入者取得本轮候选执行权",
+      "tone": "active"
+    },
+    {
+      "sequence": 6,
+      "event_id": "event-78a20b108eb54cafbc699466bd1913aa",
+      "event_type": "scene_candidate_work_progressed",
+      "occurred_at": "2026-08-31T04:27:05.677126Z",
+      "label": "Unreal 候选执行状态已更新",
+      "detail": "执行、对账与结果继续写入同一 Scene Session 事件流",
+      "tone": "active"
+    },
+    {
+      "sequence": 7,
+      "event_id": "event-2e87dc55dbec41ee8e0d6e3988dae0f8",
+      "event_type": "scene_candidate_work_progressed",
+      "occurred_at": "2026-08-31T04:27:06.713260Z",
+      "label": "Unreal 候选执行状态已更新",
+      "detail": "执行、对账与结果继续写入同一 Scene Session 事件流",
+      "tone": "active"
+    },
+    {
+      "sequence": 8,
+      "event_id": "event-8d705f402315453b862bd71c0f0a6418",
+      "event_type": "scene_candidate_work_progressed",
+      "occurred_at": "2026-08-31T04:27:06.753352Z",
+      "label": "Unreal 候选执行状态已更新",
+      "detail": "执行、对账与结果继续写入同一 Scene Session 事件流",
+      "tone": "active"
+    },
+    {
+      "sequence": 9,
+      "event_id": "event-650d7ff031894c63b78436f629acae4e",
+      "event_type": "scene_candidate_intake_evaluated",
+      "occurred_at": "2026-08-31T04:39:24.654123Z",
+      "label": "当前候选已通过技术审查",
+      "detail": "工作回执、源关卡不变量、PCG 预算与同机位回渲已绑定到当前 Session",
+      "tone": "success"
+    },
+    {
+      "sequence": 10,
+      "event_id": "event-d8dd0d2db7014ae68bde384ee5e3c0c1",
+      "event_type": "scene_candidate_visual_evaluated",
+      "occurred_at": "2026-08-31T04:46:44.512173Z",
+      "label": "当前候选已完成视觉裁决",
+      "detail": "独立视觉观察与技术审查已按硬失败优先级聚合为领域结果",
+      "tone": "warning"
+    },
+    {
+      "sequence": 11,
+      "event_id": "event-a9d8023893a04d6d9cc471975af0cf99",
+      "event_type": "scene_correction_work_queued",
+      "occurred_at": "2026-08-31T04:58:20.905177Z",
+      "label": "灯光纠正工作已封存",
+      "detail": "通过域证据保持不变，仅 lighting 参数进入 Unreal 队列",
+      "tone": "active"
+    },
+    {
+      "sequence": 12,
+      "event_id": "event-d7211f78ac924f5aa0a3925b9b703371",
+      "event_type": "scene_correction_work_claimed",
+      "occurred_at": "2026-08-31T05:06:41.480397Z",
+      "label": "Unreal 已领取灯光纠正",
+      "detail": "单一写入者取得当前候选的 lighting 修正权",
+      "tone": "active"
+    },
+    {
+      "sequence": 13,
+      "event_id": "event-9cdbb23f21014f42a7baa94123b2f6b3",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:06:41.540160Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 14,
+      "event_id": "event-9329f62cdf8e453d87f278eaa5a17ab8",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:06:41.585860Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 15,
+      "event_id": "event-f0ca6f689cba4dfba6fd4c45a5eb9dfd",
+      "event_type": "scene_correction_work_queued",
+      "occurred_at": "2026-08-31T05:11:10.412793Z",
+      "label": "灯光纠正工作已封存",
+      "detail": "通过域证据保持不变，仅 lighting 参数进入 Unreal 队列",
+      "tone": "active"
+    },
+    {
+      "sequence": 16,
+      "event_id": "event-938e7088a5b04e3e82b113bfcac8b9ba",
+      "event_type": "scene_correction_work_claimed",
+      "occurred_at": "2026-08-31T05:11:35.498689Z",
+      "label": "Unreal 已领取灯光纠正",
+      "detail": "单一写入者取得当前候选的 lighting 修正权",
+      "tone": "active"
+    },
+    {
+      "sequence": 17,
+      "event_id": "event-9689f1006a434fad90e6b1e701c21f51",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:11:35.534297Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 18,
+      "event_id": "event-a82fe9ee6e5c4a2183c300c97a323c7c",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:11:35.761142Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 19,
+      "event_id": "event-55fb74e3fefe4a1d944a10086bfedf7e",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:11:35.797680Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 20,
+      "event_id": "event-e7b29d2a63ce4679aba318f6f7559859",
+      "event_type": "scene_correction_work_queued",
+      "occurred_at": "2026-08-31T05:13:03.471308Z",
+      "label": "灯光纠正工作已封存",
+      "detail": "通过域证据保持不变，仅 lighting 参数进入 Unreal 队列",
+      "tone": "active"
+    },
+    {
+      "sequence": 21,
+      "event_id": "event-a5a9ace7d5c041f8839ae950cda6fed0",
+      "event_type": "scene_correction_work_claimed",
+      "occurred_at": "2026-08-31T05:13:34.333664Z",
+      "label": "Unreal 已领取灯光纠正",
+      "detail": "单一写入者取得当前候选的 lighting 修正权",
+      "tone": "active"
+    },
+    {
+      "sequence": 22,
+      "event_id": "event-519fc3324adf4c49b3ea3e314b407ea6",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:13:34.399456Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 23,
+      "event_id": "event-242629e911154d6090f9f5c5505eeead",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:13:34.954150Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 24,
+      "event_id": "event-636080d7f752487babb647cfd17a6244",
+      "event_type": "scene_correction_work_progressed",
+      "occurred_at": "2026-08-31T05:13:35.072924Z",
+      "label": "灯光纠正状态已更新",
+      "detail": "执行、对账与新回渲继续写入当前 Scene Session",
+      "tone": "active"
+    },
+    {
+      "sequence": 25,
+      "event_id": "event-66b433135aae4218967cf5d972c27cd1",
+      "event_type": "scene_correction_intake_evaluated",
+      "occurred_at": "2026-08-31T05:31:58.624875Z",
+      "label": "纠正结果已通过技术复检",
+      "detail": "源关卡、保护结构、PCG、灯光补丁与新回渲已绑定到当前纠正工作",
+      "tone": "success"
+    },
+    {
+      "sequence": 26,
+      "event_id": "event-5681080d40754e04a10243e2cc455670",
+      "event_type": "scene_correction_visual_evaluated",
+      "occurred_at": "2026-08-31T05:33:29.806653Z",
+      "label": "纠正结果已完成视觉复评",
+      "detail": "新的多模态观察只评价当前纠正回渲，并按硬失败优先级形成领域结果",
+      "tone": "success"
+    }
+  ],
+  "capabilities": [
+    {
+      "capability_id": "scene.inspect_constraints",
+      "version": "1.0.0",
+      "input_schema": {
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "package_id"
+        ],
+        "title": "InspectSceneInput",
+        "type": "object"
+      },
+      "output_schema": {
+        "properties": {
+          "package_id": {
+            "title": "Package Id",
+            "type": "string"
+          },
+          "pass_kinds": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Pass Kinds",
+            "type": "array"
+          },
+          "protected_regions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Protected Regions",
+            "type": "array"
+          },
+          "editable_regions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Editable Regions",
+            "type": "array"
+          }
+        },
+        "required": [
+          "package_id",
+          "pass_kinds",
+          "protected_regions",
+          "editable_regions"
+        ],
+        "title": "InspectSceneOutput",
+        "type": "object"
+      },
+      "authority": {
+        "reads": [
+          "agent_state.scene"
+        ],
+        "writes": [],
+        "external_side_effects": false
+      },
+      "availability": "available",
+      "risk": "R0",
+      "idempotency": "read_only",
+      "timeout_seconds": 2.0,
+      "max_observation_bytes": 8192,
+      "verification_signal": "Output must exactly match the event-reduced scene package."
+    }
+  ],
+  "route": null,
+  "capability_attestations": [],
+  "provider_executions": [],
+  "codex_image_candidates": [],
+  "tribunal_report": null,
+  "negative_controls": [],
+  "multimodal_tribunal": null,
+  "adoption_decision": null,
+  "bounded_revision_request": null,
+  "bounded_revision_result": null,
+  "bounded_revision_attempts": [],
+  "recovery_scorecard": null,
+  "memory_records": [],
+  "memory_scorecard": null,
+  "harness_scorecard": null,
+  "verified_delivery": null,
+  "comparison_plan": null,
+  "comparison_authorization": null,
+  "comparison_manifest": null,
+  "scene_session": {
+    "schema_id": "artflow-scene-session/1",
+    "session_id": "scene-session-dc31f6ed0f4e",
+    "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+    "strategy_version": "scene-session-strategy/1",
+    "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+    "source_scene": "/Game/ArtFlowDemo",
+    "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+    "start_action_id": "ue-handshake-ca79f77b487ea5080876017d",
+    "supersedes_session_id": null,
+    "draft": {
+      "schema_id": "artflow-scene-session-draft/1",
+      "draft_id": "scene-draft-2b80d958bc7d",
+      "draft_sha256": "2b80d958bc7dac78eba6936c5b78e80e45f7103f863071acd382d45ba3b4452f",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "basis_sequence": 2,
+      "source_scene": "/Game/ArtFlowDemo",
+      "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+      "capability_environment_sha256s": [],
+      "intent": "在保持相机构图与受保护灰盒轮廓的前提下，探索雨后清晨的灯光、材质与空间层次。",
+      "preserve": [
+        "相机构图",
+        "受保护灰盒轮廓",
+        "地面空间关系"
+      ],
+      "prohibit": [
+        "新增角色",
+        "品牌标识",
+        "重设计受保护几何体"
+      ],
+      "nodes": [
+        {
+          "domain": "pcg",
+          "label": "空间布局",
+          "readiness": "ready",
+          "action": "通过固定 PCG 图布置项目资产",
+          "reason": "Scene Digital Twin 可提供边界与保护对象事实。",
+          "verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+          "depends_on": []
+        },
+        {
+          "domain": "lighting",
+          "label": "灯光",
+          "readiness": "ready",
+          "action": "在候选关卡调整强度、色温与方向",
+          "reason": "Scene Digital Twin 可提供灯光身份与相机事实。",
+          "verification": "参数范围、源关卡指纹与同机位亮度回渲",
+          "depends_on": []
+        }
+      ],
+      "ready_domain_count": 2,
+      "guarded_domain_count": 0,
+      "experimental_domain_count": 0,
+      "can_stage": true,
+      "next_action": "创建隔离候选关卡并执行已接入领域"
+    }
+  },
+  "scene_candidate_work": {
+    "definition": {
+      "schema_id": "artflow-scene-candidate-work/1",
+      "work_id": "scene-work-807e766c4393",
+      "work_sha256": "807e766c4393b6850a7308f7a1617d4c586e22b7558915ab3314d81d606c0485",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "stage_request": {
+        "schema_id": "artflow-scene-stage-request/1",
+        "request_id": "stage-request-e31328f4b1f5",
+        "request_sha256": "e31328f4b1f52ee07dbcb8720adb8ef60564a282fd295ed78fb9dfe846028c89",
+        "idempotency_key": "scene-stage:e31328f4b1f52ee07dbcb8720adb8ef60564a282fd295ed78fb9dfe846028c89",
+        "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+        "basis_sequence": 3,
+        "session_id": "scene-session-dc31f6ed0f4e",
+        "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+        "draft_sha256": "2b80d958bc7dac78eba6936c5b78e80e45f7103f863071acd382d45ba3b4452f",
+        "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+        "strategy_version": "scene-session-strategy/1",
+        "source_scene": "/Game/ArtFlowDemo",
+        "candidate_destination": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+        "operations": [
+          {
+            "domain": "pcg",
+            "readiness": "ready",
+            "action": "通过固定 PCG 图布置项目资产",
+            "verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+            "depends_on": []
+          },
+          {
+            "domain": "lighting",
+            "readiness": "ready",
+            "action": "在候选关卡调整强度、色温与方向",
+            "verification": "参数范围、源关卡指纹与同机位亮度回渲",
+            "depends_on": []
+          }
+        ]
+      },
+      "candidate_plan": {
+        "schema_id": "artflow-scene-candidate-plan/1",
+        "plan_id": "candidate-plan-9039733f0b6b",
+        "plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+        "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+        "basis_sequence": 3,
+        "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+        "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+        "draft_sha256": "2b80d958bc7dac78eba6936c5b78e80e45f7103f863071acd382d45ba3b4452f",
+        "stage_request_sha256": "e31328f4b1f52ee07dbcb8720adb8ef60564a282fd295ed78fb9dfe846028c89",
+        "strategy_version": "scene-session-strategy/1",
+        "source_scene": "/Game/ArtFlowDemo",
+        "candidate_destination": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+        "operations": [
+          {
+            "operation_type": "apply_pcg_layout",
+            "operation_id": "pcg-layout-main",
+            "domain": "pcg",
+            "tool_name": "unreal.pcg.layout.apply",
+            "target_actor_id": "3fa0497b43ee5f7a52b02f9ebd35573b",
+            "target_actor_label": "Editable_Form",
+            "expected_source_fingerprint": "f9fa50d516c405c1822898e320cc30cddb527842b7b4abfc5e6fa772b15627e9",
+            "component_id": "3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter",
+            "approved_graph_path": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+            "seed": 240827,
+            "max_generated_instances": 64
+          },
+          {
+            "operation_type": "set_lighting_rig",
+            "operation_id": "lighting-rig-main",
+            "domain": "lighting",
+            "tool_name": "unreal.lighting.rig.patch",
+            "target_actor_id": "2fd6e5d1474ecd751f1b8f8729e64ad1",
+            "target_actor_label": "ArtFlow_KeyLight",
+            "expected_source_fingerprint": "00ea81ac90f62b384255c6a4c0ff1dbcf573017c5875a0e370bddb94bfb60bb1",
+            "intensity": 5.5,
+            "use_temperature": true,
+            "temperature_kelvin": 4200.0
+          }
+        ]
+      }
+    },
+    "status": "succeeded",
+    "worker_id": "ue-editor-47200",
+    "outcome_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+    "message": "候选关卡已完成并通过 Unreal 宿主复检"
+  },
+  "scene_candidate_intake": {
+    "evaluation_input": {
+      "schema_id": "artflow-current-candidate-evaluation-input/1",
+      "input_sha256": "9d2375586490531d61f657fe4069451bb2871fb11c4239e18a06716f2cc24d29",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "work_sha256": "807e766c4393b6850a7308f7a1617d4c586e22b7558915ab3314d81d606c0485",
+      "outcome_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+      "plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+      "stage_request_sha256": "e31328f4b1f52ee07dbcb8720adb8ef60564a282fd295ed78fb9dfe846028c89",
+      "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+      "source_scene": "/Game/ArtFlowDemo",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "candidate_level_sha256": "d7fac7758eb00bc96f81310bef0dcad1795a5c29f81e5cb32e9effa7531ae335",
+      "source_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+      "candidate_beauty_sha256": "c487423666354550b44dd1dd7bcae53a84c2fe82a02f7671d9dbe2138881ae0f",
+      "camera_width": 640,
+      "camera_height": 360,
+      "candidate_width": 640,
+      "candidate_height": 360,
+      "generated_instance_count": 12,
+      "maximum_generated_instances": 64,
+      "registered_receipt": "integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/SceneCandidates/candidate-plan-9039733f0b6b/candidate-execution-receipt.json"
+    },
+    "technical_evaluation": {
+      "schema_id": "artflow-current-candidate-technical-evaluation/1",
+      "evaluation_id": "current-technical-evaluation-c14caf81bcd1",
+      "evaluation_sha256": "c14caf81bcd179a6426052e6d5d7a2f5f001a0aa4fce6181de0000e70405ac76",
+      "evaluator_id": "current-session-technical-judge-v1",
+      "input_sha256": "9d2375586490531d61f657fe4069451bb2871fb11c4239e18a06716f2cc24d29",
+      "checks": [
+        {
+          "check_id": "receipt_identity",
+          "domain": "image",
+          "status": "passed",
+          "reason": "工作结果、回执与候选计划身份一致",
+          "evidence_sha256": "9007b20266b04eea6705c08a8352b32797deef7a30b97a53f72f880fa7af03d1"
+        },
+        {
+          "check_id": "source_invariants",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "源关卡在候选执行前后保持不变",
+          "evidence_sha256": "36d8c762504f9e8b4e7c55f12d9c8dd29bd01dbb810a575c4c55fab53e08a0f4"
+        },
+        {
+          "check_id": "candidate_namespace",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "候选关卡位于当前 Session 的隔离命名空间",
+          "evidence_sha256": "491214f91af82f671200862c51a7234dd90e0e0f5d344c1f97c96b36ec5b13e9"
+        },
+        {
+          "check_id": "instance_budget",
+          "domain": "pcg",
+          "status": "passed",
+          "reason": "PCG 实例 12/64",
+          "evidence_sha256": "0d7618b177cce82f86b9de91638656a93634ee981b6b5e30fe7348e0abce2ada"
+        },
+        {
+          "check_id": "same_camera_rerender",
+          "domain": "image",
+          "status": "passed",
+          "reason": "同机位回渲尺寸 640×360",
+          "evidence_sha256": "1b224e51e08f10d50651c94ed305d5fa606e4d6f4c92e1f6724e50e57fa51f3c"
+        },
+        {
+          "check_id": "rerender_content",
+          "domain": "image",
+          "status": "passed",
+          "reason": "候选回渲内容与 Unreal 回执哈希一致",
+          "evidence_sha256": "fd599c8f45a6e04045c62b19682ef1335c8d1b77cce9ee4b9c3fed30f41e897e"
+        }
+      ],
+      "failed_domains": [],
+      "status": "eligible_for_visual_review"
+    }
+  },
+  "scene_candidate_visual_verdict": {
+    "technical_intake_sha256": "9d2375586490531d61f657fe4069451bb2871fb11c4239e18a06716f2cc24d29",
+    "visual_observation": {
+      "schema_id": "artflow-current-candidate-visual-observation/1",
+      "observation_id": "current-visual-observation-39c343b26349",
+      "observation_sha256": "39c343b263491f2e27a77d1886eca85738780c76b79d365973df025967f19eb1",
+      "evaluator_id": "codex-native-multimodal-critic",
+      "evaluator_surface": "codex-app-current-images",
+      "input_sha256": "9d2375586490531d61f657fe4069451bb2871fb11c4239e18a06716f2cc24d29",
+      "source_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+      "candidate_beauty_sha256": "c487423666354550b44dd1dd7bcae53a84c2fe82a02f7671d9dbe2138881ae0f",
+      "rubric_sha256": "f229131346a6d09c6fbcd8a8be648ea24cf77b26497d96795c5273e57381e85c",
+      "claims": [
+        {
+          "dimension": "camera_composition",
+          "verdict": "passed",
+          "confidence": 0.99,
+          "rationale": "源图与候选保持相同机位、画幅和主体占位。"
+        },
+        {
+          "dimension": "protected_structure",
+          "verdict": "passed",
+          "confidence": 0.98,
+          "rationale": "灰盒立方体、球体与右侧墙体轮廓保持一致。"
+        },
+        {
+          "dimension": "spatial_readability",
+          "verdict": "passed",
+          "confidence": 0.94,
+          "rationale": "新增锥体形成可读的前中景分布且没有遮挡主体。"
+        },
+        {
+          "dimension": "lighting_direction",
+          "verdict": "failed",
+          "confidence": 0.96,
+          "rationale": "画面仍接近默认日照，未形成雨后清晨的冷湿空气与层次。"
+        },
+        {
+          "dimension": "visual_coherence",
+          "verdict": "passed",
+          "confidence": 0.9,
+          "rationale": "新增空间元素与原灰盒尺度关系一致，整体没有视觉冲突。"
+        }
+      ],
+      "recommended_failed_domains": [
+        "lighting"
+      ]
+    },
+    "domain_evaluation": {
+      "schema_id": "artflow-scene-domain-evaluation/1",
+      "evaluation_id": "domain-evaluation-d6698ca7471a",
+      "evaluation_sha256": "d6698ca7471a7df202462422e9fffffda1e9725ad368bbfc7141d6911e2f6294",
+      "plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+      "findings": [
+        {
+          "domain": "image",
+          "status": "passed",
+          "reason": "源图与候选保持相同机位、画幅和主体占位。；灰盒立方体、球体与右侧墙体轮廓保持一致。",
+          "evidence_sha256": "0d2850b4d96dd4d557feea3320fff5d95de7bdb97ac08e9079a7639723b9fa63"
+        },
+        {
+          "domain": "pcg",
+          "status": "passed",
+          "reason": "灰盒立方体、球体与右侧墙体轮廓保持一致。；新增锥体形成可读的前中景分布且没有遮挡主体。",
+          "evidence_sha256": "b676850e4b52860c86de0c7787563a639781a38f57c36224c74c721dcdd68448"
+        },
+        {
+          "domain": "lighting",
+          "status": "failed",
+          "reason": "画面仍接近默认日照，未形成雨后清晨的冷湿空气与层次。；新增空间元素与原灰盒尺度关系一致，整体没有视觉冲突。",
+          "evidence_sha256": "a25baa9eda0c706ccbae2b874fcc12182831952582228a28c2716f05cd2f6c93"
+        }
+      ],
+      "failed_domains": [
+        "lighting"
+      ],
+      "status": "correction_required"
+    }
+  },
+  "scene_correction_work": {
+    "definition": {
+      "schema_id": "artflow-scene-correction-work/1",
+      "work_id": "scene-correction-50470223e940",
+      "work_sha256": "50470223e94076cade2b731a7dc5b76d24fb78d2e312005bb7f798e32da19301",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "parent_work_sha256": "807e766c4393b6850a7308f7a1617d4c586e22b7558915ab3314d81d606c0485",
+      "parent_outcome_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "candidate_plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+      "evaluation_sha256": "d6698ca7471a7df202462422e9fffffda1e9725ad368bbfc7141d6911e2f6294",
+      "correction_plan": {
+        "schema_id": "artflow-scene-domain-correction-plan/1",
+        "correction_id": "domain-correction-3aad9c915e5d",
+        "correction_sha256": "3aad9c915e5d2c90dfb3ffa217c5b0ac15ba121b5d32d63249cbf778e63b59cc",
+        "evaluation_sha256": "d6698ca7471a7df202462422e9fffffda1e9725ad368bbfc7141d6911e2f6294",
+        "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+        "failed_domains": [
+          "lighting"
+        ],
+        "rerun_domains": [
+          "lighting"
+        ],
+        "preserved_evidence_sha256s": {
+          "image": "0d2850b4d96dd4d557feea3320fff5d95de7bdb97ac08e9079a7639723b9fa63",
+          "pcg": "b676850e4b52860c86de0c7787563a639781a38f57c36224c74c721dcdd68448"
+        },
+        "lighting_intensity": 3.2,
+        "lighting_temperature_kelvin": 7200.0
+      }
+    },
+    "status": "succeeded",
+    "worker_id": "ue-editor-47128",
+    "outcome_sha256": "11c30f12f14e4b0cd8d964b7403cda78ad71cff08931109c9b2d346cdadf55cb",
+    "message": "灯光域已修正；image 与 PCG 证据保持不变"
+  },
+  "scene_correction_intake": {
+    "evaluation_input": {
+      "schema_id": "artflow-current-correction-evaluation-input/1",
+      "input_sha256": "0fa6b34b2aa6cc7b5e806f2fe67ed685790761754b200c04740fedc6291ccbee",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "correction_work_sha256": "50470223e94076cade2b731a7dc5b76d24fb78d2e312005bb7f798e32da19301",
+      "correction_outcome_sha256": "11c30f12f14e4b0cd8d964b7403cda78ad71cff08931109c9b2d346cdadf55cb",
+      "prior_evaluation_sha256": "d6698ca7471a7df202462422e9fffffda1e9725ad368bbfc7141d6911e2f6294",
+      "plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "host_candidate_level_sha256": "556ec4b34fe1779de23e5bebe6e8a88cd6a121b4f1cc7947607a64a4894ba838",
+      "current_candidate_level_sha256": "556ec4b34fe1779de23e5bebe6e8a88cd6a121b4f1cc7947607a64a4894ba838",
+      "source_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+      "corrected_beauty_sha256": "9babc1282044ce9148915c647c80aca0ff0840c6357fc7d1d1c27272f0e2b13e",
+      "preserved_evidence_sha256s": {
+        "image": "0d2850b4d96dd4d557feea3320fff5d95de7bdb97ac08e9079a7639723b9fa63",
+        "pcg": "b676850e4b52860c86de0c7787563a639781a38f57c36224c74c721dcdd68448"
+      },
+      "protected_state_before": "65454d0cdcd4aba6811db0c7668fa65fd4b76abf594cb9ab33e20cd20b12a36f",
+      "protected_state_after": "65454d0cdcd4aba6811db0c7668fa65fd4b76abf594cb9ab33e20cd20b12a36f",
+      "generated_instance_count_before": 12,
+      "generated_instance_count_after": 12,
+      "intensity_before": 5.5,
+      "intensity_after": 3.200000047683716,
+      "temperature_before": 4200.0,
+      "temperature_after": 7200.0,
+      "registered_receipt": "integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/SceneCorrections/scene-correction-50470223e940/lighting-correction-receipt.json"
+    },
+    "technical_evaluation": {
+      "schema_id": "artflow-current-correction-technical-evaluation/1",
+      "evaluation_id": "correction-technical-evaluation-3beaaa66b6cf",
+      "evaluation_sha256": "3beaaa66b6cfe90d23ced635f5f501fcb5bf7ec4bc1fdd7e01dc8f0ddeeb42ff",
+      "evaluator_id": "current-correction-technical-judge-v1",
+      "input_sha256": "0fa6b34b2aa6cc7b5e806f2fe67ed685790761754b200c04740fedc6291ccbee",
+      "checks": [
+        {
+          "check_id": "receipt_identity",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "纠正工作、父裁决、候选与宿主回执身份一致",
+          "evidence_sha256": "f62f6326301784fa372fd8c7897c65c0c40bd0eb80bb61703675140a34c5563e"
+        },
+        {
+          "check_id": "source_invariants",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "源关卡在纠正前后及当前磁盘状态保持一致",
+          "evidence_sha256": "1bb27a598756359ad7c7438492290f53a470f0b3c8df4785cc31e0e7b4d1d340"
+        },
+        {
+          "check_id": "protected_invariants",
+          "domain": "image",
+          "status": "passed",
+          "reason": "受保护结构语义指纹在灯光纠正前后保持一致",
+          "evidence_sha256": "a3e93ac8ab6e240b18087d3f8ea4bd46975ec1766b0b9a79c32e5040974e44d3"
+        },
+        {
+          "check_id": "pcg_preserved",
+          "domain": "pcg",
+          "status": "passed",
+          "reason": "PCG 实例保持 12→12，原通过证据继续封存",
+          "evidence_sha256": "0764e72552da86d18544d45ec786ebd387c9cc767af5e7d9a37d55e6a4aaf954"
+        },
+        {
+          "check_id": "failed_domain_scope",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "纠正只重跑 lighting，并保留 image 与 PCG",
+          "evidence_sha256": "b260f75f4fb7d6efc2c89c16fc68ffedb7a2162452c8aa9818645f020db70af7"
+        },
+        {
+          "check_id": "lighting_patch",
+          "domain": "lighting",
+          "status": "passed",
+          "reason": "主光参数按注册补丁发生实际变化",
+          "evidence_sha256": "62d775fb1e9618e9bc1c54c1eced877a0788365cbcfd203773a548889feac88e"
+        },
+        {
+          "check_id": "corrected_rerender",
+          "domain": "image",
+          "status": "passed",
+          "reason": "同机位纠正回渲内容与宿主哈希一致且不同于原候选",
+          "evidence_sha256": "acaa5f4ce83d399c81adb9cb08b2f76dfac1475435efadb545074904d8f0bf2a"
+        }
+      ],
+      "failed_domains": [],
+      "status": "eligible_for_visual_review"
+    }
+  },
+  "scene_correction_visual_verdict": {
+    "technical_intake_sha256": "0fa6b34b2aa6cc7b5e806f2fe67ed685790761754b200c04740fedc6291ccbee",
+    "visual_observation": {
+      "schema_id": "artflow-current-candidate-visual-observation/1",
+      "observation_id": "current-visual-observation-c1c6b5b5cb5a",
+      "observation_sha256": "c1c6b5b5cb5a2134b85737f01e0a1f0a16419085f241c555f601329060f0b4b6",
+      "evaluator_id": "codex-native-multimodal-critic",
+      "evaluator_surface": "codex-app-current-images",
+      "input_sha256": "0fa6b34b2aa6cc7b5e806f2fe67ed685790761754b200c04740fedc6291ccbee",
+      "source_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+      "candidate_beauty_sha256": "9babc1282044ce9148915c647c80aca0ff0840c6357fc7d1d1c27272f0e2b13e",
+      "rubric_sha256": "f229131346a6d09c6fbcd8a8be648ea24cf77b26497d96795c5273e57381e85c",
+      "claims": [
+        {
+          "dimension": "camera_composition",
+          "verdict": "passed",
+          "confidence": 0.99,
+          "rationale": "纠正回渲保持源场景的相机、画幅和主体占位。"
+        },
+        {
+          "dimension": "protected_structure",
+          "verdict": "passed",
+          "confidence": 0.99,
+          "rationale": "受保护灰盒轮廓与原候选一致，没有结构改写。"
+        },
+        {
+          "dimension": "spatial_readability",
+          "verdict": "passed",
+          "confidence": 0.96,
+          "rationale": "十二个 PCG 实例仍形成可读的前景和中景节奏。"
+        },
+        {
+          "dimension": "lighting_direction",
+          "verdict": "failed",
+          "confidence": 0.93,
+          "rationale": "画面仍由硬质中性日照主导，冷湿清晨的空气与明暗层次不够明确。"
+        },
+        {
+          "dimension": "visual_coherence",
+          "verdict": "passed",
+          "confidence": 0.89,
+          "rationale": "灯光调整没有破坏灰盒、墙体和 PCG 布局之间的整体关系。"
+        }
+      ],
+      "recommended_failed_domains": [
+        "lighting"
+      ]
+    },
+    "domain_evaluation": {
+      "schema_id": "artflow-scene-domain-evaluation/1",
+      "evaluation_id": "domain-evaluation-5364ef0fa042",
+      "evaluation_sha256": "5364ef0fa0426a4f1ec61b385a2d5ce126da83fb7c8b077569f95d0ff5f6de12",
+      "plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+      "findings": [
+        {
+          "domain": "image",
+          "status": "passed",
+          "reason": "源图与候选保持相同机位、画幅和主体占位。；灰盒立方体、球体与右侧墙体轮廓保持一致。",
+          "evidence_sha256": "0d2850b4d96dd4d557feea3320fff5d95de7bdb97ac08e9079a7639723b9fa63"
+        },
+        {
+          "domain": "pcg",
+          "status": "passed",
+          "reason": "灰盒立方体、球体与右侧墙体轮廓保持一致。；新增锥体形成可读的前中景分布且没有遮挡主体。",
+          "evidence_sha256": "b676850e4b52860c86de0c7787563a639781a38f57c36224c74c721dcdd68448"
+        },
+        {
+          "domain": "lighting",
+          "status": "failed",
+          "reason": "画面仍由硬质中性日照主导，冷湿清晨的空气与明暗层次不够明确。；灯光调整没有破坏灰盒、墙体和 PCG 布局之间的整体关系。",
+          "evidence_sha256": "c109c7e3fdcdd95490bb163f0d52399ee53e57dda894e1099b5c15283b66afda"
+        }
+      ],
+      "failed_domains": [
+        "lighting"
+      ],
+      "status": "correction_required"
+    }
+  },
+  "scene_candidate_evaluation": null,
+  "scene_candidate_adoption": null,
+  "scene_variant_lineage": null
+}

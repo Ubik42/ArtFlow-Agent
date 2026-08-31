@@ -511,6 +511,10 @@ type AgentProjection = {
   scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
   scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
   scene_correction_work: SceneCorrectionWorkState | null;
+  scene_correction_intake: CurrentCorrectionEvaluationRecord | null;
+  scene_correction_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
+  scene_candidate_evaluation: { corrected_evaluation: CurrentCandidateDomainVerdictRecord["domain_evaluation"] } | null;
+  scene_candidate_adoption: { decision: { decision_sha256: string; orchestrator: "codex"; published_scene: string } } | null;
   scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
@@ -659,6 +663,30 @@ type SceneCorrectionWorkState = {
   worker_id: string | null;
   outcome_sha256: string | null;
   message: string | null;
+};
+type CurrentCorrectionEvaluationRecord = {
+  evaluation_input: {
+    input_sha256: string;
+    corrected_beauty_sha256: string;
+    generated_instance_count_before: number;
+    generated_instance_count_after: number;
+    intensity_before: number;
+    intensity_after: number;
+    temperature_before: number;
+    temperature_after: number;
+  };
+  technical_evaluation: {
+    evaluation_id: string;
+    evaluation_sha256: string;
+    status: "eligible_for_visual_review" | "rejected";
+    failed_domains: SceneDomain[];
+    checks: Array<{
+      check_id: string;
+      domain: SceneDomain;
+      status: "passed" | "failed";
+      reason: string;
+    }>;
+  };
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
@@ -1398,6 +1426,9 @@ function SceneChangeSpectrum({
   const intake = agent.scene_candidate_intake;
   const visualVerdict = agent.scene_candidate_visual_verdict;
   const correctionWork = agent.scene_correction_work;
+  const correctionIntake = agent.scene_correction_intake;
+  const correctionVerdict = agent.scene_correction_visual_verdict;
+  const currentAdoption = agent.scene_candidate_adoption;
   const workLabels: Record<SceneCandidateWorkState["status"], string> = {
     queued: "等待 Unreal 领取",
     claimed: "Unreal 已领取",
@@ -1485,8 +1516,18 @@ function SceneChangeSpectrum({
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
                 {correctionWork
-                  ? correctionWork.status === "succeeded"
-                    ? "灯光纠正完成，等待同机位复评"
+                  ? currentAdoption
+                    ? "当前纠正候选已由 Codex 采用，等待发布"
+                    : correctionVerdict?.domain_evaluation.status === "correction_required"
+                      ? "单灯纠正未通过复评，只需继续修正 lighting"
+                      : correctionVerdict?.domain_evaluation.status === "accepted"
+                        ? "当前纠正候选已通过独立复评"
+                    : correctionIntake
+                      ? correctionIntake.technical_evaluation.status === "eligible_for_visual_review"
+                        ? "灯光纠正已通过七项技术复检，等待视觉复评"
+                        : "灯光纠正未通过技术复检"
+                    : correctionWork.status === "succeeded"
+                      ? "灯光纠正完成，等待同机位复评"
                     : `灯光纠正：${workLabels[correctionWork.status]}`
                   : visualVerdict
                   ? visualVerdict.domain_evaluation.status === "accepted"
@@ -1516,11 +1557,27 @@ function SceneChangeSpectrum({
             <div className="spectrum-actions">
               {work ? (
                 correctionWork ? (
-                  <div className={`candidate-work-pulse state-${correctionWork.status}`}>
-                    <span />
-                    <b>{correctionWork.status === "succeeded" ? "灯光纠正回渲已就绪" : `只重做 lighting · ${workLabels[correctionWork.status]}`}</b>
-                    <small>{correctionWork.worker_id ? `写入者 ${correctionWork.worker_id}` : `保留 ${Object.keys(correctionWork.definition.correction_plan.preserved_evidence_sha256s).join("、")}`}</small>
-                  </div>
+                  correctionVerdict?.domain_evaluation.status === "correction_required" ? (
+                    <button type="button" disabled={busy} onClick={() => void queueCorrectionWork()}>
+                      <ScanLine size={13} /> 封存灯光组补丁
+                    </button>
+                  ) : (
+                    <div className={`candidate-work-pulse state-${currentAdoption || correctionVerdict?.domain_evaluation.status === "accepted" ? "succeeded" : correctionVerdict ? "failed" : correctionWork.status}`}>
+                      <span />
+                      <b>
+                        {currentAdoption
+                          ? "内容身份已采用"
+                          : correctionVerdict?.domain_evaluation.status === "accepted"
+                            ? "纠正候选复评通过"
+                            : correctionIntake
+                              ? "七项技术复检通过"
+                              : correctionWork.status === "succeeded"
+                                ? "灯光纠正回渲已就绪"
+                                : `只重做 lighting · ${workLabels[correctionWork.status]}`}
+                      </b>
+                      <small>{currentAdoption ? `Codex · ${shortId(currentAdoption.decision.decision_sha256)}` : correctionWork.worker_id ? `写入者 ${correctionWork.worker_id}` : `保留 ${Object.keys(correctionWork.definition.correction_plan.preserved_evidence_sha256s).join("、")}`}</small>
+                    </div>
+                  )
                 ) : visualVerdict?.domain_evaluation.status === "correction_required" ? (
                   <button type="button" disabled={busy} onClick={() => void queueCorrectionWork()}>
                     <ScanLine size={13} /> 封存灯光补丁
@@ -1604,8 +1661,12 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   }, [hasCurrentLifecycle, liveLineage]);
   const lineage = liveLineage ?? fallbackLineage;
   const lineageSource = liveLineage ? "当前 Scene Session" : "作品演示数据";
-  const currentVerdict = agent.scene_candidate_visual_verdict?.domain_evaluation;
+  const currentVerdict = (
+    agent.scene_correction_visual_verdict ?? agent.scene_candidate_visual_verdict
+  )?.domain_evaluation;
   const correctionSucceeded = agent.scene_correction_work?.status === "succeeded";
+  const correctionNeedsAnotherPass =
+    agent.scene_correction_visual_verdict?.domain_evaluation.status === "correction_required";
   const currentDomains = currentVerdict
     ? currentVerdict.findings.map((finding) => {
         const label: Record<SceneDomain, string> = {
@@ -1627,12 +1688,16 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       id: "rain-wet-courtyard",
       tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
       title: hasCurrentLifecycle
-        ? correctionSucceeded
+        ? correctionNeedsAnotherPass
+          ? "技术复检通过，视觉复评要求继续收敛灯光组"
+          : correctionSucceeded
           ? "Unreal 已完成一次灯光域定向纠正"
           : "当前 Unreal 候选正在沿失败域收敛"
         : "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
       description: hasCurrentLifecycle
-        ? correctionSucceeded
+        ? correctionNeedsAnotherPass
+          ? "七项技术检查证明本次修改没有越界，但新回渲仍受第二盏 DirectionalLight 主导，冷湿清晨方向不够明确。Agent 保留 image 与 PCG，只把 lighting 送入下一次受限灯光组纠正。"
+          : correctionSucceeded
           ? "独立视觉评价只判定 lighting 失败。Agent 保留图像与 PCG 证据，仅把主光从 5.5 / 4200K 改为 3.2 / 7200K，并由 Unreal 以同机位重新渲染。"
           : "源场景、候选回渲、技术审查与视觉裁决来自同一个 Scene Session。当前空间布局已经通过，雨后清晨的光照方向仍需一次有界修正。"
         : "Agent 读取 Unreal 场景包，将雨后湿润方向编译成五类受限工具调用。ComfyUI 负责 PBR 技术图，项目资产和 PCG 完成空间铺陈，所有写入只发生在隔离候选关卡。",
@@ -1656,7 +1721,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       metricB: "0",
       metricBLabel: "源关卡改写",
       note: hasCurrentLifecycle
-        ? correctionSucceeded
+        ? correctionNeedsAnotherPass
+          ? "复评结论来自当前纠正图而非历史案例；硬约束全部通过，视觉 lighting 仍失败，因此候选没有被采用。"
+          : correctionSucceeded
           ? "UE 5.8 实测：源关卡哈希不变，保护结构不变，PCG 实例 12→12；新回渲等待独立复评。"
           : "当前 UE 5.8 回执与视觉观察已进入同一事件流；下一步只生成灯光域补丁。"
         : "真实 UE 5.8 回执；新进程对账时不会重复调用 Provider 或重新导入。",

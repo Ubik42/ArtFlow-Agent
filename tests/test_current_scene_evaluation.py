@@ -50,7 +50,18 @@ def _succeeded_work(
     beauty = output / "candidate-beauty.png"
     Image.new("RGB", (640, 360), (88, 112, 132)).save(beauty)
     beauty_sha = hashlib.sha256(beauty.read_bytes()).hexdigest()
-    source_sha = "4" * 64
+    content_root = (
+        project_root
+        / "integrations/unreal/ArtFlowBridgeHost/Content"
+    )
+    content_root.mkdir(parents=True)
+    source_file = content_root / "ArtFlowDemo.umap"
+    source_file.write_bytes(b"source-level")
+    source_sha = hashlib.sha256(source_file.read_bytes()).hexdigest()
+    candidate_file = content_root / f"{plan['candidate_destination'].removeprefix('/Game/')}.umap"
+    candidate_file.parent.mkdir(parents=True)
+    candidate_file.write_bytes(b"candidate-level")
+    candidate_sha = hashlib.sha256(candidate_file.read_bytes()).hexdigest()
     receipt = {
         "schema_id": "artflow-session-candidate-execution-receipt/1",
         "plan_id": plan["plan_id"],
@@ -61,7 +72,7 @@ def _succeeded_work(
         "source_level_sha256_after": source_sha,
         "source_level_unchanged": True,
         "candidate_scene": plan["candidate_destination"],
-        "candidate_level_sha256": "5" * 64,
+        "candidate_level_sha256": candidate_sha,
         "generated_instance_count": generated_instance_count,
         "reconciled": False,
         "candidate_beauty_path": str(beauty),
@@ -354,3 +365,189 @@ def test_failed_correction_can_be_requeued_with_the_same_content_identity(
     assert [event.event_type for event in events].count(
         "scene_correction_work_queued"
     ) == 2
+
+
+def _succeeded_correction(
+    tmp_path: Path,
+) -> tuple[TestClient, Path, dict[str, object]]:
+    client, database, _ = _succeeded_work(tmp_path)
+    candidate_base = f"/api/agent/runs/{RUN_ID}/scene-candidate-work"
+    intake = client.post(f"{candidate_base}/evaluate").json()[
+        "scene_candidate_intake"
+    ]
+    client.post(
+        f"{candidate_base}/visual-observation",
+        json=_lighting_failure_observation(intake),
+    )
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    projection = client.post(f"{base}/queue").json()
+    work = projection["scene_correction_work"]
+    definition = work["definition"]
+    project_root = tmp_path / "project"
+    candidate_file = (
+        project_root
+        / "integrations/unreal/ArtFlowBridgeHost/Content"
+        / f"{definition['candidate_scene'].removeprefix('/Game/')}.umap"
+    )
+    candidate_file.write_bytes(b"corrected-candidate-level")
+    candidate_sha = hashlib.sha256(candidate_file.read_bytes()).hexdigest()
+    output = (
+        project_root
+        / "integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/SceneCorrections"
+        / definition["work_id"]
+    )
+    output.mkdir(parents=True)
+    beauty = output / "corrected-beauty.png"
+    Image.new("RGB", (640, 360), (72, 98, 146)).save(beauty)
+    beauty_sha = hashlib.sha256(beauty.read_bytes()).hexdigest()
+    receipt = {
+        "schema_id": "artflow-session-lighting-correction-receipt/1",
+        "work_id": definition["work_id"],
+        "work_sha256": definition["work_sha256"],
+        "evaluation_sha256": definition["evaluation_sha256"],
+        "correction_sha256": definition["correction_plan"]["correction_sha256"],
+        "candidate_plan_sha256": definition["candidate_plan_sha256"],
+        "candidate_scene": definition["candidate_scene"],
+        "source_level_sha256_before": definition["source_level_sha256"],
+        "source_level_sha256_after": definition["source_level_sha256"],
+        "source_level_unchanged": True,
+        "protected_state_before": "6" * 64,
+        "protected_state_after": "6" * 64,
+        "generated_instance_count_before": 12,
+        "generated_instance_count_after": 12,
+        "intensity_before": 5.5,
+        "intensity_after": 3.2,
+        "temperature_before": 4200.0,
+        "temperature_after": 7200.0,
+        "candidate_level_sha256": candidate_sha,
+        "corrected_beauty_path": str(beauty),
+        "corrected_beauty_sha256": beauty_sha,
+        "reconciled": False,
+        "completed_at": "2026-08-30T13:00:00Z",
+    }
+    receipt_path = output / "lighting-correction-receipt.json"
+    receipt_path.write_text(json.dumps(receipt), encoding="utf-8")
+    outcome = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+    claim = {
+        "schema_id": "artflow-scene-correction-claim/1",
+        "work_sha256": definition["work_sha256"],
+        "session_sha256": definition["session_sha256"],
+        "worker_id": "ue-editor-correction",
+    }
+    assert client.post(f"{base}/claim", json=claim).status_code == 200
+    for status in ("executing", "reconciling"):
+        assert client.post(
+            f"{base}/progress",
+            json={
+                "schema_id": "artflow-scene-correction-progress/1",
+                "work_sha256": definition["work_sha256"],
+                "worker_id": "ue-editor-correction",
+                "status": status,
+                "action_id": f"m20-correction-real-{status}",
+            },
+        ).status_code == 200
+    assert client.post(
+        f"{base}/progress",
+        json={
+            "schema_id": "artflow-scene-correction-progress/1",
+            "work_sha256": definition["work_sha256"],
+            "worker_id": "ue-editor-correction",
+            "status": "succeeded",
+            "action_id": "m20-correction-real-succeeded",
+            "outcome_sha256": outcome,
+        },
+    ).status_code == 200
+    return client, database, projection
+
+
+def test_corrected_candidate_is_reevaluated_and_adopted_from_current_evidence(
+    tmp_path: Path,
+) -> None:
+    client, database, before = _succeeded_correction(tmp_path)
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    first = client.post(f"{base}/evaluate")
+    replay = client.post(f"{base}/evaluate")
+    assert first.status_code == replay.status_code == 200
+    intake = first.json()["scene_correction_intake"]
+    assert intake == replay.json()["scene_correction_intake"]
+    assert intake["technical_evaluation"]["status"] == "eligible_for_visual_review"
+    assert len(intake["technical_evaluation"]["checks"]) == 7
+    assert intake["evaluation_input"]["corrected_beauty_sha256"] != before[
+        "scene_candidate_intake"
+    ]["evaluation_input"]["candidate_beauty_sha256"]
+    served = client.get(f"{base}/beauty")
+    assert served.status_code == 200
+    assert hashlib.sha256(served.content).hexdigest() == intake["evaluation_input"][
+        "corrected_beauty_sha256"
+    ]
+
+    observation = seal_visual_observation(
+        {
+            "input_sha256": intake["evaluation_input"]["input_sha256"],
+            "source_beauty_sha256": intake["evaluation_input"][
+                "source_beauty_sha256"
+            ],
+            "candidate_beauty_sha256": intake["evaluation_input"][
+                "corrected_beauty_sha256"
+            ],
+            "claims": [
+                {
+                    "dimension": "camera_composition",
+                    "verdict": "passed",
+                    "confidence": 0.99,
+                    "rationale": "纠正回渲继续保持源场景的相机、画幅和主体占位。",
+                },
+                {
+                    "dimension": "protected_structure",
+                    "verdict": "passed",
+                    "confidence": 0.99,
+                    "rationale": "受保护灰盒轮廓与原候选保持一致，没有发生结构改写。",
+                },
+                {
+                    "dimension": "spatial_readability",
+                    "verdict": "passed",
+                    "confidence": 0.95,
+                    "rationale": "十二个 PCG 实例仍维持清晰的前景与中景空间节奏。",
+                },
+                {
+                    "dimension": "lighting_direction",
+                    "verdict": "passed",
+                    "confidence": 0.86,
+                    "rationale": "降低强度并提升色温后，画面形成更冷静的清晨光照方向。",
+                },
+                {
+                    "dimension": "visual_coherence",
+                    "verdict": "passed",
+                    "confidence": 0.84,
+                    "rationale": "冷色主光与灰盒、墙体及空间层次保持统一，没有引入冲突。",
+                },
+            ],
+            "recommended_failed_domains": [],
+        }
+    ).model_dump(mode="json")
+    evaluated = client.post(f"{base}/visual-observation", json=observation)
+    replayed = client.post(f"{base}/visual-observation", json=observation)
+    assert evaluated.status_code == replayed.status_code == 200
+    payload = evaluated.json()
+    corrected = payload["scene_correction_visual_verdict"]["domain_evaluation"]
+    assert corrected["status"] == "accepted"
+    assert corrected["failed_domains"] == []
+    failed_findings = {
+        item["domain"]: item
+        for item in payload["scene_candidate_visual_verdict"]["domain_evaluation"][
+            "findings"
+        ]
+    }
+    corrected_findings = {item["domain"]: item for item in corrected["findings"]}
+    assert corrected_findings["image"] == failed_findings["image"]
+    assert corrected_findings["pcg"] == failed_findings["pcg"]
+    assert payload["scene_candidate_evaluation"]["corrected_evaluation"] == corrected
+
+    adopted = client.post(f"{base}/adopt")
+    adopted_replay = client.post(f"{base}/adopt")
+    assert adopted.status_code == adopted_replay.status_code == 200
+    decision = adopted.json()["scene_candidate_adoption"]["decision"]
+    assert decision["orchestrator"] == "codex"
+    assert decision["evaluation_sha256"] == corrected["evaluation_sha256"]
+    assert adopted.json()["scene_variant_lineage"] is None
+    assert len(AgentEventStore(database).events(RUN_ID)) == 19

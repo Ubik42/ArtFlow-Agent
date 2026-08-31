@@ -21,6 +21,10 @@ from .comparison import (
     ProviderComparisonPlan,
 )
 from .contracts import CodexImageCandidateRecord
+from .current_correction_evaluation import (
+    CurrentCorrectionDomainVerdictRecord,
+    CurrentCorrectionEvaluationRecord,
+)
 from .current_scene_evaluation import CurrentCandidateEvaluationRecord
 from .current_visual_critic import CurrentCandidateDomainVerdictRecord
 from .harness_contracts import HarnessScorecard
@@ -32,6 +36,10 @@ from .recovery_contracts import RecoveryScorecard
 from .scene_candidate_work import SceneCandidateWorkState
 from .scene_correction_work import SceneCorrectionWorkState
 from .scene_session import SceneSession
+from .scene_variant_lifecycle import (
+    SceneCandidateAdoptionRecord,
+    SceneCandidateEvaluationRecord,
+)
 from .scene_variant_review import SceneVariantLineage
 from .tribunal import TribunalReport
 
@@ -104,6 +112,10 @@ class AgentRunProjection(BaseModel):
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
+    scene_correction_intake: CurrentCorrectionEvaluationRecord | None = None
+    scene_correction_visual_verdict: CurrentCorrectionDomainVerdictRecord | None = None
+    scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
+    scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -134,6 +146,10 @@ class AgentStreamSnapshot(BaseModel):
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
+    scene_correction_intake: CurrentCorrectionEvaluationRecord | None = None
+    scene_correction_visual_verdict: CurrentCorrectionDomainVerdictRecord | None = None
+    scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
+    scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -274,6 +290,10 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
         scene_candidate_intake=state.scene_candidate_intake,
         scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
         scene_correction_work=state.scene_correction_work,
+        scene_correction_intake=state.scene_correction_intake,
+        scene_correction_visual_verdict=state.scene_correction_visual_verdict,
+        scene_candidate_evaluation=state.scene_candidate_evaluation,
+        scene_candidate_adoption=state.scene_candidate_adoption,
         scene_variant_lineage=(
             state.scene_variant_review.lineage if state.scene_variant_review else None
         ),
@@ -325,6 +345,10 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
             scene_candidate_intake=state.scene_candidate_intake,
             scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
             scene_correction_work=state.scene_correction_work,
+            scene_correction_intake=state.scene_correction_intake,
+            scene_correction_visual_verdict=state.scene_correction_visual_verdict,
+            scene_candidate_evaluation=state.scene_candidate_evaluation,
+            scene_candidate_adoption=state.scene_candidate_adoption,
             scene_variant_lineage=(
                 state.scene_variant_review.lineage if state.scene_variant_review else None
             ),
@@ -498,6 +522,16 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "灯光纠正状态已更新",
             "执行、对账与新回渲继续写入当前 Scene Session",
             "active",
+        ),
+        "scene_correction_intake_evaluated": (
+            "纠正结果已通过技术复检",
+            "源关卡、保护结构、PCG、灯光补丁与新回渲已绑定到当前纠正工作",
+            "success",
+        ),
+        "scene_correction_visual_evaluated": (
+            "纠正结果已完成视觉复评",
+            "新的多模态观察只评价当前纠正回渲，并按硬失败优先级形成领域结果",
+            "success",
         ),
         "scene_candidate_evaluated": (
             "场景候选已评价",
