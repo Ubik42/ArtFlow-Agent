@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow 场景导演台：当前 Unreal 候选仅需修正灯光域](artifacts/goal/m20-s2-current-visual/live-visual-verdict-desktop.png)
+![ArtFlow 场景导演台：当前 Unreal 候选完成灯光域定向纠正](artifacts/goal/m20-s3-current-correction/live-lighting-correction-desktop.png)
 
 ## 项目定位
 
@@ -25,6 +25,8 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 当所有选定领域满足前置条件时，系统生成一份与场景哈希、Session、策略版本和领域操作严格绑定的候选关卡请求。请求只能指向 ArtFlow 派生的隔离内容目录；截图中的状态表示“请求已封存”，不表示 Unreal 已经完成本次写入。
 
 封存后的 Candidate Plan 会进入当前 Scene Session 的注册工作项。使用者可在 Unreal 的 Tools 菜单选择“执行当前 ArtFlow 候选”；编辑器原子领取单一写入权，依次回传执行、对账和结果状态。当前 UE 5.8.1 实测由实时导出的场景包建立新 Session，生成 12 个 PCG 实例并保持源关卡哈希不变。
+
+当前候选经独立评价后只判定 `lighting` 失败。纠正工作保留图像与 PCG 证据，只把主光从 `5.5 / 4200K` 调整为 `3.2 / 7200K`；UE 回执证明保护结构未变、PCG 实例保持 `12 → 12`、源关卡哈希未变，并生成新的同机位回渲等待复评。
 
 在真实 UE 5.8 宿主中，当前已接入的 PCG 与灯光域可以进一步编译为具体 Candidate Plan。下面的候选由 Session 请求派生目录承载，生成 12 个 PCG 实例；新编辑器进程再次打开同一计划时完成对账而不重复生成，源关卡文件哈希保持不变。
 

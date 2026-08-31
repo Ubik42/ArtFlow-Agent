@@ -57,6 +57,7 @@ from .scene_correction_work import (
     SceneCorrectionWorkClaimRequest,
     SceneCorrectionWorkProgressRequest,
     compile_current_correction_work,
+    resolve_current_correction_beauty,
 )
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
@@ -511,12 +512,27 @@ def create_app(
     def queue_scene_correction_work(run_id: str):
         try:
             state = agent_store.load(run_id)
-            if state.scene_correction_work is not None:
-                return project_agent_run(agent_store, run_id)
             definition = compile_current_correction_work(state)
+            current = state.scene_correction_work
+            if current is not None and (
+                current.status != "failed"
+                and current.definition.work_sha256 == definition.work_sha256
+            ):
+                return project_agent_run(agent_store, run_id)
             agent_store.queue_scene_correction_work(run_id, definition)
             return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.get("/api/agent/runs/{run_id}/scene-correction-work/beauty")
+    def current_scene_correction_beauty(run_id: str):
+        try:
+            path = resolve_current_correction_beauty(
+                resolved_project_root, agent_store.load(run_id)
+            )
+            return FileResponse(path, media_type="image/png")
+        except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

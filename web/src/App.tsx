@@ -1605,6 +1605,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const lineage = liveLineage ?? fallbackLineage;
   const lineageSource = liveLineage ? "当前 Scene Session" : "作品演示数据";
   const currentVerdict = agent.scene_candidate_visual_verdict?.domain_evaluation;
+  const correctionSucceeded = agent.scene_correction_work?.status === "succeeded";
   const currentDomains = currentVerdict
     ? currentVerdict.findings.map((finding) => {
         const label: Record<SceneDomain, string> = {
@@ -1614,7 +1615,10 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
           pcg: "PCG",
           lighting: "灯光",
         };
-        return `${label[finding.domain]}·${finding.status === "passed" ? "通过" : "待修正"}`;
+        if (correctionSucceeded && finding.domain === "lighting") {
+          return "灯光·已纠正待复评";
+        }
+        return `${label[finding.domain]}·${finding.status === "passed" ? (correctionSucceeded ? "保留" : "通过") : "待修正"}`;
       })
     : ["图像·待评价", "PCG·已执行", "灯光·待评价"];
   const currentInput = agent.scene_candidate_intake?.evaluation_input;
@@ -1623,13 +1627,22 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       id: "rain-wet-courtyard",
       tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
       title: hasCurrentLifecycle
-        ? "当前 Unreal 候选正在沿失败域收敛"
+        ? correctionSucceeded
+          ? "Unreal 已完成一次灯光域定向纠正"
+          : "当前 Unreal 候选正在沿失败域收敛"
         : "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
       description: hasCurrentLifecycle
-        ? "源场景、候选回渲、技术审查与视觉裁决来自同一个 Scene Session。当前空间布局已经通过，雨后清晨的光照方向仍需一次有界修正。"
+        ? correctionSucceeded
+          ? "独立视觉评价只判定 lighting 失败。Agent 保留图像与 PCG 证据，仅把主光从 5.5 / 4200K 改为 3.2 / 7200K，并由 Unreal 以同机位重新渲染。"
+          : "源场景、候选回渲、技术审查与视觉裁决来自同一个 Scene Session。当前空间布局已经通过，雨后清晨的光照方向仍需一次有界修正。"
         : "Agent 读取 Unreal 场景包，将雨后湿润方向编译成五类受限工具调用。ComfyUI 负责 PBR 技术图，项目资产和 PCG 完成空间铺陈，所有写入只发生在隔离候选关卡。",
       frames: hasCurrentLifecycle
-        ? [
+        ? correctionSucceeded
+          ? [
+            { src: `/api/agent/runs/${agent.run_id}/scene/passes/beauty`, alt: "当前 Scene Session 的 Unreal 源场景", label: "源场景", title: "相机、灰盒与保护区已锁定" },
+            { src: `/api/agent/runs/${agent.run_id}/scene-correction-work/beauty`, alt: "只修正灯光后的 Unreal 同机位回渲", label: "灯光纠正", title: "3.2 / 7200K · PCG 12→12" },
+          ]
+          : [
             { src: `/api/agent/runs/${agent.run_id}/scene/passes/beauty`, alt: "当前 Scene Session 的 Unreal 源场景", label: "当前源场景", title: "相机、灰盒与保护区已锁定" },
             { src: `/api/agent/runs/${agent.run_id}/scene-candidate-work/beauty`, alt: "当前 Scene Session 的 Unreal 候选回渲", label: "当前候选", title: currentVerdict?.status === "correction_required" ? "PCG 通过 · 灯光待修正" : "当前候选回渲" },
           ]
@@ -1643,7 +1656,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       metricB: "0",
       metricBLabel: "源关卡改写",
       note: hasCurrentLifecycle
-        ? "当前 UE 5.8 回执与视觉观察已进入同一事件流；下一步只生成灯光域补丁。"
+        ? correctionSucceeded
+          ? "UE 5.8 实测：源关卡哈希不变，保护结构不变，PCG 实例 12→12；新回渲等待独立复评。"
+          : "当前 UE 5.8 回执与视觉观察已进入同一事件流；下一步只生成灯光域补丁。"
         : "真实 UE 5.8 回执；新进程对账时不会重复调用 Provider 或重新导入。",
       domains: hasCurrentLifecycle ? currentDomains : ["图像·参考", "材质·通过", "资产·通过", "PCG·通过", "灯光·通过"],
     },

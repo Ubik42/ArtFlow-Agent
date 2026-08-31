@@ -1824,6 +1824,251 @@ bool FinalizeSessionCandidateExecution(
     return true;
 }
 
+bool ExecuteSessionLightingCorrection(
+    const FJsonObject& Definition,
+    const FString& ExpectedRunId,
+    const FString& ExpectedSessionSha,
+    const FString& ExpectedOutcomeSha,
+    FString& OutReceiptPath,
+    FString& OutOutcomeSha,
+    FString& OutError)
+{
+    FString Schema;
+    FString WorkId;
+    FString WorkSha;
+    FString RunId;
+    FString SessionSha;
+    FString ParentWorkSha;
+    FString ParentOutcomeSha;
+    FString SourceLevelSha;
+    FString CandidatePlanSha;
+    FString CandidateScene;
+    FString EvaluationSha;
+    const TSharedPtr<FJsonObject>* Plan = nullptr;
+    if (!Definition.TryGetStringField(TEXT("schema_id"), Schema) ||
+        !Definition.TryGetStringField(TEXT("work_id"), WorkId) ||
+        !Definition.TryGetStringField(TEXT("work_sha256"), WorkSha) ||
+        !Definition.TryGetStringField(TEXT("run_id"), RunId) ||
+        !Definition.TryGetStringField(TEXT("session_sha256"), SessionSha) ||
+        !Definition.TryGetStringField(TEXT("parent_work_sha256"), ParentWorkSha) ||
+        !Definition.TryGetStringField(TEXT("parent_outcome_sha256"), ParentOutcomeSha) ||
+        !Definition.TryGetStringField(TEXT("source_level_sha256"), SourceLevelSha) ||
+        !Definition.TryGetStringField(TEXT("candidate_plan_sha256"), CandidatePlanSha) ||
+        !Definition.TryGetStringField(TEXT("candidate_scene"), CandidateScene) ||
+        !Definition.TryGetStringField(TEXT("evaluation_sha256"), EvaluationSha) ||
+        !Definition.TryGetObjectField(TEXT("correction_plan"), Plan) || Plan == nullptr ||
+        Schema != TEXT("artflow-scene-correction-work/1") ||
+        RunId != ExpectedRunId || SessionSha != ExpectedSessionSha ||
+        !WorkId.StartsWith(TEXT("scene-correction-")) || !IsSha256(WorkSha) ||
+        !IsSha256(ParentWorkSha) || !IsSha256(ParentOutcomeSha) || !IsSha256(SourceLevelSha) ||
+        !IsSha256(CandidatePlanSha) || !IsSha256(EvaluationSha) ||
+        !CandidateScene.StartsWith(TEXT("/Game/ArtFlow/Sessions/AF_")) ||
+        !CandidateScene.Contains(TEXT("/Candidates/C_")) || CandidateScene.Contains(TEXT("..")))
+    {
+        OutError = TEXT("Lighting correction work identity or candidate boundary is invalid.");
+        return false;
+    }
+
+    FString PlanSchema;
+    FString CorrectionId;
+    FString CorrectionSha;
+    FString PlanEvaluationSha;
+    FString PlanCandidateScene;
+    double Intensity = -1.0;
+    double Temperature = -1.0;
+    const TArray<TSharedPtr<FJsonValue>>* Failed = nullptr;
+    const TArray<TSharedPtr<FJsonValue>>* Rerun = nullptr;
+    const TSharedPtr<FJsonObject>* Preserved = nullptr;
+    if (!(*Plan)->TryGetStringField(TEXT("schema_id"), PlanSchema) ||
+        !(*Plan)->TryGetStringField(TEXT("correction_id"), CorrectionId) ||
+        !(*Plan)->TryGetStringField(TEXT("correction_sha256"), CorrectionSha) ||
+        !(*Plan)->TryGetStringField(TEXT("evaluation_sha256"), PlanEvaluationSha) ||
+        !(*Plan)->TryGetStringField(TEXT("candidate_scene"), PlanCandidateScene) ||
+        !(*Plan)->TryGetArrayField(TEXT("failed_domains"), Failed) || Failed == nullptr ||
+        !(*Plan)->TryGetArrayField(TEXT("rerun_domains"), Rerun) || Rerun == nullptr ||
+        !(*Plan)->TryGetObjectField(TEXT("preserved_evidence_sha256s"), Preserved) || Preserved == nullptr ||
+        !(*Plan)->TryGetNumberField(TEXT("lighting_intensity"), Intensity) ||
+        !(*Plan)->TryGetNumberField(TEXT("lighting_temperature_kelvin"), Temperature) ||
+        PlanSchema != TEXT("artflow-scene-domain-correction-plan/1") ||
+        PlanEvaluationSha != EvaluationSha || PlanCandidateScene != CandidateScene ||
+        !CorrectionId.StartsWith(TEXT("domain-correction-")) || !IsSha256(CorrectionSha) ||
+        Failed->Num() != 1 || Rerun->Num() != 1 ||
+        (*Failed)[0]->AsString() != TEXT("lighting") ||
+        (*Rerun)[0]->AsString() != TEXT("lighting") ||
+        Preserved->Get()->Values.Num() != 2 ||
+        !Preserved->Get()->HasField(TEXT("image")) || !Preserved->Get()->HasField(TEXT("pcg")) ||
+        Intensity < 0 || Intensity > 1000000 || Temperature < 1000 || Temperature > 20000)
+    {
+        OutError = TEXT("Lighting correction plan widened scope or failed typed bounds.");
+        return false;
+    }
+
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(
+        CandidateScene, FPackageName::GetMapPackageExtension());
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(
+        TEXT("/Game/ArtFlowDemo"), FPackageName::GetMapPackageExtension());
+    FString SourceBefore;
+    if (!IFileManager::Get().FileExists(*CandidateFilename) ||
+        !HashFile(SourceFilename, SourceBefore, OutError) || SourceBefore != SourceLevelSha ||
+        !FEditorFileUtils::LoadMap(CandidateFilename, false, false))
+    {
+        OutError = TEXT("Current candidate or source identity is unavailable for lighting correction.");
+        return false;
+    }
+    UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    AActor* LightActor = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("ArtFlow_KeyLight"));
+    AActor* Protected = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("Protected_Blockout"));
+    AActor* Camera = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("ArtFlow_Camera"));
+    ULightComponent* Light = LightActor == nullptr ? nullptr : LightActor->FindComponentByClass<ULightComponent>();
+    if (World == nullptr || World->GetOutermost()->GetName() != CandidateScene ||
+        Light == nullptr || Protected == nullptr || Camera == nullptr)
+    {
+        OutError = TEXT("Candidate lighting, camera or protected actor is missing.");
+        return false;
+    }
+    const int32 InstancesBefore = CountGeneratedInstances(World);
+    const FString ProtectedBefore = ProtectedSemanticFingerprint(Protected);
+    const float IntensityBefore = Light->Intensity;
+    const float TemperatureBefore = Light->Temperature;
+    const bool bReconciled = FMath::IsNearlyEqual(IntensityBefore, static_cast<float>(Intensity)) &&
+        Light->bUseTemperature &&
+        FMath::IsNearlyEqual(TemperatureBefore, static_cast<float>(Temperature));
+    const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("SceneCorrections"), WorkId);
+    if (bReconciled && !ExpectedOutcomeSha.IsEmpty())
+    {
+        const FString ExistingReceiptPath = FPaths::Combine(
+            OutputRoot, TEXT("lighting-correction-receipt.json"));
+        FString ExistingReceiptSha;
+        FString ExistingText;
+        TSharedPtr<FJsonObject> ExistingReceipt;
+        FString ExistingSchema;
+        FString ExistingWorkSha;
+        FString ExistingBeautyPath;
+        FString ExistingBeautySha;
+        FString ExistingSourceAfter;
+        FString ExistingProtectedAfter;
+        double ExistingInstancesAfter = -1;
+        double ExistingIntensityAfter = -1;
+        double ExistingTemperatureAfter = -1;
+        FString ActualBeautySha;
+        if (!IsSha256(ExpectedOutcomeSha) ||
+            !HashFile(ExistingReceiptPath, ExistingReceiptSha, OutError) ||
+            ExistingReceiptSha != ExpectedOutcomeSha ||
+            !FFileHelper::LoadFileToString(ExistingText, *ExistingReceiptPath) ||
+            !FJsonSerializer::Deserialize(
+                TJsonReaderFactory<>::Create(ExistingText), ExistingReceipt) ||
+            !ExistingReceipt.IsValid() ||
+            !ExistingReceipt->TryGetStringField(TEXT("schema_id"), ExistingSchema) ||
+            !ExistingReceipt->TryGetStringField(TEXT("work_sha256"), ExistingWorkSha) ||
+            !ExistingReceipt->TryGetStringField(TEXT("source_level_sha256_after"), ExistingSourceAfter) ||
+            !ExistingReceipt->TryGetStringField(TEXT("protected_state_after"), ExistingProtectedAfter) ||
+            !ExistingReceipt->TryGetNumberField(TEXT("generated_instance_count_after"), ExistingInstancesAfter) ||
+            !ExistingReceipt->TryGetNumberField(TEXT("intensity_after"), ExistingIntensityAfter) ||
+            !ExistingReceipt->TryGetNumberField(TEXT("temperature_after"), ExistingTemperatureAfter) ||
+            !ExistingReceipt->TryGetStringField(TEXT("corrected_beauty_path"), ExistingBeautyPath) ||
+            !ExistingReceipt->TryGetStringField(TEXT("corrected_beauty_sha256"), ExistingBeautySha) ||
+            ExistingSchema != TEXT("artflow-session-lighting-correction-receipt/1") ||
+            ExistingWorkSha != WorkSha || ExistingSourceAfter != SourceBefore ||
+            ExistingProtectedAfter != ProtectedBefore ||
+            static_cast<int32>(ExistingInstancesAfter) != InstancesBefore ||
+            !FMath::IsNearlyEqual(static_cast<float>(ExistingIntensityAfter), Light->Intensity) ||
+            !FMath::IsNearlyEqual(static_cast<float>(ExistingTemperatureAfter), Light->Temperature) ||
+            !IsPathInside(ExistingBeautyPath, OutputRoot) ||
+            !HashFile(ExistingBeautyPath, ActualBeautySha, OutError) ||
+            ActualBeautySha != ExistingBeautySha)
+        {
+            OutError = TEXT("Succeeded lighting correction could not reconcile its registered receipt.");
+            return false;
+        }
+        OutReceiptPath = ExistingReceiptPath;
+        OutOutcomeSha = ExistingReceiptSha;
+        return true;
+    }
+    if (!bReconciled)
+    {
+        Light->SetIntensity(static_cast<float>(Intensity));
+        Light->SetUseTemperature(true);
+        Light->SetTemperature(static_cast<float>(Temperature));
+        if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, CandidateFilename))
+        {
+            OutError = TEXT("Could not save the lighting-only candidate correction.");
+            return false;
+        }
+    }
+    const int32 InstancesAfter = CountGeneratedInstances(World);
+    const FString ProtectedAfter = ProtectedSemanticFingerprint(Protected);
+    FString SourceAfter;
+    FString CandidateSha;
+    if (InstancesBefore != InstancesAfter || InstancesAfter != 12 ||
+        ProtectedBefore != ProtectedAfter ||
+        !HashFile(SourceFilename, SourceAfter, OutError) || SourceAfter != SourceBefore ||
+        !HashFile(CandidateFilename, CandidateSha, OutError))
+    {
+        OutError = TEXT("Lighting correction changed a preserved scene domain.");
+        return false;
+    }
+
+    IFileManager::Get().MakeDirectory(*OutputRoot, true);
+    const FString BeautyPath = FPaths::Combine(OutputRoot, TEXT("corrected-beauty.png"));
+    FCaptureRequest CaptureRequest;
+    if (!LoadCaptureRequest(CaptureRequest, OutError) ||
+        !CapturePass(
+            World,
+            Cast<ACameraActor>(Camera),
+            CaptureRequest,
+            SCS_FinalColorLDR,
+            false,
+            BeautyPath,
+            nullptr,
+            {},
+            OutError))
+    {
+        return false;
+    }
+    FString BeautySha;
+    if (!HashFile(BeautyPath, BeautySha, OutError))
+    {
+        return false;
+    }
+    TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();
+    Receipt->SetStringField(TEXT("schema_id"), TEXT("artflow-session-lighting-correction-receipt/1"));
+    Receipt->SetStringField(TEXT("work_id"), WorkId);
+    Receipt->SetStringField(TEXT("work_sha256"), WorkSha);
+    Receipt->SetStringField(TEXT("evaluation_sha256"), EvaluationSha);
+    Receipt->SetStringField(TEXT("correction_sha256"), CorrectionSha);
+    Receipt->SetStringField(TEXT("candidate_plan_sha256"), CandidatePlanSha);
+    Receipt->SetStringField(TEXT("candidate_scene"), CandidateScene);
+    Receipt->SetStringField(TEXT("source_level_sha256_before"), SourceBefore);
+    Receipt->SetStringField(TEXT("source_level_sha256_after"), SourceAfter);
+    Receipt->SetBoolField(TEXT("source_level_unchanged"), true);
+    Receipt->SetStringField(TEXT("protected_state_before"), ProtectedBefore);
+    Receipt->SetStringField(TEXT("protected_state_after"), ProtectedAfter);
+    Receipt->SetNumberField(TEXT("generated_instance_count_before"), InstancesBefore);
+    Receipt->SetNumberField(TEXT("generated_instance_count_after"), InstancesAfter);
+    Receipt->SetNumberField(TEXT("intensity_before"), IntensityBefore);
+    Receipt->SetNumberField(TEXT("intensity_after"), Light->Intensity);
+    Receipt->SetNumberField(TEXT("temperature_before"), TemperatureBefore);
+    Receipt->SetNumberField(TEXT("temperature_after"), Light->Temperature);
+    Receipt->SetStringField(TEXT("candidate_level_sha256"), CandidateSha);
+    Receipt->SetStringField(TEXT("corrected_beauty_path"), BeautyPath);
+    Receipt->SetStringField(TEXT("corrected_beauty_sha256"), BeautySha);
+    Receipt->SetBoolField(TEXT("reconciled"), bReconciled);
+    Receipt->SetStringField(TEXT("completed_at"), FDateTime::UtcNow().ToIso8601());
+    FString ReceiptText;
+    FJsonSerializer::Serialize(Receipt.ToSharedRef(), TJsonWriterFactory<>::Create(&ReceiptText));
+    OutReceiptPath = FPaths::Combine(OutputRoot, TEXT("lighting-correction-receipt.json"));
+    if (!FFileHelper::SaveStringToFile(
+        ReceiptText,
+        *OutReceiptPath,
+        FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM) ||
+        !HashFile(OutReceiptPath, OutOutcomeSha, OutError))
+    {
+        OutError = TEXT("Could not persist or hash the lighting correction receipt.");
+        return false;
+    }
+    return true;
+}
+
 bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FString& OutSourceHash, FString& OutProtectedHash, FString& OutError, bool bApplyReviewedDelta = true)
 {
     UWorld* SourceWorld = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
@@ -2416,8 +2661,8 @@ void FArtFlowSceneBridgeModule::RegisterMenus()
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::StartSceneSession)));
     Section.AddMenuEntry(
         TEXT("ArtFlowExecuteCurrentCandidate"),
-        LOCTEXT("ExecuteCandidateLabel", "执行当前 ArtFlow 候选"),
-        LOCTEXT("ExecuteCandidateTooltip", "领取当前 Scene Session 已封存的候选工作项，在隔离关卡执行并把进度回传到场景变更谱。"),
+        LOCTEXT("ExecuteCandidateLabel", "执行当前 ArtFlow 候选 / 纠正"),
+        LOCTEXT("ExecuteCandidateTooltip", "领取当前 Scene Session 已封存的候选或失败域纠正工作，在隔离关卡执行并把进度回传到场景变更谱。"),
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork)));
     Section.AddMenuEntry(
@@ -2482,7 +2727,7 @@ void FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork()
         FMessageDialog::Open(
             EAppMsgType::Ok,
             FText::Format(
-                LOCTEXT("CandidateWorkStartFailure", "ArtFlow 候选未开始：\n{0}\n\n源关卡未发生修改。"),
+                LOCTEXT("CandidateWorkStartFailure", "ArtFlow 候选或纠正工作未开始：\n{0}\n\n源关卡未发生修改。"),
                 FText::FromString(Error)));
     }
 }
@@ -2883,6 +3128,86 @@ void FArtFlowSceneBridgeModule::HandleSceneCandidateWorkDiscovery(
     FString RunId;
     FString Status;
     FString SessionSha;
+    const TSharedPtr<FJsonObject>* CorrectionWork = nullptr;
+    const TSharedPtr<FJsonObject>* CorrectionDefinition = nullptr;
+    FString CorrectionStatus;
+    FString CorrectionSessionSha;
+    FString CorrectionOutcomeSha;
+    if (Error.IsEmpty() &&
+        Projection->TryGetObjectField(TEXT("scene_correction_work"), CorrectionWork) &&
+        CorrectionWork != nullptr)
+    {
+        if (!Projection->TryGetStringField(TEXT("schema_id"), Schema) ||
+            !Projection->TryGetStringField(TEXT("run_id"), RunId) ||
+            !(*CorrectionWork)->TryGetStringField(TEXT("status"), CorrectionStatus) ||
+            !(*CorrectionWork)->TryGetObjectField(TEXT("definition"), CorrectionDefinition) ||
+            CorrectionDefinition == nullptr ||
+            !(*CorrectionDefinition)->TryGetStringField(TEXT("work_sha256"), SceneCorrectionWorkSha) ||
+            !(*CorrectionDefinition)->TryGetStringField(TEXT("session_sha256"), CorrectionSessionSha) ||
+            Schema != TEXT("agent-run-projection/1") || RunId != SessionRunId ||
+            CorrectionSessionSha != SessionSha256 ||
+            !ArtFlowSceneBridge::IsSha256(SceneCorrectionWorkSha))
+        {
+            Error = TEXT("The current Scene Session correction identity is invalid.");
+        }
+        else if (CorrectionStatus == TEXT("queued"))
+        {
+            PendingSceneCorrectionDefinition = *CorrectionDefinition;
+            BeginSceneCorrectionWorkClaim(Error);
+        }
+        else if (CorrectionStatus == TEXT("succeeded") &&
+            (*CorrectionWork)->TryGetStringField(TEXT("outcome_sha256"), CorrectionOutcomeSha))
+        {
+            FString ReceiptPath;
+            FString ReconciledOutcomeSha;
+            const bool bReconciled = ArtFlowSceneBridge::ExecuteSessionLightingCorrection(
+                **CorrectionDefinition,
+                SessionRunId,
+                SessionSha256,
+                CorrectionOutcomeSha,
+                ReceiptPath,
+                ReconciledOutcomeSha,
+                Error);
+            UE_LOG(
+                LogArtFlowSceneBridge,
+                Display,
+                TEXT("ARTFLOW_CORRECTION_RECONCILE_RESULT success=%s work=%s receipt=%s error=%s"),
+                bReconciled ? TEXT("true") : TEXT("false"),
+                *SceneCorrectionWorkSha,
+                *ReceiptPath,
+                *Error);
+            if (bSceneCandidateWorkAutomation)
+            {
+                ArtFlowSceneBridge::WriteAutomationResult(bReconciled, ReceiptPath, Error);
+                FPlatformMisc::RequestExit(false);
+            }
+            else
+            {
+                FNotificationInfo Info(FText::FromString(
+                    bReconciled
+                        ? TEXT("ArtFlow 灯光纠正已对账，未重复修改候选关卡")
+                        : TEXT("ArtFlow 灯光纠正对账失败；候选关卡未重新修改")));
+                Info.bFireAndForget = true;
+                Info.ExpireDuration = 10.0f;
+                const TSharedPtr<SNotificationItem> Notification =
+                    FSlateNotificationManager::Get().AddNotification(Info);
+                if (Notification.IsValid())
+                {
+                    Notification->SetCompletionState(
+                        bReconciled ? SNotificationItem::CS_Success : SNotificationItem::CS_Fail);
+                }
+            }
+            return;
+        }
+        else
+        {
+            Error = TEXT("The current Scene Session correction work is not claimable or reconcilable.");
+        }
+        if (Error.IsEmpty())
+        {
+            return;
+        }
+    }
     if (Error.IsEmpty() &&
         (!Projection->TryGetStringField(TEXT("schema_id"), Schema) ||
         !Projection->TryGetStringField(TEXT("run_id"), RunId) ||
@@ -3169,6 +3494,263 @@ void FArtFlowSceneBridgeModule::HandleSceneCandidateWorkProgress(
         if (bSceneCandidateWorkAutomation)
         {
             ArtFlowSceneBridge::WriteAutomationResult(false, SceneCandidateFinalReceiptPath, Error);
+            FPlatformMisc::RequestExit(false);
+        }
+    }
+}
+
+bool FArtFlowSceneBridgeModule::BeginSceneCorrectionWorkClaim(FString& OutError)
+{
+    TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("schema_id"), TEXT("artflow-scene-correction-claim/1"));
+    Payload->SetStringField(TEXT("work_sha256"), SceneCorrectionWorkSha);
+    Payload->SetStringField(TEXT("session_sha256"), SessionSha256);
+    Payload->SetStringField(TEXT("worker_id"), SceneCandidateWorkerId);
+    FString Body;
+    FJsonSerializer::Serialize(Payload.ToSharedRef(), TJsonWriterFactory<>::Create(&Body));
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+        FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId +
+        TEXT("/scene-correction-work/claim"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    HttpRequest->SetContentAsString(Body);
+    HttpRequest->SetTimeout(20.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this, &FArtFlowSceneBridgeModule::HandleSceneCorrectionWorkClaim);
+    bSceneCandidateWorkRequestPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneCandidateWorkRequestPending = false;
+        OutError = TEXT("The lighting correction work claim could not be submitted.");
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneCorrectionWorkClaim(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneCandidateWorkRequestPending = false;
+    FString Error;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid() || ResponseCode != 200 ||
+        !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(Response.IsValid() ? Response->GetContentAsString() : TEXT("")),
+            Projection) || !Projection.IsValid())
+    {
+        Error = FString::Printf(TEXT("ArtFlow rejected the correction claim (HTTP %d)."), ResponseCode);
+    }
+    const TSharedPtr<FJsonObject>* Work = nullptr;
+    const TSharedPtr<FJsonObject>* Definition = nullptr;
+    FString Status;
+    FString WorkerId;
+    FString WorkSha;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetObjectField(TEXT("scene_correction_work"), Work) || Work == nullptr ||
+        !(*Work)->TryGetStringField(TEXT("status"), Status) ||
+        !(*Work)->TryGetStringField(TEXT("worker_id"), WorkerId) ||
+        !(*Work)->TryGetObjectField(TEXT("definition"), Definition) || Definition == nullptr ||
+        !(*Definition)->TryGetStringField(TEXT("work_sha256"), WorkSha) ||
+        Status != TEXT("claimed") || WorkerId != SceneCandidateWorkerId ||
+        WorkSha != SceneCorrectionWorkSha))
+    {
+        Error = TEXT("The claimed correction identity does not match this Unreal editor.");
+    }
+    if (Error.IsEmpty())
+    {
+        PendingSceneCorrectionDefinition = *Definition;
+        BeginSceneCorrectionWorkProgress(
+            TEXT("executing"), TEXT(""), TEXT("Unreal 正在只修正当前候选的灯光域"), Error);
+    }
+    if (!Error.IsEmpty())
+    {
+        UE_LOG(LogArtFlowSceneBridge, Error, TEXT("ARTFLOW_CORRECTION_CLAIM_FAILED error=%s"), *Error);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(false, TEXT(""), Error);
+            FPlatformMisc::RequestExit(false);
+        }
+        else
+        {
+            FMessageDialog::Open(
+                EAppMsgType::Ok,
+                FText::FromString(TEXT("ArtFlow 灯光纠正领取失败：\n") + Error));
+        }
+    }
+}
+
+bool FArtFlowSceneBridgeModule::BeginSceneCorrectionWorkProgress(
+    const FString& Status,
+    const FString& OutcomeSha256,
+    const FString& Message,
+    FString& OutError)
+{
+    if (bSceneCandidateWorkRequestPending)
+    {
+        OutError = TEXT("Another ArtFlow correction request is pending.");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("schema_id"), TEXT("artflow-scene-correction-progress/1"));
+    Payload->SetStringField(TEXT("work_sha256"), SceneCorrectionWorkSha);
+    Payload->SetStringField(TEXT("worker_id"), SceneCandidateWorkerId);
+    Payload->SetStringField(TEXT("status"), Status);
+    Payload->SetStringField(
+        TEXT("action_id"), TEXT("ue-correction-") + Status + TEXT("-") + SceneCorrectionWorkSha.Left(16));
+    if (!OutcomeSha256.IsEmpty()) Payload->SetStringField(TEXT("outcome_sha256"), OutcomeSha256);
+    if (!Message.IsEmpty()) Payload->SetStringField(TEXT("message"), Message);
+    FString Body;
+    FJsonSerializer::Serialize(Payload.ToSharedRef(), TJsonWriterFactory<>::Create(&Body));
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId +
+        TEXT("/scene-correction-work/progress"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    HttpRequest->SetContentAsString(Body);
+    HttpRequest->SetTimeout(20.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this, &FArtFlowSceneBridgeModule::HandleSceneCorrectionWorkProgress);
+    SceneCorrectionProgressStatus = Status;
+    bSceneCandidateWorkRequestPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneCandidateWorkRequestPending = false;
+        OutError = TEXT("Lighting correction progress could not be submitted.");
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneCorrectionWorkProgress(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneCandidateWorkRequestPending = false;
+    FString Error;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid() || ResponseCode != 200 ||
+        !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(Response.IsValid() ? Response->GetContentAsString() : TEXT("")),
+            Projection) || !Projection.IsValid())
+    {
+        Error = FString::Printf(TEXT("ArtFlow rejected correction progress (HTTP %d)."), ResponseCode);
+    }
+    const TSharedPtr<FJsonObject>* Work = nullptr;
+    FString Status;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetObjectField(TEXT("scene_correction_work"), Work) || Work == nullptr ||
+        !(*Work)->TryGetStringField(TEXT("status"), Status) ||
+        Status != SceneCorrectionProgressStatus))
+    {
+        Error = TEXT("Correction progress response does not match the submitted state.");
+    }
+    if (Error.IsEmpty() && SceneCorrectionProgressStatus == TEXT("executing"))
+    {
+        if (!PendingSceneCorrectionDefinition.IsValid() ||
+            !ArtFlowSceneBridge::ExecuteSessionLightingCorrection(
+                *PendingSceneCorrectionDefinition,
+                SessionRunId,
+                SessionSha256,
+                TEXT(""),
+                SceneCorrectionFinalReceiptPath,
+                SceneCorrectionFinalOutcomeSha,
+                Error))
+        {
+            if (Error.IsEmpty()) Error = TEXT("The claimed correction contains no executable lighting patch.");
+        }
+        else
+        {
+            PendingSceneCorrectionDefinition.Reset();
+            BeginSceneCorrectionWorkProgress(
+                TEXT("reconciling"),
+                TEXT(""),
+                TEXT("灯光参数已写入候选关卡，正在核对保留域和回渲"),
+                Error);
+            if (Error.IsEmpty())
+            {
+                UE_LOG(
+                    LogArtFlowSceneBridge,
+                    Display,
+                    TEXT("ARTFLOW_CORRECTION_EXECUTED work=%s receipt=%s"),
+                    *SceneCorrectionWorkSha,
+                    *SceneCorrectionFinalReceiptPath);
+                return;
+            }
+        }
+    }
+    if (Error.IsEmpty() && SceneCorrectionProgressStatus == TEXT("reconciling"))
+    {
+        BeginSceneCorrectionWorkProgress(
+            TEXT("succeeded"),
+            SceneCorrectionFinalOutcomeSha,
+            TEXT("灯光域已修正；image 与 PCG 证据保持不变"),
+            Error);
+        if (Error.IsEmpty()) return;
+    }
+    if (Error.IsEmpty() &&
+        (SceneCorrectionProgressStatus == TEXT("succeeded") ||
+         SceneCorrectionProgressStatus == TEXT("failed")))
+    {
+        const bool bSucceeded = SceneCorrectionProgressStatus == TEXT("succeeded");
+        UE_LOG(
+            LogArtFlowSceneBridge,
+            Display,
+            TEXT("ARTFLOW_CORRECTION_RESULT success=%s work=%s receipt=%s error=%s"),
+            bSucceeded ? TEXT("true") : TEXT("false"),
+            *SceneCorrectionWorkSha,
+            *SceneCorrectionFinalReceiptPath,
+            *SceneCorrectionFinalError);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(
+                bSucceeded, SceneCorrectionFinalReceiptPath, SceneCorrectionFinalError);
+            FPlatformMisc::RequestExit(false);
+        }
+        else
+        {
+            FNotificationInfo Info(FText::FromString(
+                bSucceeded
+                    ? TEXT("ArtFlow 已只修正灯光域，新的同机位回渲等待复评")
+                    : TEXT("ArtFlow 灯光纠正停止；源关卡与通过域未修改")));
+            Info.bFireAndForget = true;
+            Info.ExpireDuration = 12.0f;
+            const TSharedPtr<SNotificationItem> Notification =
+                FSlateNotificationManager::Get().AddNotification(Info);
+            if (Notification.IsValid())
+            {
+                Notification->SetCompletionState(
+                    bSucceeded ? SNotificationItem::CS_Success : SNotificationItem::CS_Fail);
+            }
+        }
+        return;
+    }
+    if (!Error.IsEmpty() && SceneCorrectionProgressStatus == TEXT("executing"))
+    {
+        SceneCorrectionFinalError = Error;
+        FString SyncError;
+        if (BeginSceneCorrectionWorkProgress(
+            TEXT("failed"), TEXT(""), Error.Left(500), SyncError))
+        {
+            return;
+        }
+        Error += TEXT(" Final correction failure sync also failed: ") + SyncError;
+    }
+    if (!Error.IsEmpty())
+    {
+        UE_LOG(LogArtFlowSceneBridge, Error, TEXT("ARTFLOW_CORRECTION_PROGRESS_FAILED error=%s"), *Error);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(false, SceneCorrectionFinalReceiptPath, Error);
             FPlatformMisc::RequestExit(false);
         }
     }

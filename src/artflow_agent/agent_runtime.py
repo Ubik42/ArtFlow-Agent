@@ -612,24 +612,39 @@ class AgentEventStore:
     def queue_scene_correction_work(
         self, run_id: str, definition: SceneCorrectionWorkDefinition
     ) -> AgentRunState:
+        current = self.load(run_id).scene_correction_work
+        retry_suffix = (
+            f":retry:{len(self.events(run_id))}"
+            if current is not None
+            else ""
+        )
         self._append(
             run_id,
             "scene_correction_work_queued",
             _SceneCorrectionWorkQueued(definition=definition).model_dump(mode="json"),
-            idempotency_key=f"scene_correction_work_queued:{definition.work_id}",
+            idempotency_key=(
+                f"scene_correction_work_queued:{definition.work_id}{retry_suffix}"
+            ),
         )
         return self.load(run_id)
 
     def claim_scene_correction_work(
         self, run_id: str, *, work_sha256: str, worker_id: str
     ) -> AgentRunState:
+        queue_sequence = next(
+            event.sequence
+            for event in reversed(self.events(run_id))
+            if event.event_type == "scene_correction_work_queued"
+        )
         self._append(
             run_id,
             "scene_correction_work_claimed",
             _SceneCorrectionWorkClaimed(
                 work_sha256=work_sha256, worker_id=worker_id
             ).model_dump(mode="json"),
-            idempotency_key=f"scene_correction_work_claimed:{work_sha256}",
+            idempotency_key=(
+                f"scene_correction_work_claimed:{work_sha256}:{queue_sequence}"
+            ),
         )
         return self.load(run_id)
 
@@ -1764,9 +1779,17 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             parent = state.scene_candidate_work
             if verdict is None or parent is None or parent.outcome_sha256 is None:
                 raise AgentRuntimeError("correction work requires current evaluated candidate")
-            if state.scene_correction_work is not None:
-                raise AgentRuntimeError("current Scene Session already has correction work")
             definition = _SceneCorrectionWorkQueued.model_validate(event.data).definition
+            current_correction = state.scene_correction_work
+            if current_correction is not None and (
+                current_correction.status not in {"failed", "succeeded"}
+                or (
+                    current_correction.status == "succeeded"
+                    and current_correction.definition.work_sha256
+                    == definition.work_sha256
+                )
+            ):
+                raise AgentRuntimeError("current Scene Session already has correction work")
             if (
                 definition.run_id != state.run_id
                 or definition.session_sha256 != state.scene_sessions[-1].session_sha256

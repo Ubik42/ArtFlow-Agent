@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M20-S3",
+  "status": "completed",
+  "outcome": "The current lighting-only failure compiled into a content-bound Unreal work item. The host changed only intensity and temperature, preserved source, protected structure, image evidence and 12 PCG instances, and returned a new same-camera rerender through the live append-only run.",
+  "evidence": [
+    "artifacts/goal/m20-s3-current-correction/verification.json",
+    "artifacts/goal/m20-s3-current-correction/host-receipt.json",
+    "artifacts/goal/m20-s3-current-correction/corrected-beauty.png",
+    "artifacts/goal/m20-s3-current-correction/live-lighting-correction-desktop.png",
+    "artifacts/goal/m20-s3-current-correction/live-lighting-correction-narrow.png",
+    "docs/evidence/M20_S3_CURRENT_LIGHTING_CORRECTION_2026-08-30.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

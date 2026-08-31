@@ -252,6 +252,9 @@ def test_lighting_only_correction_work_preserves_passed_evidence_and_replays(
     work = queued.json()["scene_correction_work"]
     assert work == replay.json()["scene_correction_work"]
     plan = work["definition"]["correction_plan"]
+    assert work["definition"]["source_level_sha256"] == intake["evaluation_input"][
+        "source_level_sha256"
+    ]
     assert plan["failed_domains"] == plan["rerun_domains"] == ["lighting"]
     assert set(plan["preserved_evidence_sha256s"]) == {"image", "pcg"}
     findings = {
@@ -262,8 +265,8 @@ def test_lighting_only_correction_work_preserves_passed_evidence_and_replays(
         "image": findings["image"],
         "pcg": findings["pcg"],
     }
-    assert plan["lighting_intensity"] == 5.5
-    assert plan["lighting_temperature_kelvin"] == 4200.0
+    assert plan["lighting_intensity"] == 3.2
+    assert plan["lighting_temperature_kelvin"] == 7200.0
 
     definition = work["definition"]
     claim = {
@@ -303,3 +306,51 @@ def test_lighting_only_correction_work_preserves_passed_evidence_and_replays(
     assert restored is not None
     assert restored.status == "succeeded"
     assert restored.outcome_sha256 == "8" * 64
+
+
+def test_failed_correction_can_be_requeued_with_the_same_content_identity(
+    tmp_path: Path,
+) -> None:
+    client, database, _ = _succeeded_work(tmp_path)
+    candidate_base = f"/api/agent/runs/{RUN_ID}/scene-candidate-work"
+    intake = client.post(f"{candidate_base}/evaluate").json()[
+        "scene_candidate_intake"
+    ]
+    client.post(
+        f"{candidate_base}/visual-observation",
+        json=_lighting_failure_observation(intake),
+    )
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    first = client.post(f"{base}/queue").json()["scene_correction_work"]
+    definition = first["definition"]
+    claim = {
+        "schema_id": "artflow-scene-correction-claim/1",
+        "work_sha256": definition["work_sha256"],
+        "session_sha256": definition["session_sha256"],
+        "worker_id": "ue-editor-correction",
+    }
+    assert client.post(f"{base}/claim", json=claim).status_code == 200
+    assert client.post(
+        f"{base}/progress",
+        json={
+            "schema_id": "artflow-scene-correction-progress/1",
+            "work_sha256": definition["work_sha256"],
+            "worker_id": "ue-editor-correction",
+            "status": "failed",
+            "action_id": "m20-correction-failed-once",
+            "message": "宿主在写入前安全退出",
+        },
+    ).status_code == 200
+
+    retried = client.post(f"{base}/queue")
+    assert retried.status_code == 200
+    retried_work = retried.json()["scene_correction_work"]
+    assert retried_work["status"] == "queued"
+    assert retried_work["definition"] == definition
+    reclaimed = client.post(f"{base}/claim", json=claim)
+    assert reclaimed.status_code == 200
+    assert reclaimed.json()["scene_correction_work"]["status"] == "claimed"
+    events = AgentEventStore(database).events(RUN_ID)
+    assert [event.event_type for event in events].count(
+        "scene_correction_work_queued"
+    ) == 2

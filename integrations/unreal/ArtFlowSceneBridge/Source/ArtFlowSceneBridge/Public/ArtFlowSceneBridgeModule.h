@@ -37,6 +37,14 @@ private:
         const FString& Message,
         FString& OutError);
     void HandleSceneCandidateWorkProgress(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+    bool BeginSceneCorrectionWorkClaim(FString& OutError);
+    void HandleSceneCorrectionWorkClaim(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+    bool BeginSceneCorrectionWorkProgress(
+        const FString& Status,
+        const FString& OutcomeSha256,
+        const FString& Message,
+        FString& OutError);
+    void HandleSceneCorrectionWorkProgress(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
     void ReviewLastExport() const;
     bool TickAutomation(float DeltaTime);
 
@@ -76,6 +84,12 @@ private:
     FString SceneCandidateFinalOutcomeSha;
     FString SceneCandidateFinalError;
     TSharedPtr<FJsonObject> PendingSceneCandidatePlan;
+    FString SceneCorrectionWorkSha;
+    FString SceneCorrectionProgressStatus;
+    FString SceneCorrectionFinalReceiptPath;
+    FString SceneCorrectionFinalOutcomeSha;
+    FString SceneCorrectionFinalError;
+    TSharedPtr<FJsonObject> PendingSceneCorrectionDefinition;
     FString SessionCandidatePackage;
     FString SessionCandidatePlanId;
     FString SessionCandidatePlanSha;

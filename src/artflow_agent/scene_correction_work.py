@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime
+from pathlib import Path
 from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
@@ -33,6 +35,7 @@ class SceneCorrectionWorkDefinition(BaseModel):
     session_sha256: str = Field(pattern=SHA256)
     parent_work_sha256: str = Field(pattern=SHA256)
     parent_outcome_sha256: str = Field(pattern=SHA256)
+    source_level_sha256: str | None = Field(default=None, pattern=SHA256)
     candidate_plan_sha256: str = Field(pattern=SHA256)
     candidate_scene: str
     evaluation_sha256: str = Field(pattern=SHA256)
@@ -46,7 +49,9 @@ class SceneCorrectionWorkDefinition(BaseModel):
         ):
             raise ValueError("correction work plan references another evaluation or candidate")
         payload = self.model_dump(
-            mode="json", exclude={"schema_id", "work_id", "work_sha256"}
+            mode="json",
+            exclude={"schema_id", "work_id", "work_sha256"},
+            exclude_none=True,
         )
         expected = canonical_sha256(payload)
         if self.work_sha256 != expected:
@@ -99,6 +104,34 @@ class SceneCorrectionWorkProgressRequest(BaseModel):
         return self
 
 
+class UnrealLightingCorrectionReceipt(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_id: Literal["artflow-session-lighting-correction-receipt/1"]
+    work_id: str
+    work_sha256: str = Field(pattern=SHA256)
+    evaluation_sha256: str = Field(pattern=SHA256)
+    correction_sha256: str = Field(pattern=SHA256)
+    candidate_plan_sha256: str = Field(pattern=SHA256)
+    candidate_scene: str
+    source_level_sha256_before: str = Field(pattern=SHA256)
+    source_level_sha256_after: str = Field(pattern=SHA256)
+    source_level_unchanged: bool
+    protected_state_before: str = Field(pattern=SHA256)
+    protected_state_after: str = Field(pattern=SHA256)
+    generated_instance_count_before: int = Field(ge=0, le=10_000)
+    generated_instance_count_after: int = Field(ge=0, le=10_000)
+    intensity_before: float
+    intensity_after: float
+    temperature_before: float
+    temperature_after: float
+    candidate_level_sha256: str = Field(pattern=SHA256)
+    corrected_beauty_path: str
+    corrected_beauty_sha256: str = Field(pattern=SHA256)
+    reconciled: bool
+    completed_at: datetime
+
+
 def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWorkDefinition:
     verdict = state.scene_candidate_visual_verdict
     parent = state.scene_candidate_work
@@ -110,6 +143,9 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         raise ValueError("registered correction currently requires a lighting-only failure")
     if parent.status != "succeeded" or parent.outcome_sha256 is None:
         raise ValueError("correction work requires a succeeded parent candidate")
+    intake = state.scene_candidate_intake
+    if intake is None:
+        raise ValueError("correction work requires the registered Unreal intake")
 
     preserved = {
         finding.domain: finding.evidence_sha256
@@ -122,8 +158,8 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         "failed_domains": ["lighting"],
         "rerun_domains": ["lighting"],
         "preserved_evidence_sha256s": preserved,
-        "lighting_intensity": 5.5,
-        "lighting_temperature_kelvin": 4200.0,
+        "lighting_intensity": 3.2,
+        "lighting_temperature_kelvin": 7200.0,
     }
     correction_sha256 = canonical_sha256(correction_payload)
     correction_plan = SceneDomainCorrectionPlan(
@@ -136,6 +172,7 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         "session_sha256": session.session_sha256,
         "parent_work_sha256": parent.definition.work_sha256,
         "parent_outcome_sha256": parent.outcome_sha256,
+        "source_level_sha256": intake.evaluation_input.source_level_sha256,
         "candidate_plan_sha256": parent.definition.candidate_plan.plan_sha256,
         "candidate_scene": evaluation.candidate_scene,
         "evaluation_sha256": evaluation.evaluation_sha256,
@@ -155,3 +192,54 @@ def canonical_sha256(payload: object) -> str:
             payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")
         ).encode("utf-8")
     ).hexdigest()
+
+
+def resolve_current_correction_beauty(
+    project_root: Path, state: AgentRunState
+) -> Path:
+    work = state.scene_correction_work
+    if work is None or work.status != "succeeded" or work.outcome_sha256 is None:
+        raise ValueError("current lighting correction has no succeeded Unreal receipt")
+    receipt_path = (
+        project_root
+        / "integrations"
+        / "unreal"
+        / "ArtFlowBridgeHost"
+        / "Saved"
+        / "ArtFlowSceneBridge"
+        / "SceneCorrections"
+        / work.definition.work_id
+        / "lighting-correction-receipt.json"
+    ).resolve()
+    if not receipt_path.is_file() or file_sha256(receipt_path) != work.outcome_sha256:
+        raise ValueError("registered lighting correction receipt does not match current work")
+    receipt = UnrealLightingCorrectionReceipt.model_validate_json(
+        receipt_path.read_text(encoding="utf-8-sig")
+    )
+    definition = work.definition
+    if (
+        receipt.work_id != definition.work_id
+        or receipt.work_sha256 != definition.work_sha256
+        or receipt.evaluation_sha256 != definition.evaluation_sha256
+        or receipt.correction_sha256
+        != definition.correction_plan.correction_sha256
+        or receipt.source_level_sha256_before != definition.source_level_sha256
+        or receipt.source_level_sha256_after != definition.source_level_sha256
+        or not receipt.source_level_unchanged
+        or receipt.protected_state_before != receipt.protected_state_after
+        or receipt.generated_instance_count_before
+        != receipt.generated_instance_count_after
+    ):
+        raise ValueError("lighting correction receipt widened or changed a preserved domain")
+    beauty = Path(receipt.corrected_beauty_path).resolve()
+    try:
+        beauty.relative_to(receipt_path.parent)
+    except ValueError as exc:
+        raise ValueError("corrected rerender escaped its registered work directory") from exc
+    if not beauty.is_file() or file_sha256(beauty) != receipt.corrected_beauty_sha256:
+        raise ValueError("corrected rerender content does not match its Unreal receipt")
+    return beauty
+
+
+def file_sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
