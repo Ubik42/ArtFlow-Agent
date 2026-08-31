@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 50,
+  "stateRevision": 51,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M15",
+  "currentMilestone": "M16",
   "milestones": [
     {
       "id": "M0",
@@ -162,7 +162,7 @@
     {
       "id": "M15",
       "title": "Evidence-bound disposition and versioned Unreal publish",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M14"],
       "outcome": "The orchestrator adopts or rejects Session candidates from persisted evaluation evidence and publishes accepted work as a versioned Unreal scene variant with replayable provenance, without overwriting the source level or duplicating package side effects.",
       "acceptance": [
@@ -170,39 +170,49 @@
         "Unreal publishes an accepted candidate only into a content-addressed ArtFlow Published namespace while the source level remains byte-identical",
         "A lost publish receipt is reconciled by a fresh process without creating a second package, and rejected candidates cannot enter the published namespace"
       ]
+    },
+    {
+      "id": "M16",
+      "title": "Scene Variant Ledger and embedded Unreal review",
+      "status": "in_progress",
+      "dependsOn": ["M15"],
+      "outcome": "The Scene Change Spectrum presents evaluation, correction, adoption and versioned publish as one legible scene-variant lineage, while a registered Unreal review action opens the exact published map and returns a typed inspection receipt without exposing arbitrary paths or host execution.",
+      "acceptance": [
+        "The Chinese product UI distinguishes candidate, corrected, adopted, published and reconciled states from real receipts rather than simulated progress",
+        "A reviewer can inspect the exact content-addressed published variant from the Unreal-facing entry while the source level remains untouched",
+        "Desktop and narrow screenshots demonstrate a recognizable scene-directing interface rather than a chat shell, node canvas or generic AI dashboard"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M15-S1",
-    "milestone": "M15",
-    "title": "Typed candidate disposition and content-addressed Unreal scene variant",
-    "outcome": "Compile the accepted M13-S2 corrected-domain evaluation into a typed Codex-owned adoption decision, execute a narrow Unreal publish tool that duplicates the exact isolated candidate into a content-addressed /Game/ArtFlow/Published scene-variant namespace, persist provenance and source invariants, then reconcile the same decision in a fresh editor process with zero duplicate package side effect. Also prove that a correction-required or identity-mismatched evaluation cannot produce a publish request.",
-    "risk": "R3",
-    "evidenceTarget": "A4",
+    "id": "M16-S1",
+    "milestone": "M16",
+    "title": "Published variant lineage and Unreal review handoff",
+    "outcome": "Turn the frozen M13 correction and M15 publication into a product-facing variant lineage inside the Scene Change Spectrum: show which domains passed, why lighting was corrected, which exact candidate Codex adopted, and where Unreal published it. Add one fixed Unreal review handoff that validates the content-addressed scene and records inspection, then capture current Chinese desktop and narrow portfolio screenshots.",
+    "risk": "R2",
+    "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not overwrite, rename or save the source ArtFlowDemo level",
-      "Do not merge a candidate into an arbitrary user level; publish only a versioned project-owned scene variant",
-      "Do not rerun GPT Image, ComfyUI, asset import, material generation or PCG",
-      "Do not add another Provider, framework, workflow engine or generalized source-control integration",
-      "Do not redesign the Scene Lab or broaden this slice into packaged plugin distribution",
-      "Do not spend time on broad engine matrices, full test coverage or cosmetic evidence expansion"
+      "Do not rerun GPT Image, ComfyUI, material generation, PCG or candidate publication",
+      "Do not add chat, a free-form node canvas, a generic activity feed or decorative agent-role theater",
+      "Do not expose arbitrary Unreal package paths, Python, Shell, Blueprint or console execution",
+      "Do not rebuild unrelated historical evidence pages or establish a generalized design system",
+      "Do not spend time on broad browser or engine matrices, exhaustive accessibility auditing or full test coverage"
     ],
     "acceptance": [
-      "A strict disposition contract rejects failure evaluation, stale candidate hash, changed source hash, unknown strategy version and any publish destination outside /Game/ArtFlow/Published",
-      "The orchestrator decision cites the corrected accepted evaluation, Candidate Plan, UE execution receipt and policy version and requires no permission prompt",
-      "UE 5.8 creates exactly one versioned published scene package whose source candidate, source level, protected state, material binding and PCG instance count match the decision",
-      "A fresh UE process reconciles the same publish decision as already complete without creating another map or repeating any external tool",
-      "The source ArtFlowDemo.umap remains byte-identical, and publish plus negative-control receipts are frozen for the next UI/documentation slice"
+      "The interface reads M13 and M15 frozen artifacts and renders a compact correction-to-publish lineage with exact real states and no fabricated live progress",
+      "The visual language combines the existing domain spectrum with scene-oriented variant strips, spatial framing and decisive publish markers, using restrained Chinese product copy",
+      "A fixed Unreal review request accepts only the published scene from the signed M15 request, opens or inspects that exact map and persists a typed receipt",
+      "The review handoff cannot mutate ArtFlowDemo, cannot select an arbitrary map and reconciles safely when repeated",
+      "Current desktop and narrow screenshots contain the real published lineage, readable primary controls and no overflow, console error or blocking prompt"
     ],
     "stopConditions": [
-      "Stop if the corrected candidate package cannot be restored with the exact frozen hash from M13-S2",
-      "Stop if accepted evaluation, candidate plan, execution receipt and source scene identity do not agree exactly",
-      "Stop if Unreal would write outside the exact project-owned ArtFlow Published destination",
-      "Stop if publish would mutate or save the source level, rerun a successful domain or invoke an external Provider",
-      "Stop if a second process observes ambiguous completion rather than a single exact published package",
-      "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
+      "Stop if the M13 correction and M15 publish artifacts do not validate to the same candidate identity",
+      "Stop if the UI would need to invent state absent from frozen receipts",
+      "Stop if the Unreal review action could open an arbitrary package or save the source level",
+      "Stop if real published content cannot be restored from the frozen M15 runtime artifact with the verified hash",
+      "Stop if project-owned UI or UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
@@ -223,9 +233,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0045.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0046.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M14 are complete. Two current M13 routes bind real ComfyUI PBR and Codex GPT Image 2 work to isolated UE 5.8 candidates, including lighting-only correction with four successful-domain evidence hashes preserved, 12 PCG instances, zero repeated external submission and source ArtFlowDemo.umap SHA-256 620e4814... unchanged. The Chinese Scene Change Spectrum UI has desktop and narrow screenshots, a clean clone at f370694 starts from one PowerShell command, and a 49-file content-addressed portfolio archive passes both project and embedded standard-library verification under manifest 29eb651c... . This evidence does not yet claim that the new Session coordinator has adopted or published an M13 candidate into a versioned Unreal scene variant.",
+  "evidenceCeiling": "M0-M15 are complete. Two current M13 routes bind real ComfyUI PBR and Codex GPT Image 2 work to isolated UE 5.8 candidates, including lighting-only correction with four successful-domain evidence hashes preserved, 12 PCG instances and zero repeated external submission. The Codex orchestrator has now adopted the accepted corrected candidate and UE 5.8 published exactly one content-addressed scene variant at /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9; a fresh process reconciled it with zero duplicate package while source ArtFlowDemo.umap SHA-256 620e4814... remained unchanged. The existing Chinese Scene Change Spectrum and release archive predate this published lineage and do not yet expose an embedded Unreal review handoff.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

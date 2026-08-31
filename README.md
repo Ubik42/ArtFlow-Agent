@@ -54,7 +54,7 @@ Codex GPT Image 2 先依据源机位生成晴光、轻度植被覆盖的视觉�
 
 ![晴光庭院视觉目标与定向纠正](docs/assets/showcase/m13-scene-lab-sunlit-correction.png)
 
-修正前后保持 12 个 PCG 实例、同一材质路径和同一项目资产集合；四个成功领域的证据哈希完全一致，外部重复提交为 0，源 `ArtFlowDemo.umap` 字节未变化。这里展示的是候选关卡纠正，不代表已经发布或覆盖源关卡。
+修正前后保持 12 个 PCG 实例、同一材质路径和同一项目资产集合；四个成功领域的证据哈希完全一致，外部重复提交为 0。通过复检后，编排器将精确候选发布为内容寻址场景变体；新 UE 进程对账没有创建第二个关卡包，源 `ArtFlowDemo.umap` 字节始终未变化。
 
 ## 工作流程
 
@@ -139,6 +139,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | M13 单域故障分类 | 仅 `lighting`，1 / 5 |
 | M13 修正前后成功域证据 | image / material / asset / PCG，4 / 4 哈希不变 |
 | M13 修正后 UE 对账 | `reconciled=true`，外部重复提交 0 |
+| 版本化场景发布 | 1 个内容寻址关卡包，源关卡字节变化 0 |
+| 新进程发布对账 | `reconciled`，重复关卡包 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
@@ -205,6 +207,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 | `src/artflow_agent/tribunal.py` | 独立评价与确定性硬门禁 |
 | `src/artflow_agent/scene_lifecycle.py` | 多域执行、纠正、恢复与发布 |
 | `src/artflow_agent/scene_session.py` | Scene Session 草案、持久身份与候选关卡请求 |
+| `src/artflow_agent/scene_disposition.py` | 证据绑定的候选采用与版本化发布合同 |
 | `src/artflow_agent/pbr.py` | PBR 合同、通道验证与受审图编译 |
 | `src/artflow_agent/image_to_3d.py` | 图生 3D 合同、GLB 预检与 UE 接纳 |
 | `src/artflow_agent/mcp_facade.py` | 内容寻址 MCP 薄适配层 |

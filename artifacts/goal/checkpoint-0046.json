@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M15-S1",
+  "status": "completed",
+  "outcome": "The Codex orchestrator compiled the accepted M13-S2 evidence into a typed content-bound adoption decision and a fixed Unreal publish request. UE 5.8 published exactly one scene variant under /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9, preserved the source level byte-for-byte, retained the evaluated protected state, material and 12 generated instances, then reconciled the same request in a fresh process with zero duplicate package side effect. Five negative controls reject correction-required, stale-content, manual-destination and unknown-policy inputs.",
+  "evidence": [
+    "docs/evidence/M15_S1_SESSION_VARIANT_PUBLISH_2026-08-30.md",
+    "artifacts/goal/m15-s1-session-publish/adoption-decision.json",
+    "artifacts/goal/m15-s1-session-publish/publish-request.json",
+    "artifacts/goal/m15-s1-session-publish/publish-receipt.json",
+    "artifacts/goal/m15-s1-session-publish/publish-reconcile-receipt.json",
+    "artifacts/goal/m15-s1-session-publish/verification.json"
+  ]
+}

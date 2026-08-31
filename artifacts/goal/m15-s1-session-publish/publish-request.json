@@ -1,0 +1,27 @@
+{
+  "schema_id": "artflow-scene-variant-publish-request/1",
+  "request_id": "scene-publish-a38499432ad2eb2a",
+  "request_sha256": "a38499432ad2eb2a25933836f8b3388f8d07e27df345044256e4d612fcc47345",
+  "idempotency_key": "scene-publish:a38499432ad2eb2a25933836f8b3388f8d07e27df345044256e4d612fcc47345",
+  "decision": {
+    "schema_id": "artflow-scene-adoption-decision/1",
+    "decision_id": "scene-adoption-a9d761a381755f55",
+    "decision_sha256": "a9d761a381755f55d40b7bfbf3c9d017c87dc7d0e36c5b65ea209ca1c2cb4104",
+    "action": "publish",
+    "orchestrator": "codex",
+    "policy_version": "scene-disposition-policy/1",
+    "evaluation_sha256": "445666ae184f9feb18f9d957210dc430cd70ca5fba0c26b0525cbdd8add3145a",
+    "plan_sha256": "90932f54c99f373e045b3dbabc3a04656e310af3a003769e36db880f920e3947",
+    "execution_receipt_sha256": "25c7153fcaff62be5ec3a74c83baaa0c1b533d1ff1fdd2d97afc749cca5fd6b7",
+    "content_identity_sha256": "baeeeb76ada98df5ecb44ead82b0ca9efb080024a198ecd7214283a69e8b48e3",
+    "source_scene": "/Game/ArtFlowDemo",
+    "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+    "candidate_scene": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+    "candidate_level_sha256": "3aea2587b74156559a8e1bee5c6e4ea523e08b71cf010aa115a835ace55105cc",
+    "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9",
+    "rationale": "五个场景域均已通过独立评价；采用内容身份锁定的修正候选，发布为版本化场景变体，不覆盖源关卡。"
+  },
+  "expected_protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "expected_material_path": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+  "expected_instance_count": 12
+}

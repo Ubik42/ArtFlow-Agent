@@ -1,0 +1,26 @@
+{
+  "schema_id": "artflow-m15-s1-publish-verification/1",
+  "status": "passed",
+  "request_sha256": "a38499432ad2eb2a25933836f8b3388f8d07e27df345044256e4d612fcc47345",
+  "decision_sha256": "a9d761a381755f55d40b7bfbf3c9d017c87dc7d0e36c5b65ea209ca1c2cb4104",
+  "content_identity_sha256": "baeeeb76ada98df5ecb44ead82b0ca9efb080024a198ecd7214283a69e8b48e3",
+  "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9",
+  "published_level_sha256": "88177f197a9b727525dabf2c9132f2b9e7aa7af3ad89ffc674ab1e8bf03e1cf2",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "fresh_process_status": "reconciled",
+  "published_map_count": 1,
+  "duplicate_side_effect_count": 0,
+  "technical_facts": {
+    "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+    "material_path": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+    "generated_instance_count": 12
+  },
+  "contract_negative_controls": {
+    "correction_required_evaluation": "rejected",
+    "changed_candidate_bytes": "rejected",
+    "changed_source_bytes": "rejected",
+    "manual_publish_destination": "rejected",
+    "unknown_policy_version": "rejected"
+  },
+  "focused_contract_tests": "6 passed"
+}
