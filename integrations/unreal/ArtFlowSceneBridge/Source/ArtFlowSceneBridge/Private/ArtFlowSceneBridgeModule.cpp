@@ -35,6 +35,7 @@
 #include "ImageCore.h"
 #include "ImageUtils.h"
 #include "HttpModule.h"
+#include "IPythonScriptPlugin.h"
 #include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IPluginManager.h"
 #include "Json.h"
@@ -2725,6 +2726,18 @@ void FArtFlowSceneBridgeModule::RegisterMenus()
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork)));
     Section.AddMenuEntry(
+        TEXT("ArtFlowPublishCurrentVariant"),
+        LOCTEXT("PublishCurrentVariantLabel", "发布当前 ArtFlow 版本"),
+        LOCTEXT("PublishCurrentVariantTooltip", "依据当前 Scene Session 已持久化的采用决定发布唯一内容寻址版本；未知完成会先对账，不接受自定义路径。"),
+        FSlateIcon(),
+        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::PublishCurrentVariant)));
+    Section.AddMenuEntry(
+        TEXT("ArtFlowReviewCurrentVariant"),
+        LOCTEXT("ReviewCurrentVariantLabel", "审阅当前 Published 版本"),
+        LOCTEXT("ReviewCurrentVariantTooltip", "从当前 Scene Session 获取精确 Published 身份，打开并复核该版本；不接受手动选择关卡。"),
+        FSlateIcon(),
+        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ReviewCurrentVariant)));
+    Section.AddMenuEntry(
         TEXT("ArtFlowExportScenePackage"),
         LOCTEXT("ExportLabel", "仅导出场景包"),
         LOCTEXT("ExportTooltip", "将选定相机与标记区域导出为原子化、内容哈希绑定的 Scene Package。"),
@@ -2788,6 +2801,117 @@ void FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork()
             FText::Format(
                 LOCTEXT("CandidateWorkStartFailure", "ArtFlow 候选或纠正工作未开始：\n{0}\n\n源关卡未发生修改。"),
                 FText::FromString(Error)));
+    }
+}
+
+bool FArtFlowSceneBridgeModule::ExecuteRegisteredCurrentVariantScript(
+    const FString& ScriptName,
+    FString& OutError)
+{
+    if (SessionRunId.IsEmpty() || SessionEndpointOrigin.IsEmpty())
+    {
+        OutError = TEXT("请先从当前关卡启动 ArtFlow 场景任务；发布与审阅只接受本次 Session 的注册身份。");
+        return false;
+    }
+    if (ScriptName != TEXT("publish_session_candidate.py") &&
+        ScriptName != TEXT("review_published_variant.py"))
+    {
+        OutError = TEXT("ArtFlow 拒绝了未注册的编辑器动作。");
+        return false;
+    }
+    const TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("ArtFlowSceneBridge"));
+    if (!Plugin.IsValid())
+    {
+        OutError = TEXT("ArtFlowSceneBridge 插件目录不可用。");
+        return false;
+    }
+    const FString RepositoryRoot = FPaths::ConvertRelativePathToFull(
+        FPaths::Combine(Plugin->GetBaseDir(), TEXT(".."), TEXT(".."), TEXT("..")));
+    const FString ScriptPath = FPaths::ConvertRelativePathToFull(
+        FPaths::Combine(RepositoryRoot, TEXT("integrations"), TEXT("unreal"), ScriptName));
+    if (!ArtFlowSceneBridge::IsPathInside(ScriptPath, RepositoryRoot) ||
+        !IFileManager::Get().FileExists(*ScriptPath))
+    {
+        OutError = TEXT("ArtFlow 注册的版本动作脚本缺失或越出项目目录。");
+        return false;
+    }
+    IPythonScriptPlugin* Python = IPythonScriptPlugin::Get();
+    if (Python == nullptr || !Python->IsPythonInitialized())
+    {
+        OutError = TEXT("Unreal PythonScriptPlugin 尚未就绪。");
+        return false;
+    }
+
+    const FString PriorRoot = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_REPO_ROOT"));
+    const FString PriorOrigin = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"));
+    const FString PriorRun = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"));
+    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_REPO_ROOT"), *RepositoryRoot);
+    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"), *SessionEndpointOrigin);
+    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"), *SessionRunId);
+    ON_SCOPE_EXIT
+    {
+        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_REPO_ROOT"), *PriorRoot);
+        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"), *PriorOrigin);
+        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"), *PriorRun);
+    };
+
+    FPythonCommandEx Command;
+    Command.ExecutionMode = EPythonCommandExecutionMode::ExecuteFile;
+    Command.FileExecutionScope = EPythonFileExecutionScope::Private;
+    Command.Command = ScriptPath;
+    if (!Python->ExecPythonCommandEx(Command))
+    {
+        OutError = Command.CommandResult.IsEmpty()
+            ? TEXT("注册版本动作执行失败；详细信息已写入 Unreal Output Log。")
+            : Command.CommandResult.Left(800);
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::PublishCurrentVariant()
+{
+    FString Error;
+    FScopedSlowTask Progress(1.0f, LOCTEXT("PublishCurrentVariantProgress", "正在发布并对账当前 ArtFlow 版本…"));
+    Progress.MakeDialog(false);
+    Progress.EnterProgressFrame(1.0f);
+    if (!ExecuteRegisteredCurrentVariantScript(TEXT("publish_session_candidate.py"), Error))
+    {
+        FMessageDialog::Open(EAppMsgType::Ok, FText::Format(
+            LOCTEXT("PublishCurrentVariantFailure", "当前 ArtFlow 版本未发布：\n{0}\n\n源关卡未发生修改。"),
+            FText::FromString(Error)));
+        return;
+    }
+    FNotificationInfo Info(LOCTEXT("PublishCurrentVariantSuccess", "当前 ArtFlow 版本已发布 / 对账完成"));
+    Info.bFireAndForget = true;
+    Info.ExpireDuration = 8.0f;
+    const TSharedPtr<SNotificationItem> Notification = FSlateNotificationManager::Get().AddNotification(Info);
+    if (Notification.IsValid())
+    {
+        Notification->SetCompletionState(SNotificationItem::CS_Success);
+    }
+}
+
+void FArtFlowSceneBridgeModule::ReviewCurrentVariant()
+{
+    FString Error;
+    FScopedSlowTask Progress(1.0f, LOCTEXT("ReviewCurrentVariantProgress", "正在打开并复核精确 Published 版本…"));
+    Progress.MakeDialog(false);
+    Progress.EnterProgressFrame(1.0f);
+    if (!ExecuteRegisteredCurrentVariantScript(TEXT("review_published_variant.py"), Error))
+    {
+        FMessageDialog::Open(EAppMsgType::Ok, FText::Format(
+            LOCTEXT("ReviewCurrentVariantFailure", "当前 Published 版本未通过审阅：\n{0}\n\n没有保存源关卡。"),
+            FText::FromString(Error)));
+        return;
+    }
+    FNotificationInfo Info(LOCTEXT("ReviewCurrentVariantSuccess", "已打开并复核当前 Published 版本"));
+    Info.bFireAndForget = true;
+    Info.ExpireDuration = 8.0f;
+    const TSharedPtr<SNotificationItem> Notification = FSlateNotificationManager::Get().AddNotification(Info);
+    if (Notification.IsValid())
+    {
+        Notification->SetCompletionState(SNotificationItem::CS_Success);
     }
 }
 

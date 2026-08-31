@@ -24,6 +24,7 @@ public class ArtFlowSceneBridge : ModuleRules
             "Json",
             "LevelEditor",
             "Projects",
+            "PythonScriptPlugin",
             "RenderCore",
             "RHI",
             "Slate",

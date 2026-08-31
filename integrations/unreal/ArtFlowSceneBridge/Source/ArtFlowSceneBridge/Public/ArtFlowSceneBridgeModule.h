@@ -18,6 +18,9 @@ private:
     void ExportSelectedScene();
     void StartSceneSession();
     void ExecuteCurrentCandidateWork();
+    void PublishCurrentVariant();
+    void ReviewCurrentVariant();
+    bool ExecuteRegisteredCurrentVariantScript(const FString& ScriptName, FString& OutError);
     bool BeginSceneSessionHandshake(const FString& ArchivePath, bool bAutomation, FString& OutError);
     void HandleSceneSessionHandshake(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
     bool BeginSceneLifecycleCallback(
