@@ -125,6 +125,14 @@ class UnrealLightingCorrectionReceipt(BaseModel):
     intensity_after: float
     temperature_before: float
     temperature_after: float
+    key_light_pitch_before: float | None = None
+    key_light_pitch_after: float | None = None
+    key_light_yaw_before: float | None = None
+    key_light_yaw_after: float | None = None
+    secondary_intensity_before: float | None = None
+    secondary_intensity_after: float | None = None
+    secondary_temperature_before: float | None = None
+    secondary_temperature_after: float | None = None
     candidate_level_sha256: str = Field(pattern=SHA256)
     corrected_beauty_path: str
     corrected_beauty_sha256: str = Field(pattern=SHA256)
@@ -133,8 +141,11 @@ class UnrealLightingCorrectionReceipt(BaseModel):
 
 
 def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWorkDefinition:
-    verdict = state.scene_candidate_visual_verdict
-    parent = state.scene_candidate_work
+    corrected_verdict = state.scene_correction_visual_verdict
+    first_correction = state.scene_correction_work
+    is_rig_correction = corrected_verdict is not None
+    verdict = corrected_verdict or state.scene_candidate_visual_verdict
+    parent = first_correction if is_rig_correction else state.scene_candidate_work
     session = state.scene_sessions[-1] if state.scene_sessions else None
     if verdict is None or parent is None or session is None:
         raise ValueError("correction work requires a current visual verdict")
@@ -143,7 +154,11 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         raise ValueError("registered correction currently requires a lighting-only failure")
     if parent.status != "succeeded" or parent.outcome_sha256 is None:
         raise ValueError("correction work requires a succeeded parent candidate")
-    intake = state.scene_candidate_intake
+    intake = (
+        state.scene_correction_intake
+        if is_rig_correction
+        else state.scene_candidate_intake
+    )
     if intake is None:
         raise ValueError("correction work requires the registered Unreal intake")
 
@@ -152,7 +167,7 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         for finding in evaluation.findings
         if finding.status == "passed"
     }
-    correction_payload = {
+    correction_payload: dict[str, object] = {
         "evaluation_sha256": evaluation.evaluation_sha256,
         "candidate_scene": evaluation.candidate_scene,
         "failed_domains": ["lighting"],
@@ -161,6 +176,17 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         "lighting_intensity": 3.2,
         "lighting_temperature_kelvin": 7200.0,
     }
+    if is_rig_correction:
+        correction_payload.update(
+            {
+                "lighting_intensity": 2.2,
+                "lighting_temperature_kelvin": 8500.0,
+                "key_light_pitch_degrees": -18.0,
+                "key_light_yaw_degrees": -45.0,
+                "secondary_light_intensity": 0.25,
+                "secondary_light_temperature_kelvin": 9000.0,
+            }
+        )
     correction_sha256 = canonical_sha256(correction_payload)
     correction_plan = SceneDomainCorrectionPlan(
         correction_id=f"domain-correction-{correction_sha256[:12]}",
@@ -173,10 +199,12 @@ def compile_current_correction_work(state: AgentRunState) -> SceneCorrectionWork
         "parent_work_sha256": parent.definition.work_sha256,
         "parent_outcome_sha256": parent.outcome_sha256,
         "source_level_sha256": intake.evaluation_input.source_level_sha256,
-        "candidate_plan_sha256": parent.definition.candidate_plan.plan_sha256,
+        "candidate_plan_sha256": (
+            state.scene_candidate_work.definition.candidate_plan.plan_sha256
+        ),
         "candidate_scene": evaluation.candidate_scene,
         "evaluation_sha256": evaluation.evaluation_sha256,
-        "correction_plan": correction_plan.model_dump(mode="json"),
+        "correction_plan": correction_plan.model_dump(mode="json", exclude_none=True),
     }
     work_sha256 = canonical_sha256(work_payload)
     return SceneCorrectionWorkDefinition(

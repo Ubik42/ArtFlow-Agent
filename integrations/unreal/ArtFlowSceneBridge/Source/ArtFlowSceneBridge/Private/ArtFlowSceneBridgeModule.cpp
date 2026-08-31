@@ -1876,9 +1876,19 @@ bool ExecuteSessionLightingCorrection(
     FString PlanCandidateScene;
     double Intensity = -1.0;
     double Temperature = -1.0;
+    double KeyPitch = 0.0;
+    double KeyYaw = 0.0;
+    double SecondaryIntensity = 0.0;
+    double SecondaryTemperature = 0.0;
     const TArray<TSharedPtr<FJsonValue>>* Failed = nullptr;
     const TArray<TSharedPtr<FJsonValue>>* Rerun = nullptr;
     const TSharedPtr<FJsonObject>* Preserved = nullptr;
+    const bool bHasKeyPitch = (*Plan)->TryGetNumberField(TEXT("key_light_pitch_degrees"), KeyPitch);
+    const bool bHasKeyYaw = (*Plan)->TryGetNumberField(TEXT("key_light_yaw_degrees"), KeyYaw);
+    const bool bHasSecondaryIntensity = (*Plan)->TryGetNumberField(TEXT("secondary_light_intensity"), SecondaryIntensity);
+    const bool bHasSecondaryTemperature = (*Plan)->TryGetNumberField(TEXT("secondary_light_temperature_kelvin"), SecondaryTemperature);
+    const bool bHasAnyRigField = bHasKeyPitch || bHasKeyYaw || bHasSecondaryIntensity || bHasSecondaryTemperature;
+    const bool bHasCompleteRig = bHasKeyPitch && bHasKeyYaw && bHasSecondaryIntensity && bHasSecondaryTemperature;
     if (!(*Plan)->TryGetStringField(TEXT("schema_id"), PlanSchema) ||
         !(*Plan)->TryGetStringField(TEXT("correction_id"), CorrectionId) ||
         !(*Plan)->TryGetStringField(TEXT("correction_sha256"), CorrectionSha) ||
@@ -1897,7 +1907,11 @@ bool ExecuteSessionLightingCorrection(
         (*Rerun)[0]->AsString() != TEXT("lighting") ||
         Preserved->Get()->Values.Num() != 2 ||
         !Preserved->Get()->HasField(TEXT("image")) || !Preserved->Get()->HasField(TEXT("pcg")) ||
-        Intensity < 0 || Intensity > 1000000 || Temperature < 1000 || Temperature > 20000)
+        Intensity < 0 || Intensity > 1000000 || Temperature < 1000 || Temperature > 20000 ||
+        (bHasAnyRigField && !bHasCompleteRig) ||
+        (bHasCompleteRig && (KeyPitch < -89 || KeyPitch > 89 || KeyYaw < -180 || KeyYaw > 180 ||
+            SecondaryIntensity < 0 || SecondaryIntensity > 1000000 ||
+            SecondaryTemperature < 1000 || SecondaryTemperature > 20000)))
     {
         OutError = TEXT("Lighting correction plan widened scope or failed typed bounds.");
         return false;
@@ -1917,11 +1931,14 @@ bool ExecuteSessionLightingCorrection(
     }
     UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
     AActor* LightActor = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("ArtFlow_KeyLight"));
+    AActor* SecondaryLightActor = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("DirectionalLight"));
     AActor* Protected = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("Protected_Blockout"));
     AActor* Camera = World == nullptr ? nullptr : FindActorByLabel(World, TEXT("ArtFlow_Camera"));
     ULightComponent* Light = LightActor == nullptr ? nullptr : LightActor->FindComponentByClass<ULightComponent>();
+    ULightComponent* SecondaryLight = SecondaryLightActor == nullptr ? nullptr : SecondaryLightActor->FindComponentByClass<ULightComponent>();
     if (World == nullptr || World->GetOutermost()->GetName() != CandidateScene ||
-        Light == nullptr || Protected == nullptr || Camera == nullptr)
+        Light == nullptr || Protected == nullptr || Camera == nullptr ||
+        (bHasCompleteRig && (SecondaryLight == nullptr || SecondaryLightActor == LightActor)))
     {
         OutError = TEXT("Candidate lighting, camera or protected actor is missing.");
         return false;
@@ -1930,9 +1947,18 @@ bool ExecuteSessionLightingCorrection(
     const FString ProtectedBefore = ProtectedSemanticFingerprint(Protected);
     const float IntensityBefore = Light->Intensity;
     const float TemperatureBefore = Light->Temperature;
+    const FRotator KeyRotationBefore = LightActor->GetActorRotation();
+    const float SecondaryIntensityBefore = SecondaryLight == nullptr ? 0.0f : SecondaryLight->Intensity;
+    const float SecondaryTemperatureBefore = SecondaryLight == nullptr ? 0.0f : SecondaryLight->Temperature;
     const bool bReconciled = FMath::IsNearlyEqual(IntensityBefore, static_cast<float>(Intensity)) &&
         Light->bUseTemperature &&
-        FMath::IsNearlyEqual(TemperatureBefore, static_cast<float>(Temperature));
+        FMath::IsNearlyEqual(TemperatureBefore, static_cast<float>(Temperature)) &&
+        (!bHasCompleteRig || (
+            FMath::IsNearlyEqual(KeyRotationBefore.Pitch, static_cast<float>(KeyPitch)) &&
+            FMath::IsNearlyEqual(KeyRotationBefore.Yaw, static_cast<float>(KeyYaw)) &&
+            SecondaryLight->bUseTemperature &&
+            FMath::IsNearlyEqual(SecondaryIntensityBefore, static_cast<float>(SecondaryIntensity)) &&
+            FMath::IsNearlyEqual(SecondaryTemperatureBefore, static_cast<float>(SecondaryTemperature))));
     const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("SceneCorrections"), WorkId);
     if (bReconciled && !ExpectedOutcomeSha.IsEmpty())
     {
@@ -1950,6 +1976,10 @@ bool ExecuteSessionLightingCorrection(
         double ExistingInstancesAfter = -1;
         double ExistingIntensityAfter = -1;
         double ExistingTemperatureAfter = -1;
+        double ExistingKeyPitchAfter = 0;
+        double ExistingKeyYawAfter = 0;
+        double ExistingSecondaryIntensityAfter = 0;
+        double ExistingSecondaryTemperatureAfter = 0;
         FString ActualBeautySha;
         if (!IsSha256(ExpectedOutcomeSha) ||
             !HashFile(ExistingReceiptPath, ExistingReceiptSha, OutError) ||
@@ -1965,6 +1995,11 @@ bool ExecuteSessionLightingCorrection(
             !ExistingReceipt->TryGetNumberField(TEXT("generated_instance_count_after"), ExistingInstancesAfter) ||
             !ExistingReceipt->TryGetNumberField(TEXT("intensity_after"), ExistingIntensityAfter) ||
             !ExistingReceipt->TryGetNumberField(TEXT("temperature_after"), ExistingTemperatureAfter) ||
+            (bHasCompleteRig && (
+                !ExistingReceipt->TryGetNumberField(TEXT("key_light_pitch_after"), ExistingKeyPitchAfter) ||
+                !ExistingReceipt->TryGetNumberField(TEXT("key_light_yaw_after"), ExistingKeyYawAfter) ||
+                !ExistingReceipt->TryGetNumberField(TEXT("secondary_intensity_after"), ExistingSecondaryIntensityAfter) ||
+                !ExistingReceipt->TryGetNumberField(TEXT("secondary_temperature_after"), ExistingSecondaryTemperatureAfter))) ||
             !ExistingReceipt->TryGetStringField(TEXT("corrected_beauty_path"), ExistingBeautyPath) ||
             !ExistingReceipt->TryGetStringField(TEXT("corrected_beauty_sha256"), ExistingBeautySha) ||
             ExistingSchema != TEXT("artflow-session-lighting-correction-receipt/1") ||
@@ -1973,6 +2008,11 @@ bool ExecuteSessionLightingCorrection(
             static_cast<int32>(ExistingInstancesAfter) != InstancesBefore ||
             !FMath::IsNearlyEqual(static_cast<float>(ExistingIntensityAfter), Light->Intensity) ||
             !FMath::IsNearlyEqual(static_cast<float>(ExistingTemperatureAfter), Light->Temperature) ||
+            (bHasCompleteRig && (
+                !FMath::IsNearlyEqual(static_cast<float>(ExistingKeyPitchAfter), LightActor->GetActorRotation().Pitch) ||
+                !FMath::IsNearlyEqual(static_cast<float>(ExistingKeyYawAfter), LightActor->GetActorRotation().Yaw) ||
+                !FMath::IsNearlyEqual(static_cast<float>(ExistingSecondaryIntensityAfter), SecondaryLight->Intensity) ||
+                !FMath::IsNearlyEqual(static_cast<float>(ExistingSecondaryTemperatureAfter), SecondaryLight->Temperature))) ||
             !IsPathInside(ExistingBeautyPath, OutputRoot) ||
             !HashFile(ExistingBeautyPath, ActualBeautySha, OutError) ||
             ActualBeautySha != ExistingBeautySha)
@@ -1989,6 +2029,14 @@ bool ExecuteSessionLightingCorrection(
         Light->SetIntensity(static_cast<float>(Intensity));
         Light->SetUseTemperature(true);
         Light->SetTemperature(static_cast<float>(Temperature));
+        if (bHasCompleteRig)
+        {
+            LightActor->SetActorRotation(FRotator(
+                static_cast<float>(KeyPitch), static_cast<float>(KeyYaw), 0.0f));
+            SecondaryLight->SetIntensity(static_cast<float>(SecondaryIntensity));
+            SecondaryLight->SetUseTemperature(true);
+            SecondaryLight->SetTemperature(static_cast<float>(SecondaryTemperature));
+        }
         if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, CandidateFilename))
         {
             OutError = TEXT("Could not save the lighting-only candidate correction.");
@@ -2049,6 +2097,17 @@ bool ExecuteSessionLightingCorrection(
     Receipt->SetNumberField(TEXT("intensity_after"), Light->Intensity);
     Receipt->SetNumberField(TEXT("temperature_before"), TemperatureBefore);
     Receipt->SetNumberField(TEXT("temperature_after"), Light->Temperature);
+    if (bHasCompleteRig)
+    {
+        Receipt->SetNumberField(TEXT("key_light_pitch_before"), KeyRotationBefore.Pitch);
+        Receipt->SetNumberField(TEXT("key_light_pitch_after"), LightActor->GetActorRotation().Pitch);
+        Receipt->SetNumberField(TEXT("key_light_yaw_before"), KeyRotationBefore.Yaw);
+        Receipt->SetNumberField(TEXT("key_light_yaw_after"), LightActor->GetActorRotation().Yaw);
+        Receipt->SetNumberField(TEXT("secondary_intensity_before"), SecondaryIntensityBefore);
+        Receipt->SetNumberField(TEXT("secondary_intensity_after"), SecondaryLight->Intensity);
+        Receipt->SetNumberField(TEXT("secondary_temperature_before"), SecondaryTemperatureBefore);
+        Receipt->SetNumberField(TEXT("secondary_temperature_after"), SecondaryLight->Temperature);
+    }
     Receipt->SetStringField(TEXT("candidate_level_sha256"), CandidateSha);
     Receipt->SetStringField(TEXT("corrected_beauty_path"), BeautyPath);
     Receipt->SetStringField(TEXT("corrected_beauty_sha256"), BeautySha);

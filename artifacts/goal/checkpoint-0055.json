@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M20-S5",
+  "status": "completed",
+  "outcome": "A complete registered two-light correction changed only bounded lighting fields in the current Unreal candidate. Seven technical checks and a fresh visual observation accepted the new rerender, and Codex adopted the exact content identity without publishing it.",
+  "evidence": [
+    "artifacts/goal/m20-s5-multilight-correction/verification.json",
+    "artifacts/goal/m20-s5-multilight-correction/host-receipt.json",
+    "artifacts/goal/m20-s5-multilight-correction/corrected-beauty.png",
+    "artifacts/goal/m20-s5-multilight-correction/live-projection.json",
+    "artifacts/goal/m20-s5-multilight-correction/live-adopted-multilight-desktop.png",
+    "artifacts/goal/m20-s5-multilight-correction/live-adopted-multilight-narrow.png",
+    "docs/evidence/M20_S5_MULTILIGHT_CORRECTION_2026-08-30.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

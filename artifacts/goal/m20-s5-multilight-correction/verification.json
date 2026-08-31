@@ -1,0 +1,61 @@
+{
+  "schema_id": "artflow-m20-multilight-correction-verification/1",
+  "status": "verified_adopted_unpublished",
+  "engine_version": "5.8.1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "event_count": 35,
+  "work_sha256": "998d1544f384de82f84d5ac9ee126c75b9ca14a42bcb07e0edb53e51afb489fe",
+  "parent_work_sha256": "50470223e94076cade2b731a7dc5b76d24fb78d2e312005bb7f798e32da19301",
+  "parent_outcome_sha256": "11c30f12f14e4b0cd8d964b7403cda78ad71cff08931109c9b2d346cdadf55cb",
+  "technical_pass_count": 7,
+  "visual_observation_sha256": "def98c2102f2b3d174a2a74ffce042b155280bf655b85a671019a2381c447113",
+  "evaluation_sha256": "8b1a012f7bd82277d2b4c8a04ec62b80d9346086e7ed37b793a8d894ca522081",
+  "evaluation_status": "accepted",
+  "adoption_sha256": "38b161a29c15340354758e048058738bdf86d3119f612a691590ee8bece3e263",
+  "adoption_orchestrator": "codex",
+  "published": false,
+  "source_level_unchanged": true,
+  "protected_state_unchanged": true,
+  "generated_instance_count": 12,
+  "lighting_before": {
+    "primary_intensity": 3.200000047683716,
+    "primary_temperature_kelvin": 7200.0,
+    "primary_pitch_degrees": -81.00000000000026,
+    "primary_yaw_degrees": -25.000000000000078,
+    "secondary_intensity": 6.0,
+    "secondary_temperature_kelvin": 6500.0
+  },
+  "lighting_after": {
+    "primary_intensity": 2.200000047683716,
+    "primary_temperature_kelvin": 8500.0,
+    "primary_pitch_degrees": -17.999999999999996,
+    "primary_yaw_degrees": -44.99999999999999,
+    "secondary_intensity": 0.25,
+    "secondary_temperature_kelvin": 9000.0
+  },
+  "corrected_beauty_sha256": "6fb78beba13104136f37a8cdefc61a15d383156faa6975155ebd77eccd19673e",
+  "host_receipt_sha256": "3e5ed85f223f74fc226d063a75beb32f119a3c68cd5b7b4c61edb211db9cfb7d",
+  "screenshots": [
+    {
+      "path": "artifacts/goal/m20-s5-multilight-correction/live-adopted-multilight-desktop.png",
+      "size": [
+        1600,
+        1000
+      ],
+      "sha256": "21c02c65c6a18a1964acd70755c211b86727b173806d889b5de37522c2ef1d63"
+    },
+    {
+      "path": "artifacts/goal/m20-s5-multilight-correction/live-adopted-multilight-narrow.png",
+      "size": [
+        412,
+        915
+      ],
+      "sha256": "55fbb04287ec8d84c942ffd69c2c3d4fe7b5d7a3d54dbf5a5f2612644596f90b"
+    }
+  ],
+  "browser_console_error_count": 0,
+  "broken_image_count": 0,
+  "horizontal_overflow_px": 0,
+  "targeted_test_result": "8 passed",
+  "unreal_build_result": "Succeeded"
+}

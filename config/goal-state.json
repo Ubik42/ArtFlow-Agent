@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 59,
+  "stateRevision": 60,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M20",
+  "currentMilestone": "M21",
   "milestones": [
     {
       "id": "M0",
@@ -222,7 +222,7 @@
     {
       "id": "M20",
       "title": "Current-session tribunal and failed-domain correction",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M19"],
       "outcome": "The current Scene Session evaluates its own Unreal candidate rerender and 3D host receipt, classifies failed domains, preserves passed evidence, submits only a bounded correction plan and advances an accepted candidate toward adoption without loading historical M16 evaluation artifacts.",
       "acceptance": [
@@ -230,36 +230,48 @@
         "A failed domain produces one content-bound correction work item while passed domain evidence remains byte-identical and is not re-executed",
         "A passing reevaluation appends the current candidate evaluation through AgentEventStore and projects the decision basis in the Scene Change Spectrum"
       ]
+    },
+    {
+      "id": "M21",
+      "title": "Current-session versioned publish and Unreal review",
+      "status": "in_progress",
+      "dependsOn": ["M20"],
+      "outcome": "The exact current candidate adopted by Codex is published into a content-addressed Unreal variant namespace, reconciled without duplicate packages and opened through the registered review action while the source level remains byte-identical.",
+      "acceptance": [
+        "Publish derives only from the current persisted adoption and exact candidate bytes and cannot accept a caller path or arbitrary package name",
+        "A fresh UE process reconciles the same published package and receipt without a second package or source-level write",
+        "The live Scene Change Spectrum projects adopted, published and reviewed as distinct current-session states"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M20-S5",
-    "milestone": "M20",
-    "title": "Bounded multi-light rig correction",
-    "outcome": "Compile the persisted lighting-only reevaluation failure into a second content-bound correction that adjusts only the two registered directional lights and key-light direction, execute it in the existing Unreal candidate, and independently reevaluate the new same-camera rerender before any adoption.",
+    "id": "M21-S1",
+    "milestone": "M21",
+    "title": "Publish and review the current adopted variant",
+    "outcome": "Compile the current Codex adoption into the existing typed publish lifecycle, let UE create or reconcile the exact content-addressed variant, and return a registered in-editor review receipt through the same append-only Scene Session.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not rerun image, material, asset or PCG capabilities that already passed",
-      "Do not expose arbitrary Actor labels, property paths, console commands or host scripts",
-      "Do not reuse either earlier visual observation for the new rerender",
-      "Do not publish the candidate in this slice",
+      "Do not rerun generation, correction or evaluation after the adopted content identity is frozen",
+      "Do not overwrite, rename or save the source ArtFlowDemo level",
+      "Do not accept a caller-selected candidate path, publish path, map or review target",
+      "Do not add a second publisher, state machine or manual approval gate",
       "Do not spend time on broad benchmarks, provider additions or unrelated interface redesign"
     ],
     "acceptance": [
-      "The new work derives only from the persisted current correction verdict and carries the previous correction outcome as its parent identity",
-      "The typed plan can modify only registered primary/secondary directional-light intensity, temperature and primary direction, and rejects partial or caller-selected patches",
-      "UE changes no non-lighting domain, preserves the source level, protected-state fingerprint and 12 PCG instances, and returns a new same-camera rerender through the existing event stream",
-      "A fresh technical and visual reevaluation cites the new work, receipt and rerender hashes; hard failures remain non-overridable",
-      "Codex adopts the exact current candidate only if the new persisted evaluation is accepted, without publishing it or requesting a permission prompt"
+      "The publish request is derived from event 35's adoption, accepted evaluation, correction receipt and current candidate file hash without user-supplied host paths",
+      "UE writes exactly one package under the adoption decision's content-addressed Published namespace and leaves the source level hash unchanged",
+      "A fresh UE process reconciles the same package and registered receipt with zero duplicate package, Actor, PCG or provider side effects",
+      "The registered review action opens only the exact published variant and appends one typed review event",
+      "Desktop and narrow live UI evidence distinguishes adopted, published and reviewed states and maps each claim to current-session receipts"
     ],
     "stopConditions": [
-      "Stop before mutation if the current failed verdict, previous correction receipt or candidate bytes no longer match the persisted identities",
-      "Stop if either registered light cannot be resolved unambiguously in the candidate level",
-      "Stop if source, protected structure or PCG invariants change during correction",
-      "Stop if the new rerender is missing, hash-mismatched or cannot be independently inspected",
+      "Stop before publish if the current adoption, accepted evaluation, correction receipt or candidate bytes no longer match",
+      "Stop if the derived destination is outside the registered ArtFlow Published namespace",
+      "Stop if the source level hash changes or an existing different package occupies the content identity",
+      "Stop if fresh-process reconciliation cannot distinguish completed from unknown publication",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -281,9 +293,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0054.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0055.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M19 and M20-S1-S4 are complete. The exact current correction passed seven technical identity and invariant checks, and a fresh Visual Critic observation cited only its new same-camera rerender. Camera, protected structure, spatial readability and coherence passed, but the image remained dominated by a second hard neutral DirectionalLight, so the append-only 26-event run truthfully remains correction_required for lighting only. Image and PCG findings stayed byte-identical; no accepted evaluation, adoption or publish event was appended. Desktop and narrow live UI captures have no broken image, console error or horizontal overflow. A bounded registered multi-light correction, its fresh reevaluation, conditional adoption and publish remain M20 work.",
+  "evidenceCeiling": "M0-M20 are complete. The persisted lighting-only failure produced a second correction whose complete typed contract could address only the registered primary and secondary directional lights. UE 5.8.1 changed the primary from 3.2/7200K at -81/-25 degrees to 2.2/8500K at -18/-45 degrees and the secondary from 6.0/6500K to 0.25/9000K; source hash, protected-state fingerprint and 12 PCG instances remained unchanged. Seven technical checks and a fresh visual observation accepted the new same-camera rerender. Event 35 records Codex adoption of the exact current candidate without a permission prompt or publish side effect. Desktop and narrow live UI captures have no broken image, console error or horizontal overflow. Content-addressed publish, fresh-process reconciliation and exact Unreal review remain M21 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

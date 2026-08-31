@@ -329,6 +329,14 @@ class SceneDomainCorrectionPlan(BaseModel):
     preserved_evidence_sha256s: dict[SceneDomain, str]
     lighting_intensity: float = Field(ge=0, le=1_000_000)
     lighting_temperature_kelvin: float = Field(ge=1_000, le=20_000)
+    key_light_pitch_degrees: float | None = Field(default=None, ge=-89, le=89)
+    key_light_yaw_degrees: float | None = Field(default=None, ge=-180, le=180)
+    secondary_light_intensity: float | None = Field(
+        default=None, ge=0, le=1_000_000
+    )
+    secondary_light_temperature_kelvin: float | None = Field(
+        default=None, ge=1_000, le=20_000
+    )
 
     @model_validator(mode="after")
     def verify_correction_scope(self) -> SceneDomainCorrectionPlan:
@@ -338,8 +346,20 @@ class SceneDomainCorrectionPlan(BaseModel):
             raise ValueError("the registered correction tool currently supports lighting only")
         if "lighting" in self.preserved_evidence_sha256s:
             raise ValueError("failed lighting evidence cannot be marked preserved")
+        rig_fields = (
+            self.key_light_pitch_degrees,
+            self.key_light_yaw_degrees,
+            self.secondary_light_intensity,
+            self.secondary_light_temperature_kelvin,
+        )
+        if any(value is not None for value in rig_fields) and not all(
+            value is not None for value in rig_fields
+        ):
+            raise ValueError("registered multi-light correction requires the complete rig")
         payload = self.model_dump(
-            mode="json", exclude={"schema_id", "correction_id", "correction_sha256"}
+            mode="json",
+            exclude={"schema_id", "correction_id", "correction_sha256"},
+            exclude_none=True,
         )
         expected = _content_sha256(payload)
         if self.correction_sha256 != expected:

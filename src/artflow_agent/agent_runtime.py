@@ -1827,8 +1827,13 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
                 raise AgentRuntimeError("visual verdict references another current candidate")
             state.scene_candidate_visual_verdict = record
         elif event.event_type == "scene_correction_work_queued":
-            verdict = state.scene_candidate_visual_verdict
-            parent = state.scene_candidate_work
+            corrected_verdict = state.scene_correction_visual_verdict
+            verdict = corrected_verdict or state.scene_candidate_visual_verdict
+            parent = (
+                state.scene_correction_work
+                if corrected_verdict is not None
+                else state.scene_candidate_work
+            )
             if verdict is None or parent is None or parent.outcome_sha256 is None:
                 raise AgentRuntimeError("correction work requires current evaluated candidate")
             definition = _SceneCorrectionWorkQueued.model_validate(event.data).definition
@@ -1852,6 +1857,10 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             ):
                 raise AgentRuntimeError("correction work references another current candidate")
             state.scene_correction_work = SceneCorrectionWorkState(definition=definition)
+            state.scene_correction_intake = None
+            state.scene_correction_visual_verdict = None
+            state.scene_candidate_evaluation = None
+            state.scene_candidate_adoption = None
         elif event.event_type == "scene_correction_work_claimed":
             work = state.scene_correction_work
             if work is None or work.status != "queued":

@@ -63,11 +63,21 @@ class CurrentCorrectionEvaluationInput(BaseModel):
     intensity_after: float
     temperature_before: float
     temperature_after: float
+    key_light_pitch_before: float | None = None
+    key_light_pitch_after: float | None = None
+    key_light_yaw_before: float | None = None
+    key_light_yaw_after: float | None = None
+    secondary_intensity_before: float | None = None
+    secondary_intensity_after: float | None = None
+    secondary_temperature_before: float | None = None
+    secondary_temperature_after: float | None = None
     registered_receipt: str
 
     @model_validator(mode="after")
     def verify_identity(self) -> CurrentCorrectionEvaluationInput:
-        payload = self.model_dump(mode="json", exclude={"schema_id", "input_sha256"})
+        payload = self.model_dump(
+            mode="json", exclude={"schema_id", "input_sha256"}, exclude_none=True
+        )
         if self.input_sha256 != canonical_sha256(payload):
             raise ValueError("current correction evaluation input hash is invalid")
         return self
@@ -235,8 +245,17 @@ def evaluate_current_correction(
         "intensity_after": receipt.intensity_after,
         "temperature_before": receipt.temperature_before,
         "temperature_after": receipt.temperature_after,
+        "key_light_pitch_before": receipt.key_light_pitch_before,
+        "key_light_pitch_after": receipt.key_light_pitch_after,
+        "key_light_yaw_before": receipt.key_light_yaw_before,
+        "key_light_yaw_after": receipt.key_light_yaw_after,
+        "secondary_intensity_before": receipt.secondary_intensity_before,
+        "secondary_intensity_after": receipt.secondary_intensity_after,
+        "secondary_temperature_before": receipt.secondary_temperature_before,
+        "secondary_temperature_after": receipt.secondary_temperature_after,
         "registered_receipt": receipt_path.relative_to(project_root).as_posix(),
     }
+    input_payload = {key: value for key, value in input_payload.items() if value is not None}
     evaluation_input = CurrentCorrectionEvaluationInput(
         input_sha256=canonical_sha256(input_payload), **input_payload
     )
@@ -288,10 +307,44 @@ def evaluate_current_correction(
             abs(receipt.intensity_after - plan.lighting_intensity) < 0.001
             and abs(receipt.temperature_after - plan.lighting_temperature_kelvin) < 0.001
             and (
+                plan.key_light_pitch_degrees is None
+                or (
+                    receipt.key_light_pitch_after is not None
+                    and receipt.key_light_yaw_after is not None
+                    and receipt.secondary_intensity_after is not None
+                    and receipt.secondary_temperature_after is not None
+                    and abs(
+                        receipt.key_light_pitch_after
+                        - plan.key_light_pitch_degrees
+                    )
+                    < 0.001
+                    and abs(
+                        receipt.key_light_yaw_after - plan.key_light_yaw_degrees
+                    )
+                    < 0.001
+                    and abs(
+                        receipt.secondary_intensity_after
+                        - plan.secondary_light_intensity
+                    )
+                    < 0.001
+                    and abs(
+                        receipt.secondary_temperature_after
+                        - plan.secondary_light_temperature_kelvin
+                    )
+                    < 0.001
+                )
+            )
+            and (
                 receipt.intensity_before != receipt.intensity_after
                 or receipt.temperature_before != receipt.temperature_after
+                or receipt.key_light_pitch_before != receipt.key_light_pitch_after
+                or receipt.key_light_yaw_before != receipt.key_light_yaw_after
+                or receipt.secondary_intensity_before
+                != receipt.secondary_intensity_after
+                or receipt.secondary_temperature_before
+                != receipt.secondary_temperature_after
             ),
-            "主光参数按注册补丁发生实际变化",
+            "注册灯光组参数按类型化补丁发生实际变化",
         ),
         (
             "corrected_rerender",

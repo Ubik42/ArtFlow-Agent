@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from artflow_agent.agent_runtime import AgentEventStore
+from artflow_agent.scene_session import SceneDomainCorrectionPlan
 from artflow_agent.current_visual_critic import seal_visual_observation
 from artflow_agent.web_api import create_app
 
@@ -551,3 +552,96 @@ def test_corrected_candidate_is_reevaluated_and_adopted_from_current_evidence(
     assert decision["evaluation_sha256"] == corrected["evaluation_sha256"]
     assert adopted.json()["scene_variant_lineage"] is None
     assert len(AgentEventStore(database).events(RUN_ID)) == 19
+
+
+def test_failed_corrected_rerender_queues_complete_registered_light_rig(
+    tmp_path: Path,
+) -> None:
+    client, _, _ = _succeeded_correction(tmp_path)
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    intake = client.post(f"{base}/evaluate").json()["scene_correction_intake"]
+    input_record = intake["evaluation_input"]
+    observation = seal_visual_observation(
+        {
+            "input_sha256": input_record["input_sha256"],
+            "source_beauty_sha256": input_record["source_beauty_sha256"],
+            "candidate_beauty_sha256": input_record["corrected_beauty_sha256"],
+            "claims": [
+                {
+                    "dimension": "camera_composition",
+                    "verdict": "passed",
+                    "confidence": 0.99,
+                    "rationale": "相机、画幅和主体占位保持不变。",
+                },
+                {
+                    "dimension": "protected_structure",
+                    "verdict": "passed",
+                    "confidence": 0.99,
+                    "rationale": "受保护结构没有被灯光修改。",
+                },
+                {
+                    "dimension": "spatial_readability",
+                    "verdict": "passed",
+                    "confidence": 0.95,
+                    "rationale": "PCG 空间节奏继续保持清晰。",
+                },
+                {
+                    "dimension": "lighting_direction",
+                    "verdict": "failed",
+                    "confidence": 0.93,
+                    "rationale": "第二盏定向光仍使画面保持硬质中性日照。",
+                },
+                {
+                    "dimension": "visual_coherence",
+                    "verdict": "passed",
+                    "confidence": 0.88,
+                    "rationale": "场景布局与光照修改没有产生结构冲突。",
+                },
+            ],
+            "recommended_failed_domains": ["lighting"],
+        }
+    ).model_dump(mode="json")
+    failed = client.post(f"{base}/visual-observation", json=observation).json()
+    previous = failed["scene_correction_work"]
+    previous_verdict = failed["scene_correction_visual_verdict"]["domain_evaluation"]
+
+    queued = client.post(f"{base}/queue")
+    assert queued.status_code == 200
+    projection = queued.json()
+    work = projection["scene_correction_work"]
+    definition = work["definition"]
+    plan = definition["correction_plan"]
+    assert definition["parent_work_sha256"] == previous["definition"]["work_sha256"]
+    assert definition["parent_outcome_sha256"] == previous["outcome_sha256"]
+    assert definition["evaluation_sha256"] == previous_verdict["evaluation_sha256"]
+    assert plan["lighting_intensity"] == 2.2
+    assert plan["lighting_temperature_kelvin"] == 8500.0
+    assert plan["key_light_pitch_degrees"] == -18.0
+    assert plan["key_light_yaw_degrees"] == -45.0
+    assert plan["secondary_light_intensity"] == 0.25
+    assert plan["secondary_light_temperature_kelvin"] == 9000.0
+    assert projection["scene_correction_intake"] is None
+    assert projection["scene_correction_visual_verdict"] is None
+
+    invalid_payload = {**plan, "secondary_light_temperature_kelvin": None}
+    invalid_payload.pop("schema_id")
+    invalid_payload.pop("correction_id")
+    invalid_payload.pop("correction_sha256")
+    invalid_sha = hashlib.sha256(
+        json.dumps(
+            {key: value for key, value in invalid_payload.items() if value is not None},
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+    ).hexdigest()
+    try:
+        SceneDomainCorrectionPlan(
+            correction_id=f"domain-correction-{invalid_sha[:12]}",
+            correction_sha256=invalid_sha,
+            **invalid_payload,
+        )
+    except ValueError as exc:
+        assert "complete rig" in str(exc)
+    else:
+        raise AssertionError("partial registered light rig must be rejected")

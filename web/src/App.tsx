@@ -657,6 +657,10 @@ type SceneCorrectionWorkState = {
       preserved_evidence_sha256s: Partial<Record<SceneDomain, string>>;
       lighting_intensity: number;
       lighting_temperature_kelvin: number;
+      key_light_pitch_degrees?: number;
+      key_light_yaw_degrees?: number;
+      secondary_light_intensity?: number;
+      secondary_light_temperature_kelvin?: number;
     };
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
@@ -674,6 +678,14 @@ type CurrentCorrectionEvaluationRecord = {
     intensity_after: number;
     temperature_before: number;
     temperature_after: number;
+    key_light_pitch_before?: number;
+    key_light_pitch_after?: number;
+    key_light_yaw_before?: number;
+    key_light_yaw_after?: number;
+    secondary_intensity_before?: number;
+    secondary_intensity_after?: number;
+    secondary_temperature_before?: number;
+    secondary_temperature_after?: number;
   };
   technical_evaluation: {
     evaluation_id: string;
@@ -1665,6 +1677,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     agent.scene_correction_visual_verdict ?? agent.scene_candidate_visual_verdict
   )?.domain_evaluation;
   const correctionSucceeded = agent.scene_correction_work?.status === "succeeded";
+  const correctionAccepted =
+    agent.scene_correction_visual_verdict?.domain_evaluation.status === "accepted";
+  const currentAdopted = Boolean(agent.scene_candidate_adoption);
   const correctionNeedsAnotherPass =
     agent.scene_correction_visual_verdict?.domain_evaluation.status === "correction_required";
   const currentDomains = currentVerdict
@@ -1676,6 +1691,12 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
           pcg: "PCG",
           lighting: "灯光",
         };
+        if (finding.domain === "lighting" && currentAdopted) {
+          return "灯光·已采用";
+        }
+        if (finding.domain === "lighting" && correctionAccepted) {
+          return "灯光·复评通过";
+        }
         if (correctionSucceeded && finding.domain === "lighting") {
           return "灯光·已纠正待复评";
         }
@@ -1683,19 +1704,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       })
     : ["图像·待评价", "PCG·已执行", "灯光·待评价"];
   const currentInput = agent.scene_candidate_intake?.evaluation_input;
+  const currentCorrection = agent.scene_correction_intake?.evaluation_input;
+  const hasMultiLightReceipt = currentCorrection?.secondary_intensity_after !== undefined;
   const cases = [
     {
       id: "rain-wet-courtyard",
       tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
       title: hasCurrentLifecycle
-        ? correctionNeedsAnotherPass
+        ? currentAdopted
+          ? "双灯光组通过复评，当前候选已由 Codex 采用"
+          : correctionAccepted
+            ? "双灯光组通过技术与视觉复评"
+          : correctionNeedsAnotherPass
           ? "技术复检通过，视觉复评要求继续收敛灯光组"
           : correctionSucceeded
           ? "Unreal 已完成一次灯光域定向纠正"
           : "当前 Unreal 候选正在沿失败域收敛"
         : "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
       description: hasCurrentLifecycle
-        ? correctionNeedsAnotherPass
+        ? currentAdopted
+          ? "Agent 将第二盏定向光从 6.0 压低至 0.25，并把主光改为冷蓝低角度方向。七项硬检查与独立视觉复评均通过；Codex 依据持久评价采用精确内容身份，尚未发布。"
+          : correctionAccepted
+            ? "第二盏中性顶光已被压低，主光方向与色温形成冷蓝清晨层次。通过域证据保持不变，当前候选已满足采用条件。"
+          : correctionNeedsAnotherPass
           ? "七项技术检查证明本次修改没有越界，但新回渲仍受第二盏 DirectionalLight 主导，冷湿清晨方向不够明确。Agent 保留 image 与 PCG，只把 lighting 送入下一次受限灯光组纠正。"
           : correctionSucceeded
           ? "独立视觉评价只判定 lighting 失败。Agent 保留图像与 PCG 证据，仅把主光从 5.5 / 4200K 改为 3.2 / 7200K，并由 Unreal 以同机位重新渲染。"
@@ -1705,7 +1736,12 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
         ? correctionSucceeded
           ? [
             { src: `/api/agent/runs/${agent.run_id}/scene/passes/beauty`, alt: "当前 Scene Session 的 Unreal 源场景", label: "源场景", title: "相机、灰盒与保护区已锁定" },
-            { src: `/api/agent/runs/${agent.run_id}/scene-correction-work/beauty`, alt: "只修正灯光后的 Unreal 同机位回渲", label: "灯光纠正", title: "3.2 / 7200K · PCG 12→12" },
+            {
+              src: `/api/agent/runs/${agent.run_id}/scene-correction-work/beauty`,
+              alt: "双定向灯修正后的 Unreal 同机位回渲",
+              label: currentAdopted ? "已采用候选" : "灯光纠正",
+              title: hasMultiLightReceipt ? "主光 2.2 / 8500K · 辅光 0.25 / 9000K" : "3.2 / 7200K · PCG 12→12",
+            },
           ]
           : [
             { src: `/api/agent/runs/${agent.run_id}/scene/passes/beauty`, alt: "当前 Scene Session 的 Unreal 源场景", label: "当前源场景", title: "相机、灰盒与保护区已锁定" },
@@ -1721,7 +1757,11 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       metricB: "0",
       metricBLabel: "源关卡改写",
       note: hasCurrentLifecycle
-        ? correctionNeedsAnotherPass
+        ? currentAdopted
+          ? "采用决定引用当前双灯光组回执、新回渲与 accepted 评价；源关卡哈希和保护结构不变，发布仍是独立的后续动作。"
+          : correctionAccepted
+            ? "当前结果已经满足硬约束与视觉方向；采用与发布仍通过各自的类型化事件推进。"
+          : correctionNeedsAnotherPass
           ? "复评结论来自当前纠正图而非历史案例；硬约束全部通过，视觉 lighting 仍失败，因此候选没有被采用。"
           : correctionSucceeded
           ? "UE 5.8 实测：源关卡哈希不变，保护结构不变，PCG 实例 12→12；新回渲等待独立复评。"
