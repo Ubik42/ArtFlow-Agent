@@ -12,12 +12,44 @@ def sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def canonical_sha256(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
+
+
+def actor_state(actor: unreal.Actor) -> str:
+    component = actor.get_component_by_class(unreal.StaticMeshComponent)
+    materials = []
+    if component:
+        materials = [
+            component.get_material(index).get_path_name() if component.get_material(index) else "none"
+            for index in range(component.get_num_materials())
+        ]
+    location = actor.get_actor_location()
+    rotation = actor.get_actor_rotation()
+    scale = actor.get_actor_scale3d()
+    return canonical_sha256(
+        {
+            "label": actor.get_actor_label(),
+            "class": actor.get_class().get_path_name(),
+            "location": [location.x, location.y, location.z],
+            "rotation": [rotation.roll, rotation.pitch, rotation.yaw],
+            "scale": [scale.x, scale.y, scale.z],
+            "tags": sorted(str(item) for item in actor.tags),
+            "materials": materials,
+        }
+    )
+
+
 repo_root = Path(os.environ["ARTFLOW_REPO_ROOT"]).resolve()
 plan_path = Path(os.environ["ARTFLOW_M13_PLAN"]).resolve()
 output_path = Path(os.environ["ARTFLOW_M13_INSPECTION"]).resolve()
 if not plan_path.is_relative_to(repo_root) or not output_path.is_relative_to(repo_root):
     raise RuntimeError("M13 inspection paths escaped the repository")
 plan = json.loads(plan_path.read_text(encoding="utf-8"))
+execution_path = Path(os.environ.get("ARTFLOW_M13_EXECUTION", "")).resolve()
+execution = json.loads(execution_path.read_text(encoding="utf-8")) if execution_path.is_file() else {}
 world = unreal.EditorLoadingAndSavingUtils.load_map(plan["candidate_destination"])
 if not world:
     raise RuntimeError("M13 candidate could not be loaded")
@@ -58,11 +90,13 @@ facts = {
         "lighting_intensity": light.get_editor_property("intensity"),
         "lighting_temperature_kelvin": light.get_editor_property("temperature"),
         "protected_actor_present": protected is not None,
+        "protected_state_sha256": actor_state(protected),
         "source_level_sha256": sha256_file(source_map),
         "candidate_level_sha256": sha256_file(candidate_map),
     },
     "material_instance_path": material_path,
     "generated_asset_paths": sorted(set(generated_meshes)),
+    "candidate_beauty_sha256": execution.get("candidate_beauty_sha256", ""),
 }
 required = [
     facts["checks"]["material_instance_matches"],

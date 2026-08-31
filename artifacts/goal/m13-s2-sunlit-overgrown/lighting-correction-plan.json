@@ -1,0 +1,21 @@
+{
+  "schema_id": "artflow-scene-domain-correction-plan/1",
+  "correction_id": "domain-correction-499a118bdb23",
+  "correction_sha256": "499a118bdb238aa3851028686a889fc97660f83426951f9bb161ba2e0798d36b",
+  "evaluation_sha256": "eccb2b2731bec7fcd9b87e04ba90fc3231139e624a799bcff9203092bb123e3f",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+  "failed_domains": [
+    "lighting"
+  ],
+  "rerun_domains": [
+    "lighting"
+  ],
+  "preserved_evidence_sha256s": {
+    "image": "f8b129fcaf11b1ee31bddbecfb5a096b16e4fa9a9439e21b894a0ab4d036eecc",
+    "material": "972fb9189ad0cfa8870af9bd0f3da9f408a39aad775255a120feeb7c92b4404a",
+    "asset": "8dcf6ac448e31b17c58780a0c5f4fd6422e8b9313c3a6d3fdfc6637414a48810",
+    "pcg": "94a6655c2c45d1ef05202cd38041c1745860c157ce0803fbdb35a9ff3c89a971"
+  },
+  "lighting_intensity": 5.5,
+  "lighting_temperature_kelvin": 4200.0
+}

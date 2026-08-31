@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 48,
+  "stateRevision": 49,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M13",
+  "currentMilestone": "M14",
   "milestones": [
     {
       "id": "M0",
@@ -140,7 +140,7 @@
     {
       "id": "M13",
       "title": "Cross-pipeline scene transformation and failed-domain correction",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M12"],
       "outcome": "Reviewed ComfyUI graphs, GPT Image 2 development orchestration, PBR materials, project and generated assets, PCG and lighting cooperate through one typed plan, with independent evaluation and failed-domain-only correction.",
       "acceptance": [
@@ -151,7 +151,7 @@
     {
       "id": "M14",
       "title": "Embedded delivery and portfolio release",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M13"],
       "outcome": "ArtFlow ships as a polished Chinese portfolio product with an Unreal-facing entry, multiple reproducible production cases, restrained documentation, real screenshots and a traceable release package.",
       "acceptance": [
@@ -161,41 +161,41 @@
     }
   ],
   "nextSlice": {
-    "id": "M13-S2",
-    "milestone": "M13",
-    "title": "Sunlit overgrown courtyard image-route case and failed-domain correction",
-    "outcome": "Complete a materially different production case whose visual target is developed through Codex GPT Image 2, stage the bounded Unreal asset, PCG and lighting changes through the same coordinator, deliberately fail only lighting, preserve successful image, asset and PCG evidence, rerun the lighting branch, and expose both M13 cases through a distinctive Chinese production-case interface without publishing either candidate.",
-    "risk": "R3",
+    "id": "M14-S1",
+    "milestone": "M14",
+    "title": "Reviewer-first launch path and traceable portfolio release",
+    "outcome": "Turn the verified ArtFlow runtime into a reviewer-ready Chinese portfolio delivery: make the Unreal entry and local showcase launch path obvious, align README and demo guidance around the two current M13 cases, freeze a compact screenshot-rich walkthrough, and build a content-addressed release that can be independently verified without exposing development conversation, private state or generated runtime clutter.",
+    "risk": "R2",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
-    "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
+    "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not publish, merge or overwrite the active/source level in this slice",
-      "Do not rerun the successful rain-wet ComfyUI/PBR branch from M13-S1",
-      "Do not add image-to-3D or a new Provider when project-owned assets satisfy the case",
-      "Do not rebuild the whole frontend or introduce a generic node canvas; add only the production-case presentation needed for M13 evidence",
+      "Do not publish, merge or overwrite the active/source Unreal level",
+      "Do not rerun image, ComfyUI, asset import or PCG work whose frozen M13 receipts already satisfy the public case",
+      "Do not add another Provider, framework, protocol, Agent role or case only to enlarge the feature list",
+      "Do not redesign the whole frontend again; polish only issues that block reviewer understanding or target-size presentation",
       "Do not modify shared engine installation files or unrelated Unreal projects",
-      "Do not delay the production case for packaged-runtime support, broad engine matrices or cosmetic test expansion"
+      "Do not delay delivery for packaged-runtime support, broad engine matrices, coverage targets or cosmetic test expansion"
     ],
     "acceptance": [
-      "A second editor-bound Session cites a real Codex GPT Image 2 visual-target artifact and uses a route materially different from the M13-S1 ComfyUI PBR case",
-      "The deliberate initial failure is classified only as lighting while image target, project assets and PCG evidence are preserved by immutable hashes",
-      "Correction submits and applies only the lighting tool call, then the same-camera technical and visual evaluators pass without a repeated image generation, asset import or PCG side effect",
-      "The Chinese case interface presents source, visual target, typed plan, failed evaluation, correction and final candidate with a recognizable Scene Change Spectrum visual language rather than a generic AI dashboard",
-      "Both M13 cases have frozen real-host receipts and workflow screenshots, and M13 acceptance is satisfied without publishing a source-level change"
+      "A reviewer can start the fixed local showcase and understand the Unreal-to-Agent-to-candidate loop, two capability routes and failed-domain correction from the first README screen and current Chinese UI",
+      "The Unreal integration guide names the actual editor command, candidate-only mutation boundary and local Agent endpoint without requiring internal development knowledge",
+      "Desktop and narrow screenshots cover the current two-case interface with zero console errors, blocking overlays or invented statuses",
+      "The portfolio release manifest includes the current README, demo guide, key screenshots and evidence summaries, verifies content hashes independently, and excludes credentials, event databases, temporary candidates and conversation artifacts",
+      "A clean clone can run the documented lightweight showcase path using repository-owned frozen evidence"
     ],
     "stopConditions": [
-      "Stop before publish or any source-level save",
-      "Stop if the GPT Image 2 artifact cannot be content-bound to the exact Session intent and source scene",
-      "Stop if failure classification touches a domain other than the injected lighting branch or correction reruns a successful branch",
-      "Stop if candidate target identity, camera, protected invariant or source-level bytes change",
-      "Stop if the interface would require invented status, receipts or screenshots instead of current artifacts",
+      "Stop before any source-level Unreal save or candidate adoption",
+      "Stop if release assembly would include secrets, local databases, ignored runtime state or unreviewed generated binaries",
+      "Stop if a public claim cannot cite a current frozen artifact, exact denominator or real host receipt",
+      "Stop if visual polish requires replacing the current Scene Change Spectrum product language with a generic template",
+      "Stop if launch documentation would depend on the user's login state or machine-private absolute paths",
       "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": false}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -211,9 +211,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0043.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0044.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M12 and M13-S1 are complete. M13-S1 binds a current RTX 4080 ComfyUI capability snapshot and real 23.094-second reviewed PBR execution to a validated five-channel texture set, UE material instance, project-owned rock asset, PCG and lighting in one four-operation Candidate Plan. UE 5.8 creates the isolated candidate, technical and same-camera visual evaluation pass, and a fresh process reconciles 12 instances with no repeated provider/import side effect. The source .umap SHA-256 remains 620e4814... before and after. This evidence does not yet claim a second materially different case, failed-domain-only correction in the new Session coordinator, embedded case UI or publish.",
+  "evidenceCeiling": "M0-M13 are complete. M13-S1 binds a current RTX 4080 ComfyUI capability snapshot and real 23.094-second PBR execution to a validated five-channel texture set, Unreal material instance, project asset, PCG and lighting candidate. M13-S2 binds a real Codex GPT Image 2 visual target to the same Session coordinator, classifies an injected 0.05 / 6500K failure as lighting only, applies one lighting patch, preserves image/material/asset/PCG evidence hashes, and reconciles the corrected UE 5.8 candidate in a new process with 12 instances and zero repeated external submission. Both keep source ArtFlowDemo.umap SHA-256 620e4814... unchanged and are shown in the current Chinese desktop and narrow UI. This evidence does not yet claim a packaged release, clean-clone launch verification or source-level publish.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

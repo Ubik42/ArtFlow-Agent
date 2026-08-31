@@ -1,0 +1,18 @@
+{
+  "schema_id": "artflow-codex-visual-target-receipt/1",
+  "execution_surface": "codex_builtin_image_generation",
+  "requested_model_family": "gpt-image-2",
+  "execution_id": "616dd574-ed18-40f0-9f05-7791a423cf5d",
+  "source_scene": "/Game/ArtFlowDemo",
+  "source_scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+  "source_render_path": "artifacts/goal/m13-s1-rain-wet-courtyard/source-beauty.png",
+  "source_render_sha256": "46af73e1486bcaccd78afd832f86e3678659d949c4472e087bf1712ea15fdd4d",
+  "source_dimensions": [640, 360],
+  "artifact_path": "artifacts/goal/m13-s2-sunlit-overgrown/gpt-image-2-visual-target.png",
+  "artifact_sha256": "2b075863f65211642080ad62cf2c931bc8cf5f9e1301d762ea038a05a823c517",
+  "artifact_dimensions": [1672, 941],
+  "intent": "将当前灰盒发展为阳光充足、轻度植被侵入的石质庭院，同时保持相机、对象数量和主要轮廓。",
+  "preserve": ["相机构图", "左侧受保护方块轮廓", "球体与右墙空间关系", "对象数量"],
+  "allowed_changes": ["材质方向", "灯光方向", "大气", "少量表面植被"],
+  "adoption_status": "visual_target_only"
+}

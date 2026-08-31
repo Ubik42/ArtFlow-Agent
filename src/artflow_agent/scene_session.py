@@ -225,6 +225,19 @@ class SceneCandidateMaterialToolCall(BaseModel):
     )
 
 
+class SceneCandidateImageTargetToolCall(BaseModel):
+    operation_type: Literal["bind_visual_target"] = "bind_visual_target"
+    operation_id: str
+    domain: Literal["image"] = "image"
+    tool_name: Literal["codex.image.visual_target.bind"] = (
+        "codex.image.visual_target.bind"
+    )
+    source_render_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    preserve: list[str] = Field(min_length=1, max_length=16)
+
+
 class SceneCandidateProjectAssetToolCall(BaseModel):
     operation_type: Literal["bind_project_asset_set"] = "bind_project_asset_set"
     operation_id: str
@@ -246,12 +259,94 @@ class SceneCandidateProjectAssetToolCall(BaseModel):
 
 
 SceneCandidateToolCall = Annotated[
-    SceneCandidateMaterialToolCall
+    SceneCandidateImageTargetToolCall
+    | SceneCandidateMaterialToolCall
     | SceneCandidateProjectAssetToolCall
     | SceneCandidatePCGToolCall
     | SceneCandidateLightingToolCall,
     Field(discriminator="operation_type"),
 ]
+
+
+class SceneDomainFinding(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    domain: SceneDomain
+    status: Literal["passed", "failed"]
+    reason: str = Field(min_length=3, max_length=300)
+    evidence_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+
+
+class SceneCandidateDomainEvaluation(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_id: Literal["artflow-scene-domain-evaluation/1"] = (
+        "artflow-scene-domain-evaluation/1"
+    )
+    evaluation_id: str
+    evaluation_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    plan_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    candidate_scene: str
+    findings: list[SceneDomainFinding] = Field(min_length=1, max_length=5)
+    failed_domains: list[SceneDomain]
+    status: Literal["accepted", "correction_required"]
+
+    @model_validator(mode="after")
+    def verify_evaluation(self) -> SceneCandidateDomainEvaluation:
+        ordered_failed = [
+            domain
+            for domain in DOMAIN_ORDER
+            if any(item.domain == domain and item.status == "failed" for item in self.findings)
+        ]
+        if self.failed_domains != ordered_failed:
+            raise ValueError("failed domains do not match domain findings")
+        expected_status = "correction_required" if ordered_failed else "accepted"
+        if self.status != expected_status:
+            raise ValueError("evaluation status does not match failed domains")
+        payload = self.model_dump(
+            mode="json", exclude={"schema_id", "evaluation_id", "evaluation_sha256"}
+        )
+        expected = _content_sha256(payload)
+        if self.evaluation_sha256 != expected:
+            raise ValueError("scene domain evaluation content hash is invalid")
+        if self.evaluation_id != f"domain-evaluation-{expected[:12]}":
+            raise ValueError("scene domain evaluation id is invalid")
+        return self
+
+
+class SceneDomainCorrectionPlan(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_id: Literal["artflow-scene-domain-correction-plan/1"] = (
+        "artflow-scene-domain-correction-plan/1"
+    )
+    correction_id: str
+    correction_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    evaluation_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    candidate_scene: str
+    failed_domains: list[SceneDomain] = Field(min_length=1)
+    rerun_domains: list[SceneDomain] = Field(min_length=1)
+    preserved_evidence_sha256s: dict[SceneDomain, str]
+    lighting_intensity: float = Field(ge=0, le=1_000_000)
+    lighting_temperature_kelvin: float = Field(ge=1_000, le=20_000)
+
+    @model_validator(mode="after")
+    def verify_correction_scope(self) -> SceneDomainCorrectionPlan:
+        if self.rerun_domains != self.failed_domains:
+            raise ValueError("correction may rerun only the failed domains")
+        if self.failed_domains != ["lighting"]:
+            raise ValueError("the registered correction tool currently supports lighting only")
+        if "lighting" in self.preserved_evidence_sha256s:
+            raise ValueError("failed lighting evidence cannot be marked preserved")
+        payload = self.model_dump(
+            mode="json", exclude={"schema_id", "correction_id", "correction_sha256"}
+        )
+        expected = _content_sha256(payload)
+        if self.correction_sha256 != expected:
+            raise ValueError("scene correction plan content hash is invalid")
+        if self.correction_id != f"domain-correction-{expected[:12]}":
+            raise ValueError("scene correction plan id is invalid")
+        return self
 
 
 class SceneCandidatePlan(BaseModel):

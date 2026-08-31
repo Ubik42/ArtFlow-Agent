@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-scene-domain-evaluation/1",
+  "evaluation_id": "domain-evaluation-eccb2b2731be",
+  "evaluation_sha256": "eccb2b2731bec7fcd9b87e04ba90fc3231139e624a799bcff9203092bb123e3f",
+  "plan_sha256": "3d3cbf0c00bfba8578caf1c83594e678cd35e02ddfd831b9a334561d58e7ef94",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+  "findings": [
+    {
+      "domain": "image",
+      "status": "passed",
+      "reason": "候选画面与宿主回执逐字节一致",
+      "evidence_sha256": "f8b129fcaf11b1ee31bddbecfb5a096b16e4fa9a9439e21b894a0ab4d036eecc"
+    },
+    {
+      "domain": "material",
+      "status": "passed",
+      "reason": "验证过的 PBR 材质实例保持绑定",
+      "evidence_sha256": "972fb9189ad0cfa8870af9bd0f3da9f408a39aad775255a120feeb7c92b4404a"
+    },
+    {
+      "domain": "asset",
+      "status": "passed",
+      "reason": "项目资产集合与允许清单一致",
+      "evidence_sha256": "8dcf6ac448e31b17c58780a0c5f4fd6422e8b9313c3a6d3fdfc6637414a48810"
+    },
+    {
+      "domain": "pcg",
+      "status": "passed",
+      "reason": "PCG 生成 12 个实例且未越过预算",
+      "evidence_sha256": "94a6655c2c45d1ef05202cd38041c1745860c157ce0803fbdb35a9ff3c89a971"
+    },
+    {
+      "domain": "lighting",
+      "status": "failed",
+      "reason": "主光 0.05000000074505806 / 6500.0K，画面平均亮度 120.04",
+      "evidence_sha256": "e4d6b3830ef6da32bfb9a0e6694c1dc6adb6dcf91f9bcbf68ff02e0bb38402c6"
+    }
+  ],
+  "failed_domains": [
+    "lighting"
+  ],
+  "status": "correction_required"
+}

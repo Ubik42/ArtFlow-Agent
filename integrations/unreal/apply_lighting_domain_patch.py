@@ -52,8 +52,12 @@ def actor_state(actor: unreal.Actor) -> str:
 
 
 repo_root = Path(os.environ["ARTFLOW_REPO_ROOT"]).resolve()
-request_path = Path(os.environ["ARTFLOW_M9_LIGHTING_REQUEST"]).resolve()
-result_path = Path(os.environ["ARTFLOW_M9_LIGHTING_RESULT"]).resolve()
+request_path = Path(
+    os.environ.get("ARTFLOW_LIGHTING_REQUEST", os.environ.get("ARTFLOW_M9_LIGHTING_REQUEST", ""))
+).resolve()
+result_path = Path(
+    os.environ.get("ARTFLOW_LIGHTING_RESULT", os.environ.get("ARTFLOW_M9_LIGHTING_RESULT", ""))
+).resolve()
 if not request_path.is_relative_to(repo_root) or not result_path.is_relative_to(repo_root):
     fail("request or result escaped the repository")
 request = json.loads(request_path.read_text(encoding="utf-8"))
@@ -63,15 +67,19 @@ unsigned = dict(request)
 request_sha = unsigned.pop("request_sha256", None)
 if canonical_sha256(unsigned) != request_sha:
     fail("request fingerprint mismatch")
-if request["candidate_scene_path"] != "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1":
-    fail("only the content-addressed M9 candidate is writable")
+candidate_scene_path = request["candidate_scene_path"]
+if not (
+    candidate_scene_path == "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1"
+    or candidate_scene_path.startswith("/Game/ArtFlow/Sessions/")
+):
+    fail("candidate escaped the registered ArtFlow candidate namespaces")
 
 project_root = Path(unreal.Paths.project_dir()).resolve()
 source_path = project_root / "Content" / "ArtFlowDemo.umap"
 source_before = file_sha256(source_path)
 if source_before != request["source_scene_sha256"]:
     fail("source scene fingerprint is stale")
-world = unreal.EditorLoadingAndSavingUtils.load_map(request["candidate_scene_path"])
+world = unreal.EditorLoadingAndSavingUtils.load_map(candidate_scene_path)
 if not world:
     fail("candidate scene could not be loaded")
 actors = unreal.get_editor_subsystem(unreal.EditorActorSubsystem).get_all_level_actors()
@@ -124,7 +132,7 @@ if not reconciled:
     light.set_editor_property("intensity", request["intensity"])
     light.set_editor_property("use_temperature", True)
     light.set_editor_property("temperature", request["temperature_kelvin"])
-    if not unreal.EditorLoadingAndSavingUtils.save_map(world, request["candidate_scene_path"]):
+    if not unreal.EditorLoadingAndSavingUtils.save_map(world, candidate_scene_path):
         fail("candidate map could not be saved")
 
 instances_after = generated_count()
@@ -145,7 +153,7 @@ result = {
     "request_id": request["request_id"],
     "request_sha256": request_sha,
     "status": "reconciled" if reconciled else "executed",
-    "candidate_scene_path": request["candidate_scene_path"],
+    "candidate_scene_path": candidate_scene_path,
     "intensity_before": intensity_before,
     "intensity_after": float(light.get_editor_property("intensity")),
     "temperature_before": temperature_before,
@@ -166,6 +174,6 @@ temporary = result_path.with_suffix(result_path.suffix + ".tmp")
 temporary.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 temporary.replace(result_path)
 unreal.log(
-    f"ARTFLOW_M9_LIGHTING_PATCH purpose={request['purpose']} status={result['status']} "
+    f"ARTFLOW_LIGHTING_PATCH purpose={request['purpose']} status={result['status']} "
     f"intensity={result['intensity_after']} pcg_instances={instances_after}"
 )

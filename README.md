@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow 场景变更谱与候选关卡请求](artifacts/goal/m11-s2-persistent-session-stage-request.png)
+![ArtFlow Scene Lab：雨后庭院跨管线候选](docs/assets/showcase/m13-scene-lab-rain.png)
 
 ## 项目定位
 
@@ -40,53 +40,21 @@ Candidate Plan。下面的雨湿庭院候选来自当前 RTX 4080 受审图执�
 
 ## 生产案例
 
-Scene Lab 使用同一套 Agent 控制平面呈现四类典型任务。界面中的状态、指标和结果均来自实际运行回执。
+Scene Lab 当前聚焦两条来自同一 Unreal 场景、但走不同生成路线的生产案例。界面中的图像、领域状态和数字均来自本仓冻结的 UE 5.8、ComfyUI 与 Codex Image 回执。
 
-| 概念道具生成与接入 | PBR 材质生成与回流 |
-| --- | --- |
-| ![GPT Image 2 参考生成 GLB 并接入 Unreal](docs/assets/showcase/scene-lab-image-to-3d.png) | ![ComfyUI PBR 材质验证与回流](docs/assets/showcase/scene-lab-pbr.png) |
-| 场景多域联合改造 | 失败域定向纠正 |
-| ![材质、PCG、灯光与项目资产联合改造](docs/assets/showcase/scene-lab-multi-domain.png) | ![评价失败后仅纠正灯光](docs/assets/showcase/scene-lab-correction.png) |
+### 雨后庭院：跨管线场景改造
 
-### 概念道具生成与接入
+Agent 将受审 ComfyUI PBR、已验证材质实例、项目资产、固定 PCG 图和灯光参数编译为一份类型化 Candidate Plan。原始 PBR 技术图不满足通道语义时，只重建失败的技术域；通过后再由 Unreal 串行写入隔离候选关卡。新进程重放同一计划时直接对账，不重复调用 Provider 或导入资产。
 
-二维概念参考经过图生 3D Provider 生成 GLB。资产进入引擎前必须通过许可证、外部 URI、格式扩展、几何规模、材质表示和三角面预算检查；合格结果再由 Unreal Interchange 导入隔离命名空间，创建碰撞并放入候选关卡。
+![雨后庭院跨管线案例](docs/assets/showcase/m13-scene-lab-rain.png)
 
-| 二维概念参考 | Unreal 三维候选 |
-| --- | --- |
-| ![玄武岩祭坛概念参考](docs/assets/showcase/image-to-3d-reference.png) | ![Unreal 中的生成祭坛候选](docs/assets/showcase/image-to-3d-unreal.png) |
+### 晴光庭院：视觉目标驱动的单域纠正
 
-本次结果在 Unreal 中构建为 4,817 个三角面、1 个材质槽和 1 个简单碰撞，并以约 180 cm 的尺度进入候选关卡。当前路线定位为实验性几何草案，保留顶点色，不将其描述为最终生产级 PBR 资产。
+Codex GPT Image 2 先依据源机位生成晴光、轻度植被覆盖的视觉目标，并把源图、目标图、保持项和内容哈希绑定为图像域回执。第一次 UE 候选故意使用 `0.05 / 6500K` 的错误主光；评价结果只有 `lighting` 失败，图像、材质、资产和 PCG 四个领域的证据被锁定。Correction Planner 只提交灯光补丁，修正为 `5.5 / 4200K`，随后由新的 UE 进程完成对账和同机位回渲。
 
-### PBR 材质生成与回流
+![晴光庭院视觉目标与定向纠正](docs/assets/showcase/m13-scene-lab-sunlit-correction.png)
 
-ArtFlow 只允许视觉意图、种子、尺寸和输出前缀进入受审 ComfyUI 模板，不接受任意工作流执行。生成后的 BaseColor、Normal、Roughness、Metallic 与 AO 分别进行尺寸、通道语义和内容哈希检查；失败通道单独重建，通过后创建 Unreal Material Instance 并等待 Shader 编译完成再回渲。
-
-| 通过验证的 BaseColor | Unreal 同机位回渲 |
-| --- | --- |
-| ![玄武岩 BaseColor](docs/assets/showcase/pbr-basecolor.png) | ![Unreal 材质候选回渲](docs/assets/showcase/pbr-unreal.png) |
-
-两组无效结果因彩色标量图、法线语义错误等问题被拦截；最终五个通道全部通过，重复执行没有新增资产，源关卡保持不变。
-
-### 场景多域联合改造
-
-Agent 将项目资产、已验证材质、固定 PCG 图和灯光参数编译为带依赖关系的变更 DAG。非引擎资产可以并行准备，Unreal 写入严格串行。候选完成后同时从美术机位和瞬态验证机位回渲，检查镜头外遮挡、保护区侵入与实例空间关系。
-
-| 美术机位 | 空间验证机位 |
-| --- | --- |
-| ![场景改造主机位](docs/assets/showcase/multi-domain-authored.png) | ![场景改造验证机位](docs/assets/showcase/multi-domain-validation.png) |
-
-真实运行生成 12 个 PCG 实例，保护区侵入为 0；重复执行仍保持 12 个实例和相同的资产集合。
-
-### 失败域定向纠正
-
-评价器分别检查技术约束与视觉目标。当一次低照度候选只在 `lighting` 域失败时，Correction Planner 锁定已经通过的资产、材质与 PCG 证据，只生成灯光补丁，不重新调用生成或导入链路。
-
-| 失败回渲：平均亮度 117.72 | 纠正回渲：平均亮度 166.66 |
-| --- | --- |
-| ![灯光失败回渲](docs/assets/showcase/correction-before.png) | ![灯光纠正回渲](docs/assets/showcase/correction-after.png) |
-
-纠正过程中注入回执丢失，恢复进程通过持久账本对账已有结果，外部重提次数为 0；重复发布同样不会产生额外副作用。
+修正前后保持 12 个 PCG 实例、同一材质路径和同一项目资产集合；四个成功领域的证据哈希完全一致，外部重复提交为 0，源 `ArtFlowDemo.umap` 字节未变化。这里展示的是候选关卡纠正，不代表已经发布或覆盖源关卡。
 
 ## 工作流程
 
@@ -167,6 +135,10 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 新 UE 进程候选对账 | `reconciled=true`，重复实例 0 |
 | 雨湿庭院跨管线计划 | 材质 / 项目资产 / PCG / 灯光 4 / 4 |
 | 当前 ComfyUI PBR 验证 | 5 / 5 通道，真实生成 23.094 秒 |
+| GPT Image 2 视觉目标绑定 | 1 / 1，源图与保持项内容寻址 |
+| M13 单域故障分类 | 仅 `lighting`，1 / 5 |
+| M13 修正前后成功域证据 | image / material / asset / PCG，4 / 4 哈希不变 |
+| M13 修正后 UE 对账 | `reconciled=true`，外部重复提交 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

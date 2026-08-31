@@ -814,6 +814,21 @@ def create_app(
             "lighting-corrected": goal_root
             / "m9-s3-correction-release"
             / "corrected-authored-camera.png",
+            "m13-rain-source": goal_root
+            / "m13-s1-rain-wet-courtyard"
+            / "source-beauty.png",
+            "m13-rain-candidate": goal_root
+            / "m13-s1-rain-wet-courtyard"
+            / "candidate-beauty.png",
+            "m13-sun-target": goal_root
+            / "m13-s2-sunlit-overgrown"
+            / "gpt-image-2-visual-target.png",
+            "m13-sun-failure": goal_root
+            / "m13-s2-sunlit-overgrown"
+            / "failure-candidate.png",
+            "m13-sun-corrected": goal_root
+            / "m13-s2-sunlit-overgrown"
+            / "corrected-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

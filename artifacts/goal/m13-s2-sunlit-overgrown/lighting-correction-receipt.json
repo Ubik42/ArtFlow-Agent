@@ -1,0 +1,21 @@
+{
+  "schema_id": "lighting-domain-patch-receipt/1",
+  "request_id": "lighting-patch-c233f0b91912",
+  "request_sha256": "fec0df613c74b63949009fd53a47ed8fe065adf047bfc54689e6658a6a77f518",
+  "status": "executed",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+  "intensity_before": 0.05000000074505806,
+  "intensity_after": 5.5,
+  "temperature_before": 6500.0,
+  "temperature_after": 4200.0,
+  "generated_instance_count_before": 12,
+  "generated_instance_count_after": 12,
+  "material_path_before": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+  "material_path_after": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+  "source_scene_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_scene_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_before": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "protected_state_after": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "completed_at": "2026-08-31T02:32:58.505366Z",
+  "receipt_sha256": "e132b8d657ae3458b295a1fcb5df520244ff9d160577cd60a312589c804576bb"
+}

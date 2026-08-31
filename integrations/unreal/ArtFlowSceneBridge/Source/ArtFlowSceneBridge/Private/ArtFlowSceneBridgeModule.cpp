@@ -1445,7 +1445,7 @@ bool StartSessionCandidateExecution(
 
     const TArray<TSharedPtr<FJsonValue>>* Operations = nullptr;
     if (!Plan.TryGetArrayField(TEXT("operations"), Operations) || Operations == nullptr ||
-        (Operations->Num() != 2 && Operations->Num() != 4))
+        (Operations->Num() != 2 && Operations->Num() != 4 && Operations->Num() != 5))
     {
         OutError = TEXT("Candidate plan must contain the registered scene operations.");
         return false;
@@ -1472,6 +1472,9 @@ bool StartSessionCandidateExecution(
     FString AssetSetId;
     TArray<FString> ApprovedAssetPaths;
     TArray<FString> ApprovedAssetShas;
+    FString VisualSourceSha;
+    FString VisualArtifactSha;
+    FString VisualReceiptSha;
     for (const TSharedPtr<FJsonValue>& Value : *Operations)
     {
         const TSharedPtr<FJsonObject>* Operation = nullptr;
@@ -1548,6 +1551,21 @@ bool StartSessionCandidateExecution(
                 !IsSha256(ApprovedAssetShas[0]))
             {
                 OutError = TEXT("Candidate project asset set failed its typed allowlist bounds.");
+                return false;
+            }
+        }
+        else if (Type == TEXT("bind_visual_target") &&
+            ToolName == TEXT("codex.image.visual_target.bind"))
+        {
+            const TArray<TSharedPtr<FJsonValue>>* Preserve = nullptr;
+            if (!(*Operation)->TryGetStringField(TEXT("source_render_sha256"), VisualSourceSha) ||
+                !(*Operation)->TryGetStringField(TEXT("artifact_sha256"), VisualArtifactSha) ||
+                !(*Operation)->TryGetStringField(TEXT("receipt_sha256"), VisualReceiptSha) ||
+                !(*Operation)->TryGetArrayField(TEXT("preserve"), Preserve) || Preserve == nullptr ||
+                Preserve->Num() < 1 || !IsSha256(VisualSourceSha) ||
+                !IsSha256(VisualArtifactSha) || !IsSha256(VisualReceiptSha))
+            {
+                OutError = TEXT("Candidate visual target failed its content binding.");
                 return false;
             }
         }

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M13-S2",
+  "status": "completed",
+  "outcome": "A content-bound Codex GPT Image 2 visual target drives a second UE 5.8 scene route. The deliberately injected lighting failure is classified as lighting only; image, material, asset and PCG evidence remains hash-identical while a narrow lighting patch restores 5.5 / 4200K. A new editor process reconciles the corrected five-operation candidate with 12 instances, zero repeated external submission and no source-level byte change, and both M13 cases are presented in the Chinese Scene Change Spectrum UI.",
+  "evidence": [
+    "docs/evidence/M13_S2_SUNLIT_IMAGE_ROUTE_CORRECTION_2026-08-30.md",
+    "artifacts/goal/m13-s2-sunlit-overgrown/codex-image-target-receipt.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/failure-domain-evaluation.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/lighting-correction-plan.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/lighting-correction-receipt.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/corrected-execution-receipt.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/corrected-domain-evaluation.json",
+    "artifacts/goal/m13-s2-sunlit-overgrown/ui-case-sunlit-correction.png"
+  ]
+}

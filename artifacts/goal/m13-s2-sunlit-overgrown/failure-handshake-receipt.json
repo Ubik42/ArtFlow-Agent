@@ -1,0 +1,191 @@
+{
+  "schema": "artflow-unreal-scene-session-handshake-receipt/1",
+  "success": true,
+  "endpoint_origin": "http://127.0.0.1:18878",
+  "archive_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+  "source_scene": "/Game/ArtFlowDemo",
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_unchanged": true,
+  "received_at": "2026-08-31T01:55:35.680Z",
+  "artflow_receipt": {
+    "schema_id": "artflow-scene-session-handshake/1",
+    "handshake_id": "scene-handshake-ebd7b5f80946",
+    "handshake_sha256": "ebd7b5f8094607733e71f343c2a75a81e77d782e3d36f278b9c365e30e708bc2",
+    "action_id": "ue-handshake-207d24a911c356879dba45af",
+    "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+    "source_scene": "/Game/ArtFlowDemo",
+    "scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+    "event_sequence": 3,
+    "session": {
+      "schema_id": "artflow-scene-session/1",
+      "session_id": "scene-session-784907467248",
+      "session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+      "strategy_version": "scene-session-strategy/1",
+      "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+      "source_scene": "/Game/ArtFlowDemo",
+      "scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+      "start_action_id": "ue-handshake-207d24a911c356879dba45af",
+      "supersedes_session_id": null,
+      "draft": {
+        "schema_id": "artflow-scene-session-draft/1",
+        "draft_id": "scene-draft-84507e759198",
+        "draft_sha256": "84507e759198b2e1fcff0e320c1c3f2a913096f51739845487dd8ca4e6a63b27",
+        "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+        "basis_sequence": 2,
+        "source_scene": "/Game/ArtFlowDemo",
+        "scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+        "capability_environment_sha256s": [],
+        "intent": "在保持相机构图与受保护灰盒轮廓的前提下，探索雨后清晨的灯光、材质与空间层次。",
+        "preserve": [
+          "相机构图",
+          "受保护灰盒轮廓",
+          "地面空间关系"
+        ],
+        "prohibit": [
+          "新增角色",
+          "品牌标识",
+          "重设计受保护几何体"
+        ],
+        "nodes": [
+          {
+            "domain": "pcg",
+            "label": "空间布局",
+            "readiness": "ready",
+            "action": "通过固定 PCG 图布置项目资产",
+            "reason": "Scene Digital Twin 可提供边界与保护对象事实。",
+            "verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+            "depends_on": []
+          },
+          {
+            "domain": "lighting",
+            "label": "灯光",
+            "readiness": "ready",
+            "action": "在候选关卡调整强度、色温与方向",
+            "reason": "Scene Digital Twin 可提供灯光身份与相机事实。",
+            "verification": "参数范围、源关卡指纹与同机位亮度回渲",
+            "depends_on": []
+          }
+        ],
+        "ready_domain_count": 2,
+        "guarded_domain_count": 0,
+        "experimental_domain_count": 0,
+        "can_stage": true,
+        "next_action": "创建隔离候选关卡并执行已接入领域"
+      }
+    },
+    "stage_request": {
+      "schema_id": "artflow-scene-stage-request/1",
+      "request_id": "stage-request-5e39f4fb72dc",
+      "request_sha256": "5e39f4fb72dc51f4ecd930b2e753465aa19aec67996625314a96b1ddacf9de2e",
+      "idempotency_key": "scene-stage:5e39f4fb72dc51f4ecd930b2e753465aa19aec67996625314a96b1ddacf9de2e",
+      "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+      "basis_sequence": 3,
+      "session_id": "scene-session-784907467248",
+      "session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+      "draft_sha256": "84507e759198b2e1fcff0e320c1c3f2a913096f51739845487dd8ca4e6a63b27",
+      "scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+      "strategy_version": "scene-session-strategy/1",
+      "source_scene": "/Game/ArtFlowDemo",
+      "candidate_destination": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+      "operations": [
+        {
+          "domain": "pcg",
+          "readiness": "ready",
+          "action": "通过固定 PCG 图布置项目资产",
+          "verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+          "depends_on": []
+        },
+        {
+          "domain": "lighting",
+          "readiness": "ready",
+          "action": "在候选关卡调整强度、色温与方向",
+          "verification": "参数范围、源关卡指纹与同机位亮度回渲",
+          "depends_on": []
+        }
+      ]
+    },
+    "candidate_plan": {
+      "schema_id": "artflow-scene-candidate-plan/1",
+      "plan_id": "candidate-plan-3d3cbf0c00bf",
+      "plan_sha256": "3d3cbf0c00bfba8578caf1c83594e678cd35e02ddfd831b9a334561d58e7ef94",
+      "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+      "basis_sequence": 3,
+      "scene_package_sha256": "207d24a911c356879dba45af14c939bdde77a506ffa74eda82d2090db63e073b",
+      "session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+      "draft_sha256": "84507e759198b2e1fcff0e320c1c3f2a913096f51739845487dd8ca4e6a63b27",
+      "stage_request_sha256": "5e39f4fb72dc51f4ecd930b2e753465aa19aec67996625314a96b1ddacf9de2e",
+      "strategy_version": "scene-session-strategy/1",
+      "source_scene": "/Game/ArtFlowDemo",
+      "candidate_destination": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+      "operations": [
+        {
+          "operation_type": "bind_visual_target",
+          "operation_id": "image-target-sunlit-overgrown",
+          "domain": "image",
+          "tool_name": "codex.image.visual_target.bind",
+          "source_render_sha256": "46af73e1486bcaccd78afd832f86e3678659d949c4472e087bf1712ea15fdd4d",
+          "artifact_sha256": "2b075863f65211642080ad62cf2c931bc8cf5f9e1301d762ea038a05a823c517",
+          "receipt_sha256": "9e47b2a1b3656fc50a5163fdadc786b95dfac430a957beb40a6f3e05cf500bac",
+          "preserve": [
+            "相机构图",
+            "左侧受保护方块轮廓",
+            "球体与右墙空间关系",
+            "对象数量"
+          ]
+        },
+        {
+          "operation_type": "bind_verified_pbr_material",
+          "operation_id": "material-rain-wet-main",
+          "domain": "material",
+          "tool_name": "unreal.material.verified_pbr.bind",
+          "target_actor_id": "3fa0497b43ee5f7a52b02f9ebd35573b",
+          "target_actor_label": "Editable_Form",
+          "expected_source_fingerprint": "f9fa50d516c405c1822898e320cc30cddb527842b7b4abfc5e6fa772b15627e9",
+          "capability_snapshot_sha256": "1e81e64166b1643daa534ac56d592bf30b82b0408212b3512ce7c5978dba692a",
+          "generation_receipt_sha256": "5cb0cbf76f9a67875d0bcaab72feb3d61ecc5349945eb2a96b1e44e578a0a3a6",
+          "unreal_import_request_sha256": "5a25a2088165c6ada5787ff4cc8411de84c8c273ac8db89f856b16a4bfce142d",
+          "material_instance_path": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard"
+        },
+        {
+          "operation_type": "bind_project_asset_set",
+          "operation_id": "project-assets-courtyard-rocks",
+          "domain": "asset",
+          "tool_name": "unreal.project_assets.bind",
+          "asset_set_id": "courtyard-rocks-v1",
+          "approved_asset_paths": [
+            "/Game/ArtFlow/Props/SM_ArtFlowRock.SM_ArtFlowRock"
+          ],
+          "approved_asset_sha256s": [
+            "dca169bec0ea0bbcaaa81a0e36907262c1699f5ec286b0ae233b2a705034ea7d"
+          ]
+        },
+        {
+          "operation_type": "apply_pcg_layout",
+          "operation_id": "pcg-layout-main",
+          "domain": "pcg",
+          "tool_name": "unreal.pcg.layout.apply",
+          "target_actor_id": "3fa0497b43ee5f7a52b02f9ebd35573b",
+          "target_actor_label": "Editable_Form",
+          "expected_source_fingerprint": "f9fa50d516c405c1822898e320cc30cddb527842b7b4abfc5e6fa772b15627e9",
+          "component_id": "3fa0497b43ee5f7a52b02f9ebd35573b:pcg_artflowscatter",
+          "approved_graph_path": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+          "seed": 240827,
+          "max_generated_instances": 64
+        },
+        {
+          "operation_type": "set_lighting_rig",
+          "operation_id": "lighting-rig-main",
+          "domain": "lighting",
+          "tool_name": "unreal.lighting.rig.patch",
+          "target_actor_id": "2fd6e5d1474ecd751f1b8f8729e64ad1",
+          "target_actor_label": "ArtFlow_KeyLight",
+          "expected_source_fingerprint": "00ea81ac90f62b384255c6a4c0ff1dbcf573017c5875a0e370bddb94bfb60bb1",
+          "intensity": 0.05,
+          "use_temperature": true,
+          "temperature_kelvin": 6500.0
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "schema_id": "lighting-domain-patch-request/1",
+  "request_id": "lighting-patch-499a118bdb23",
+  "purpose": "仅修正失败的光照域；图像目标、材质、资产和 PCG 证据保持不变",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc",
+  "source_scene_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "expected_material_path": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+  "expected_instance_count": 12,
+  "intensity": 5.5,
+  "temperature_kelvin": 4200.0,
+  "correction_plan_sha256": "499a118bdb238aa3851028686a889fc97660f83426951f9bb161ba2e0798d36b",
+  "request_sha256": "89b9e4997d164f74fb4e60e95508f414d3111c3b0ecf3c00dc75be94b348dc4a"
+}

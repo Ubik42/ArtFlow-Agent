@@ -4030,7 +4030,7 @@ button:focus-visible {
 }
 .case-switcher {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 6px;
   border-bottom: 1px solid var(--line-soft);
   background: #080c11;
@@ -4139,6 +4139,48 @@ button:focus-visible {
   grid-template-columns: minmax(220px, 1fr) 94px minmax(220px, 1fr) 170px;
   min-height: 245px;
   border-bottom: 1px solid var(--line-soft);
+}
+.intent-to-world.frames-3 {
+  grid-template-columns: minmax(150px, 1fr) 52px minmax(150px, 1fr) 52px minmax(150px, 1fr) 170px;
+}
+.domain-ledger {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1px;
+  padding: 1px;
+  border-bottom: 1px solid var(--line-soft);
+  background: #253039;
+}
+.domain-ledger span {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 35px;
+  padding: 0 12px;
+  color: #a9b4b4;
+  background: #0d1318;
+  font-size: 10px;
+}
+.domain-ledger b {
+  color: #607078;
+  font: 8px ui-monospace, Consolas, monospace;
+}
+.domain-ledger .passed:after,
+.domain-ledger .corrected:after {
+  width: 5px;
+  height: 5px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #82c6b0;
+  content: "";
+}
+.domain-ledger .corrected {
+  color: #f1c078;
+  background: #19140e;
+}
+.domain-ledger .corrected:after {
+  background: #f1a84e;
+  box-shadow: 0 0 10px rgba(241, 168, 78, .4);
 }
 .intent-to-world figure {
   position: relative;
@@ -4293,6 +4335,9 @@ button:focus-visible {
   .intent-to-world {
     grid-template-columns: 1fr 70px 1fr;
   }
+  .intent-to-world.frames-3 {
+    grid-template-columns: 1fr 42px 1fr 42px 1fr;
+  }
   .world-verdict {
     grid-column: 1/-1;
     display: grid;
@@ -4301,6 +4346,9 @@ button:focus-visible {
     gap: 12px;
     border-top: 1px solid var(--line-soft);
     border-left: 0;
+  }
+  .frames-3 .world-verdict {
+    grid-column: 1/-1;
   }
   .world-verdict strong,
   .world-verdict p {
@@ -4375,13 +4423,17 @@ button:focus-visible {
     border-radius: 8px;
   }
   .case-switcher {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
   .case-switcher button:nth-child(2) {
     border-right: 0;
   }
   .case-switcher button:nth-child(-n+2) {
     border-bottom: 1px solid #222c35;
+  }
+  .domain-ledger {
+    grid-template-columns: repeat(5, 126px);
+    overflow-x: auto;
   }
   .pipeline-story {
     padding: 17px 15px;

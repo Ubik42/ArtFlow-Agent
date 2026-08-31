@@ -9,7 +9,8 @@ ArtFlow 是 **Unreal 原生的二维视觉意图到可验证三维场景变更 A
 M0–M11 已建立持久事件、类型化工具、真实 Unreal Scene Digital Twin、ComfyUI PBR、四域 Scene
 Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session 和“场景变更谱”。M12 已完成
 真实 UE 5.8 编辑器握手、请求派生候选关卡、注册 PCG/灯光工具执行、同机位回渲和新进程对账，
-并证明源关卡字节不变。这些能力作为稳定底座保留，后续不重复造轮子，也不再以历史审批/证据
+并证明源关卡字节不变。M13 已完成 ComfyUI PBR 全管线案例和 GPT Image 2 视觉目标案例，后者
+真实验证了只纠正 lighting、四个成功域证据哈希不变。这些能力作为稳定底座保留，后续不重复造轮子，也不再以历史审批/证据
 控制台作为产品主叙事。
 
 ## 产品闭环
@@ -31,10 +32,9 @@ Unreal 当前场景
   编译为确定性内容寻址草案，持久 Session 与候选暂存请求已进入“场景变更谱”。
 - **M12 · Unreal editor session bridge and candidate execution（已完成）**：UE 编辑器可发起 Session，
   在请求派生候选关卡执行注册工具、回渲并跨进程对账，重启没有重复 PCG 实例或源关卡写入。
-- **M13 · Cross-pipeline transformation and correction（进行中）**：第一个雨湿庭院案例已把当前
-  ComfyUI PBR 回执、材质实例、项目资产、PCG 与灯光纳入同一计划并完成 UE 对账；下一步用另一条
-  图像路线完成第二案例并验证失败域单独纠正。
-- **M14 · Embedded delivery and portfolio release**：完成 Unreal-facing 入口、中文产品界面、多个可复现
+- **M13 · Cross-pipeline transformation and correction（已完成）**：雨后庭院由当前 ComfyUI PBR
+  驱动多域联合候选；晴光庭院由 GPT Image 2 定义视觉目标，并在单一 lighting 失败后只执行灯光补丁。
+- **M14 · Embedded delivery and portfolio release（进行中）**：完成 Unreal-facing 入口、中文产品界面、多个可复现
   案例、流程截图、教学文档和可验证发布包。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。

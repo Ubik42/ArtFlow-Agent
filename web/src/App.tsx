@@ -28,6 +28,7 @@ import {
   Zap,
 } from "lucide-react";
 import {
+  Fragment,
   type ChangeEvent,
   useCallback,
   useEffect,
@@ -1345,87 +1346,42 @@ function SceneChangeSpectrum({
 function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const cases = [
     {
-      id: "image-to-3d",
-      tab: "图生 3D 道具",
-      title: "从概念道具到 Unreal 可审查三维候选",
-      description: "GPT Image 2 提供项目自有参考，TripoSR 生成 GLB。Agent 在写入前检查许可证、外部 URI、扩展、几何和预算，再经 Interchange 放入隔离候选关卡。",
-      before: "/api/showcase/production/reference",
-      beforeAlt: "GPT Image 2 生成的玄武岩祭坛概念参考",
-      beforeLabel: "二维意图",
-      beforeTitle: "玄武岩祭坛概念参考",
-      after: "/api/showcase/production/unreal",
-      afterAlt: "Unreal Engine 候选关卡中的真实三维祭坛",
-      afterLabel: "UE 三维候选",
-      afterTitle: "约 180 cm · 源关卡未改写",
-      transition: "接纳、缩放、碰撞",
-      metricA: "4,817",
-      metricALabel: "UE 构建后三角面",
-      metricB: "1 + 1",
-      metricBLabel: "材质槽 / 简单碰撞",
-      note: "当前为可识别几何和顶点色，不宣称最终 PBR 品质。",
-    },
-    {
-      id: "pbr-return",
-      tab: "PBR 材质回流",
-      title: "把生成方向拆成可验证的 Unreal PBR 材质",
-      description: "受审 ComfyUI 图生成五个材质通道，技术门禁逐通道拒绝彩色标量图和无效法线，只纠正失败域，再创建 UE Master Material 与 Material Instance。",
-      before: "/api/showcase/production/pbr-source",
-      beforeAlt: "通过校验的玄武岩 BaseColor",
-      beforeLabel: "AI 材质输入",
-      beforeTitle: "通过校验的玄武岩 BaseColor",
-      after: "/api/showcase/production/pbr-unreal",
-      afterAlt: "Unreal Engine 中完成 Shader 编译的 PBR 材质回渲",
-      afterLabel: "UE Shader-ready 回渲",
-      afterTitle: "Material Instance 已绑定候选球体",
-      transition: "逐通道校验、纠正、绑定",
-      metricA: "5 / 5",
-      metricALabel: "PBR 通道通过",
-      metricB: "0",
-      metricBLabel: "重复导入资产",
-      note: "BaseColor 来自真实 GPU 生成，失败的技术域由确定性纠正器重建。",
-    },
-    {
-      id: "multi-domain",
-      tab: "场景联合改造",
-      title: "同一计划联合修改材质、PCG、灯光与项目资产",
-      description: "Agent 把四个领域编译为依赖 DAG，非 UE 资产可并行准备，引擎写入严格串行。主机位判断视觉方向，瞬态验证机位复检镜头外空间关系。",
-      before: "/api/showcase/production/scene-authored",
-      beforeAlt: "四域 Scene Delta 的主机位回渲",
-      beforeLabel: "美术主机位",
-      beforeTitle: "视觉方向与构图检查",
-      after: "/api/showcase/production/scene-validation",
-      afterAlt: "四域 Scene Delta 的验证机位回渲",
-      afterLabel: "瞬态验证机位",
-      afterTitle: "空间关系与保护区复检",
-      transition: "同一候选、双机位评价",
+      id: "rain-wet-courtyard",
+      tab: "雨后庭院 · 全管线",
+      title: "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
+      description: "Agent 读取 Unreal 场景包，将雨后湿润方向编译成五类受限工具调用。ComfyUI 负责 PBR 技术图，项目资产和 PCG 完成空间铺陈，所有写入只发生在隔离候选关卡。",
+      frames: [
+        { src: "/api/showcase/production/m13-rain-source", alt: "Unreal 灰盒源场景", label: "源场景", title: "相机、灰盒与保护区已锁定" },
+        { src: "/api/showcase/production/m13-rain-candidate", alt: "雨后湿润庭院 Unreal 候选", label: "UE 候选", title: "PBR · 项目资产 · PCG · 灯光" },
+      ],
+      transition: "类型化 Scene Delta",
       metricA: "12",
       metricALabel: "确定性 PCG 实例",
       metricB: "0",
-      metricBLabel: "保护区侵入",
-      note: "重复执行仍为 12 个实例，源 ArtFlowDemo 关卡哈希保持不变。",
+      metricBLabel: "源关卡改写",
+      note: "真实 UE 5.8 回执；新进程对账时不会重复调用 Provider 或重新导入。",
+      domains: ["图像·参考", "材质·通过", "资产·通过", "PCG·通过", "灯光·通过"],
     },
     {
-      id: "targeted-correction",
-      tab: "失败域纠正",
-      title: "评价失败后只重做灯光，不重跑整条生成链",
-      description: "测试主动注入 0.05 lux 主光失败。Technical Judge 与 Visual Critic 独立锁定 lighting，Correction Planner 锁住已通过的资产、材质和 PCG 证据。",
-      before: "/api/showcase/production/lighting-failure",
-      beforeAlt: "注入低照度失败的 Unreal 候选",
-      beforeLabel: "失败回渲",
-      beforeTitle: "0.05 lux · 平均亮度 117.72",
-      after: "/api/showcase/production/lighting-corrected",
-      afterAlt: "只纠正灯光后的 Unreal 候选",
-      afterLabel: "定向纠正",
-      afterTitle: "8.0 lux / 4200K · 平均亮度 166.66",
-      transition: "失败分类、灯光补丁、复检",
+      id: "sunlit-overgrown",
+      tab: "晴光庭院 · 定向纠正",
+      title: "先用 GPT Image 2 定义视觉目标，再只修正失败的光照域",
+      description: "视觉目标保持原相机和灰盒轮廓，只允许阳光、材质观感与少量植被变化。第一次 UE 候选故意注入错误主光；独立评价保留图像、材质、资产与 PCG 的证据，只下发一次灯光补丁。",
+      frames: [
+        { src: "/api/showcase/production/m13-sun-target", alt: "GPT Image 2 生成的晴光庭院视觉目标", label: "视觉目标", title: "GPT Image 2 · 构图受保护" },
+        { src: "/api/showcase/production/m13-sun-failure", alt: "主光失败的 Unreal 候选", label: "失败候选", title: "0.05 / 6500K · 仅 lighting 失败" },
+        { src: "/api/showcase/production/m13-sun-corrected", alt: "只修正灯光后的 Unreal 候选", label: "定向纠正", title: "5.5 / 4200K · 新进程已对账" },
+      ],
+      transition: "评价 → 单域补丁",
       metricA: "1",
       metricALabel: "实际重跑领域",
       metricB: "0",
       metricBLabel: "外部重复提交",
-      note: "材质路径和 12 个 PCG 实例保持不变，丢失回执由新进程对账。",
+      note: "四个成功域的证据哈希在修正前后完全一致；源 ArtFlowDemo 哈希保持不变。",
+      domains: ["图像·保留", "材质·保留", "资产·保留", "PCG·保留", "灯光·已纠正"],
     },
   ] as const;
-  const [caseId, setCaseId] = useState<(typeof cases)[number]["id"]>("image-to-3d");
+  const [caseId, setCaseId] = useState<(typeof cases)[number]["id"]>("rain-wet-courtyard");
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },
@@ -1463,21 +1419,31 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
         </div>
       </div>
 
-      <div className="intent-to-world">
-        <figure>
-          <img src={activeCase.before} alt={activeCase.beforeAlt} />
-          <figcaption><span>{activeCase.beforeLabel}</span><strong>{activeCase.beforeTitle}</strong></figcaption>
-        </figure>
-        <div className="world-transition" aria-hidden="true">
-          <ScanLine size={18} />
-          <span />
-          <ArrowRight size={18} />
-          <small>{activeCase.transition}</small>
-        </div>
-        <figure>
-          <img src={activeCase.after} alt={activeCase.afterAlt} />
-          <figcaption><span>{activeCase.afterLabel}</span><strong>{activeCase.afterTitle}</strong></figcaption>
-        </figure>
+      <div className="domain-ledger" aria-label="本次 Scene Delta 领域状态">
+        {activeCase.domains.map((item, index) => (
+          <span key={item} className={item.includes("纠正") ? "corrected" : "passed"}>
+            <b>{String(index + 1).padStart(2, "0")}</b>{item}
+          </span>
+        ))}
+      </div>
+
+      <div className={`intent-to-world frames-${activeCase.frames.length}`}>
+        {activeCase.frames.map((frame, index) => (
+          <Fragment key={frame.src}>
+            <figure>
+              <img src={frame.src} alt={frame.alt} />
+              <figcaption><span>{frame.label}</span><strong>{frame.title}</strong></figcaption>
+            </figure>
+            {index < activeCase.frames.length - 1 && (
+              <div className="world-transition" aria-hidden="true">
+                <ScanLine size={16} />
+                <span />
+                <ArrowRight size={16} />
+                <small>{activeCase.transition}</small>
+              </div>
+            )}
+          </Fragment>
+        ))}
         <aside className="world-verdict">
           <span><BadgeCheck size={15} /> 实机已验证</span>
           <strong>{activeCase.metricA}</strong><small>{activeCase.metricALabel}</small>

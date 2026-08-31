@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-m13-technical-evaluation/1",
+  "plan_id": "candidate-plan-90932f54c99f",
+  "plan_sha256": "90932f54c99f373e045b3dbabc3a04656e310af3a003769e36db880f920e3947",
+  "status": "verified",
+  "checks": {
+    "material_instance_matches": true,
+    "project_asset_set_matches": true,
+    "pcg_instance_count": 12,
+    "pcg_budget_ok": true,
+    "lighting_intensity": 5.5,
+    "lighting_temperature_kelvin": 4200.0,
+    "protected_actor_present": true,
+    "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+    "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+    "candidate_level_sha256": "3aea2587b74156559a8e1bee5c6e4ea523e08b71cf010aa115a835ace55105cc"
+  },
+  "material_instance_path": "/Game/ArtFlow/Generated/3fb9485792efdc88/MI_RainWetCourtyard.MI_RainWetCourtyard",
+  "generated_asset_paths": [
+    "/Game/ArtFlow/Props/SM_ArtFlowRock.SM_ArtFlowRock"
+  ],
+  "candidate_beauty_sha256": "d3aa29f39952f951d851e8238a8cffac6a0d6dced67079b3ad865f58cb8556a0"
+}
