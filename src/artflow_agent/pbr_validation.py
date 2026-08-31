@@ -163,17 +163,22 @@ def validate_generation(
     )
 
 
-def synthesize_dielectric_texture_set(base_color: Path, output_root: Path) -> dict[str, Path]:
+def synthesize_dielectric_texture_set(
+    base_color: Path,
+    output_root: Path,
+    *,
+    material_id: str = "ruin_altar_basalt",
+) -> dict[str, Path]:
     """Build spatially aligned technical maps from an accepted dielectric albedo candidate."""
     output_root.mkdir(parents=True, exist_ok=True)
     with Image.open(base_color) as source:
-        albedo = source.convert("RGB")
+        albedo = _seamless_edges(source.convert("RGB"))
     paths = {
-        "base_color": output_root / "ruin_altar_basalt_base_color.png",
-        "normal": output_root / "ruin_altar_basalt_normal_dx.png",
-        "roughness": output_root / "ruin_altar_basalt_roughness.png",
-        "metallic": output_root / "ruin_altar_basalt_metallic.png",
-        "ambient_occlusion": output_root / "ruin_altar_basalt_ao.png",
+        "base_color": output_root / f"{material_id}_base_color.png",
+        "normal": output_root / f"{material_id}_normal_dx.png",
+        "roughness": output_root / f"{material_id}_roughness.png",
+        "metallic": output_root / f"{material_id}_metallic.png",
+        "ambient_occlusion": output_root / f"{material_id}_ao.png",
     }
     albedo.save(paths["base_color"], compress_level=6)
     height = ImageOps.autocontrast(albedo.convert("L"), cutoff=1)
@@ -194,6 +199,43 @@ def synthesize_dielectric_texture_set(base_color: Path, output_root: Path) -> di
     ao = ao_source.point(lambda value: 70 + (value * 185 // 255))
     ao.save(paths["ambient_occlusion"], compress_level=6)
     return paths
+
+
+def _seamless_edges(image: Image.Image, border: int = 24) -> Image.Image:
+    """Blend opposite borders without changing the generated interior."""
+    result = image.copy()
+    pixels = result.load()
+    width, height = result.size
+    border = max(1, min(border, width // 8, height // 8))
+    for offset in range(border):
+        weight = (border - offset) / border
+        left_x, right_x = offset, width - 1 - offset
+        for y in range(height):
+            left, right = pixels[left_x, y], pixels[right_x, y]
+            average = tuple((left[channel] + right[channel]) // 2 for channel in range(3))
+            pixels[left_x, y] = tuple(
+                round(left[channel] * (1 - weight) + average[channel] * weight)
+                for channel in range(3)
+            )
+            pixels[right_x, y] = tuple(
+                round(right[channel] * (1 - weight) + average[channel] * weight)
+                for channel in range(3)
+            )
+    for offset in range(border):
+        weight = (border - offset) / border
+        top_y, bottom_y = offset, height - 1 - offset
+        for x in range(width):
+            top, bottom = pixels[x, top_y], pixels[x, bottom_y]
+            average = tuple((top[channel] + bottom[channel]) // 2 for channel in range(3))
+            pixels[x, top_y] = tuple(
+                round(top[channel] * (1 - weight) + average[channel] * weight)
+                for channel in range(3)
+            )
+            pixels[x, bottom_y] = tuple(
+                round(bottom[channel] * (1 - weight) + average[channel] * weight)
+                for channel in range(3)
+            )
+    return result
 
 
 def _seam_error(image: Image.Image) -> float:

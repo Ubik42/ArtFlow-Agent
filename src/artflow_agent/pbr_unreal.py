@@ -15,7 +15,7 @@ class StrictModel(BaseModel):
 
 class UnrealPBRTextureInput(StrictModel):
     channel: Literal["base_color", "normal", "roughness", "metallic", "ambient_occlusion"]
-    path: str = Field(pattern=r"^artifacts/goal/m8-s2-pbr-material/validated/[A-Za-z0-9_.-]+\.png$")
+    path: str = Field(pattern=r"^artifacts/goal/[A-Za-z0-9_.-]+/validated/[A-Za-z0-9_.-]+\.png$")
     sha256: str = Field(pattern=SHA256_PATTERN)
     color_space: Literal["srgb", "linear"]
     pixel_format: Literal["rgb8", "gray8"]
@@ -27,7 +27,7 @@ class UnrealPBRReturnRequest(StrictModel):
     generation_receipt_sha256: str = Field(pattern=SHA256_PATTERN)
     source_scene_sha256: str = Field(pattern=SHA256_PATTERN)
     authority_scope: Literal["project_local_unreal_fixture"]
-    destination_scene_path: Literal["/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1"]
+    destination_scene_path: str = Field(pattern=r"^/Game/ArtFlow/Staging/[A-Za-z0-9_]+$")
     destination_root: str = Field(pattern=r"^/Game/ArtFlow/Generated/[0-9a-f]{16}$")
     target_actor_label: Literal["Editable_Form"]
     material_instance_name: str = Field(pattern=r"^MI_[A-Za-z0-9_]{3,64}$")
@@ -81,15 +81,22 @@ class UnrealPBRReturnReceipt(StrictModel):
 
 
 def build_unreal_pbr_request(
-    *, receipt_path: Path, texture_root: Path, source_scene: Path, repo_root: Path
+    *,
+    receipt_path: Path,
+    texture_root: Path,
+    source_scene: Path,
+    repo_root: Path,
+    material_id: str = "ruin_altar_basalt",
+    destination_scene_path: str = "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+    material_instance_name: str = "MI_RuinAltarBasalt",
 ) -> UnrealPBRReturnRequest:
     generation_sha = _sha256(receipt_path)
     specs = {
-        "base_color": ("ruin_altar_basalt_base_color.png", "srgb", "rgb8"),
-        "normal": ("ruin_altar_basalt_normal_dx.png", "linear", "rgb8"),
-        "roughness": ("ruin_altar_basalt_roughness.png", "linear", "gray8"),
-        "metallic": ("ruin_altar_basalt_metallic.png", "linear", "gray8"),
-        "ambient_occlusion": ("ruin_altar_basalt_ao.png", "linear", "gray8"),
+        "base_color": (f"{material_id}_base_color.png", "srgb", "rgb8"),
+        "normal": (f"{material_id}_normal_dx.png", "linear", "rgb8"),
+        "roughness": (f"{material_id}_roughness.png", "linear", "gray8"),
+        "metallic": (f"{material_id}_metallic.png", "linear", "gray8"),
+        "ambient_occlusion": (f"{material_id}_ao.png", "linear", "gray8"),
     }
     textures = []
     for channel, (filename, color_space, pixel_format) in specs.items():
@@ -111,10 +118,10 @@ def build_unreal_pbr_request(
         "generation_receipt_sha256": generation_sha,
         "source_scene_sha256": _sha256(source_scene),
         "authority_scope": "project_local_unreal_fixture",
-        "destination_scene_path": "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1",
+        "destination_scene_path": destination_scene_path,
         "destination_root": f"/Game/ArtFlow/Generated/{destination_id}",
         "target_actor_label": "Editable_Form",
-        "material_instance_name": "MI_RuinAltarBasalt",
+        "material_instance_name": material_instance_name,
         "textures": [item.model_dump(mode="json") for item in textures],
     }
     facts["request_sha256"] = canonical_sha256(facts)

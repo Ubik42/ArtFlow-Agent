@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 47,
+  "stateRevision": 48,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -161,34 +161,35 @@
     }
   ],
   "nextSlice": {
-    "id": "M13-S1",
+    "id": "M13-S2",
     "milestone": "M13",
-    "title": "Rain-wet courtyard cross-pipeline production case",
-    "outcome": "Drive one editor-originated rain-wet courtyard Session through a reviewed ComfyUI PBR route, verified Unreal material binding, project asset reuse, PCG layout and lighting in one dependency-aware Candidate Plan, then rerender and independently evaluate the isolated result without publishing it.",
+    "title": "Sunlit overgrown courtyard image-route case and failed-domain correction",
+    "outcome": "Complete a materially different production case whose visual target is developed through Codex GPT Image 2, stage the bounded Unreal asset, PCG and lighting changes through the same coordinator, deliberately fail only lighting, preserve successful image, asset and PCG evidence, rerun the lighting branch, and expose both M13 cases through a distinctive Chinese production-case interface without publishing either candidate.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
       "Do not publish, merge or overwrite the active/source level in this slice",
-      "Do not execute an arbitrary ComfyUI graph; use only the reviewed PBR template and verified Production Nodes capability",
-      "Do not add image-to-3D or a new asset Provider when project-owned assets satisfy the case",
-      "Do not implement the second production case or failed-domain correction in this slice",
+      "Do not rerun the successful rain-wet ComfyUI/PBR branch from M13-S1",
+      "Do not add image-to-3D or a new Provider when project-owned assets satisfy the case",
+      "Do not rebuild the whole frontend or introduce a generic node canvas; add only the production-case presentation needed for M13 evidence",
       "Do not modify shared engine installation files or unrelated Unreal projects",
       "Do not delay the production case for packaged-runtime support, broad engine matrices or cosmetic test expansion"
     ],
     "acceptance": [
-      "One Scene Session binds the reviewed ComfyUI capability attestation, PBR set, material instance, project asset set, PCG and lighting operations into a single ordered plan",
-      "The PBR route validates every channel and only the generated material branch waits on ComfyUI while project assets and non-engine preparation can proceed independently",
-      "UE serially applies the verified material, project assets, PCG and lighting only inside the request-derived candidate and preserves source camera, protected actor and source map bytes",
-      "Technical evaluation records channel, shader, instance, protected-region and source-invariant results separately from visual evaluation of the same-camera rerender",
-      "Real ComfyUI and UE receipts plus source, intermediate and final Chinese workflow screenshots reproduce the case"
+      "A second editor-bound Session cites a real Codex GPT Image 2 visual-target artifact and uses a route materially different from the M13-S1 ComfyUI PBR case",
+      "The deliberate initial failure is classified only as lighting while image target, project assets and PCG evidence are preserved by immutable hashes",
+      "Correction submits and applies only the lighting tool call, then the same-camera technical and visual evaluators pass without a repeated image generation, asset import or PCG side effect",
+      "The Chinese case interface presents source, visual target, typed plan, failed evaluation, correction and final candidate with a recognizable Scene Change Spectrum visual language rather than a generic AI dashboard",
+      "Both M13 cases have frozen real-host receipts and workflow screenshots, and M13 acceptance is satisfied without publishing a source-level change"
     ],
     "stopConditions": [
       "Stop before publish or any source-level save",
-      "Stop if the reviewed ComfyUI graph, required nodes or model inventory cannot be attested on the current host",
-      "Stop if a PBR channel, Unreal material compile, candidate target identity or protected invariant fails verification",
-      "Stop if source-level bytes change or the pipeline cannot cite the exact Candidate Plan and provider receipts",
+      "Stop if the GPT Image 2 artifact cannot be content-bound to the exact Session intent and source scene",
+      "Stop if failure classification touches a domain other than the injected lighting branch or correction reruns a successful branch",
+      "Stop if candidate target identity, camera, protected invariant or source-level bytes change",
+      "Stop if the interface would require invented status, receipts or screenshots instead of current artifacts",
       "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -210,9 +211,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0042.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0043.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M12 are complete. M12-S1 proves a real UE 5.8 editor-originated localhost-only Scene Session handshake with exactly one persisted Session event on request replay and byte-identical source level. M12-S2 persists the verified Scene Digital Twin in event context, compiles a content-bound Candidate Plan for the registered PCG and lighting tools, creates the exact request-derived /Game/ArtFlow/Sessions candidate, produces 12 PCG instances and a same-camera rerender, and reconciles the same candidate in a fresh UE process with zero duplicate instances. The source .umap SHA-256 remains 620e4814... before and after. This evidence does not yet claim that the new Session plan executes image, material or asset domains, independent visual evaluation, correction or publish.",
+  "evidenceCeiling": "M0-M12 and M13-S1 are complete. M13-S1 binds a current RTX 4080 ComfyUI capability snapshot and real 23.094-second reviewed PBR execution to a validated five-channel texture set, UE material instance, project-owned rock asset, PCG and lighting in one four-operation Candidate Plan. UE 5.8 creates the isolated candidate, technical and same-camera visual evaluation pass, and a fresh process reconciles 12 instances with no repeated provider/import side effect. The source .umap SHA-256 remains 620e4814... before and after. This evidence does not yet claim a second materially different case, failed-domain-only correction in the new Session coordinator, embedded case UI or publish.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

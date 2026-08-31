@@ -18,9 +18,14 @@ def main() -> int:
     parser.add_argument("--prompt-id", required=True)
     parser.add_argument("--execution-seconds", type=float, required=True)
     parser.add_argument("--receipt", type=Path, required=True)
+    parser.add_argument("--material-id", default="ruin_altar_basalt")
     args = parser.parse_args()
     compiled = CompiledPBRWorkflow.model_validate_json(args.compiled.read_text(encoding="utf-8"))
-    paths = synthesize_dielectric_texture_set(args.base_color, args.output_dir)
+    paths = synthesize_dielectric_texture_set(
+        args.base_color,
+        args.output_dir,
+        material_id=args.material_id,
+    )
     receipt = validate_generation(
         prompt_id=args.prompt_id,
         request_id=compiled.request_id,

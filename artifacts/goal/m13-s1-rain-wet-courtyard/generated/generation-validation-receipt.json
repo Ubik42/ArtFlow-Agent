@@ -1,0 +1,160 @@
+{
+  "schema_id": "pbr-generation-validation-receipt/1",
+  "prompt_id": "8fc86ed6-225c-404d-980c-bb451987188a",
+  "request_id": "pbr-b1c1cfa193ec447e5106acdc",
+  "workflow_sha256": "57ac494b1db3a7d31dfa8812b72df521cdc43ac2c6d078b9fc30817e09822975",
+  "capability_snapshot_sha256": "1e81e64166b1643daa534ac56d592bf30b82b0408212b3512ce7c5978dba692a",
+  "execution_seconds": 23.094,
+  "artifacts": [
+    {
+      "channel": "base_color",
+      "relative_path": "rain_wet_courtyard_base_color.png",
+      "sha256": "b1b6cd20eea4ff0786b62dfa888a4f297d9aec43ea9cc6298be7364e4a5b433c",
+      "byte_count": 279283,
+      "metrics": {
+        "width": 512,
+        "height": 512,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.620062,
+          0.596871,
+          0.579025
+        ],
+        "rgb_stddev": [
+          0.251221,
+          0.220259,
+          0.184612
+        ],
+        "chroma_error": 0.0941,
+        "seam_error": 0.22477,
+        "normal_blue_dominance": -0.029442,
+        "normal_unit_error": 0.27754
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "base_color_not_tileable"
+      ]
+    },
+    {
+      "channel": "normal",
+      "relative_path": "rain_wet_courtyard_normal.png",
+      "sha256": "ab3b288649ad0fab7a8480774bc7651fbe7585d48f655314e9973a3387d14d43",
+      "byte_count": 280859,
+      "metrics": {
+        "width": 512,
+        "height": 512,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.613209,
+          0.588833,
+          0.568561
+        ],
+        "rgb_stddev": [
+          0.254024,
+          0.222625,
+          0.18622
+        ],
+        "chroma_error": 0.097727,
+        "seam_error": 0.22883,
+        "normal_blue_dominance": -0.03246,
+        "normal_unit_error": 0.282997
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "normal_blue_axis_missing"
+      ]
+    },
+    {
+      "channel": "roughness",
+      "relative_path": "rain_wet_courtyard_roughness.png",
+      "sha256": "86e79b849180fe802fe9d6cf2ac36e66ac3b813bfdefc66b8116d113237a9e51",
+      "byte_count": 284708,
+      "metrics": {
+        "width": 512,
+        "height": 512,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.628472,
+          0.606166,
+          0.587627
+        ],
+        "rgb_stddev": [
+          0.256279,
+          0.224845,
+          0.188694
+        ],
+        "chroma_error": 0.095494,
+        "seam_error": 0.232744,
+        "normal_blue_dominance": -0.029693,
+        "normal_unit_error": 0.270542
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "scalar_map_not_gray8",
+        "scalar_map_contains_color"
+      ]
+    },
+    {
+      "channel": "metallic",
+      "relative_path": "rain_wet_courtyard_metallic.png",
+      "sha256": "fcce3086d37e6139879bb407649eddfc9f4ef654dabc3c6e49310410beb91b0d",
+      "byte_count": 283130,
+      "metrics": {
+        "width": 512,
+        "height": 512,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.621407,
+          0.600717,
+          0.582332
+        ],
+        "rgb_stddev": [
+          0.254441,
+          0.223007,
+          0.186601
+        ],
+        "chroma_error": 0.093858,
+        "seam_error": 0.230691,
+        "normal_blue_dominance": -0.02873,
+        "normal_unit_error": 0.274055
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "scalar_map_not_gray8",
+        "scalar_map_contains_color",
+        "dielectric_metallic_not_black"
+      ]
+    },
+    {
+      "channel": "ambient_occlusion",
+      "relative_path": "rain_wet_courtyard_ambient_occlusion.png",
+      "sha256": "ddb2b7235809304c426d7ac4bf5879fc1a48610feca74c2e6f1117702e0a6e64",
+      "byte_count": 284696,
+      "metrics": {
+        "width": 512,
+        "height": 512,
+        "source_mode": "RGB",
+        "rgb_mean": [
+          0.618288,
+          0.598254,
+          0.582616
+        ],
+        "rgb_stddev": [
+          0.256611,
+          0.225911,
+          0.1901
+        ],
+        "chroma_error": 0.091785,
+        "seam_error": 0.230806,
+        "normal_blue_dominance": -0.025655,
+        "normal_unit_error": 0.271605
+      },
+      "accepted": false,
+      "rejection_reasons": [
+        "scalar_map_not_gray8",
+        "scalar_map_contains_color"
+      ]
+    }
+  ],
+  "status": "semantic_invalid"
+}

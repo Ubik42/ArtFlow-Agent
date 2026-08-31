@@ -25,6 +25,15 @@ def main() -> int:
     parser.add_argument("--snapshot", type=Path, required=True)
     parser.add_argument("--source", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--material-id", default="ruin_altar_basalt")
+    parser.add_argument("--source-image", default="ArtFlow/M7/candidate-beauty.png")
+    parser.add_argument(
+        "--visual-intent",
+        default="风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
+    )
+    parser.add_argument("--negative-prompt", default="文字，水印，透视，相机阴影，烘焙光照，高光，接缝")
+    parser.add_argument("--seed", type=int, default=240827)
+    parser.add_argument("--size", type=int, choices=(512, 768, 1024, 1536, 2048), default=1024)
     parser.add_argument(
         "--template", type=Path, default=ROOT / "recipes/pbr-material-v1.template.json"
     )
@@ -41,15 +50,15 @@ def main() -> int:
         args.workflow,
     )
     request = PBRCompileRequest(
-        material_id="ruin_altar_basalt",
-        source_image="ArtFlow/M7/candidate-beauty.png",
+        material_id=args.material_id,
+        source_image=args.source_image,
         source_sha256=hashlib.sha256(args.source.read_bytes()).hexdigest(),
-        visual_intent="风化玄武岩祭坛，深灰基色，细微暖色矿物纹理，粗糙且适合废墟场景",
-        negative_prompt="文字，水印，透视，相机阴影，烘焙光照，高光，接缝",
-        seed=240827,
+        visual_intent=args.visual_intent,
+        negative_prompt=args.negative_prompt,
+        seed=args.seed,
         denoise=1.0 if compiler.template.template_id == "pbr-material-synthesis-v1" else 0.45,
-        width=1024,
-        height=1024,
+        width=args.size,
+        height=args.size,
         tileable=True,
     )
     compiled = compiler.compile(request, snapshot)

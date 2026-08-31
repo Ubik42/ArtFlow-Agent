@@ -1,0 +1,740 @@
+{
+  "schema_id": "artflow-reviewed-pbr-provider-receipt/1",
+  "prompt_id": "8fc86ed6-225c-404d-980c-bb451987188a",
+  "request_id": "pbr-b1c1cfa193ec447e5106acdc",
+  "workflow_sha256": "57ac494b1db3a7d31dfa8812b72df521cdc43ac2c6d078b9fc30817e09822975",
+  "capability_snapshot_sha256": "1e81e64166b1643daa534ac56d592bf30b82b0408212b3512ce7c5978dba692a",
+  "execution_seconds": 23.094,
+  "history": {
+    "prompt": [
+      0,
+      "8fc86ed6-225c-404d-980c-bb451987188a",
+      {
+        "1": {
+          "class_type": "UNETLoader",
+          "inputs": {
+            "unet_name": "flux-2-klein-base-4b-fp8.safetensors",
+            "weight_dtype": "default"
+          }
+        },
+        "2": {
+          "class_type": "CLIPLoader",
+          "inputs": {
+            "clip_name": "qwen_3_4b.safetensors",
+            "type": "flux2",
+            "device": "default"
+          }
+        },
+        "3": {
+          "class_type": "VAELoader",
+          "inputs": {
+            "vae_name": "full_encoder_small_decoder.safetensors"
+          }
+        },
+        "4": {
+          "class_type": "LoadImage",
+          "inputs": {
+            "image": "ArtFlow/M13/source-beauty.png"
+          }
+        },
+        "5": {
+          "class_type": "ImageScale",
+          "inputs": {
+            "image": [
+              "4",
+              0
+            ],
+            "upscale_method": "lanczos",
+            "width": 512,
+            "height": 512,
+            "crop": "disabled"
+          }
+        },
+        "6": {
+          "class_type": "VAEEncode",
+          "inputs": {
+            "pixels": [
+              "5",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "7": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "text, watermark, perspective, objects, sky, camera shadow, baked lighting, strong highlights, seams",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "8": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "7",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "9": {
+          "class_type": "KSamplerSelect",
+          "inputs": {
+            "sampler_name": "euler"
+          }
+        },
+        "10": {
+          "class_type": "Flux2Scheduler",
+          "inputs": {
+            "steps": 20,
+            "width": 512,
+            "height": 512
+          }
+        },
+        "11": {
+          "class_type": "SplitSigmasDenoise",
+          "inputs": {
+            "sigmas": [
+              "10",
+              0
+            ],
+            "denoise": 0.45
+          }
+        },
+        "12": {
+          "class_type": "ProductionConstraintCheck",
+          "inputs": {
+            "width": 512,
+            "height": 512,
+            "batch_size": 1,
+            "denoise": 0.45,
+            "max_megapixels": 4.0,
+            "max_batch_size": 1
+          }
+        },
+        "13": {
+          "class_type": "WorkflowContractCheck",
+          "inputs": {
+            "contract_json": "{\"parameter_ranges\": {\"denoise\": {\"max\": 0.65, \"min\": 0.15}, \"height\": {\"max\": 2048, \"min\": 512}, \"width\": {\"max\": 2048, \"min\": 512}}, \"required_slots\": [\"source_image\", \"material_id\"]}",
+            "workflow_values_json": "{\"parameters\": {\"denoise\": 0.45, \"height\": 512, \"width\": 512}, \"slots\": {\"material_id\": \"rain_wet_courtyard\", \"source_image\": \"ArtFlow/M13/source-beauty.png\"}}"
+          }
+        },
+        "14": {
+          "class_type": "GenerationReceipt",
+          "inputs": {
+            "workflow_name": "pbr-material-v1",
+            "model_name": "flux-2-klein-base-4b-fp8.safetensors",
+            "lora_name": "none",
+            "positive_prompt": "rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "negative_prompt": "text, watermark, perspective, objects, sky, camera shadow, baked lighting, strong highlights, seams",
+            "seed": 240830
+          }
+        },
+        "20": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "seamless tileable PBR base color texture, flat albedo only, no lighting; rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "21": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "20",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "22": {
+          "class_type": "CFGGuider",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "21",
+              0
+            ],
+            "negative": [
+              "8",
+              0
+            ],
+            "cfg": 5.0
+          }
+        },
+        "23": {
+          "class_type": "RandomNoise",
+          "inputs": {
+            "noise_seed": 240830
+          }
+        },
+        "24": {
+          "class_type": "SamplerCustomAdvanced",
+          "inputs": {
+            "noise": [
+              "23",
+              0
+            ],
+            "guider": [
+              "22",
+              0
+            ],
+            "sampler": [
+              "9",
+              0
+            ],
+            "sigmas": [
+              "11",
+              1
+            ],
+            "latent_image": [
+              "6",
+              0
+            ]
+          }
+        },
+        "25": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "24",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "26": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "ArtFlow/PBR/rain_wet_courtyard/rain_wet_courtyard_base_color",
+            "images": [
+              "25",
+              0
+            ]
+          }
+        },
+        "30": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "seamless tileable DirectX tangent-space normal map, RGB technical texture, dominant blue axis; rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "31": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "30",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "32": {
+          "class_type": "CFGGuider",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "31",
+              0
+            ],
+            "negative": [
+              "8",
+              0
+            ],
+            "cfg": 5.0
+          }
+        },
+        "33": {
+          "class_type": "RandomNoise",
+          "inputs": {
+            "noise_seed": 240830
+          }
+        },
+        "34": {
+          "class_type": "SamplerCustomAdvanced",
+          "inputs": {
+            "noise": [
+              "33",
+              0
+            ],
+            "guider": [
+              "32",
+              0
+            ],
+            "sampler": [
+              "9",
+              0
+            ],
+            "sigmas": [
+              "11",
+              1
+            ],
+            "latent_image": [
+              "6",
+              0
+            ]
+          }
+        },
+        "35": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "34",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "36": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "ArtFlow/PBR/rain_wet_courtyard/rain_wet_courtyard_normal",
+            "images": [
+              "35",
+              0
+            ]
+          }
+        },
+        "40": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "seamless tileable grayscale PBR roughness map, white rough black smooth; rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "41": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "40",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "42": {
+          "class_type": "CFGGuider",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "41",
+              0
+            ],
+            "negative": [
+              "8",
+              0
+            ],
+            "cfg": 5.0
+          }
+        },
+        "43": {
+          "class_type": "RandomNoise",
+          "inputs": {
+            "noise_seed": 240830
+          }
+        },
+        "44": {
+          "class_type": "SamplerCustomAdvanced",
+          "inputs": {
+            "noise": [
+              "43",
+              0
+            ],
+            "guider": [
+              "42",
+              0
+            ],
+            "sampler": [
+              "9",
+              0
+            ],
+            "sigmas": [
+              "11",
+              1
+            ],
+            "latent_image": [
+              "6",
+              0
+            ]
+          }
+        },
+        "45": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "44",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "46": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "ArtFlow/PBR/rain_wet_courtyard/rain_wet_courtyard_roughness",
+            "images": [
+              "45",
+              0
+            ]
+          }
+        },
+        "50": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "seamless tileable grayscale PBR metallic mask, white metal black dielectric; rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "51": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "50",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "52": {
+          "class_type": "CFGGuider",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "51",
+              0
+            ],
+            "negative": [
+              "8",
+              0
+            ],
+            "cfg": 5.0
+          }
+        },
+        "53": {
+          "class_type": "RandomNoise",
+          "inputs": {
+            "noise_seed": 240830
+          }
+        },
+        "54": {
+          "class_type": "SamplerCustomAdvanced",
+          "inputs": {
+            "noise": [
+              "53",
+              0
+            ],
+            "guider": [
+              "52",
+              0
+            ],
+            "sampler": [
+              "9",
+              0
+            ],
+            "sigmas": [
+              "11",
+              1
+            ],
+            "latent_image": [
+              "6",
+              0
+            ]
+          }
+        },
+        "55": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "54",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "56": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "ArtFlow/PBR/rain_wet_courtyard/rain_wet_courtyard_metallic",
+            "images": [
+              "55",
+              0
+            ]
+          }
+        },
+        "60": {
+          "class_type": "CLIPTextEncode",
+          "inputs": {
+            "text": "seamless tileable grayscale ambient occlusion map, white exposed black crevice; rain-wet courtyard dark stone, cool low-saturation gray albedo, fine mineral grain and water erosion, varied wet roughness, early-morning game environment",
+            "clip": [
+              "2",
+              0
+            ]
+          }
+        },
+        "61": {
+          "class_type": "ReferenceLatent",
+          "inputs": {
+            "conditioning": [
+              "60",
+              0
+            ],
+            "latent": [
+              "6",
+              0
+            ]
+          }
+        },
+        "62": {
+          "class_type": "CFGGuider",
+          "inputs": {
+            "model": [
+              "1",
+              0
+            ],
+            "positive": [
+              "61",
+              0
+            ],
+            "negative": [
+              "8",
+              0
+            ],
+            "cfg": 5.0
+          }
+        },
+        "63": {
+          "class_type": "RandomNoise",
+          "inputs": {
+            "noise_seed": 240830
+          }
+        },
+        "64": {
+          "class_type": "SamplerCustomAdvanced",
+          "inputs": {
+            "noise": [
+              "63",
+              0
+            ],
+            "guider": [
+              "62",
+              0
+            ],
+            "sampler": [
+              "9",
+              0
+            ],
+            "sigmas": [
+              "11",
+              1
+            ],
+            "latent_image": [
+              "6",
+              0
+            ]
+          }
+        },
+        "65": {
+          "class_type": "VAEDecode",
+          "inputs": {
+            "samples": [
+              "64",
+              0
+            ],
+            "vae": [
+              "3",
+              0
+            ]
+          }
+        },
+        "66": {
+          "class_type": "SaveImage",
+          "inputs": {
+            "filename_prefix": "ArtFlow/PBR/rain_wet_courtyard/rain_wet_courtyard_ambient_occlusion",
+            "images": [
+              "65",
+              0
+            ]
+          }
+        }
+      },
+      {
+        "create_time": 1788142055290
+      },
+      [
+        "12",
+        "13",
+        "26",
+        "14",
+        "46",
+        "56",
+        "36",
+        "66"
+      ]
+    ],
+    "outputs": {
+      "26": {
+        "images": [
+          {
+            "filename": "rain_wet_courtyard_base_color_00001_.png",
+            "subfolder": "ArtFlow\\PBR\\rain_wet_courtyard",
+            "type": "output"
+          }
+        ]
+      },
+      "46": {
+        "images": [
+          {
+            "filename": "rain_wet_courtyard_roughness_00001_.png",
+            "subfolder": "ArtFlow\\PBR\\rain_wet_courtyard",
+            "type": "output"
+          }
+        ]
+      },
+      "56": {
+        "images": [
+          {
+            "filename": "rain_wet_courtyard_metallic_00001_.png",
+            "subfolder": "ArtFlow\\PBR\\rain_wet_courtyard",
+            "type": "output"
+          }
+        ]
+      },
+      "36": {
+        "images": [
+          {
+            "filename": "rain_wet_courtyard_normal_00001_.png",
+            "subfolder": "ArtFlow\\PBR\\rain_wet_courtyard",
+            "type": "output"
+          }
+        ]
+      },
+      "66": {
+        "images": [
+          {
+            "filename": "rain_wet_courtyard_ambient_occlusion_00001_.png",
+            "subfolder": "ArtFlow\\PBR\\rain_wet_courtyard",
+            "type": "output"
+          }
+        ]
+      }
+    },
+    "status": {
+      "status_str": "success",
+      "completed": true,
+      "messages": [
+        [
+          "execution_start",
+          {
+            "prompt_id": "8fc86ed6-225c-404d-980c-bb451987188a",
+            "timestamp": 1788142055291
+          }
+        ],
+        [
+          "execution_cached",
+          {
+            "nodes": [],
+            "prompt_id": "8fc86ed6-225c-404d-980c-bb451987188a",
+            "timestamp": 1788142055296
+          }
+        ],
+        [
+          "execution_success",
+          {
+            "prompt_id": "8fc86ed6-225c-404d-980c-bb451987188a",
+            "timestamp": 1788142077515
+          }
+        ]
+      ]
+    },
+    "meta": {
+      "26": {
+        "node_id": "26",
+        "display_node": "26",
+        "parent_node": null,
+        "real_node_id": "26"
+      },
+      "46": {
+        "node_id": "46",
+        "display_node": "46",
+        "parent_node": null,
+        "real_node_id": "46"
+      },
+      "56": {
+        "node_id": "56",
+        "display_node": "56",
+        "parent_node": null,
+        "real_node_id": "56"
+      },
+      "36": {
+        "node_id": "36",
+        "display_node": "36",
+        "parent_node": null,
+        "real_node_id": "36"
+      },
+      "66": {
+        "node_id": "66",
+        "display_node": "66",
+        "parent_node": null,
+        "real_node_id": "66"
+      }
+    }
+  }
+}

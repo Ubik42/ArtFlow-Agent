@@ -31,8 +31,9 @@ Unreal 当前场景
   编译为确定性内容寻址草案，持久 Session 与候选暂存请求已进入“场景变更谱”。
 - **M12 · Unreal editor session bridge and candidate execution（已完成）**：UE 编辑器可发起 Session，
   在请求派生候选关卡执行注册工具、回渲并跨进程对账，重启没有重复 PCG 实例或源关卡写入。
-- **M13 · Cross-pipeline transformation and correction**：将审阅过的 ComfyUI、GPT Image 2 开发编排、
-  PBR、项目/生成资产、PCG 与灯光纳入同一计划，用多个真实生产案例证明路由和失败域纠正。
+- **M13 · Cross-pipeline transformation and correction（进行中）**：第一个雨湿庭院案例已把当前
+  ComfyUI PBR 回执、材质实例、项目资产、PCG 与灯光纳入同一计划并完成 UE 对账；下一步用另一条
+  图像路线完成第二案例并验证失败域单独纠正。
 - **M14 · Embedded delivery and portfolio release**：完成 Unreal-facing 入口、中文产品界面、多个可复现
   案例、流程截图、教学文档和可验证发布包。
 

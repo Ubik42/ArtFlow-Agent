@@ -17,6 +17,7 @@ def main() -> int:
     parser.add_argument("--prompt-id", required=True)
     parser.add_argument("--execution-seconds", type=float, required=True)
     parser.add_argument("--history", type=Path)
+    parser.add_argument("--material-id", default="ruin_altar_basalt")
     args = parser.parse_args()
     compiled = CompiledPBRWorkflow.model_validate_json(args.compiled.read_text(encoding="utf-8"))
     channels = ("base_color", "normal", "roughness", "metallic", "ambient_occlusion")
@@ -25,17 +26,22 @@ def main() -> int:
             channel: next(args.output_root.glob(f"*_{channel}_*.png")) for channel in channels
         }
     else:
-        history = json.loads(args.history.read_text(encoding="utf-8"))[args.prompt_id]
+        history_payload = json.loads(args.history.read_text(encoding="utf-8"))
+        history = history_payload.get("history", history_payload.get(args.prompt_id))
+        if history is None:
+            raise KeyError(f"history does not contain prompt {args.prompt_id}")
         node_channels = {"26": "base_color", "36": "normal", "46": "roughness", "56": "metallic", "66": "ambient_occlusion"}
         source_paths = {
-            channel: args.output_root / history["outputs"][node]["images"][0]["filename"]
+            channel: args.output_root
+            / history["outputs"][node]["images"][0].get("subfolder", "")
+            / history["outputs"][node]["images"][0]["filename"]
             for node, channel in node_channels.items()
         }
     raw_root = args.evidence_dir / "raw"
     raw_root.mkdir(parents=True, exist_ok=True)
     copied: dict[str, Path] = {}
     for channel, source in source_paths.items():
-        destination = raw_root / f"ruin_altar_basalt_{channel}.png"
+        destination = raw_root / f"{args.material_id}_{channel}.png"
         shutil.copy2(source, destination)
         copied[channel] = destination
     receipt = validate_generation(

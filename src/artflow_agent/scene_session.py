@@ -207,8 +207,49 @@ class SceneCandidateLightingToolCall(BaseModel):
     temperature_kelvin: float = Field(ge=1_000, le=20_000)
 
 
+class SceneCandidateMaterialToolCall(BaseModel):
+    operation_type: Literal["bind_verified_pbr_material"] = "bind_verified_pbr_material"
+    operation_id: str
+    domain: Literal["material"] = "material"
+    tool_name: Literal["unreal.material.verified_pbr.bind"] = (
+        "unreal.material.verified_pbr.bind"
+    )
+    target_actor_id: str
+    target_actor_label: str
+    expected_source_fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+    capability_snapshot_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    generation_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    unreal_import_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    material_instance_path: str = Field(
+        pattern=r"^/Game/ArtFlow/Generated/[A-Za-z0-9_/]+\.[A-Za-z0-9_]+$"
+    )
+
+
+class SceneCandidateProjectAssetToolCall(BaseModel):
+    operation_type: Literal["bind_project_asset_set"] = "bind_project_asset_set"
+    operation_id: str
+    domain: Literal["asset"] = "asset"
+    tool_name: Literal["unreal.project_assets.bind"] = "unreal.project_assets.bind"
+    asset_set_id: str = Field(pattern=r"^[a-z0-9][a-z0-9._-]{2,63}$")
+    approved_asset_paths: list[str] = Field(min_length=1, max_length=16)
+    approved_asset_sha256s: list[str] = Field(min_length=1, max_length=16)
+
+    @model_validator(mode="after")
+    def verify_asset_set(self) -> SceneCandidateProjectAssetToolCall:
+        if len(self.approved_asset_paths) != len(self.approved_asset_sha256s):
+            raise ValueError("project asset paths and hashes must have the same length")
+        if len(set(self.approved_asset_paths)) != len(self.approved_asset_paths):
+            raise ValueError("project asset paths must be unique")
+        if not all(path.startswith("/Game/ArtFlow/Props/") for path in self.approved_asset_paths):
+            raise ValueError("project asset set escaped the approved ArtFlow Props namespace")
+        return self
+
+
 SceneCandidateToolCall = Annotated[
-    SceneCandidatePCGToolCall | SceneCandidateLightingToolCall,
+    SceneCandidateMaterialToolCall
+    | SceneCandidateProjectAssetToolCall
+    | SceneCandidatePCGToolCall
+    | SceneCandidateLightingToolCall,
     Field(discriminator="operation_type"),
 ]
 

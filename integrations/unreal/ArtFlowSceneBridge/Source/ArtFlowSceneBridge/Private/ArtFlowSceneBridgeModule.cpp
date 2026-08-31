@@ -23,6 +23,7 @@
 #include "Engine/Selection.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/StaticMeshActor.h"
+#include "Materials/MaterialInterface.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "EngineUtils.h"
 #include "FileHelpers.h"
@@ -1443,9 +1444,10 @@ bool StartSessionCandidateExecution(
     }
 
     const TArray<TSharedPtr<FJsonValue>>* Operations = nullptr;
-    if (!Plan.TryGetArrayField(TEXT("operations"), Operations) || Operations == nullptr || Operations->Num() != 2)
+    if (!Plan.TryGetArrayField(TEXT("operations"), Operations) || Operations == nullptr ||
+        (Operations->Num() != 2 && Operations->Num() != 4))
     {
-        OutError = TEXT("Candidate plan must contain exactly the registered PCG and lighting operations.");
+        OutError = TEXT("Candidate plan must contain the registered scene operations.");
         return false;
     }
     FString PCGActorId;
@@ -1460,6 +1462,16 @@ bool StartSessionCandidateExecution(
     FString LightFingerprint;
     double LightIntensity = -1.0;
     double LightTemperature = -1.0;
+    FString MaterialActorId;
+    FString MaterialActorLabel;
+    FString MaterialFingerprint;
+    FString MaterialPath;
+    FString CapabilitySnapshotSha;
+    FString GenerationReceiptSha;
+    FString MaterialImportRequestSha;
+    FString AssetSetId;
+    TArray<FString> ApprovedAssetPaths;
+    TArray<FString> ApprovedAssetShas;
     for (const TSharedPtr<FJsonValue>& Value : *Operations)
     {
         const TSharedPtr<FJsonObject>* Operation = nullptr;
@@ -1507,13 +1519,47 @@ bool StartSessionCandidateExecution(
                 return false;
             }
         }
+        else if (Type == TEXT("bind_verified_pbr_material") &&
+            ToolName == TEXT("unreal.material.verified_pbr.bind"))
+        {
+            if (!(*Operation)->TryGetStringField(TEXT("target_actor_id"), MaterialActorId) ||
+                !(*Operation)->TryGetStringField(TEXT("target_actor_label"), MaterialActorLabel) ||
+                !(*Operation)->TryGetStringField(TEXT("expected_source_fingerprint"), MaterialFingerprint) ||
+                !(*Operation)->TryGetStringField(TEXT("capability_snapshot_sha256"), CapabilitySnapshotSha) ||
+                !(*Operation)->TryGetStringField(TEXT("generation_receipt_sha256"), GenerationReceiptSha) ||
+                !(*Operation)->TryGetStringField(TEXT("unreal_import_request_sha256"), MaterialImportRequestSha) ||
+                !(*Operation)->TryGetStringField(TEXT("material_instance_path"), MaterialPath) ||
+                !IsSha256(MaterialFingerprint) || !IsSha256(CapabilitySnapshotSha) ||
+                !IsSha256(GenerationReceiptSha) || !IsSha256(MaterialImportRequestSha) ||
+                !MaterialPath.StartsWith(TEXT("/Game/ArtFlow/Generated/")))
+            {
+                OutError = TEXT("Candidate material tool call failed its provenance or namespace bounds.");
+                return false;
+            }
+        }
+        else if (Type == TEXT("bind_project_asset_set") &&
+            ToolName == TEXT("unreal.project_assets.bind"))
+        {
+            if (!(*Operation)->TryGetStringField(TEXT("asset_set_id"), AssetSetId) ||
+                !(*Operation)->TryGetStringArrayField(TEXT("approved_asset_paths"), ApprovedAssetPaths) ||
+                !(*Operation)->TryGetStringArrayField(TEXT("approved_asset_sha256s"), ApprovedAssetShas) ||
+                ApprovedAssetPaths.Num() != 1 || ApprovedAssetShas.Num() != 1 ||
+                !ApprovedAssetPaths[0].StartsWith(TEXT("/Game/ArtFlow/Props/")) ||
+                !IsSha256(ApprovedAssetShas[0]))
+            {
+                OutError = TEXT("Candidate project asset set failed its typed allowlist bounds.");
+                return false;
+            }
+        }
         else
         {
             OutError = TEXT("Candidate plan requested an unregistered Unreal tool.");
             return false;
         }
     }
-    if (PCGActorId.IsEmpty() || LightActorId.IsEmpty())
+    const bool bHasCrossPipelineDomains = !MaterialPath.IsEmpty() || !AssetSetId.IsEmpty();
+    if (PCGActorId.IsEmpty() || LightActorId.IsEmpty() ||
+        (bHasCrossPipelineDomains && (MaterialPath.IsEmpty() || AssetSetId.IsEmpty())))
     {
         OutError = TEXT("Candidate plan omitted a required registered domain tool.");
         return false;
@@ -1536,7 +1582,10 @@ bool StartSessionCandidateExecution(
     };
     if (ActorId(SourcePCGActor) != PCGActorId || ActorId(SourceLightActor) != LightActorId ||
         SourceProtected == nullptr || ActorFingerprint(SourcePCGActor) != PCGFingerprint ||
-        ActorFingerprint(SourceLightActor) != LightFingerprint)
+        ActorFingerprint(SourceLightActor) != LightFingerprint ||
+        (bHasCrossPipelineDomains &&
+            (MaterialActorId != PCGActorId || MaterialActorLabel != PCGActorLabel ||
+             MaterialFingerprint != PCGFingerprint)))
     {
         OutError = TEXT("Candidate plan source Actor identity or fingerprint is stale.");
         return false;
@@ -1590,8 +1639,28 @@ bool StartSessionCandidateExecution(
         ? nullptr
         : CandidateLightActor->FindComponentByClass<ULightComponent>();
     UPCGGraph* Graph = LoadObject<UPCGGraph>(nullptr, *PCGGraphPath);
+    UMaterialInterface* Material = bHasCrossPipelineDomains
+        ? LoadObject<UMaterialInterface>(nullptr, *MaterialPath)
+        : nullptr;
+    UStaticMesh* ApprovedAsset = bHasCrossPipelineDomains
+        ? LoadObject<UStaticMesh>(nullptr, *ApprovedAssetPaths[0])
+        : nullptr;
+    FString ApprovedAssetHash;
+    if (bHasCrossPipelineDomains)
+    {
+        const FString AssetPackage = FPackageName::ObjectPathToPackageName(ApprovedAssetPaths[0]);
+        const FString AssetFilename = FPackageName::LongPackageNameToFilename(
+            AssetPackage, FPackageName::GetAssetPackageExtension());
+        if (!HashFile(AssetFilename, ApprovedAssetHash, OutError) ||
+            ApprovedAssetHash != ApprovedAssetShas[0])
+        {
+            OutError = TEXT("Approved project asset bytes no longer match the candidate plan.");
+            return false;
+        }
+    }
     if (CandidateProtected == nullptr || OutPCG == nullptr || Light == nullptr || Graph == nullptr ||
-        ProtectedSemanticFingerprint(CandidateProtected) != OutProtectedHash)
+        ProtectedSemanticFingerprint(CandidateProtected) != OutProtectedHash ||
+        (bHasCrossPipelineDomains && (Material == nullptr || ApprovedAsset == nullptr)))
     {
         OutError = FString::Printf(
             TEXT("Candidate target validation failed: pcg_actor=%s light_actor=%s protected=%s pcg_component=%s light_component=%s graph=%s protected_hash=%s."),
@@ -1606,11 +1675,17 @@ bool StartSessionCandidateExecution(
         return false;
     }
     const int32 ExistingInstances = CountGeneratedInstances(CandidateWorld);
+    UStaticMeshComponent* CandidateMesh = CandidatePCGActor == nullptr
+        ? nullptr
+        : CandidatePCGActor->FindComponentByClass<UStaticMeshComponent>();
+    const bool bMaterialMatches = !bHasCrossPipelineDomains ||
+        (CandidateMesh != nullptr && CandidateMesh->GetMaterial(0) == Material);
     const bool bExactExistingResult = bCandidateExists && ExistingInstances == 12 &&
         OutPCG->GetGraph() == Graph && OutPCG->Seed == PCGSeed &&
         FMath::IsNearlyEqual(Light->Intensity, static_cast<float>(LightIntensity)) &&
         Light->bUseTemperature &&
-        FMath::IsNearlyEqual(Light->Temperature, static_cast<float>(LightTemperature));
+        FMath::IsNearlyEqual(Light->Temperature, static_cast<float>(LightTemperature)) &&
+        bMaterialMatches;
     if (bCandidateExists && !bExactExistingResult)
     {
         OutError = TEXT("An existing candidate does not match the content-bound plan; refusing overwrite.");
@@ -1624,6 +1699,17 @@ bool StartSessionCandidateExecution(
         Light->SetIntensity(static_cast<float>(LightIntensity));
         Light->SetUseTemperature(true);
         Light->SetTemperature(static_cast<float>(LightTemperature));
+        if (bHasCrossPipelineDomains)
+        {
+            if (CandidateMesh == nullptr)
+            {
+                OutError = TEXT("Candidate material target has no StaticMeshComponent.");
+                return false;
+            }
+            CandidateMesh->SetMaterial(0, Material);
+            CandidatePCGActor->Tags.AddUnique(TEXT("ArtFlow.PBR"));
+            CandidatePCGActor->Tags.AddUnique(FName(*AssetSetId));
+        }
         OutPCG->CleanupLocalImmediate(true, true);
         OutPCG->GenerateLocal(true);
     }

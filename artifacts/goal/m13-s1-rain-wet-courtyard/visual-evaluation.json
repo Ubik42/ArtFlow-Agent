@@ -1,0 +1,15 @@
+{
+  "schema_id": "artflow-m13-independent-visual-evaluation/1",
+  "evaluator": "same-camera-pixel-critic/1",
+  "generator_independent": true,
+  "plan_id": "candidate-plan-02234449a4d7",
+  "plan_sha256": "02234449a4d7e0f73c7b32fe71fd2e57a465dea4735973b0b19eb5b1a08afed5",
+  "source_render_sha256": "46af73e1486bcaccd78afd832f86e3678659d949c4472e087bf1712ea15fdd4d",
+  "candidate_render_sha256": "1ec9e163237fb0408ecc162fbb7fea979f8747a7b4680708e459df448bc87485",
+  "same_dimensions": true,
+  "mean_absolute_change": 13.39589,
+  "protected_proxy_change": 10.858383,
+  "source_mean_luma": 164.519696,
+  "candidate_mean_luma": 156.717222,
+  "verdict": "pass"
+}

@@ -30,6 +30,14 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 | --- | --- |
 | ![Scene Session 源关卡](artifacts/goal/m12-s2-live-candidate-v2/source-beauty.png) | ![请求派生候选关卡](artifacts/goal/m12-s2-live-candidate-v2/candidate-beauty.png) |
 
+M13 进一步把真实 ComfyUI PBR、Unreal 材质实例、项目自有资产、PCG 与灯光封装进同一份四操作
+Candidate Plan。下面的雨湿庭院候选来自当前 RTX 4080 受审图执行；原始技术图未通过时，系统只纠正
+失败的 PBR 域，再由 UE 串行绑定验证后的材质与场景工具。新进程对账保持 12 个实例，源关卡字节不变。
+
+| 雨湿庭院源关卡 | 材质、项目资产、PCG 与灯光联合候选 |
+| --- | --- |
+| ![雨湿庭院源关卡](artifacts/goal/m13-s1-rain-wet-courtyard/source-beauty.png) | ![雨湿庭院跨管线候选](artifacts/goal/m13-s1-rain-wet-courtyard/candidate-beauty.png) |
+
 ## 生产案例
 
 Scene Lab 使用同一套 Agent 控制平面呈现四类典型任务。界面中的状态、指标和结果均来自实际运行回执。
@@ -157,6 +165,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 同一真实握手请求重放 | 1 个 Session 事件、0 个重复事件 |
 | Session 派生候选执行 | PCG 12 个实例，源关卡字节变化 0 |
 | 新 UE 进程候选对账 | `reconciled=true`，重复实例 0 |
+| 雨湿庭院跨管线计划 | 材质 / 项目资产 / PCG / 灯光 4 / 4 |
+| 当前 ComfyUI PBR 验证 | 5 / 5 通道，真实生成 23.094 秒 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

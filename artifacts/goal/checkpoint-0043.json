@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M13-S1",
+  "status": "completed",
+  "outcome": "A real RTX 4080 ComfyUI run, validated five-channel rain-wet PBR set, Unreal material instance, project-owned rock asset, PCG layout and lighting are bound into one four-operation Candidate Plan. UE 5.8 executes the isolated candidate, independent technical and same-camera visual evaluators pass it, and a fresh process reconciles 12 instances with no source-level byte change or duplicate provider/import side effect.",
+  "evidence": [
+    "docs/evidence/M13_S1_RAIN_WET_CROSS_PIPELINE_2026-08-30.md",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/cross-pipeline-candidate-plan.json",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/candidate-execution-receipt-reconciled.json",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/technical-evaluation.json",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/visual-evaluation.json",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/source-beauty.png",
+    "artifacts/goal/m13-s1-rain-wet-courtyard/candidate-beauty.png"
+  ]
+}

@@ -3,11 +3,10 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import unreal
-
 
 CHANNELS = ("base_color", "normal", "roughness", "metallic", "ambient_occlusion")
 
@@ -64,8 +63,8 @@ if canonical_sha256(unsigned) != request.get("request_sha256"):
     fail("request fingerprint mismatch")
 if request.get("authority_scope") != "project_local_unreal_fixture":
     fail("authority scope is not project-local")
-if request.get("destination_scene_path") != "/Game/ArtFlow/Staging/AF_cb2176a7a45bbad1":
-    fail("only the frozen candidate scene is writable")
+if not request.get("destination_scene_path", "").startswith("/Game/ArtFlow/Staging/"):
+    fail("only an ArtFlow staging scene is writable")
 if request.get("target_actor_label") != "Editable_Form":
     fail("only Editable_Form may receive this material")
 destination_root = request.get("destination_root", "")
@@ -101,7 +100,8 @@ for item in textures:
         fail(f"{channel} source escaped or is missing")
     if sha256_file(source) != item["sha256"]:
         fail(f"{channel} source hash mismatch")
-    asset_name = "T_RuinAltar_" + {
+    asset_prefix = request["material_instance_name"].removeprefix("MI_")
+    asset_name = f"T_{asset_prefix}_" + {
         "base_color": "BaseColor",
         "normal": "NormalDX",
         "roughness": "Roughness",
@@ -233,7 +233,7 @@ result = {
     "source_scene_sha256_after": source_after,
     "protected_state_before": protected_before,
     "protected_state_after": protected_after,
-    "completed_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    "completed_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
 }
 result_path.parent.mkdir(parents=True, exist_ok=True)
 temporary = result_path.with_suffix(result_path.suffix + ".tmp")
