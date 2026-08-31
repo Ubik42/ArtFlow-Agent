@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import asyncio
+import base64
+import binascii
 import hashlib
+import ipaddress
 import json
 import os
 import threading
@@ -41,9 +44,11 @@ from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
     SceneSessionDraft,
     SceneSessionDraftRequest,
+    SceneSessionHandshakeReceipt,
     SceneSessionStartRequest,
     SceneStageRequest,
     SceneStageRequestInput,
+    build_scene_session_handshake_receipt,
     compile_scene_session_draft,
     compile_scene_stage_request,
 )
@@ -133,6 +138,66 @@ def create_app(
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    def persist_scene_package(payload: bytes, expected_sha256: str | None) -> str:
+        if not payload:
+            raise HTTPException(status_code=400, detail="Scene Package body is empty")
+        if len(payload) > MAX_UI_SCENE_PACKAGE_BYTES:
+            raise HTTPException(
+                status_code=413,
+                detail="Scene Package exceeds the 64 MiB UI limit",
+            )
+        actual_sha256 = hashlib.sha256(payload).hexdigest()
+        if expected_sha256 is not None and expected_sha256.casefold() != actual_sha256:
+            raise HTTPException(
+                status_code=409,
+                detail="Scene Package upload hash does not match",
+            )
+
+        scene_archive_root.mkdir(parents=True, exist_ok=True)
+        temporary_path = scene_archive_root / f".{uuid.uuid4().hex}.uploading"
+        temporary_path.write_bytes(payload)
+        try:
+            preview = ScenePackageArchive().inspect(temporary_path)
+            final_path = scene_archive_root / f"{preview.archive_sha256}.zip"
+            if final_path.exists():
+                ScenePackageArchive().inspect(final_path)
+                temporary_path.unlink()
+            else:
+                os.replace(temporary_path, final_path)
+
+            run_id = (
+                f"unreal-{preview.package.package_id[:88]}-{preview.archive_sha256[:12]}"
+            )
+            agent_store.create_run(run_id)
+            agent_store.attach_scene(
+                run_id,
+                preview,
+                expected_archive_sha256=actual_sha256,
+            )
+            return run_id
+        except ScenePackageImportError as exc:
+            raise HTTPException(status_code=400, detail=str(exc)) from exc
+        except AgentRuntimeError as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        finally:
+            temporary_path.unlink(missing_ok=True)
+
+    async def read_scene_package_body(request: Request) -> bytes:
+        content_type = request.headers.get("content-type", "").split(";", 1)[0].casefold()
+        if content_type not in {"application/zip", "application/octet-stream"}:
+            raise HTTPException(status_code=415, detail="Scene import requires raw ZIP bytes")
+        declared_size = request.headers.get("content-length")
+        if declared_size:
+            try:
+                if int(declared_size) > MAX_UI_SCENE_PACKAGE_BYTES:
+                    raise HTTPException(
+                        status_code=413,
+                        detail="Scene Package exceeds the 64 MiB UI limit",
+                    )
+            except ValueError as exc:
+                raise HTTPException(status_code=400, detail="Invalid Content-Length") from exc
+        return await request.body()
 
     @app.get("/api/health")
     def health():
@@ -229,55 +294,90 @@ def create_app(
 
     @app.post("/api/agent/scene-packages/import", response_model=AgentRunProjection)
     async def import_scene_package(request: Request):
-        content_type = request.headers.get("content-type", "").split(";", 1)[0].casefold()
-        if content_type not in {"application/zip", "application/octet-stream"}:
-            raise HTTPException(status_code=415, detail="Scene import requires raw ZIP bytes")
-        declared_size = request.headers.get("content-length")
-        if declared_size:
-            try:
-                if int(declared_size) > MAX_UI_SCENE_PACKAGE_BYTES:
-                    raise HTTPException(status_code=413, detail="Scene Package exceeds the 64 MiB UI limit")
-            except ValueError as exc:
-                raise HTTPException(status_code=400, detail="Invalid Content-Length") from exc
-        payload = await request.body()
-        if not payload:
-            raise HTTPException(status_code=400, detail="Scene Package body is empty")
-        if len(payload) > MAX_UI_SCENE_PACKAGE_BYTES:
-            raise HTTPException(status_code=413, detail="Scene Package exceeds the 64 MiB UI limit")
+        payload = await read_scene_package_body(request)
+        run_id = persist_scene_package(
+            payload,
+            request.headers.get("x-scene-package-sha256"),
+        )
+        return project_agent_run(agent_store, run_id)
 
-        expected_sha256 = request.headers.get("x-scene-package-sha256")
-        actual_sha256 = hashlib.sha256(payload).hexdigest()
-        if expected_sha256 is not None and expected_sha256.casefold() != actual_sha256:
-            raise HTTPException(status_code=409, detail="Scene Package upload hash does not match")
-
-        scene_archive_root.mkdir(parents=True, exist_ok=True)
-        temporary_path = scene_archive_root / f".{uuid.uuid4().hex}.uploading"
-        temporary_path.write_bytes(payload)
+    @app.post(
+        "/api/agent/scene-sessions/handshake",
+        response_model=SceneSessionHandshakeReceipt,
+    )
+    async def handshake_scene_session(request: Request):
+        client_host = request.client.host if request.client is not None else ""
         try:
-            preview = ScenePackageArchive().inspect(temporary_path)
-            final_path = scene_archive_root / f"{preview.archive_sha256}.zip"
-            if final_path.exists():
-                ScenePackageArchive().inspect(final_path)
-                temporary_path.unlink()
-            else:
-                os.replace(temporary_path, final_path)
+            if not ipaddress.ip_address(client_host).is_loopback:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Unreal Scene Session handshake is loopback-only",
+                )
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=403,
+                detail="Unreal Scene Session handshake is loopback-only",
+            ) from exc
 
-            run_id = (
-                f"unreal-{preview.package.package_id[:88]}-{preview.archive_sha256[:12]}"
+        archive_sha256 = request.headers.get("x-scene-package-sha256", "").casefold()
+        action_id = request.headers.get("x-artflow-action-id", "")
+        encoded_intent = request.headers.get("x-artflow-intent-base64", "")
+        domains = [
+            item.strip()
+            for item in request.headers.get("x-artflow-domains", "").split(",")
+            if item.strip()
+        ]
+        try:
+            intent = base64.b64decode(encoded_intent, validate=True).decode("utf-8")
+            session_input = SceneSessionDraftRequest(intent=intent, domains=domains)
+            action_input = SceneSessionStartRequest(
+                intent=session_input.intent,
+                domains=session_input.domains,
+                action_id=action_id,
+                expected_draft_sha256="0" * 64,
             )
-            agent_store.create_run(run_id)
-            agent_store.attach_scene(
-                run_id,
-                preview,
-                expected_archive_sha256=actual_sha256,
+        except (binascii.Error, UnicodeDecodeError, ValueError) as exc:
+            raise HTTPException(
+                status_code=422,
+                detail=f"Invalid Unreal Scene Session handshake metadata: {exc}",
+            ) from exc
+
+        payload = await read_scene_package_body(request)
+        run_id = persist_scene_package(payload, archive_sha256)
+        try:
+            state = agent_store.load(run_id)
+            existing = next(
+                (
+                    session
+                    for session in state.scene_sessions
+                    if session.start_action_id == action_input.action_id
+                ),
+                None,
             )
-            return project_agent_run(agent_store, run_id)
-        except ScenePackageImportError as exc:
-            raise HTTPException(status_code=400, detail=str(exc)) from exc
-        except AgentRuntimeError as exc:
+            if existing is None:
+                draft = compile_scene_session_draft(state, session_input)
+                if not draft.can_stage:
+                    raise AgentRuntimeError(
+                        "Scene Session contains guarded domains and cannot enter candidate staging"
+                    )
+                agent_store.start_scene_session(
+                    run_id,
+                    draft,
+                    action_id=action_input.action_id,
+                )
+            elif (
+                existing.draft.intent != session_input.intent
+                or [node.domain for node in existing.draft.nodes] != session_input.domains
+            ):
+                raise AgentRuntimeError(
+                    "Scene Session action identity is already bound to different input"
+                )
+            return build_scene_session_handshake_receipt(
+                agent_store.load(run_id),
+                action_id=action_input.action_id,
+            )
+        except (AgentRuntimeError, ValueError) as exc:
             raise HTTPException(status_code=409, detail=str(exc)) from exc
-        finally:
-            temporary_path.unlink(missing_ok=True)
 
     @app.get("/api/agent/runs/{run_id}/scene/passes/{pass_kind}")
     def get_scene_pass(run_id: str, pass_kind: str):

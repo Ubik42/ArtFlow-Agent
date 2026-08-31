@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Containers/Ticker.h"
+#include "Interfaces/IHttpRequest.h"
 #include "Modules/ModuleManager.h"
 
 class UPCGComponent;
@@ -14,15 +15,27 @@ public:
 private:
     void RegisterMenus();
     void ExportSelectedScene();
+    void StartSceneSession();
+    bool BeginSceneSessionHandshake(const FString& ArchivePath, bool bAutomation, FString& OutError);
+    void HandleSceneSessionHandshake(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
     void ReviewLastExport() const;
     bool TickAutomation(float DeltaTime);
 
     FTSTicker::FDelegateHandle AutomationTickHandle;
     bool bAutomationHandled = false;
     bool bStageGenerationPending = false;
+    bool bSessionHandshakePending = false;
+    bool bSessionHandshakeAutomation = false;
     bool bStageReconciled = false;
     TWeakObjectPtr<UPCGComponent> StagePCGComponent;
     FString StageSourceHash;
     FString StageProtectedHash;
     FString LastExportPath;
+    FString SessionArchivePath;
+    FString SessionArchiveSha;
+    FString SessionSourceScene;
+    FString SessionSourceLevelPath;
+    FString SessionSourceLevelSha;
+    FString SessionActionId;
+    FString SessionEndpointOrigin;
 };

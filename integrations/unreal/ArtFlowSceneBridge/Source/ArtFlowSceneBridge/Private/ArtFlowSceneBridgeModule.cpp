@@ -27,13 +27,17 @@
 #include "EngineUtils.h"
 #include "FileHelpers.h"
 #include "FileUtilities/ZipArchiveWriter.h"
+#include "Framework/Notifications/NotificationManager.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
 #include "ImageCore.h"
 #include "ImageUtils.h"
+#include "HttpModule.h"
+#include "Interfaces/IHttpResponse.h"
 #include "Interfaces/IPluginManager.h"
 #include "Json.h"
 #include "Misc/App.h"
+#include "Misc/Base64.h"
 #include "Misc/CommandLine.h"
 #include "Misc/DateTime.h"
 #include "Misc/EngineVersion.h"
@@ -56,6 +60,7 @@
 #include "StructUtils/PropertyBag.h"
 #include "ToolMenus.h"
 #include "UObject/SavePackage.h"
+#include "Widgets/Notifications/SNotificationList.h"
 
 #define LOCTEXT_NAMESPACE "ArtFlowSceneBridge"
 
@@ -80,6 +85,8 @@ struct FCaptureRequest
     int32 Width = DefaultWidth;
     int32 Height = DefaultHeight;
     FString Goal;
+    FString ArtFlowEndpoint = TEXT("http://127.0.0.1:8796");
+    TArray<FString> SessionDomains = {TEXT("image"), TEXT("asset"), TEXT("pcg"), TEXT("lighting")};
     TArray<FString> Preserve;
     TArray<FString> Prohibit;
 };
@@ -201,8 +208,73 @@ bool LoadCaptureRequest(FCaptureRequest& OutRequest, FString& OutError)
 
     OutRequest.Width = static_cast<int32>(Width);
     OutRequest.Height = static_cast<int32>(Height);
+    Root->TryGetStringField(TEXT("artflow_endpoint"), OutRequest.ArtFlowEndpoint);
+    if (Root->HasField(TEXT("session_domains")))
+    {
+        OutRequest.SessionDomains.Reset();
+        if (!ReadStringArray(TEXT("session_domains"), OutRequest.SessionDomains))
+        {
+            return false;
+        }
+    }
+    FString EndpointOverride;
+    if (FParse::Value(FCommandLine::Get(), TEXT("ArtFlowEndpoint="), EndpointOverride))
+    {
+        OutRequest.ArtFlowEndpoint = EndpointOverride;
+    }
     return ReadStringArray(TEXT("preserve"), OutRequest.Preserve) &&
         ReadStringArray(TEXT("prohibit"), OutRequest.Prohibit);
+}
+
+bool NormalizeLoopbackOrigin(const FString& Candidate, FString& OutOrigin, FString& OutError)
+{
+    OutOrigin = Candidate.TrimStartAndEnd();
+    while (OutOrigin.EndsWith(TEXT("/")))
+    {
+        OutOrigin.LeftChopInline(1);
+    }
+    FString PortText;
+    if (OutOrigin.StartsWith(TEXT("http://127.0.0.1:"), ESearchCase::IgnoreCase))
+    {
+        PortText = OutOrigin.Mid(17);
+    }
+    else if (OutOrigin.StartsWith(TEXT("http://localhost:"), ESearchCase::IgnoreCase))
+    {
+        PortText = OutOrigin.Mid(17);
+    }
+    else
+    {
+        OutError = TEXT("ArtFlow endpoint must be an explicit localhost HTTP origin.");
+        return false;
+    }
+    if (PortText.IsEmpty() || !PortText.IsNumeric() || PortText.Len() > 5)
+    {
+        OutError = TEXT("ArtFlow endpoint must contain only a valid localhost port.");
+        return false;
+    }
+    const int32 Port = FCString::Atoi(*PortText);
+    if (Port < 1 || Port > 65535)
+    {
+        OutError = TEXT("ArtFlow endpoint port is outside the valid range.");
+        return false;
+    }
+    return true;
+}
+
+bool IsSha256(const FString& Value)
+{
+    if (Value.Len() != 64)
+    {
+        return false;
+    }
+    for (const TCHAR Character : Value)
+    {
+        if (!FChar::IsHexDigit(Character) || FChar::IsUpper(Character))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool HashBytes(const TArray<uint8>& Bytes, FString& OutSha256)
@@ -1888,6 +1960,7 @@ void FArtFlowSceneBridgeModule::StartupModule()
     ArtFlowSceneBridge::RecoverInterruptedExports();
     UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::RegisterMenus));
     if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
@@ -1917,15 +1990,21 @@ void FArtFlowSceneBridgeModule::RegisterMenus()
     UToolMenu* Menu = UToolMenus::Get()->ExtendMenu(TEXT("LevelEditor.MainMenu.Tools"));
     FToolMenuSection& Section = Menu->FindOrAddSection(TEXT("ArtFlow"), LOCTEXT("ArtFlowSection", "ArtFlow"));
     Section.AddMenuEntry(
+        TEXT("ArtFlowStartSceneSession"),
+        LOCTEXT("StartSessionLabel", "启动 ArtFlow 场景任务"),
+        LOCTEXT("StartSessionTooltip", "从当前关卡导出可验证场景包，并向本机 ArtFlow Agent 请求类型化候选方案。不会修改当前关卡。"),
+        FSlateIcon(),
+        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::StartSceneSession)));
+    Section.AddMenuEntry(
         TEXT("ArtFlowExportScenePackage"),
-        LOCTEXT("ExportLabel", "Export ArtFlow Scene Package"),
-        LOCTEXT("ExportTooltip", "Capture the selected camera and tagged region actors into an atomic, hashed Scene Package."),
+        LOCTEXT("ExportLabel", "仅导出场景包"),
+        LOCTEXT("ExportTooltip", "将选定相机与标记区域导出为原子化、内容哈希绑定的 Scene Package。"),
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ExportSelectedScene)));
     Section.AddMenuEntry(
         TEXT("ArtFlowReviewLastExport"),
-        LOCTEXT("ReviewLabel", "Show Last ArtFlow Export"),
-        LOCTEXT("ReviewTooltip", "Show the last exported package path. Export is complete and does not wait for approval."),
+        LOCTEXT("ReviewLabel", "查看最近导出"),
+        LOCTEXT("ReviewTooltip", "查看本次编辑器会话最近完成的 Scene Package。"),
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ReviewLastExport)));
 }
@@ -1945,11 +2024,302 @@ void FArtFlowSceneBridgeModule::ExportSelectedScene()
     }
 }
 
+void FArtFlowSceneBridgeModule::StartSceneSession()
+{
+    FString Error;
+    FString ArchivePath;
+    if (!ArtFlowSceneBridge::ExportSelection(ArchivePath, Error) ||
+        !BeginSceneSessionHandshake(ArchivePath, false, Error))
+    {
+        FMessageDialog::Open(
+            EAppMsgType::Ok,
+            FText::Format(
+                LOCTEXT("SessionStartFailure", "ArtFlow 场景任务未启动：\n{0}\n\n当前关卡未发生修改。"),
+                FText::FromString(Error)));
+        return;
+    }
+    LastExportPath = ArchivePath;
+}
+
+bool FArtFlowSceneBridgeModule::BeginSceneSessionHandshake(
+    const FString& ArchivePath,
+    const bool bAutomation,
+    FString& OutError)
+{
+    if (bSessionHandshakePending)
+    {
+        OutError = TEXT("An ArtFlow Scene Session handshake is already pending.");
+        return false;
+    }
+    ArtFlowSceneBridge::FCaptureRequest CaptureRequest;
+    if (!ArtFlowSceneBridge::LoadCaptureRequest(CaptureRequest, OutError) ||
+        !ArtFlowSceneBridge::NormalizeLoopbackOrigin(
+            CaptureRequest.ArtFlowEndpoint,
+            SessionEndpointOrigin,
+            OutError))
+    {
+        return false;
+    }
+    UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    if (World == nullptr || World->WorldType != EWorldType::Editor)
+    {
+        OutError = TEXT("ArtFlow Scene Session requires an active editor level.");
+        return false;
+    }
+    SessionSourceScene = World->GetOutermost()->GetName();
+    SessionSourceLevelPath = FPackageName::LongPackageNameToFilename(
+        SessionSourceScene,
+        FPackageName::GetMapPackageExtension());
+    if (!IFileManager::Get().FileExists(*SessionSourceLevelPath) ||
+        !ArtFlowSceneBridge::HashFile(
+            SessionSourceLevelPath,
+            SessionSourceLevelSha,
+            OutError))
+    {
+        OutError = TEXT("Save the active project-owned level before starting ArtFlow. ") + OutError;
+        return false;
+    }
+    TArray<uint8> ArchiveBytes;
+    if (!FFileHelper::LoadFileToArray(ArchiveBytes, *ArchivePath) || ArchiveBytes.IsEmpty() ||
+        !ArtFlowSceneBridge::HashBytes(ArchiveBytes, SessionArchiveSha))
+    {
+        OutError = TEXT("The exported Scene Package could not be read or hashed.");
+        return false;
+    }
+    const TSet<FString> AllowedDomains = {
+        TEXT("image"), TEXT("material"), TEXT("asset"), TEXT("pcg"), TEXT("lighting")};
+    TSet<FString> UniqueDomains;
+    TArray<FString> NormalizedDomains;
+    for (FString Domain : CaptureRequest.SessionDomains)
+    {
+        Domain = Domain.TrimStartAndEnd().ToLower();
+        if (!AllowedDomains.Contains(Domain) || UniqueDomains.Contains(Domain))
+        {
+            OutError = TEXT("ArtFlow session_domains contains an unknown or duplicate domain.");
+            return false;
+        }
+        UniqueDomains.Add(Domain);
+        NormalizedDomains.Add(Domain);
+    }
+    if (UniqueDomains.IsEmpty())
+    {
+        OutError = TEXT("ArtFlow session_domains cannot be empty.");
+        return false;
+    }
+
+    FTCHARToUTF8 IntentUtf8(*CaptureRequest.Goal);
+    TArray<uint8> IntentBytes;
+    IntentBytes.Append(
+        reinterpret_cast<const uint8*>(IntentUtf8.Get()),
+        IntentUtf8.Length());
+    SessionActionId = TEXT("ue-handshake-") + SessionArchiveSha.Left(24);
+    SessionArchivePath = ArchivePath;
+    bSessionHandshakeAutomation = bAutomation;
+
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+        FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/scene-sessions/handshake"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/zip"));
+    HttpRequest->SetHeader(TEXT("X-Scene-Package-SHA256"), SessionArchiveSha);
+    HttpRequest->SetHeader(TEXT("X-ArtFlow-Intent-Base64"), FBase64::Encode(IntentBytes));
+    HttpRequest->SetHeader(
+        TEXT("X-ArtFlow-Domains"),
+        FString::Join(NormalizedDomains, TEXT(",")));
+    HttpRequest->SetHeader(TEXT("X-ArtFlow-Action-Id"), SessionActionId);
+    HttpRequest->SetContent(ArchiveBytes);
+    HttpRequest->SetTimeout(60.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this,
+        &FArtFlowSceneBridgeModule::HandleSceneSessionHandshake);
+    bSessionHandshakePending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSessionHandshakePending = false;
+        OutError = TEXT("The localhost ArtFlow request could not be submitted.");
+        return false;
+    }
+    UE_LOG(
+        LogArtFlowSceneBridge,
+        Display,
+        TEXT("ARTFLOW_SESSION_HANDSHAKE_SUBMITTED action=%s archive_sha256=%s source=%s endpoint=%s"),
+        *SessionActionId,
+        *SessionArchiveSha,
+        *SessionSourceScene,
+        *SessionEndpointOrigin);
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSessionHandshakePending = false;
+    FString Error;
+    FString ReceiptPath;
+    TSharedPtr<FJsonObject> BackendReceipt;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid())
+    {
+        Error = TEXT("The localhost ArtFlow runtime did not return a response.");
+    }
+    else if (ResponseCode != 200)
+    {
+        Error = FString::Printf(
+            TEXT("ArtFlow rejected the Scene Session handshake (HTTP %d): %s"),
+            ResponseCode,
+            *Response->GetContentAsString().Left(800));
+    }
+    else
+    {
+        const TSharedRef<TJsonReader<>> Reader =
+            TJsonReaderFactory<>::Create(Response->GetContentAsString());
+        if (!FJsonSerializer::Deserialize(Reader, BackendReceipt) || !BackendReceipt.IsValid())
+        {
+            Error = TEXT("ArtFlow returned invalid JSON.");
+        }
+    }
+
+    FString Schema;
+    FString HandshakeId;
+    FString HandshakeSha;
+    FString ActionId;
+    FString RunId;
+    FString SourceScene;
+    FString ScenePackageSha;
+    const TSharedPtr<FJsonObject>* Session = nullptr;
+    const TSharedPtr<FJsonObject>* StageRequest = nullptr;
+    if (Error.IsEmpty() &&
+        (!BackendReceipt->TryGetStringField(TEXT("schema_id"), Schema) ||
+        !BackendReceipt->TryGetStringField(TEXT("handshake_id"), HandshakeId) ||
+        !BackendReceipt->TryGetStringField(TEXT("handshake_sha256"), HandshakeSha) ||
+        !BackendReceipt->TryGetStringField(TEXT("action_id"), ActionId) ||
+        !BackendReceipt->TryGetStringField(TEXT("run_id"), RunId) ||
+        !BackendReceipt->TryGetStringField(TEXT("source_scene"), SourceScene) ||
+        !BackendReceipt->TryGetStringField(TEXT("scene_package_sha256"), ScenePackageSha) ||
+        !BackendReceipt->TryGetObjectField(TEXT("session"), Session) ||
+        !BackendReceipt->TryGetObjectField(TEXT("stage_request"), StageRequest)))
+    {
+        Error = TEXT("ArtFlow handshake receipt is missing required typed fields.");
+    }
+    FString SessionSchema;
+    FString SessionSha;
+    FString StageSchema;
+    FString StageSessionSha;
+    FString StageSceneSha;
+    FString CandidateDestination;
+    if (Error.IsEmpty())
+    {
+        (*Session)->TryGetStringField(TEXT("schema_id"), SessionSchema);
+        (*Session)->TryGetStringField(TEXT("session_sha256"), SessionSha);
+        (*StageRequest)->TryGetStringField(TEXT("schema_id"), StageSchema);
+        (*StageRequest)->TryGetStringField(TEXT("session_sha256"), StageSessionSha);
+        (*StageRequest)->TryGetStringField(TEXT("scene_package_sha256"), StageSceneSha);
+        (*StageRequest)->TryGetStringField(TEXT("candidate_destination"), CandidateDestination);
+        if (Schema != TEXT("artflow-scene-session-handshake/1") ||
+            SessionSchema != TEXT("artflow-scene-session/1") ||
+            StageSchema != TEXT("artflow-scene-stage-request/1") ||
+            ActionId != SessionActionId || SourceScene != SessionSourceScene ||
+            ScenePackageSha != SessionArchiveSha || StageSceneSha != SessionArchiveSha ||
+            !ArtFlowSceneBridge::IsSha256(HandshakeSha) ||
+            !ArtFlowSceneBridge::IsSha256(SessionSha) || SessionSha != StageSessionSha ||
+            !CandidateDestination.StartsWith(TEXT("/Game/ArtFlow/Sessions/")))
+        {
+            Error = TEXT("ArtFlow handshake identity or candidate boundary did not match the exact exported scene.");
+        }
+    }
+
+    FString SourceAfterSha;
+    if (Error.IsEmpty() &&
+        (!ArtFlowSceneBridge::HashFile(SessionSourceLevelPath, SourceAfterSha, Error) ||
+        SourceAfterSha != SessionSourceLevelSha))
+    {
+        Error = TEXT("The source level changed during the read-only Scene Session handshake.");
+    }
+    if (Error.IsEmpty())
+    {
+        TSharedPtr<FJsonObject> HostReceipt = MakeShared<FJsonObject>();
+        HostReceipt->SetStringField(
+            TEXT("schema"),
+            TEXT("artflow-unreal-scene-session-handshake-receipt/1"));
+        HostReceipt->SetBoolField(TEXT("success"), true);
+        HostReceipt->SetStringField(TEXT("endpoint_origin"), SessionEndpointOrigin);
+        HostReceipt->SetStringField(TEXT("archive_sha256"), SessionArchiveSha);
+        HostReceipt->SetStringField(TEXT("source_scene"), SessionSourceScene);
+        HostReceipt->SetStringField(TEXT("source_level_sha256_before"), SessionSourceLevelSha);
+        HostReceipt->SetStringField(TEXT("source_level_sha256_after"), SourceAfterSha);
+        HostReceipt->SetBoolField(TEXT("source_level_unchanged"), true);
+        HostReceipt->SetStringField(TEXT("received_at"), FDateTime::UtcNow().ToIso8601());
+        HostReceipt->SetObjectField(TEXT("artflow_receipt"), BackendReceipt);
+        FString ReceiptText;
+        FJsonSerializer::Serialize(
+            HostReceipt.ToSharedRef(),
+            TJsonWriterFactory<>::Create(&ReceiptText));
+        const FString ReceiptRoot =
+            FPaths::Combine(ArtFlowSceneBridge::GetBridgeRoot(), TEXT("SceneSessions"));
+        IFileManager::Get().MakeDirectory(*ReceiptRoot, true);
+        ReceiptPath = FPaths::Combine(ReceiptRoot, HandshakeId + TEXT(".json"));
+        if (!FFileHelper::SaveStringToFile(
+            ReceiptText,
+            *ReceiptPath,
+            FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+        {
+            Error = TEXT("The verified ArtFlow handshake receipt could not be saved.");
+            ReceiptPath.Reset();
+        }
+    }
+
+    const bool bSuccess = Error.IsEmpty();
+    UE_LOG(
+        LogArtFlowSceneBridge,
+        Display,
+        TEXT("ARTFLOW_SESSION_HANDSHAKE_RESULT success=%s action=%s receipt=%s source_unchanged=%s error=%s"),
+        bSuccess ? TEXT("true") : TEXT("false"),
+        *SessionActionId,
+        *ReceiptPath,
+        bSuccess ? TEXT("true") : TEXT("unverified"),
+        *Error);
+    if (bSessionHandshakeAutomation)
+    {
+        ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
+        FPlatformMisc::RequestExit(false);
+    }
+    else
+    {
+        if (bSuccess)
+        {
+            FNotificationInfo Info(FText::Format(
+                LOCTEXT("SessionStartSuccess", "ArtFlow 场景任务已建立\n候选 {0} · 源关卡哈希未改变"),
+                FText::FromString(FPaths::GetCleanFilename(CandidateDestination))));
+            Info.bFireAndForget = true;
+            Info.bUseLargeFont = false;
+            Info.ExpireDuration = 30.0f;
+            const TSharedPtr<SNotificationItem> Notification =
+                FSlateNotificationManager::Get().AddNotification(Info);
+            if (Notification.IsValid())
+            {
+                Notification->SetCompletionState(SNotificationItem::CS_Success);
+            }
+        }
+        else
+        {
+            FMessageDialog::Open(
+                EAppMsgType::Ok,
+                FText::Format(
+                    LOCTEXT("SessionHandshakeFailure", "ArtFlow 场景任务握手失败：\n{0}\n\n当前关卡未发生修改。"),
+                    FText::FromString(Error)));
+        }
+    }
+}
+
 void FArtFlowSceneBridgeModule::ReviewLastExport() const
 {
     const FString Message = LastExportPath.IsEmpty()
-        ? TEXT("No Scene Package has been exported in this editor session.")
-        : FString::Printf(TEXT("Last completed Scene Package (no approval pending):\n%s"), *LastExportPath);
+        ? TEXT("本次编辑器会话尚未导出 Scene Package。")
+        : FString::Printf(TEXT("最近完成的 Scene Package：\n%s"), *LastExportPath);
     FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(Message));
 }
 
@@ -2001,6 +2371,22 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     else if (bPrepareOnly)
     {
         bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(true, Error);
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")))
+    {
+        bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(false, Error) &&
+            ArtFlowSceneBridge::ExportSelection(ArchivePath, Error);
+        if (bSuccess)
+        {
+            LastExportPath = ArchivePath;
+            const bool bKeepOpen =
+                FParse::Param(FCommandLine::Get(), TEXT("ArtFlowKeepOpen"));
+            if (BeginSceneSessionHandshake(ArchivePath, !bKeepOpen, Error))
+            {
+                return true;
+            }
+            bSuccess = false;
+        }
     }
     else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")))
     {

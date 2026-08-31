@@ -1,3 +1,4 @@
+import base64
 import hashlib
 import json
 from datetime import UTC, datetime
@@ -287,6 +288,67 @@ def test_scene_session_start_replays_and_compiles_bound_stage_request(
         json={"expected_draft_sha256": "f" * 64},
     )
     assert stale.status_code == 409
+
+
+def test_unreal_scene_session_handshake_is_loopback_bound_and_idempotent(
+    tmp_path: Path,
+) -> None:
+    payload = _scene_archive(tmp_path).read_bytes()
+    digest = hashlib.sha256(payload).hexdigest()
+    client = TestClient(
+        create_app(runs_dir=tmp_path / "runs"),
+        client=("127.0.0.1", 51234),
+    )
+    intent = "保持原始相机与主体关系，生成视觉参考并探索一个可替换资产候选。"
+    headers = {
+        "Content-Type": "application/zip",
+        "X-Scene-Package-SHA256": digest,
+        "X-ArtFlow-Intent-Base64": base64.b64encode(intent.encode()).decode(),
+        "X-ArtFlow-Domains": "asset,image",
+        "X-ArtFlow-Action-Id": f"ue-handshake-{digest[:24]}",
+    }
+
+    first = client.post(
+        "/api/agent/scene-sessions/handshake",
+        content=payload,
+        headers=headers,
+    )
+    replay = client.post(
+        "/api/agent/scene-sessions/handshake",
+        content=payload,
+        headers=headers,
+    )
+
+    assert first.status_code == 200
+    assert replay.status_code == 200
+    receipt = first.json()
+    assert replay.json()["handshake_sha256"] == receipt["handshake_sha256"]
+    assert receipt["schema_id"] == "artflow-scene-session-handshake/1"
+    assert receipt["scene_package_sha256"] == digest
+    assert receipt["session"]["draft"]["intent"] == intent
+    assert [
+        operation["domain"] for operation in receipt["stage_request"]["operations"]
+    ] == ["image", "asset"]
+    assert receipt["stage_request"]["candidate_destination"].startswith(
+        "/Game/ArtFlow/Sessions/"
+    )
+    projection = client.get(f"/api/agent/runs/{receipt['run_id']}").json()
+    assert [item["event_type"] for item in projection["timeline"]] == [
+        "run_created",
+        "scene_attached",
+        "scene_session_started",
+    ]
+
+    remote = TestClient(
+        create_app(runs_dir=tmp_path / "remote-runs"),
+        client=("203.0.113.10", 51234),
+    )
+    rejected = remote.post(
+        "/api/agent/scene-sessions/handshake",
+        content=payload,
+        headers=headers,
+    )
+    assert rejected.status_code == 403
 
 
 def test_verified_provider_artifact_is_served_by_receipt_hash(tmp_path) -> None:

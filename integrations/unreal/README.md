@@ -1,7 +1,57 @@
 # Unreal 集成
 
-- `ArtFlowSceneBridge/` 是可独立安装的 Editor 插件；
-- `ArtFlowBridgeHost/` 是项目自有 UE 5.8 验证宿主，不是用户生产项目。
+`ArtFlowSceneBridge/` 是可安装到 Unreal Engine 项目的 Editor 插件；
+`ArtFlowBridgeHost/` 是仓库内随附的 UE 5.8 示例项目，用于复现截图、回执和自动化案例。
+Bridge 的能力不依赖这个示例项目，实际项目可以使用相同入口导出自己的关卡。
 
-当前宿主保存真实 PCG 测试图和 `ArtFlowDemo` fixture。`Binaries`、`Intermediate`、`Saved`
-与 `DerivedDataCache` 仍是忽略的运行产物；冻结证据复制到 `artifacts/goal/` 并由独立验证器检查。
+## 安装
+
+将 `ArtFlowSceneBridge` 放入目标项目的 `Plugins` 目录，或像示例宿主一样通过
+`AdditionalPluginDirectories` 引用插件目录，然后重新生成项目文件并编译 Editor Target。
+插件只在编辑器中运行，不修改 Engine 安装目录。
+
+## 从 Unreal 发起场景任务
+
+1. 保存当前关卡；
+2. 选中且仅选中一个 `CameraActor`；
+3. 给需要保持不变的 Actor 添加 `ArtFlow.Protected` Tag，给允许进入候选方案的 Actor 添加
+   `ArtFlow.Editable` Tag，并把两类 Actor 一同选中；
+4. 启动本地 ArtFlow 服务：
+
+   ```powershell
+   .\.venv\Scripts\python scripts\serve_agent_fixture.py runs --port 8796
+   ```
+
+5. 在 Unreal 顶部菜单选择 `Tools > ArtFlow > 启动 ArtFlow 场景任务`。
+
+插件会完成 Scene Package 导出、localhost 握手、Scene Session 建立和候选请求验证。成功回执保存到：
+
+```text
+<Project>/Saved/ArtFlowSceneBridge/SceneSessions/
+```
+
+该动作不弹出权限确认，也不修改或保存源关卡。当前版本在这里停止于“候选请求已建立”；候选关卡
+执行、复检与发布由后续类型化工具阶段负责。
+
+## 配置
+
+项目配置位于 `Config/ArtFlowSceneBridge.json`：
+
+| 字段 | 含义 |
+| --- | --- |
+| `width` / `height` | Beauty、Depth、World Normal、Object ID 的导出尺寸 |
+| `goal` | 本轮场景意图 |
+| `artflow_endpoint` | ArtFlow 本地服务 Origin，只接受带明确端口的 `127.0.0.1` 或 `localhost` |
+| `session_domains` | 本轮允许编排的 `image`、`material`、`asset`、`pcg`、`lighting` 领域 |
+| `preserve` | 必须保持的场景关系 |
+| `prohibit` | 明确禁止的变化 |
+
+命令行实测可用 `-ArtFlowEndpoint=http://127.0.0.1:<port>` 临时覆盖端口。非回环地址、URL
+路径、查询参数、未知领域、重复领域和越出 `/Game/ArtFlow/Sessions/` 的候选目录都会在任何场景
+写入前失败关闭。
+
+## 示例宿主与证据
+
+`ArtFlowBridgeHost` 保存 `ArtFlowDemo`、PCG 图和用于真实宿主验证的项目资产。`Binaries`、
+`Intermediate`、`Saved` 与 `DerivedDataCache` 是本地运行产物；公开证据会复制到
+`artifacts/goal/`，并明确区分“请求已建立”“候选已执行”和“结果已发布”。

@@ -1,0 +1,10 @@
+{
+  "schema": "artflow-m12-s1-real-replay-summary/1",
+  "handshake_sha256": "63b822132bf3bfb745e985ad3c5fc6af43bdb395eebcabd2b23f0e38a5cc84dd",
+  "run_id": "unreal-artflow-ue-1f6cf1c04e5e72238f520b8f23351196-1d00b61e385d",
+  "timeline_event_count_after_replay": 3,
+  "scene_session_started_count_after_replay": 1,
+  "duplicate_scene_session_event_count": 0,
+  "candidate_destination": "/Game/ArtFlow/Sessions/AF_e5857bc3d123/Candidates/C_a9df851fc1f2",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a"
+}

@@ -19,6 +19,7 @@ public class ArtFlowSceneBridge : ModuleRules
             "FileUtilities",
             "AssetTools",
             "AssetRegistry",
+            "HTTP",
             "ImageCore",
             "Json",
             "LevelEditor",

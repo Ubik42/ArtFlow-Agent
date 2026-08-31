@@ -180,6 +180,55 @@ class SceneStageRequest(BaseModel):
         }
 
 
+class SceneSessionHandshakeReceipt(BaseModel):
+    schema_id: Literal["artflow-scene-session-handshake/1"] = (
+        "artflow-scene-session-handshake/1"
+    )
+    handshake_id: str
+    handshake_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    action_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$")
+    run_id: str
+    source_scene: str
+    scene_package_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    event_sequence: int = Field(ge=1)
+    session: SceneSession
+    stage_request: SceneStageRequest
+
+    @model_validator(mode="after")
+    def verify_identity(self) -> SceneSessionHandshakeReceipt:
+        expected = _content_sha256(self._identity_payload())
+        if self.handshake_sha256 != expected:
+            raise ValueError("scene session handshake content hash is invalid")
+        if self.handshake_id != f"scene-handshake-{expected[:12]}":
+            raise ValueError("scene session handshake id is invalid")
+        if self.action_id != self.session.start_action_id:
+            raise ValueError("scene session handshake action identity is invalid")
+        if self.run_id != self.session.run_id or self.run_id != self.stage_request.run_id:
+            raise ValueError("scene session handshake references another run")
+        if self.scene_package_sha256 != self.session.scene_package_sha256:
+            raise ValueError("scene session handshake references another Scene Package")
+        if self.session.session_sha256 != self.stage_request.session_sha256:
+            raise ValueError("scene session handshake stage request references another Session")
+        if self.source_scene != self.session.source_scene:
+            raise ValueError("scene session handshake references another source scene")
+        if self.source_scene != self.stage_request.source_scene:
+            raise ValueError("scene session handshake stage request references another source scene")
+        if self.event_sequence != self.stage_request.basis_sequence:
+            raise ValueError("scene session handshake event sequence is invalid")
+        return self
+
+    def _identity_payload(self) -> dict[str, object]:
+        return {
+            "action_id": self.action_id,
+            "run_id": self.run_id,
+            "source_scene": self.source_scene,
+            "scene_package_sha256": self.scene_package_sha256,
+            "event_sequence": self.event_sequence,
+            "session": self.session.model_dump(mode="json"),
+            "stage_request": self.stage_request.model_dump(mode="json"),
+        }
+
+
 def compile_scene_session_draft(
     state: AgentRunState,
     request: SceneSessionDraftRequest,
@@ -393,6 +442,43 @@ def compile_scene_stage_request(
             f"/Candidates/C_{digest[:12]}"
         ),
         operations=operations,
+    )
+
+
+def build_scene_session_handshake_receipt(
+    state: AgentRunState,
+    *,
+    action_id: str,
+) -> SceneSessionHandshakeReceipt:
+    if not state.scene_sessions:
+        raise ValueError("scene session handshake requires a persisted Scene Session")
+    session = state.scene_sessions[-1]
+    if session.start_action_id != action_id:
+        raise ValueError("scene session handshake action does not match the active Session")
+    stage_request = compile_scene_stage_request(
+        state,
+        expected_draft_sha256=session.draft.draft_sha256,
+    )
+    payload = {
+        "action_id": action_id,
+        "run_id": state.run_id,
+        "source_scene": session.source_scene,
+        "scene_package_sha256": session.scene_package_sha256,
+        "event_sequence": state.last_sequence,
+        "session": session.model_dump(mode="json"),
+        "stage_request": stage_request.model_dump(mode="json"),
+    }
+    digest = _content_sha256(payload)
+    return SceneSessionHandshakeReceipt(
+        handshake_id=f"scene-handshake-{digest[:12]}",
+        handshake_sha256=digest,
+        action_id=action_id,
+        run_id=state.run_id,
+        source_scene=session.source_scene,
+        scene_package_sha256=session.scene_package_sha256,
+        event_sequence=state.last_sequence,
+        session=session,
+        stage_request=stage_request,
     )
 
 

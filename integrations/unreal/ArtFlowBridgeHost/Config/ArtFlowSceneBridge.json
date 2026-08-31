@@ -1,15 +1,22 @@
 {
   "width": 640,
   "height": 360,
-  "goal": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette.",
+  "goal": "在保持相机构图与受保护灰盒轮廓的前提下，探索雨后清晨的灯光、材质与空间层次。",
+  "artflow_endpoint": "http://127.0.0.1:8796",
+  "session_domains": [
+    "image",
+    "asset",
+    "pcg",
+    "lighting"
+  ],
   "preserve": [
-    "camera framing",
-    "protected blockout silhouette",
-    "ground-plane composition"
+    "相机构图",
+    "受保护灰盒轮廓",
+    "地面空间关系"
   ],
   "prohibit": [
-    "new characters",
-    "logos",
-    "protected geometry redesign"
+    "新增角色",
+    "品牌标识",
+    "重设计受保护几何体"
   ]
 }

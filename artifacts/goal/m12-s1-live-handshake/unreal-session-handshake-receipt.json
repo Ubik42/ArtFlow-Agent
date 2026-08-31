@@ -1,0 +1,153 @@
+{
+	"schema": "artflow-unreal-scene-session-handshake-receipt/1",
+	"success": true,
+	"endpoint_origin": "http://127.0.0.1:18877",
+	"archive_sha256": "1d00b61e385de0cbc842a7be8999e59cabeb87f75bf0b87df83269eba812914a",
+	"source_scene": "/Game/ArtFlowDemo",
+	"source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_level_unchanged": true,
+	"received_at": "2026-08-31T01:27:45.286Z",
+	"artflow_receipt":
+	{
+		"schema_id": "artflow-scene-session-handshake/1",
+		"handshake_id": "scene-handshake-63b822132bf3",
+		"handshake_sha256": "63b822132bf3bfb745e985ad3c5fc6af43bdb395eebcabd2b23f0e38a5cc84dd",
+		"action_id": "ue-handshake-1d00b61e385de0cbc842a7be",
+		"run_id": "unreal-artflow-ue-1f6cf1c04e5e72238f520b8f23351196-1d00b61e385d",
+		"source_scene": "/Game/ArtFlowDemo",
+		"scene_package_sha256": "1d00b61e385de0cbc842a7be8999e59cabeb87f75bf0b87df83269eba812914a",
+		"event_sequence": 3,
+		"session":
+		{
+			"schema_id": "artflow-scene-session/1",
+			"session_id": "scene-session-e5857bc3d123",
+			"session_sha256": "e5857bc3d1238eb969e884c9d23694c2ba2b0b1be81550453a2c9344e1a7b15a",
+			"strategy_version": "scene-session-strategy/1",
+			"run_id": "unreal-artflow-ue-1f6cf1c04e5e72238f520b8f23351196-1d00b61e385d",
+			"source_scene": "/Game/ArtFlowDemo",
+			"scene_package_sha256": "1d00b61e385de0cbc842a7be8999e59cabeb87f75bf0b87df83269eba812914a",
+			"start_action_id": "ue-handshake-1d00b61e385de0cbc842a7be",
+			"supersedes_session_id": null,
+			"draft":
+			{
+				"schema_id": "artflow-scene-session-draft/1",
+				"draft_id": "scene-draft-e163eefb7b8f",
+				"draft_sha256": "e163eefb7b8ff502aa730bb255dba660d9bdad097984ca30e6c04b96b8f23735",
+				"run_id": "unreal-artflow-ue-1f6cf1c04e5e72238f520b8f23351196-1d00b61e385d",
+				"basis_sequence": 2,
+				"source_scene": "/Game/ArtFlowDemo",
+				"scene_package_sha256": "1d00b61e385de0cbc842a7be8999e59cabeb87f75bf0b87df83269eba812914a",
+				"capability_environment_sha256s": [],
+				"intent": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette.",
+				"preserve": [
+					"camera framing",
+					"protected blockout silhouette",
+					"ground-plane composition"
+				],
+				"prohibit": [
+					"new characters",
+					"logos",
+					"protected geometry redesign"
+				],
+				"nodes": [
+					{
+						"domain": "image",
+						"label": "视觉参考",
+						"readiness": "ready",
+						"action": "生成保持相机与主体关系的视觉方向",
+						"reason": "Scene Package 已绑定 Beauty、Depth、Normal 与 Object ID。",
+						"verification": "画幅、相机代理指标与受保护区域检查",
+						"depends_on": []
+					},
+					{
+						"domain": "asset",
+						"label": "三维资产",
+						"readiness": "experimental",
+						"action": "优先复用项目资产，必要时生成 GLB 候选",
+						"reason": "图生 3D 已接入候选路径，但仍定位为实验性几何草案。",
+						"verification": "许可证、外部 URI、比例、面数、材质、碰撞与命名空间",
+						"depends_on": [
+							"image"
+						]
+					},
+					{
+						"domain": "pcg",
+						"label": "空间布局",
+						"readiness": "ready",
+						"action": "通过固定 PCG 图布置项目资产",
+						"reason": "Scene Digital Twin 可提供边界与保护对象事实。",
+						"verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+						"depends_on": [
+							"asset"
+						]
+					},
+					{
+						"domain": "lighting",
+						"label": "灯光",
+						"readiness": "ready",
+						"action": "在候选关卡调整强度、色温与方向",
+						"reason": "Scene Digital Twin 可提供灯光身份与相机事实。",
+						"verification": "参数范围、源关卡指纹与同机位亮度回渲",
+						"depends_on": []
+					}
+				],
+				"ready_domain_count": 3,
+				"guarded_domain_count": 0,
+				"experimental_domain_count": 1,
+				"can_stage": true,
+				"next_action": "创建隔离候选关卡并执行已接入领域"
+			}
+		},
+		"stage_request":
+		{
+			"schema_id": "artflow-scene-stage-request/1",
+			"request_id": "stage-request-a9df851fc1f2",
+			"request_sha256": "a9df851fc1f26d2b5c8e563c85145137bbd10f7a160e826b6334a2be35645c63",
+			"idempotency_key": "scene-stage:a9df851fc1f26d2b5c8e563c85145137bbd10f7a160e826b6334a2be35645c63",
+			"run_id": "unreal-artflow-ue-1f6cf1c04e5e72238f520b8f23351196-1d00b61e385d",
+			"basis_sequence": 3,
+			"session_id": "scene-session-e5857bc3d123",
+			"session_sha256": "e5857bc3d1238eb969e884c9d23694c2ba2b0b1be81550453a2c9344e1a7b15a",
+			"draft_sha256": "e163eefb7b8ff502aa730bb255dba660d9bdad097984ca30e6c04b96b8f23735",
+			"scene_package_sha256": "1d00b61e385de0cbc842a7be8999e59cabeb87f75bf0b87df83269eba812914a",
+			"strategy_version": "scene-session-strategy/1",
+			"source_scene": "/Game/ArtFlowDemo",
+			"candidate_destination": "/Game/ArtFlow/Sessions/AF_e5857bc3d123/Candidates/C_a9df851fc1f2",
+			"operations": [
+				{
+					"domain": "image",
+					"readiness": "ready",
+					"action": "生成保持相机与主体关系的视觉方向",
+					"verification": "画幅、相机代理指标与受保护区域检查",
+					"depends_on": []
+				},
+				{
+					"domain": "asset",
+					"readiness": "experimental",
+					"action": "优先复用项目资产，必要时生成 GLB 候选",
+					"verification": "许可证、外部 URI、比例、面数、材质、碰撞与命名空间",
+					"depends_on": [
+						"image"
+					]
+				},
+				{
+					"domain": "pcg",
+					"readiness": "ready",
+					"action": "通过固定 PCG 图布置项目资产",
+					"verification": "实例数量、保护区侵入、依赖图指纹与重复执行",
+					"depends_on": [
+						"asset"
+					]
+				},
+				{
+					"domain": "lighting",
+					"readiness": "ready",
+					"action": "在候选关卡调整强度、色温与方向",
+					"verification": "参数范围、源关卡指纹与同机位亮度回渲",
+					"depends_on": []
+				}
+			]
+		}
+	}
+}

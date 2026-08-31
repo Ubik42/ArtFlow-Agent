@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M12-S1",
+  "status": "completed",
+  "outcome": "A project-owned UE 5.8 editor now exports the active saved level, performs an explicit loopback-only typed Scene Session handshake, validates and persists a source-, package-, run-, Session-, draft-, strategy- and stage-request-bound receipt, and proves the source map stays byte-identical; replaying the same real request leaves exactly one Session event and performs no candidate operation.",
+  "evidence": [
+    "docs/evidence/M12_S1_UNREAL_SCENE_SESSION_HANDSHAKE_2026-08-30.md",
+    "artifacts/goal/m12-s1-live-handshake/unreal-session-handshake-receipt.json",
+    "artifacts/goal/m12-s1-live-handshake/replay-summary.json",
+    "artifacts/goal/m12-s1-live-handshake/unreal-editor-scene-session-cn.png"
+  ]
+}

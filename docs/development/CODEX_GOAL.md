@@ -6,9 +6,10 @@ ArtFlow 是 **Unreal 原生的二维视觉意图到可验证三维场景变更 A
 技术底座进入产品化阶段：把只读案例与证据界面推进为真正可操作的实时 Scene Session，让用户
 从引擎场景发起任务，编排受限管线，并在候选关卡完成执行、评价、纠正和发布。
 
-M0–M10 已建立持久事件、类型化工具、真实 Unreal Scene Digital Twin、ComfyUI PBR、四域 Scene
-Delta、失败域纠正、MCP 边界、实验图生 3D 和第一版中文作品集证据。这些能力作为稳定底座保留，
-后续不重复造轮子，也不再以历史审批/证据控制台作为产品主叙事。
+M0–M11 已建立持久事件、类型化工具、真实 Unreal Scene Digital Twin、ComfyUI PBR、四域 Scene
+Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session 和“场景变更谱”。M12-S1 已完成
+真实 UE 5.8 编辑器到本地 Agent 的 Scene Session 握手，并证明源关卡字节不变。这些能力作为稳定
+底座保留，后续不重复造轮子，也不再以历史审批/证据控制台作为产品主叙事。
 
 ## 产品闭环
 
@@ -25,9 +26,8 @@ Unreal 当前场景
 
 ## 阶段路线
 
-- **M11 · Live Scene Session and Scene Change Spectrum**：把真实场景、意图和域选择编译成确定性、
-  内容寻址的只读草案，并形成 ArtFlow 自有的“场景变更谱”交互语言；随后持久化 Session 并生成
-  候选暂存请求。
+- **M11 · Live Scene Session and Scene Change Spectrum（已完成）**：真实场景、意图和域选择已经能
+  编译为确定性内容寻址草案，持久 Session 与候选暂存请求已进入“场景变更谱”。
 - **M12 · Unreal editor session bridge and candidate execution**：从 UE 编辑器发起 Session，在项目
   自有候选关卡执行注册工具、回渲并对账，证明重启与重试没有重复副作用。
 - **M13 · Cross-pipeline transformation and correction**：将审阅过的 ComfyUI、GPT Image 2 开发编排、
