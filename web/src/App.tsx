@@ -509,6 +509,7 @@ type AgentProjection = {
   scene_session: SceneSession | null;
   scene_candidate_work: SceneCandidateWorkState | null;
   scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
+  scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
   scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
@@ -609,6 +610,30 @@ type CurrentCandidateEvaluationRecord = {
     failed_domains: SceneDomain[];
     checks: Array<{
       check_id: string;
+      domain: SceneDomain;
+      status: "passed" | "failed";
+      reason: string;
+    }>;
+  };
+};
+type CurrentCandidateDomainVerdictRecord = {
+  technical_intake_sha256: string;
+  visual_observation: {
+    observation_id: string;
+    observation_sha256: string;
+    claims: Array<{
+      dimension: string;
+      verdict: "passed" | "failed" | "uncertain";
+      confidence: number;
+      rationale: string;
+    }>;
+  };
+  domain_evaluation: {
+    evaluation_id: string;
+    evaluation_sha256: string;
+    status: "accepted" | "correction_required";
+    failed_domains: SceneDomain[];
+    findings: Array<{
       domain: SceneDomain;
       status: "passed" | "failed";
       reason: string;
@@ -1335,6 +1360,7 @@ function SceneChangeSpectrum({
 
   const work = agent.scene_candidate_work;
   const intake = agent.scene_candidate_intake;
+  const visualVerdict = agent.scene_candidate_visual_verdict;
   const workLabels: Record<SceneCandidateWorkState["status"], string> = {
     queued: "等待 Unreal 领取",
     claimed: "Unreal 已领取",
@@ -1421,7 +1447,11 @@ function SceneChangeSpectrum({
             <div>
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
-                {intake
+                {visualVerdict
+                  ? visualVerdict.domain_evaluation.status === "accepted"
+                    ? "当前候选已通过技术与视觉评价"
+                    : `只需修正：${visualVerdict.domain_evaluation.failed_domains.join("、")}`
+                  : intake
                   ? intake.technical_evaluation.status === "eligible_for_visual_review"
                     ? "当前候选已通过六项技术审查"
                     : `技术审查拒绝：${intake.technical_evaluation.failed_domains.join("、")}`
@@ -1444,7 +1474,19 @@ function SceneChangeSpectrum({
             </code>
             <div className="spectrum-actions">
               {work ? (
-                intake ? (
+                visualVerdict ? (
+                  <div className={`candidate-work-pulse state-${visualVerdict.domain_evaluation.status === "accepted" ? "succeeded" : "failed"}`}>
+                    <span />
+                    <b>{visualVerdict.domain_evaluation.status === "accepted" ? "候选评价通过" : "视觉方向需要单域修正"}</b>
+                    <small>
+                      {visualVerdict.domain_evaluation.findings.filter((finding) => finding.status === "passed").length}
+                      /{visualVerdict.domain_evaluation.findings.length} 域通过
+                      {visualVerdict.domain_evaluation.failed_domains.length > 0
+                        ? ` · ${visualVerdict.domain_evaluation.failed_domains.join("、")}`
+                        : ""}
+                    </small>
+                  </div>
+                ) : intake ? (
                   <div className={`candidate-work-pulse state-${intake.technical_evaluation.status === "eligible_for_visual_review" ? "succeeded" : "failed"}`}>
                     <span />
                     <b>{intake.technical_evaluation.status === "eligible_for_visual_review" ? "技术审查通过，等待视觉评价" : "技术审查未通过"}</b>
@@ -1486,9 +1528,14 @@ function SceneChangeSpectrum({
 
 function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const liveLineage = agent.scene_variant_lineage;
+  const hasCurrentLifecycle = Boolean(
+    agent.scene_candidate_work ||
+    agent.scene_candidate_intake ||
+    agent.scene_candidate_visual_verdict,
+  );
   const [fallbackLineage, setFallbackLineage] = useState<SceneVariantLineage | null>(null);
   useEffect(() => {
-    if (liveLineage) {
+    if (liveLineage || hasCurrentLifecycle) {
       setFallbackLineage(null);
       return;
     }
@@ -1503,26 +1550,51 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     return () => {
       active = false;
     };
-  }, [liveLineage]);
+  }, [hasCurrentLifecycle, liveLineage]);
   const lineage = liveLineage ?? fallbackLineage;
   const lineageSource = liveLineage ? "当前 Scene Session" : "作品演示数据";
+  const currentVerdict = agent.scene_candidate_visual_verdict?.domain_evaluation;
+  const currentDomains = currentVerdict
+    ? currentVerdict.findings.map((finding) => {
+        const label: Record<SceneDomain, string> = {
+          image: "图像",
+          material: "材质",
+          asset: "资产",
+          pcg: "PCG",
+          lighting: "灯光",
+        };
+        return `${label[finding.domain]}·${finding.status === "passed" ? "通过" : "待修正"}`;
+      })
+    : ["图像·待评价", "PCG·已执行", "灯光·待评价"];
+  const currentInput = agent.scene_candidate_intake?.evaluation_input;
   const cases = [
     {
       id: "rain-wet-courtyard",
-      tab: "雨后庭院 · 全管线",
-      title: "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
-      description: "Agent 读取 Unreal 场景包，将雨后湿润方向编译成五类受限工具调用。ComfyUI 负责 PBR 技术图，项目资产和 PCG 完成空间铺陈，所有写入只发生在隔离候选关卡。",
-      frames: [
-        { src: "/api/showcase/production/m13-rain-source", alt: "Unreal 灰盒源场景", label: "源场景", title: "相机、灰盒与保护区已锁定" },
-        { src: "/api/showcase/production/m13-rain-candidate", alt: "雨后湿润庭院 Unreal 候选", label: "UE 候选", title: "PBR · 项目资产 · PCG · 灯光" },
-      ],
-      transition: "类型化 Scene Delta",
-      metricA: "12",
+      tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
+      title: hasCurrentLifecycle
+        ? "当前 Unreal 候选正在沿失败域收敛"
+        : "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
+      description: hasCurrentLifecycle
+        ? "源场景、候选回渲、技术审查与视觉裁决来自同一个 Scene Session。当前空间布局已经通过，雨后清晨的光照方向仍需一次有界修正。"
+        : "Agent 读取 Unreal 场景包，将雨后湿润方向编译成五类受限工具调用。ComfyUI 负责 PBR 技术图，项目资产和 PCG 完成空间铺陈，所有写入只发生在隔离候选关卡。",
+      frames: hasCurrentLifecycle
+        ? [
+            { src: `/api/agent/runs/${agent.run_id}/scene/passes/beauty`, alt: "当前 Scene Session 的 Unreal 源场景", label: "当前源场景", title: "相机、灰盒与保护区已锁定" },
+            { src: `/api/agent/runs/${agent.run_id}/scene-candidate-work/beauty`, alt: "当前 Scene Session 的 Unreal 候选回渲", label: "当前候选", title: currentVerdict?.status === "correction_required" ? "PCG 通过 · 灯光待修正" : "当前候选回渲" },
+          ]
+        : [
+            { src: "/api/showcase/production/m13-rain-source", alt: "Unreal 灰盒源场景", label: "源场景", title: "相机、灰盒与保护区已锁定" },
+            { src: "/api/showcase/production/m13-rain-candidate", alt: "雨后湿润庭院 Unreal 候选", label: "UE 候选", title: "PBR · 项目资产 · PCG · 灯光" },
+          ],
+      transition: hasCurrentLifecycle ? "当前 Scene Delta" : "类型化 Scene Delta",
+      metricA: String(currentInput?.generated_instance_count ?? 12),
       metricALabel: "确定性 PCG 实例",
       metricB: "0",
       metricBLabel: "源关卡改写",
-      note: "真实 UE 5.8 回执；新进程对账时不会重复调用 Provider 或重新导入。",
-      domains: ["图像·参考", "材质·通过", "资产·通过", "PCG·通过", "灯光·通过"],
+      note: hasCurrentLifecycle
+        ? "当前 UE 5.8 回执与视觉观察已进入同一事件流；下一步只生成灯光域补丁。"
+        : "真实 UE 5.8 回执；新进程对账时不会重复调用 Provider 或重新导入。",
+      domains: hasCurrentLifecycle ? currentDomains : ["图像·参考", "材质·通过", "资产·通过", "PCG·通过", "灯光·通过"],
     },
     {
       id: "sunlit-overgrown",
@@ -1542,8 +1614,8 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       note: "四个成功域的证据哈希在修正前后完全一致；源 ArtFlowDemo 哈希保持不变。",
       domains: ["图像·保留", "材质·保留", "资产·保留", "PCG·保留", "灯光·已纠正"],
     },
-  ] as const;
-  const [caseId, setCaseId] = useState<(typeof cases)[number]["id"]>("rain-wet-courtyard");
+  ];
+  const [caseId, setCaseId] = useState("rain-wet-courtyard");
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },
@@ -1581,9 +1653,13 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
         </div>
       </div>
 
-      <div className="domain-ledger" aria-label="本次 Scene Delta 领域状态">
+      <div
+        className="domain-ledger"
+        aria-label="本次 Scene Delta 领域状态"
+        style={{ gridTemplateColumns: `repeat(${activeCase.domains.length}, minmax(0, 1fr))` }}
+      >
         {activeCase.domains.map((item, index) => (
-          <span key={item} className={item.includes("纠正") ? "corrected" : "passed"}>
+          <span key={item} className={item.includes("纠正") ? "corrected" : item.includes("待") ? "failed" : "passed"}>
             <b>{String(index + 1).padStart(2, "0")}</b>{item}
           </span>
         ))}

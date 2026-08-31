@@ -1,0 +1,28 @@
+{
+  "schema_id": "artflow-m20-s2-verification/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "observation_sha256": "39c343b263491f2e27a77d1886eca85738780c76b79d365973df025967f19eb1",
+  "evaluation_sha256": "d6698ca7471a7df202462422e9fffffda1e9725ad368bbfc7141d6911e2f6294",
+  "event_count_after_append": 10,
+  "domain_status": {
+    "image": "passed",
+    "pcg": "passed",
+    "lighting": "failed"
+  },
+  "failed_domains": ["lighting"],
+  "historical_lifecycle_loaded": false,
+  "rejected_technical_intake_can_enter_visual_scoring": false,
+  "desktop": {
+    "size": [1600, 1000],
+    "sha256": "313d08ad9336037056dcb36c4549fda426c96e668cdfb672ed3c88ec43831f39"
+  },
+  "narrow": {
+    "size": [720, 1200],
+    "sha256": "9340fabd9062c350d166f5178b9befe38ecae7081c594d044e63e76974378313"
+  },
+  "broken_images": 0,
+  "browser_console_errors": 0,
+  "horizontal_overflow": 0,
+  "focused_tests": "6 passed",
+  "frontend_build": "passed"
+}

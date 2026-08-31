@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M20-S2",
+  "status": "completed",
+  "outcome": "The exact current source and Unreal candidate images were independently observed under a hashed five-dimension rubric. Hard-gate aggregation preserved image and PCG, marked only lighting for correction, appended event 10 idempotently, and replaced the live workspace's contradictory frozen-case status with current Session media and findings.",
+  "evidence": [
+    "artifacts/goal/m20-s2-current-visual/verification.json",
+    "artifacts/goal/m20-s2-current-visual/live-visual-verdict-desktop.png",
+    "artifacts/goal/m20-s2-current-visual/live-visual-verdict-narrow.png",
+    "docs/evidence/M20_S2_CURRENT_VISUAL_VERDICT_2026-08-30.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

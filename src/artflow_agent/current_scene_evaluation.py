@@ -312,6 +312,34 @@ def evaluate_current_candidate(
     )
 
 
+def resolve_current_candidate_beauty(project_root: Path, state: AgentRunState) -> Path:
+    intake = state.scene_candidate_intake
+    if intake is None:
+        raise ValueError("current candidate beauty requires persisted technical intake")
+    root = project_root.resolve()
+    receipt_path = (root / intake.evaluation_input.registered_receipt).resolve()
+    try:
+        receipt_path.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("registered Unreal receipt escaped the project root") from exc
+    if not receipt_path.is_file() or file_sha256(receipt_path) != intake.evaluation_input.outcome_sha256:
+        raise ValueError("registered Unreal receipt no longer matches current intake")
+    receipt = UnrealCandidateExecutionReceipt.model_validate_json(
+        receipt_path.read_text(encoding="utf-8-sig")
+    )
+    candidate = Path(receipt.candidate_beauty_path).resolve()
+    try:
+        candidate.relative_to(receipt_path.parent.resolve())
+    except ValueError as exc:
+        raise ValueError("registered candidate rerender escaped its work directory") from exc
+    if (
+        not candidate.is_file()
+        or file_sha256(candidate) != intake.evaluation_input.candidate_beauty_sha256
+    ):
+        raise ValueError("registered candidate rerender no longer matches current intake")
+    return candidate
+
+
 def canonical_sha256(payload: object) -> str:
     return hashlib.sha256(
         json.dumps(

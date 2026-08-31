@@ -9,6 +9,7 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from artflow_agent.agent_runtime import AgentEventStore
+from artflow_agent.current_visual_critic import seal_visual_observation
 from artflow_agent.web_api import create_app
 
 RUN_ID = "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3"
@@ -138,3 +139,92 @@ def test_current_candidate_intake_rejects_failed_pcg_budget_without_visual_overr
     assert evaluation["failed_domains"] == ["pcg"]
     budget = next(check for check in evaluation["checks"] if check["check_id"] == "instance_budget")
     assert budget["status"] == "failed"
+
+
+def _lighting_failure_observation(intake: dict[str, object]) -> dict[str, object]:
+    evaluation_input = intake["evaluation_input"]
+    assert isinstance(evaluation_input, dict)
+    observation = seal_visual_observation(
+        {
+            "input_sha256": evaluation_input["input_sha256"],
+            "source_beauty_sha256": evaluation_input["source_beauty_sha256"],
+            "candidate_beauty_sha256": evaluation_input["candidate_beauty_sha256"],
+            "claims": [
+                {
+                    "dimension": "camera_composition",
+                    "verdict": "passed",
+                    "confidence": 0.99,
+                    "rationale": "源图与候选保持相同机位、画幅和主体占位。",
+                },
+                {
+                    "dimension": "protected_structure",
+                    "verdict": "passed",
+                    "confidence": 0.98,
+                    "rationale": "灰盒立方体、球体与右侧墙体轮廓保持一致。",
+                },
+                {
+                    "dimension": "spatial_readability",
+                    "verdict": "passed",
+                    "confidence": 0.94,
+                    "rationale": "新增锥体形成可读的前中景分布且没有遮挡主体。",
+                },
+                {
+                    "dimension": "lighting_direction",
+                    "verdict": "failed",
+                    "confidence": 0.96,
+                    "rationale": "画面仍接近默认日照，未形成雨后清晨的冷湿空气与层次。",
+                },
+                {
+                    "dimension": "visual_coherence",
+                    "verdict": "passed",
+                    "confidence": 0.9,
+                    "rationale": "新增空间元素与原灰盒尺度关系一致，整体没有视觉冲突。",
+                },
+            ],
+            "recommended_failed_domains": ["lighting"],
+        }
+    )
+    return observation.model_dump(mode="json")
+
+
+def test_current_visual_observation_produces_only_lighting_failure_and_replays(
+    tmp_path: Path,
+) -> None:
+    client, database, _ = _succeeded_work(tmp_path)
+    base = f"/api/agent/runs/{RUN_ID}/scene-candidate-work"
+    intake_response = client.post(f"{base}/evaluate")
+    assert intake_response.status_code == 200
+    payload = _lighting_failure_observation(
+        intake_response.json()["scene_candidate_intake"]
+    )
+
+    first = client.post(f"{base}/visual-observation", json=payload)
+    replay = client.post(f"{base}/visual-observation", json=payload)
+    assert first.status_code == replay.status_code == 200
+    verdict = first.json()["scene_candidate_visual_verdict"]
+    assert verdict == replay.json()["scene_candidate_visual_verdict"]
+    assert verdict["domain_evaluation"]["status"] == "correction_required"
+    assert verdict["domain_evaluation"]["failed_domains"] == ["lighting"]
+    candidate_beauty = client.get(f"{base}/beauty")
+    assert candidate_beauty.status_code == 200
+    assert hashlib.sha256(candidate_beauty.content).hexdigest() == verdict[
+        "visual_observation"
+    ]["candidate_beauty_sha256"]
+    assert len(AgentEventStore(database).events(RUN_ID)) == 10
+    restored = AgentEventStore(database).load(RUN_ID).scene_candidate_visual_verdict
+    assert restored is not None
+    assert restored.domain_evaluation.failed_domains == ["lighting"]
+
+
+def test_visual_observation_cannot_override_rejected_technical_intake(
+    tmp_path: Path,
+) -> None:
+    client, _, _ = _succeeded_work(tmp_path, generated_instance_count=999)
+    base = f"/api/agent/runs/{RUN_ID}/scene-candidate-work"
+    intake_response = client.post(f"{base}/evaluate")
+    payload = _lighting_failure_observation(
+        intake_response.json()["scene_candidate_intake"]
+    )
+    response = client.post(f"{base}/visual-observation", json=payload)
+    assert response.status_code == 409
+    assert "rejected technical intake" in response.json()["detail"]

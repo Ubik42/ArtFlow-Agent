@@ -22,6 +22,7 @@ from .comparison import (
 )
 from .contracts import CodexImageCandidateRecord
 from .current_scene_evaluation import CurrentCandidateEvaluationRecord
+from .current_visual_critic import CurrentCandidateDomainVerdictRecord
 from .harness_contracts import HarnessScorecard
 from .multimodal_critic import MultimodalTribunalReport
 from .negative_control import NegativeControlRecord
@@ -100,6 +101,7 @@ class AgentRunProjection(BaseModel):
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
+    scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -128,6 +130,7 @@ class AgentStreamSnapshot(BaseModel):
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
+    scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -266,6 +269,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
         scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
         scene_candidate_work=state.scene_candidate_work,
         scene_candidate_intake=state.scene_candidate_intake,
+        scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
         scene_variant_lineage=(
             state.scene_variant_review.lineage if state.scene_variant_review else None
         ),
@@ -315,6 +319,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
             scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
             scene_candidate_work=state.scene_candidate_work,
             scene_candidate_intake=state.scene_candidate_intake,
+            scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
             scene_variant_lineage=(
                 state.scene_variant_review.lineage if state.scene_variant_review else None
             ),
@@ -468,6 +473,11 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "当前候选已通过技术审查",
             "工作回执、源关卡不变量、PCG 预算与同机位回渲已绑定到当前 Session",
             "success",
+        ),
+        "scene_candidate_visual_evaluated": (
+            "当前候选已完成视觉裁决",
+            "独立视觉观察与技术审查已按硬失败优先级聚合为领域结果",
+            "warning",
         ),
         "scene_candidate_evaluated": (
             "场景候选已评价",

@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow Scene Lab：Unreal 已完成当前候选工作项](artifacts/goal/m19-s1-candidate-work/live-candidate-work-desktop.png)
+![ArtFlow 场景导演台：当前 Unreal 候选仅需修正灯光域](artifacts/goal/m20-s2-current-visual/live-visual-verdict-desktop.png)
 
 ## 项目定位
 
@@ -137,6 +137,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 生命周期回调路径输入 | 0 个调用方路径字段；未知身份与乱序转换关闭失败 |
 | 当前候选工作项 | 排队 / 领取 / 执行 / 对账 / 成功，8 条持久事件 |
 | UE 候选执行结果 | 12 个 PCG 实例，源关卡字节变化 0 |
+| 当前候选技术审查 | 6 / 6；回执、源关卡、命名空间、PCG 预算与同机位回渲 |
+| 当前候选视觉裁决 | image、PCG 通过；lighting 进入单域修正 |
 | 候选工作项写入者 | 1 个；第二写入者与非法状态跳转关闭失败 |
 | 陈旧候选请求拦截 | 1 / 1 |
 | UE 原生 Scene Session 握手 | 1 次真实 UE 5.8 运行，源关卡哈希不变 |

@@ -36,7 +36,14 @@ from .comparison import (
     ComparisonAuthorizationDecision,
     ProviderComparisonPlan,
 )
-from .current_scene_evaluation import evaluate_current_candidate
+from .current_scene_evaluation import (
+    evaluate_current_candidate,
+    resolve_current_candidate_beauty,
+)
+from .current_visual_critic import (
+    CurrentCandidateVisualObservation,
+    compile_current_domain_verdict,
+)
 from .providers import ComfyRecipeProvider
 from .recipes import RecipeCatalog
 from .review import create_contact_sheet
@@ -448,6 +455,46 @@ def create_app(
                 action_id=f"current-intake-{record.technical_evaluation.evaluation_sha256[:16]}",
             )
             return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-candidate-work/visual-observation",
+        response_model=AgentRunProjection,
+    )
+    def record_scene_candidate_visual_observation(
+        run_id: str,
+        payload: CurrentCandidateVisualObservation,
+        request: Request,
+    ):
+        _require_loopback(request, "当前候选视觉观察仅允许本机 Agent 回传")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_candidate_visual_verdict is not None:
+                if state.scene_candidate_visual_verdict.visual_observation != payload:
+                    raise AgentRuntimeError(
+                        "current candidate already has a different visual observation"
+                    )
+                return project_agent_run(agent_store, run_id)
+            record = compile_current_domain_verdict(state, payload)
+            agent_store.record_current_candidate_visual_verdict(
+                run_id,
+                record,
+                action_id=f"current-visual-{payload.observation_sha256[:16]}",
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.get("/api/agent/runs/{run_id}/scene-candidate-work/beauty")
+    def current_scene_candidate_beauty(run_id: str):
+        try:
+            path = resolve_current_candidate_beauty(
+                resolved_project_root, agent_store.load(run_id)
+            )
+            return FileResponse(path, media_type="image/png")
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc

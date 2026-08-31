@@ -4233,6 +4233,19 @@ button:focus-visible {
   background: #f1a84e;
   box-shadow: 0 0 10px rgba(241, 168, 78, .4);
 }
+.domain-ledger .failed {
+  color: #ff9a8f;
+  background: #1a1011;
+}
+.domain-ledger .failed:after {
+  width: 5px;
+  height: 5px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: #ff6f66;
+  box-shadow: 0 0 10px rgba(255, 111, 102, .45);
+  content: "";
+}
 .variant-lineage {
   --film-cyan: #76d7e6;
   --film-amber: #f2b65c;

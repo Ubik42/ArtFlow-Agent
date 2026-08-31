@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 56,
+  "stateRevision": 57,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -233,33 +233,33 @@
     }
   ],
   "nextSlice": {
-    "id": "M20-S2",
+    "id": "M20-S3",
     "milestone": "M20",
-    "title": "Current-session visual critic and domain verdict",
-    "outcome": "Evaluate the exact current candidate rerender against the current Scene Package beauty pass, combine a typed Codex-native visual observation with the persisted technical intake under hard-gate precedence, and append one current SceneCandidateDomainEvaluation without reading the frozen M13-M16 lifecycle.",
+    "title": "Failed-lighting correction work",
+    "outcome": "Compile the current lighting-only failure into one content-bound correction plan, preserve the accepted image and PCG evidence byte-for-byte, let Unreal claim and apply only the registered lighting patch to the existing candidate, and return a corrected same-camera rerender for reevaluation.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not add providers, rerun GPT Image or ComfyUI, or redesign the Scene Session planner",
-      "Do not create a second evaluator state store, workflow engine, event bus or generic job platform",
-      "Do not adopt, publish or compile correction work in this slice",
-      "Do not let the visual critic override a failed technical check or accept caller artifact paths",
-      "Do not spend time on broad model benchmarks, browser matrices or unrelated visual redesign"
+      "Do not rerun image generation, material, asset or PCG branches",
+      "Do not create a generic repair workflow, second event store or arbitrary Unreal patch surface",
+      "Do not adopt or publish before the corrected candidate passes reevaluation",
+      "Do not allow a caller to supply a candidate path, Unreal property name or arbitrary correction schema",
+      "Do not spend time on broad benchmarks, provider additions or unrelated interface redesign"
     ],
     "acceptance": [
-      "Source and candidate images resolve from the persisted current intake and registered Scene Package and Unreal receipt rather than caller paths",
-      "A typed visual observation cites exact source, candidate and rubric hashes and remains distinct from the technical judge",
-      "Aggregation produces per-domain findings with deterministic failure precedence and cannot mutate or adopt the candidate",
-      "The current domain evaluation appends idempotently and reducer replay reconstructs the same verdict",
-      "The normal evaluator imports no M13-M16 fixed evaluation record or showcase lineage"
+      "The correction plan derives only from the current persisted lighting failure and exact candidate identity",
+      "Passed image and PCG evidence hashes are sealed as preserved and their branches are not re-executed",
+      "One Unreal writer claims the correction and applies only registered intensity and temperature fields to the existing candidate",
+      "The corrected host receipt binds before and after lighting facts, unchanged source level, unchanged PCG instance count and a new rerender hash",
+      "Retry and restart reconcile the same correction without duplicate Actor, instance, asset or provider side effects"
     ],
     "stopConditions": [
-      "Stop if either image cannot be resolved by current content identity",
-      "Stop if the visual observation cannot cite the exact current input and rubric",
-      "Stop if a visual score would override a deterministic scene or receipt failure",
-      "Stop if the normal path reads a fixed M13-M16 evaluation artifact",
+      "Stop if the current verdict contains any failed domain other than lighting",
+      "Stop if preserved evidence cannot be bound before Unreal mutation",
+      "Stop if the correction requires a caller path, arbitrary property or model-generated host code",
+      "Stop if UE cannot distinguish a missing receipt from unknown completion without resubmission",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -281,9 +281,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0051.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0052.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M19 and M20-S1 are complete. The current succeeded Unreal work now resolves its only admissible evaluation input from the work definition, outcome hash and project-registered candidate receipt. Six deterministic checks bind receipt identity, source invariants, candidate namespace, PCG instance budget and same-camera rerender dimensions/content to the current Session. The real UE 5.8.1 M19 result passed 6/6 checks and appended event 9 idempotently; reducer restart restored the identical record. A 999-instance negative case is rejected in the PCG domain before visual scoring. The normal path reads no M13-M16 evaluation or showcase artifact. Multimodal visual judgment, failed-domain correction, adoption and publish remain M20 work.",
+  "evidenceCeiling": "M0-M19 and M20-S1-S2 are complete. Codex inspected the exact current source Beauty and Unreal candidate rerender identified by the persisted technical intake. A typed five-dimension observation cites source, candidate and rubric hashes; camera composition, protected structure, spatial readability and visual coherence passed, while the rain-after-morning lighting direction failed. Hard-gate aggregation appended event 10 with image and PCG passed and only lighting correction_required. Replay is idempotent, a rejected technical intake cannot enter visual scoring, and the candidate image endpoint accepts no caller path. The live Chinese workspace now shows current source/candidate media and the lighting failure without loading the contradictory frozen M16 lineage; desktop 1600x1000 and narrow 720x1200 have no broken image, console error or horizontal overflow. Correction execution, reevaluation, adoption and publish remain M20 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
