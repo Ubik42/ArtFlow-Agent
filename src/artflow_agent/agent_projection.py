@@ -21,6 +21,7 @@ from .comparison import (
     ProviderComparisonPlan,
 )
 from .contracts import CodexImageCandidateRecord
+from .current_scene_evaluation import CurrentCandidateEvaluationRecord
 from .harness_contracts import HarnessScorecard
 from .multimodal_critic import MultimodalTribunalReport
 from .negative_control import NegativeControlRecord
@@ -98,6 +99,7 @@ class AgentRunProjection(BaseModel):
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
+    scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -125,6 +127,7 @@ class AgentStreamSnapshot(BaseModel):
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
+    scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_variant_lineage: SceneVariantLineage | None = None
 
 
@@ -262,6 +265,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
         ),
         scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
         scene_candidate_work=state.scene_candidate_work,
+        scene_candidate_intake=state.scene_candidate_intake,
         scene_variant_lineage=(
             state.scene_variant_review.lineage if state.scene_variant_review else None
         ),
@@ -310,6 +314,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
             ),
             scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
             scene_candidate_work=state.scene_candidate_work,
+            scene_candidate_intake=state.scene_candidate_intake,
             scene_variant_lineage=(
                 state.scene_variant_review.lineage if state.scene_variant_review else None
             ),
@@ -458,6 +463,11 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "Unreal 候选执行状态已更新",
             "执行、对账与结果继续写入同一 Scene Session 事件流",
             "active",
+        ),
+        "scene_candidate_intake_evaluated": (
+            "当前候选已通过技术审查",
+            "工作回执、源关卡不变量、PCG 预算与同机位回渲已绑定到当前 Session",
+            "success",
         ),
         "scene_candidate_evaluated": (
             "场景候选已评价",

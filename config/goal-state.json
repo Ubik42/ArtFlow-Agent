@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 55,
+  "stateRevision": 56,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -233,33 +233,33 @@
     }
   ],
   "nextSlice": {
-    "id": "M20-S1",
+    "id": "M20-S2",
     "milestone": "M20",
-    "title": "Current candidate evaluation intake",
-    "outcome": "Resolve the current succeeded candidate work and its registered Unreal receipt into a typed evaluation input, run deterministic 3D and image integrity checks against the exact current Scene Session, and append the resulting evaluation through AgentEventStore. Reuse the existing tribunal and correction contracts, but remove the normal-path dependency on frozen M13-M16 evaluation artifacts.",
+    "title": "Current-session visual critic and domain verdict",
+    "outcome": "Evaluate the exact current candidate rerender against the current Scene Package beauty pass, combine a typed Codex-native visual observation with the persisted technical intake under hard-gate precedence, and append one current SceneCandidateDomainEvaluation without reading the frozen M13-M16 lifecycle.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not add new providers, rerun GPT Image or ComfyUI, or redesign the Scene Session planner",
+      "Do not add providers, rerun GPT Image or ComfyUI, or redesign the Scene Session planner",
       "Do not create a second evaluator state store, workflow engine, event bus or generic job platform",
-      "Do not allow the evaluator to select, adopt, publish or override deterministic failures",
-      "Do not generalize receipt intake to caller filesystem paths or arbitrary evaluation schemas",
+      "Do not adopt, publish or compile correction work in this slice",
+      "Do not let the visual critic override a failed technical check or accept caller artifact paths",
       "Do not spend time on broad model benchmarks, browser matrices or unrelated visual redesign"
     ],
     "acceptance": [
-      "Evaluation input resolves only from the current succeeded work definition, outcome hash and registered Unreal receipt",
-      "Deterministic checks verify source invariants, candidate namespace, generated instance budget, receipt identity and same-camera rerender content before visual scoring",
-      "The evaluator returns per-domain pass or fail evidence with exact artifact hashes and cannot mutate or adopt the candidate",
-      "Appending the evaluation is idempotent and reducer replay reconstructs the same current-session result",
-      "No M13-M16 fixed evaluation record or showcase lineage is read on the normal current-session path"
+      "Source and candidate images resolve from the persisted current intake and registered Scene Package and Unreal receipt rather than caller paths",
+      "A typed visual observation cites exact source, candidate and rubric hashes and remains distinct from the technical judge",
+      "Aggregation produces per-domain findings with deterministic failure precedence and cannot mutate or adopt the candidate",
+      "The current domain evaluation appends idempotently and reducer replay reconstructs the same verdict",
+      "The normal evaluator imports no M13-M16 fixed evaluation record or showcase lineage"
     ],
     "stopConditions": [
-      "Stop if evaluation cannot be bound to the current work outcome and Session without inventing identity",
-      "Stop if a visual score would need to override a deterministic scene or receipt failure",
-      "Stop if the normal path still requires a fixed M13-M16 evaluation artifact",
-      "Stop if evaluation replay or future correction evidence cannot remain deterministic and idempotent",
+      "Stop if either image cannot be resolved by current content identity",
+      "Stop if the visual observation cannot cite the exact current input and rubric",
+      "Stop if a visual score would override a deterministic scene or receipt failure",
+      "Stop if the normal path reads a fixed M13-M16 evaluation artifact",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -281,9 +281,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0050.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0051.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M19 are complete. UE 5.8.1 exported the current project-owned ArtFlowDemo into a new Scene Package and Scene Session rather than reusing the M12 fixture. The current Session compiled one content-bound PCG and lighting work item; one Unreal writer claimed it, reported executing and reconciling, generated 12 PCG instances, returned a hashed host receipt and reached succeeded across eight ordered append-only events. The source level hash remained unchanged. A second writer, caller path, illegal transition and non-loopback claim fail closed. Desktop 1600x1000 and narrow 720x1200 captures show the live success pulse with zero horizontal overflow and no browser console error. Current-candidate evaluation still depends on fixed historical M13-M16 artifacts, which M20 replaces.",
+  "evidenceCeiling": "M0-M19 and M20-S1 are complete. The current succeeded Unreal work now resolves its only admissible evaluation input from the work definition, outcome hash and project-registered candidate receipt. Six deterministic checks bind receipt identity, source invariants, candidate namespace, PCG instance budget and same-camera rerender dimensions/content to the current Session. The real UE 5.8.1 M19 result passed 6/6 checks and appended event 9 idempotently; reducer restart restored the identical record. A 999-instance negative case is rejected in the PCG domain before visual scoring. The normal path reads no M13-M16 evaluation or showcase artifact. Multimodal visual judgment, failed-domain correction, adoption and publish remain M20 work.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

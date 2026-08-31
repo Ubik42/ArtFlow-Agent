@@ -1,0 +1,24 @@
+{
+  "schema_id": "artflow-m20-s1-verification/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "work_sha256": "807e766c4393b6850a7308f7a1617d4c586e22b7558915ab3314d81d606c0485",
+  "outcome_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+  "evaluation_sha256": "c14caf81bcd179a6426052e6d5d7a2f5f001a0aa4fce6181de0000e70405ac76",
+  "status": "eligible_for_visual_review",
+  "checks": {
+    "receipt_identity": "passed",
+    "source_invariants": "passed",
+    "candidate_namespace": "passed",
+    "instance_budget": "passed",
+    "same_camera_rerender": "passed",
+    "rerender_content": "passed"
+  },
+  "passed_checks": 6,
+  "total_checks": 6,
+  "event_count_after_append": 9,
+  "generated_instance_count": 12,
+  "historical_evaluation_artifacts_read": 0,
+  "focused_tests": "4 passed",
+  "frontend_build": "passed"
+}

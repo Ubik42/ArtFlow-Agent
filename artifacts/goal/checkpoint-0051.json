@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M20-S1",
+  "status": "completed",
+  "outcome": "The current succeeded Unreal work resolves one typed evaluation input from its registered receipt and passes six deterministic identity, scene, budget and rerender checks before visual scoring. The result appends idempotently to the current Session and survives reducer replay without loading M13-M16 evaluation artifacts.",
+  "evidence": [
+    "artifacts/goal/m20-s1-current-intake/verification.json",
+    "artifacts/goal/m19-s1-candidate-work/host-receipt.json",
+    "docs/evidence/M20_S1_CURRENT_CANDIDATE_INTAKE_2026-08-30.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

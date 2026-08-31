@@ -508,6 +508,7 @@ type AgentProjection = {
   comparison_manifest: ComparisonManifest | null;
   scene_session: SceneSession | null;
   scene_candidate_work: SceneCandidateWorkState | null;
+  scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
   scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
@@ -591,6 +592,28 @@ type SceneCandidateWorkState = {
   worker_id: string | null;
   outcome_sha256: string | null;
   message: string | null;
+};
+type CurrentCandidateEvaluationRecord = {
+  evaluation_input: {
+    input_sha256: string;
+    candidate_scene: string;
+    generated_instance_count: number;
+    maximum_generated_instances: number;
+    candidate_width: number;
+    candidate_height: number;
+  };
+  technical_evaluation: {
+    evaluation_id: string;
+    evaluation_sha256: string;
+    status: "eligible_for_visual_review" | "rejected";
+    failed_domains: SceneDomain[];
+    checks: Array<{
+      check_id: string;
+      domain: SceneDomain;
+      status: "passed" | "failed";
+      reason: string;
+    }>;
+  };
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
@@ -1294,7 +1317,24 @@ function SceneChangeSpectrum({
     }
   }, [agent.run_id, onAgentChange, stageRequest]);
 
+  const evaluateCandidateWork = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-candidate-work/evaluate`,
+        { method: "POST" },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, onAgentChange]);
+
   const work = agent.scene_candidate_work;
+  const intake = agent.scene_candidate_intake;
   const workLabels: Record<SceneCandidateWorkState["status"], string> = {
     queued: "等待 Unreal 领取",
     claimed: "Unreal 已领取",
@@ -1381,7 +1421,11 @@ function SceneChangeSpectrum({
             <div>
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
-                {work
+                {intake
+                  ? intake.technical_evaluation.status === "eligible_for_visual_review"
+                    ? "当前候选已通过六项技术审查"
+                    : `技术审查拒绝：${intake.technical_evaluation.failed_domains.join("、")}`
+                  : work
                   ? workLabels[work.status]
                   : stageRequest
                   ? "候选关卡请求已封存，尚未交给 Unreal 执行"
@@ -1400,11 +1444,23 @@ function SceneChangeSpectrum({
             </code>
             <div className="spectrum-actions">
               {work ? (
-                <div className={`candidate-work-pulse state-${work.status}`}>
-                  <span />
-                  <b>{workLabels[work.status]}</b>
-                  <small>{work.worker_id ? `写入者 ${work.worker_id}` : "已锁定当前 Session 与候选计划"}</small>
-                </div>
+                intake ? (
+                  <div className={`candidate-work-pulse state-${intake.technical_evaluation.status === "eligible_for_visual_review" ? "succeeded" : "failed"}`}>
+                    <span />
+                    <b>{intake.technical_evaluation.status === "eligible_for_visual_review" ? "技术审查通过，等待视觉评价" : "技术审查未通过"}</b>
+                    <small>{intake.technical_evaluation.checks.filter((check) => check.status === "passed").length}/6 项 · PCG {intake.evaluation_input.generated_instance_count}/{intake.evaluation_input.maximum_generated_instances}</small>
+                  </div>
+                ) : work.status === "succeeded" ? (
+                  <button type="button" disabled={busy} onClick={() => void evaluateCandidateWork()}>
+                    <ScanLine size={13} /> 校验当前候选
+                  </button>
+                ) : (
+                  <div className={`candidate-work-pulse state-${work.status}`}>
+                    <span />
+                    <b>{workLabels[work.status]}</b>
+                    <small>{work.worker_id ? `写入者 ${work.worker_id}` : "已锁定当前 Session 与候选计划"}</small>
+                  </div>
+                )
               ) : !isPersisted ? (
                 <button type="button" disabled={busy} onClick={() => void startSession()}>
                   <ArrowUpRight size={13} /> 启动场景任务

@@ -36,16 +36,17 @@ from .comparison import (
     ComparisonAuthorizationDecision,
     ProviderComparisonPlan,
 )
+from .current_scene_evaluation import evaluate_current_candidate
 from .providers import ComfyRecipeProvider
 from .recipes import RecipeCatalog
 from .review import create_contact_sheet
 from .run_store import RunStateError, RunStore
-from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_candidate_work import (
     SceneCandidateWorkClaimRequest,
     SceneCandidateWorkProgressRequest,
     compile_scene_candidate_work,
 )
+from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
     SceneSessionDraft,
     SceneSessionDraftRequest,
@@ -58,13 +59,13 @@ from .scene_session import (
     compile_scene_session_draft,
     compile_scene_stage_request,
 )
-from .scene_variant_review import SceneVariantLineage
 from .scene_variant_lifecycle import (
     SceneVariantLifecycleCallbackRequest,
     load_registered_m16_lifecycle,
     registered_artifact_sha256,
     resolve_registered_lifecycle_record,
 )
+from .scene_variant_review import SceneVariantLineage
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -139,7 +140,9 @@ def create_app(
     agent_database: Path | None = None,
     comfy_url: str = "http://127.0.0.1:8188",
     delivery_artifact_root: Path | None = None,
+    project_root: Path | None = None,
 ) -> FastAPI:
+    resolved_project_root = (project_root or PROJECT_ROOT).resolve()
     resolved_runs = (runs_dir or PROJECT_ROOT / "runs").resolve()
     store = RunStore(resolved_runs)
     resolved_agent_database = (agent_database or resolved_runs / "agent-events.sqlite3").resolve()
@@ -426,6 +429,26 @@ def create_app(
             agent_store.progress_scene_candidate_work(run_id, payload)
             return project_agent_run(agent_store, run_id)
         except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-candidate-work/evaluate",
+        response_model=AgentRunProjection,
+    )
+    def evaluate_scene_candidate_work(run_id: str):
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_candidate_intake is not None:
+                return project_agent_run(agent_store, run_id)
+            record = evaluate_current_candidate(resolved_project_root, state)
+            agent_store.record_current_candidate_intake(
+                run_id,
+                record,
+                action_id=f"current-intake-{record.technical_evaluation.evaluation_sha256[:16]}",
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

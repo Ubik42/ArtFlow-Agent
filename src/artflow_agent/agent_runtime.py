@@ -21,6 +21,7 @@ from .contracts import (
     SceneConstraintPackage,
     SceneDigitalTwin,
 )
+from .current_scene_evaluation import CurrentCandidateEvaluationRecord
 from .harness_contracts import HarnessScorecard
 from .multimodal_critic import MultimodalTribunalReport
 from .negative_control import NegativeControlRecord
@@ -33,12 +34,12 @@ from .production_memory import (
 )
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
-from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
 from .scene_candidate_work import (
     SceneCandidateWorkDefinition,
     SceneCandidateWorkProgressRequest,
     SceneCandidateWorkState,
 )
+from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
 from .scene_session import (
     SceneSession,
     SceneSessionDraft,
@@ -48,10 +49,10 @@ from .scene_session import (
 from .scene_variant_lifecycle import (
     SceneCandidateAdoptionRecord,
     SceneCandidateEvaluationRecord,
-    SceneVariantPublishRecord,
-    SceneVariantReviewRecord,
     SceneVariantLifecycleRecord,
     SceneVariantLifecycleTransition,
+    SceneVariantPublishRecord,
+    SceneVariantReviewRecord,
     validate_session_binding,
 )
 from .scene_variant_review import compile_scene_variant_lineage
@@ -94,6 +95,7 @@ AgentEventType = Literal[
     "scene_candidate_work_queued",
     "scene_candidate_work_claimed",
     "scene_candidate_work_progressed",
+    "scene_candidate_intake_evaluated",
     "scene_candidate_evaluated",
     "scene_candidate_adopted",
     "scene_variant_published",
@@ -227,6 +229,7 @@ class AgentRunState(BaseModel):
     comparison_manifest: dict[str, Any] | None = None
     scene_sessions: list[SceneSession] = Field(default_factory=list)
     scene_candidate_work: SceneCandidateWorkState | None = None
+    scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
     scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
     scene_variant_publication: SceneVariantPublishRecord | None = None
@@ -421,6 +424,10 @@ class _SceneCandidateEvaluated(BaseModel):
     record: SceneCandidateEvaluationRecord
 
 
+class _SceneCandidateIntakeEvaluated(BaseModel):
+    record: CurrentCandidateEvaluationRecord
+
+
 class _SceneCandidateAdopted(BaseModel):
     record: SceneCandidateAdoptionRecord
 
@@ -540,6 +547,21 @@ class AgentEventStore:
             "scene_candidate_evaluated",
             _SceneCandidateEvaluated(record=record).model_dump(mode="json"),
             idempotency_key=f"scene_candidate_evaluated:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_current_candidate_intake(
+        self,
+        run_id: str,
+        record: CurrentCandidateEvaluationRecord,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_intake_evaluated",
+            _SceneCandidateIntakeEvaluated(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_intake_evaluated:{action_id}",
         )
         return self.load(run_id)
 
@@ -1566,6 +1588,7 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
                 raise AgentRuntimeError("scene_session_started duplicates a persisted session")
             state.scene_sessions.append(session)
             state.scene_candidate_work = None
+            state.scene_candidate_intake = None
         elif event.event_type == "scene_candidate_work_queued":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("candidate work requires a current Scene Session")
@@ -1616,6 +1639,26 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             work.status = progress.status
             work.outcome_sha256 = progress.outcome_sha256
             work.message = progress.message
+        elif event.event_type == "scene_candidate_intake_evaluated":
+            work = state.scene_candidate_work
+            if work is None or work.status != "succeeded" or work.outcome_sha256 is None:
+                raise AgentRuntimeError("candidate intake requires succeeded Unreal work")
+            if state.scene_candidate_intake is not None:
+                raise AgentRuntimeError("current candidate intake is already persisted")
+            record = _SceneCandidateIntakeEvaluated.model_validate(event.data).record
+            evaluation_input = record.evaluation_input
+            if (
+                evaluation_input.run_id != state.run_id
+                or evaluation_input.session_sha256 != work.definition.session_sha256
+                or evaluation_input.work_sha256 != work.definition.work_sha256
+                or evaluation_input.outcome_sha256 != work.outcome_sha256
+                or evaluation_input.plan_sha256
+                != work.definition.candidate_plan.plan_sha256
+                or evaluation_input.stage_request_sha256
+                != work.definition.stage_request.request_sha256
+            ):
+                raise AgentRuntimeError("candidate intake references another current work item")
+            state.scene_candidate_intake = record
         elif event.event_type == "scene_candidate_evaluated":
             if state.scene is None or not state.scene_sessions:
                 raise AgentRuntimeError("scene candidate evaluation requires a Scene Session")
