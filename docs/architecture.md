@@ -18,9 +18,10 @@ Unreal Scene Digital Twin + explicit intent
 ```
 
 The append-only Agent event store and reducer own state; Scene Session, MCP and the browser are typed
-projections over that control plane. `scene_session.py` currently provides the first content-addressed,
-side-effect-free interactive draft. Scene staging continues through registered Unreal tools and never
-through browser-authored code.
+projections over that control plane. `scene_session.py` provides content-addressed drafts, persistent
+Session identity and deterministic candidate-stage requests. A stage request is an execution input,
+not a completion receipt; scene writes continue through registered Unreal tools and never through
+browser-authored code.
 
 The original v0 compatibility path remains readable and separates probabilistic decisions from
 deterministic execution:

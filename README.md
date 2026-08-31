@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow 三维场景导演台](docs/assets/showcase/scene-lab-image-to-3d.png)
+![ArtFlow 场景变更谱与候选关卡请求](artifacts/goal/m11-s2-persistent-session-stage-request.png)
 
 ## 项目定位
 
@@ -15,6 +15,12 @@
 - 二维参考图很难直接落实为引擎内可编辑、可复检的三维结果。
 
 ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平面。它读取真实场景事实，将目标编译为类型化 `SceneChangePlan`，只调用经过声明的有限工具，并以独立评价和确定性规则决定后续动作。所有场景写入首先发生在候选关卡，源关卡不会被直接覆盖。
+
+### 从当前 Unreal 场景开始
+
+使用者在“场景变更谱”中描述本轮美术意图，并选择视觉参考、材质、三维资产、空间布局和灯光等允许改变的领域。ArtFlow 根据 Scene Digital Twin 与实际运行时能力标出可执行、待补齐和实验路线；确认后的 Scene Session 进入 append-only 账本，刷新或重启不会丢失。
+
+当所有选定领域满足前置条件时，系统生成一份与场景哈希、Session、策略版本和领域操作严格绑定的候选关卡请求。请求只能指向 ArtFlow 派生的隔离内容目录；截图中的状态表示“请求已封存”，不表示 Unreal 已经完成本次写入。
 
 ## 生产案例
 
@@ -137,6 +143,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 来源文件哈希绑定 | 9 / 9 |
 | 发布包内容寻址验证 | 36 / 36 |
 | Scene Lab 浏览器检查 | 0 溢出、0 控制台错误、0 阻塞弹窗 |
+| Scene Session 重复启动 | 1 个持久事件、0 个重复事件 |
+| 陈旧候选请求拦截 | 1 / 1 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
@@ -205,6 +213,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 | `src/artflow_agent/routing.py` | Provider 路由、隐私/成本策略与指纹 |
 | `src/artflow_agent/tribunal.py` | 独立评价与确定性硬门禁 |
 | `src/artflow_agent/scene_lifecycle.py` | 多域执行、纠正、恢复与发布 |
+| `src/artflow_agent/scene_session.py` | Scene Session 草案、持久身份与候选关卡请求 |
 | `src/artflow_agent/pbr.py` | PBR 合同、通道验证与受审图编译 |
 | `src/artflow_agent/image_to_3d.py` | 图生 3D 合同、GLB 预检与 UE 接纳 |
 | `src/artflow_agent/mcp_facade.py` | 内容寻址 MCP 薄适配层 |

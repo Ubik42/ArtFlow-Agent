@@ -33,6 +33,12 @@ from .production_memory import (
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
 from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
+from .scene_session import (
+    SceneSession,
+    SceneSessionDraft,
+    build_scene_session,
+    validate_scene_session_draft,
+)
 from .tribunal import TribunalReport
 
 AgentEventType = Literal[
@@ -68,6 +74,7 @@ AgentEventType = Literal[
     "comparison_planned",
     "comparison_authorized",
     "comparison_manifest_recorded",
+    "scene_session_started",
 ]
 AgentStage = Literal[
     "awaiting_scene",
@@ -194,6 +201,7 @@ class AgentRunState(BaseModel):
     comparison_plan: dict[str, Any] | None = None
     comparison_authorization: dict[str, Any] | None = None
     comparison_manifest: dict[str, Any] | None = None
+    scene_sessions: list[SceneSession] = Field(default_factory=list)
     approval: ApprovalState = "none"
     failures: list[str] = Field(default_factory=list)
     budgets: AgentBudget = Field(default_factory=AgentBudget)
@@ -363,6 +371,10 @@ class _ComparisonPayload(BaseModel):
     value: dict[str, Any]
 
 
+class _SceneSessionStarted(BaseModel):
+    session: SceneSession
+
+
 class AgentEventStore:
     """SQLite event log whose reducer, not the model, owns authoritative Agent state."""
 
@@ -433,6 +445,31 @@ class AgentEventStore:
             "scene_attached",
             attachment.model_dump(mode="json"),
             idempotency_key=f"scene_attached:{preview.archive_sha256}",
+        )
+        return self.load(run_id)
+
+    def start_scene_session(
+        self,
+        run_id: str,
+        draft: SceneSessionDraft,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        state = self.load(run_id)
+        if (
+            state.scene_sessions
+            and state.scene_sessions[-1].draft.draft_sha256 == draft.draft_sha256
+        ):
+            return state
+        try:
+            session = build_scene_session(state, draft, action_id=action_id)
+        except ValueError as exc:
+            raise AgentRuntimeError(str(exc)) from exc
+        self._append(
+            run_id,
+            "scene_session_started",
+            _SceneSessionStarted(session=session).model_dump(mode="json"),
+            idempotency_key=f"scene_session_started:{action_id}",
         )
         return self.load(run_id)
 
@@ -1325,6 +1362,29 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
                 raise AgentRuntimeError(f"scene_attached is illegal while run is {state.stage}")
             state.scene = SceneAttachment.model_validate(event.data)
             state.stage = "route_ready"
+        elif event.event_type == "scene_session_started":
+            if state.scene is None:
+                raise AgentRuntimeError("scene_session_started requires an attached Scene Package")
+            session = _SceneSessionStarted.model_validate(event.data).session
+            if session.run_id != state.run_id:
+                raise AgentRuntimeError("scene_session_started references another run")
+            if session.scene_package_sha256 != state.scene.archive_sha256:
+                raise AgentRuntimeError(
+                    "scene_session_started references different Scene Package content"
+                )
+            if session.draft.basis_sequence != event.sequence - 1:
+                raise AgentRuntimeError("scene_session_started draft is stale")
+            try:
+                validate_scene_session_draft(state, session.draft)
+            except ValueError as exc:
+                raise AgentRuntimeError(str(exc)) from exc
+            previous = state.scene_sessions[-1] if state.scene_sessions else None
+            expected_previous = previous.session_id if previous else None
+            if session.supersedes_session_id != expected_previous:
+                raise AgentRuntimeError("scene_session_started supersession chain is invalid")
+            if any(item.session_id == session.session_id for item in state.scene_sessions):
+                raise AgentRuntimeError("scene_session_started duplicates a persisted session")
+            state.scene_sessions.append(session)
         elif event.event_type == "approval_requested":
             if state.stage != "route_ready":
                 raise AgentRuntimeError(

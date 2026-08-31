@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 44,
+  "stateRevision": 45,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M11",
+  "currentMilestone": "M12",
   "milestones": [
     {
       "id": "M0",
@@ -117,7 +117,7 @@
     {
       "id": "M11",
       "title": "Live Scene Session and Scene Change Spectrum",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M10"],
       "outcome": "A real imported Unreal scene opens an interactive Scene Session where the user states a visual intent, scopes bounded image, material, asset, PCG and lighting domains, and inspects a deterministic typed Scene Delta draft through ArtFlow's distinctive Scene Change Spectrum interface.",
       "acceptance": [
@@ -129,7 +129,7 @@
     {
       "id": "M12",
       "title": "Unreal editor session bridge and candidate execution",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M11"],
       "outcome": "The Unreal editor can initiate a Scene Session, receive a typed candidate-stage request and execute registered scene tools in an isolated candidate level with durable receipts and reconciliation.",
       "acceptance": [
@@ -161,37 +161,38 @@
     }
   ],
   "nextSlice": {
-    "id": "M11-S2",
-    "milestone": "M11",
-    "title": "Persistent Scene Session and candidate-stage request",
-    "outcome": "Promote an explicitly compiled Scene Session draft into the append-only Agent ledger exactly once, reconstruct it after restart, and compile a typed candidate-stage request that binds the current scene, draft, allowed domains, strategy version and isolated Unreal destination without executing the host yet.",
-    "risk": "R2",
-    "evidenceTarget": "A2",
-    "requiresRealHosts": false,
+    "id": "M12-S1",
+    "milestone": "M12",
+    "title": "Unreal editor-originated Scene Session handshake",
+    "outcome": "Add one Unreal editor action that starts from the active project-owned level, exports its verified Scene Package, hands it to the localhost ArtFlow runtime, starts a typed Scene Session and receives a content-bound candidate-stage request plus receipt without mutating the level.",
+    "risk": "R3",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
     "allowedPaths": ["web/**", "src/artflow_agent/**", "tests/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not execute Unreal, ComfyUI or an image Provider in this slice",
-      "Do not introduce a second frontend state machine or make the browser authoritative for planning, policy or publish",
-      "Do not expose arbitrary ComfyUI graphs, prompts as host code, hidden chain-of-thought or unrestricted execution controls",
-      "Do not add a generic task queue, distributed workflow framework or new frontend framework",
-      "Do not delay the slice for broad browser matrices, coverage targets or cosmetic test expansion"
+      "Do not apply the candidate-stage operations or mutate the active/source level in this slice",
+      "Do not accept a non-loopback ArtFlow endpoint, arbitrary content destination or editor-authored host script",
+      "Do not add an Unreal login, browser automation, generic MCP client or second Agent state machine",
+      "Do not modify shared engine installation files or unrelated Unreal projects",
+      "Do not delay the handshake for packaged-runtime support, broad engine matrices or cosmetic test expansion"
     ],
     "acceptance": [
-      "An explicit start action appends one Scene Session event and the same action identity replays without a duplicate event",
-      "Restart reconstructs the selected intent, domains, draft hash and readiness from the event ledger",
-      "A typed stage request binds run, source Scene Package, draft, strategy, domains and an isolated candidate destination and rejects stale draft identity",
-      "The Scene Change Spectrum resumes the persisted Session and exposes the next candidate-stage action without inventing host completion",
-      "Focused reducer/API tests and the frontend production build pass"
+      "A menu or toolbar action in the project-owned UE 5.8 editor exports the active level and performs a localhost-only typed ArtFlow handshake",
+      "The returned receipt binds source level, Scene Package, run, Session, draft, strategy and stage-request hashes and is saved under the project Saved directory",
+      "The candidate destination is under /Game/ArtFlow/Sessions and any mismatched hash, non-loopback endpoint or unexpected schema fails before host mutation",
+      "The real editor handshake is idempotent and repeating it creates neither a duplicate Session event nor a level or asset change",
+      "A real UE 5.8 host log, receipt and Chinese editor screenshot prove the handshake while source-level bytes remain unchanged"
     ],
     "stopConditions": [
-      "Stop before any external Provider call or Unreal mutation",
-      "Stop if the stage request can outlive or mismatch its source scene or draft identity",
-      "Stop if the UI requires changing frozen M9/M10 event semantics merely to simplify presentation",
-      "Stop if existing user changes overlap the selected files and cannot be preserved"
+      "Stop before executing the returned operations or saving a changed source level",
+      "Stop if the editor cannot prove that the endpoint is loopback-only",
+      "Stop if the returned identity cannot be checked against the exact exported archive",
+      "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
-      {"id": "python", "kind": "command", "value": "python", "required": true}
+      {"id": "python", "kind": "command", "value": "python", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -207,9 +208,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0039.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0040.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M10 retain their frozen evidence and bounded claims. M11-S1 adds only a content-addressed, read-only Scene Session draft: one real persisted Unreal run accepts an explicit intent and selected image, material, asset, PCG and lighting domains, derives ready/guarded/experimental status from reducer state, and renders the result through the Chinese Scene Change Spectrum. The focused API suite passes 9/9, the TypeScript/Vite production build passes, and a 1920x1080 Playwright inspection reports zero console errors and warnings. Recompiling reordered domains preserves the same draft hash and event timeline. This does not yet prove Session persistence, a candidate-stage request or new Unreal/Provider execution.",
+  "evidenceCeiling": "M0-M10 retain their frozen evidence and bounded claims. M11 is complete at the Scene Session boundary. M11-S1 compiled one real persisted Unreal run into a deterministic Scene Change Spectrum draft. M11-S2 appends exactly one scene_session_started event for a repeated action, reconstructs the same Session in a new process, rejects 1/1 stale stage identity, and deterministically returns the same stage-request hash without appending another event. The focused API suite passes 10/10, Ruff and the TypeScript/Vite build pass, and the 1920x1080 start-to-request flow reports zero console errors or warnings. The request is restricted to /Game/ArtFlow/Sessions and explicitly remains unexecuted; no new Unreal or Provider side effect is claimed.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

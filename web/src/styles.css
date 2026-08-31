@@ -3980,6 +3980,41 @@ button:focus-visible {
   color: #9a806f;
   font: 9px ui-monospace, Consolas, monospace;
 }
+.spectrum-actions {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.spectrum-actions button {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  border: 1px solid #7e5a42;
+  border-radius: 3px;
+  color: #ead7c3;
+  background: #241a14;
+  font-size: 9px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.spectrum-actions button:hover:not(:disabled) {
+  border-color: var(--spectrum-copper);
+  background: #302017;
+}
+.spectrum-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.stage-request-path {
+  max-width: 250px;
+  overflow: hidden;
+  color: #82c6b0;
+  font: 9px ui-monospace, Consolas, monospace;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .spectrum-error {
   display: flex;
   align-items: center;
@@ -4286,6 +4321,9 @@ button:focus-visible {
   .spectrum-counts {
     margin-left: 0;
   }
+  .spectrum-actions {
+    margin-left: auto;
+  }
   .pipeline-story {
     display: block;
   }
@@ -4329,6 +4367,9 @@ button:focus-visible {
   }
   .spectrum-result code {
     display: none;
+  }
+  .stage-request-path {
+    max-width: 180px;
   }
   .pipeline-overview {
     border-radius: 8px;

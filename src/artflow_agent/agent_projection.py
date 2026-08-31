@@ -27,6 +27,7 @@ from .negative_control import NegativeControlRecord
 from .production_memory import MemoryRecord, MemoryScorecard
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
+from .scene_session import SceneSession
 from .tribunal import TribunalReport
 
 
@@ -93,6 +94,7 @@ class AgentRunProjection(BaseModel):
     comparison_plan: ProviderComparisonPlan | None = None
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
+    scene_session: SceneSession | None = None
 
 
 class AgentRouteProjection(BaseModel):
@@ -117,6 +119,7 @@ class AgentStreamSnapshot(BaseModel):
     comparison_plan: ProviderComparisonPlan | None = None
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
+    scene_session: SceneSession | None = None
 
 
 class AgentStreamEnvelope(BaseModel):
@@ -251,6 +254,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
             if state.comparison_manifest
             else None
         ),
+        scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
     )
 
 
@@ -294,6 +298,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
                 if state.comparison_manifest
                 else None
             ),
+            scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
         ),
     )
 
@@ -419,6 +424,11 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "Comparison evidence recorded",
             "Child outcomes were normalized without choosing a winner",
             "success",
+        ),
+        "scene_session_started": (
+            "Scene Session started",
+            "Intent, selected domains and scene identity entered the durable ledger",
+            "active",
         ),
     }
     label, detail, tone = labels[event.event_type]

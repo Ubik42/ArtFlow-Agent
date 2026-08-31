@@ -41,7 +41,11 @@ from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
     SceneSessionDraft,
     SceneSessionDraftRequest,
+    SceneSessionStartRequest,
+    SceneStageRequest,
+    SceneStageRequestInput,
     compile_scene_session_draft,
+    compile_scene_stage_request,
 )
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
@@ -167,6 +171,58 @@ def create_app(
         try:
             state = agent_store.load(run_id)
             return compile_scene_session_draft(state, payload)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-session/start",
+        response_model=AgentRunProjection,
+    )
+    def start_scene_session(run_id: str, payload: SceneSessionStartRequest):
+        try:
+            state = agent_store.load(run_id)
+            replays = [
+                session
+                for session in state.scene_sessions
+                if session.start_action_id == payload.action_id
+            ]
+            if replays:
+                persisted = replays[0]
+                requested_domains = [node.domain for node in persisted.draft.nodes]
+                if (
+                    persisted.draft.draft_sha256 != payload.expected_draft_sha256
+                    or persisted.draft.intent != payload.intent
+                    or requested_domains != payload.domains
+                ):
+                    raise AgentRuntimeError(
+                        "Scene Session action identity is already bound to different input"
+                    )
+                return project_agent_run(agent_store, run_id)
+            draft = compile_scene_session_draft(
+                state,
+                SceneSessionDraftRequest(intent=payload.intent, domains=payload.domains),
+            )
+            if draft.draft_sha256 != payload.expected_draft_sha256:
+                raise AgentRuntimeError(
+                    "Scene Session draft is stale; compile it again from the current event state"
+                )
+            agent_store.start_scene_session(run_id, draft, action_id=payload.action_id)
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-session/stage-request",
+        response_model=SceneStageRequest,
+    )
+    def create_scene_stage_request(run_id: str, payload: SceneStageRequestInput):
+        try:
+            return compile_scene_stage_request(
+                agent_store.load(run_id),
+                expected_draft_sha256=payload.expected_draft_sha256,
+            )
         except (AgentRuntimeError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc

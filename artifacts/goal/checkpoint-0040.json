@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M11-S2",
+  "status": "completed",
+  "outcome": "Scene Sessions now enter the append-only Agent ledger exactly once, survive process restart, reject stale draft identity and deterministically compile a scene-, session-, strategy- and domain-bound candidate-stage request restricted to an ArtFlow-owned Unreal content destination; the Scene Change Spectrum exposes the full start-to-request flow without claiming host execution.",
+  "evidence": [
+    "docs/evidence/M11_S2_PERSISTENT_SCENE_SESSION_2026-08-30.md",
+    "artifacts/goal/m11-s2-persistent-session-stage-request.png"
+  ]
+}

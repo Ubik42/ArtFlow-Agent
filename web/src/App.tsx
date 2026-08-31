@@ -503,6 +503,7 @@ type AgentProjection = {
     authorized_action_ids: string[];
   };
   comparison_manifest: ComparisonManifest | null;
+  scene_session: SceneSession | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
 type SceneSpectrumNode = {
@@ -519,8 +520,10 @@ type SceneSessionDraft = {
   draft_id: string;
   draft_sha256: string;
   run_id: string;
+  basis_sequence: number;
   source_scene: string;
   scene_package_sha256: string;
+  capability_environment_sha256s: string[];
   intent: string;
   preserve: string[];
   prohibit: string[];
@@ -530,6 +533,40 @@ type SceneSessionDraft = {
   experimental_domain_count: number;
   can_stage: boolean;
   next_action: string;
+};
+type SceneSession = {
+  schema_id: "artflow-scene-session/1";
+  session_id: string;
+  session_sha256: string;
+  strategy_version: "scene-session-strategy/1";
+  run_id: string;
+  source_scene: string;
+  scene_package_sha256: string;
+  start_action_id: string;
+  supersedes_session_id: string | null;
+  draft: SceneSessionDraft;
+};
+type SceneStageRequest = {
+  schema_id: "artflow-scene-stage-request/1";
+  request_id: string;
+  request_sha256: string;
+  idempotency_key: string;
+  run_id: string;
+  basis_sequence: number;
+  session_id: string;
+  session_sha256: string;
+  draft_sha256: string;
+  scene_package_sha256: string;
+  strategy_version: "scene-session-strategy/1";
+  source_scene: string;
+  candidate_destination: string;
+  operations: Array<{
+    domain: SceneDomain;
+    readiness: "ready" | "experimental";
+    action: string;
+    verification: string;
+    depends_on: SceneDomain[];
+  }>;
 };
 type LegacyRun = {
   run_id: string;
@@ -618,6 +655,8 @@ const timelineText = (value: string) =>
     "Durable event stream opened": "持久事件流已开启",
     "Scene package verified": "场景包已验证",
     "Content hashes and constraints bound": "内容哈希与场景约束已绑定",
+    "Scene Session started": "场景任务已启动",
+    "Intent, selected domains and scene identity entered the durable ledger": "美术意图、选定领域与场景身份已进入持久账本",
     "Local route accepted": "本地路线已接纳",
     "Bounded local compute passed policy without an approval interrupt": "有界本地计算通过策略检查，无需人工批准",
     "Runtime attested": "运行时已实测",
@@ -952,7 +991,7 @@ export default function App() {
             {stageLabel(context.stage)}
           </div>
         </section>
-        {agent && <SceneChangeSpectrum agent={agent} />}
+        {agent && <SceneChangeSpectrum agent={agent} onAgentChange={setAgent} />}
         {agent && <ScenePipelineOverview agent={agent} />}
         {loading ? (
           <LoadingStage />
@@ -1067,19 +1106,25 @@ const SCENE_DOMAIN_OPTIONS: Array<{
   { domain: "lighting", label: "灯光", index: "05" },
 ];
 
-function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
-  const initialIntent = agent.scene?.art_goal ?? "";
+function SceneChangeSpectrum({
+  agent,
+  onAgentChange,
+}: {
+  agent: AgentProjection;
+  onAgentChange: (next: AgentProjection) => void;
+}) {
+  const persistedDraft = agent.scene_session?.draft ?? null;
+  const initialIntent = persistedDraft?.intent ?? agent.scene?.art_goal ?? "";
+  const initialDomains = persistedDraft
+    ? persistedDraft.nodes.map((node) => node.domain)
+    : SCENE_DOMAIN_OPTIONS.map((item) => item.domain);
   const [intent, setIntent] = useState(initialIntent);
-  const [domains, setDomains] = useState<SceneDomain[]>([
-    "image",
-    "material",
-    "asset",
-    "pcg",
-    "lighting",
-  ]);
-  const [draft, setDraft] = useState<SceneSessionDraft | null>(null);
+  const [domains, setDomains] = useState<SceneDomain[]>(initialDomains);
+  const [draft, setDraft] = useState<SceneSessionDraft | null>(persistedDraft);
+  const [stageRequest, setStageRequest] = useState<SceneStageRequest | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const startActionRef = useRef<string | null>(null);
 
   const compileDraft = useCallback(async () => {
     if (intent.trim().length < 10 || domains.length === 0) return;
@@ -1095,6 +1140,8 @@ function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
         },
       );
       setDraft(next);
+      setStageRequest(null);
+      startActionRef.current = null;
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : String(reason));
     } finally {
@@ -1104,12 +1151,21 @@ function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
 
   useEffect(() => {
     setIntent(initialIntent);
-    setDraft(null);
+    setDomains(
+      persistedDraft
+        ? persistedDraft.nodes.map((node) => node.domain)
+        : SCENE_DOMAIN_OPTIONS.map((item) => item.domain),
+    );
+    setDraft(persistedDraft);
+    setStageRequest(null);
+    startActionRef.current = null;
     setError(null);
-  }, [agent.run_id, initialIntent]);
+  }, [agent.run_id, agent.scene_session?.session_sha256, initialIntent]);
 
   const toggleDomain = (domain: SceneDomain) => {
     setDraft(null);
+    setStageRequest(null);
+    startActionRef.current = null;
     setDomains((current) =>
       current.includes(domain)
         ? current.filter((item) => item !== domain)
@@ -1119,6 +1175,58 @@ function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
     );
   };
   const nodes = new Map(draft?.nodes.map((node) => [node.domain, node]));
+  const isPersisted = Boolean(
+    draft && agent.scene_session?.draft.draft_sha256 === draft.draft_sha256,
+  );
+
+  const startSession = useCallback(async () => {
+    if (!draft) return;
+    setBusy(true);
+    setError(null);
+    startActionRef.current ??= `scene-ui-${crypto.randomUUID()}`;
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-session/start`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action_id: startActionRef.current,
+            expected_draft_sha256: draft.draft_sha256,
+            intent: draft.intent,
+            domains: draft.nodes.map((node) => node.domain),
+          }),
+        },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, draft, onAgentChange]);
+
+  const createStageRequest = useCallback(async () => {
+    if (!draft || !isPersisted) return;
+    setBusy(true);
+    setError(null);
+    try {
+      setStageRequest(
+        await request<SceneStageRequest>(
+          `/api/agent/runs/${agent.run_id}/scene-session/stage-request`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ expected_draft_sha256: draft.draft_sha256 }),
+          },
+        ),
+      );
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, draft, isPersisted]);
 
   return (
     <section className="scene-spectrum" aria-label="场景变更谱">
@@ -1145,6 +1253,8 @@ function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
             onChange={(event) => {
               setIntent(event.target.value);
               setDraft(null);
+              setStageRequest(null);
+              startActionRef.current = null;
             }}
             aria-label="本轮美术意图"
           />
@@ -1193,15 +1303,36 @@ function SceneChangeSpectrum({ agent }: { agent: AgentProjection }) {
         ) : draft ? (
           <>
             <div>
-              <span>{draft.can_stage ? <Check size={14} /> : <LockKeyhole size={14} />}</span>
-              <strong>{draft.next_action}</strong>
+              <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
+              <strong>
+                {stageRequest
+                  ? "候选关卡请求已封存，尚未交给 Unreal 执行"
+                  : isPersisted
+                    ? "Scene Session 已进入持久账本"
+                    : draft.next_action}
+              </strong>
             </div>
             <div className="spectrum-counts">
               <span>{draft.ready_domain_count} 项可执行</span>
               <span>{draft.guarded_domain_count} 项待补齐</span>
               <span>{draft.experimental_domain_count} 项实验能力</span>
             </div>
-            <code>{shortId(draft.draft_sha256)}</code>
+            <code title={stageRequest?.candidate_destination}>
+              {shortId(stageRequest?.request_sha256 ?? draft.draft_sha256)}
+            </code>
+            <div className="spectrum-actions">
+              {!isPersisted ? (
+                <button type="button" disabled={busy} onClick={() => void startSession()}>
+                  <ArrowUpRight size={13} /> 启动场景任务
+                </button>
+              ) : draft.can_stage && !stageRequest ? (
+                <button type="button" disabled={busy} onClick={() => void createStageRequest()}>
+                  <Layers3 size={13} /> 生成候选请求
+                </button>
+              ) : stageRequest ? (
+                <span className="stage-request-path">{stageRequest.candidate_destination}</span>
+              ) : null}
+            </div>
           </>
         ) : (
           <span>选择本轮会改变的领域，编译后查看执行准备度与依赖。</span>

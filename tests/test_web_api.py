@@ -213,6 +213,82 @@ def test_scene_session_draft_rejects_duplicate_domains(tmp_path) -> None:
     assert response.status_code == 422
 
 
+def test_scene_session_start_replays_and_compiles_bound_stage_request(
+    tmp_path: Path,
+) -> None:
+    payload = _scene_archive(tmp_path).read_bytes()
+    runs_dir = tmp_path / "runs"
+    client = TestClient(create_app(runs_dir=runs_dir))
+    run_id = client.post(
+        "/api/agent/scene-packages/import",
+        content=payload,
+        headers={"Content-Type": "application/zip"},
+    ).json()["run_id"]
+    request = {
+        "intent": "保持原始相机与主体关系，生成材质参考并探索一个祭坛资产候选。",
+        "domains": ["asset", "image"],
+    }
+    draft = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/draft",
+        json=request,
+    ).json()
+    start = {
+        **request,
+        "action_id": "scene-session-test-001",
+        "expected_draft_sha256": draft["draft_sha256"],
+    }
+
+    started = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/start",
+        json=start,
+    )
+
+    assert started.status_code == 200
+    projection = started.json()
+    assert projection["scene_session"]["draft"]["draft_sha256"] == draft["draft_sha256"]
+    assert projection["timeline"][-1]["event_type"] == "scene_session_started"
+    event_count = len(projection["timeline"])
+
+    replay = client.post(
+        f"/api/agent/runs/{run_id}/scene-session/start",
+        json=start,
+    )
+    assert replay.status_code == 200
+    assert len(replay.json()["timeline"]) == event_count
+
+    restarted = TestClient(create_app(runs_dir=runs_dir))
+    restored = restarted.get(f"/api/agent/runs/{run_id}").json()
+    assert restored["scene_session"]["session_sha256"] == projection["scene_session"][
+        "session_sha256"
+    ]
+    assert restored["scene_session"]["draft"]["intent"] == request["intent"]
+
+    staged = restarted.post(
+        f"/api/agent/runs/{run_id}/scene-session/stage-request",
+        json={"expected_draft_sha256": draft["draft_sha256"]},
+    )
+    assert staged.status_code == 200
+    stage_request = staged.json()
+    assert stage_request["session_sha256"] == projection["scene_session"]["session_sha256"]
+    assert stage_request["basis_sequence"] == projection["timeline"][-1]["sequence"]
+    assert stage_request["scene_package_sha256"] == draft["scene_package_sha256"]
+    assert [item["domain"] for item in stage_request["operations"]] == ["image", "asset"]
+    assert stage_request["candidate_destination"].startswith("/Game/ArtFlow/Sessions/")
+    assert stage_request["idempotency_key"].endswith(stage_request["request_sha256"])
+    staged_again = restarted.post(
+        f"/api/agent/runs/{run_id}/scene-session/stage-request",
+        json={"expected_draft_sha256": draft["draft_sha256"]},
+    ).json()
+    assert staged_again["request_sha256"] == stage_request["request_sha256"]
+    assert len(restarted.get(f"/api/agent/runs/{run_id}").json()["timeline"]) == event_count
+
+    stale = restarted.post(
+        f"/api/agent/runs/{run_id}/scene-session/stage-request",
+        json={"expected_draft_sha256": "f" * 64},
+    )
+    assert stale.status_code == 409
+
+
 def test_verified_provider_artifact_is_served_by_receipt_hash(tmp_path) -> None:
     preview = ScenePackageArchive().inspect(_scene_archive(tmp_path))
     database = tmp_path / "agent-events.sqlite3"

@@ -10,9 +10,11 @@ ComfyUI PBR、PCG/灯光/材质/资产四域执行、独立技术与视觉评价
 
 ### M11 — Live Scene Session
 
-- 用真实 Unreal 场景、简洁美术意图和可修改域创建 Session；
+状态：已完成。
+
+- 用真实 Unreal 场景、简洁美术意图和可修改域创建可恢复 Session；
 - 通过“场景变更谱”显示 Image / Material / Asset / PCG / Lighting 就绪度与依赖；
-- 将只读草案持久化为事件，并生成内容寻址的候选暂存请求。
+- 将确认草案持久化为 exactly-once 事件，并生成内容寻址、隔离路径受限的候选暂存请求。
 
 ### M12 — Unreal editor bridge
 
