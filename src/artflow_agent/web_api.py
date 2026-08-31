@@ -53,6 +53,7 @@ from .scene_session import (
     compile_scene_stage_request,
 )
 from .scene_variant_review import SceneVariantLineage
+from .scene_variant_lifecycle import load_registered_m16_lifecycle
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -290,6 +291,51 @@ def create_app(
                 expected_draft_sha256=payload.expected_draft_sha256,
             )
         except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-variant-lifecycle/m16",
+        response_model=AgentRunProjection,
+    )
+    def register_m16_scene_variant_lifecycle(run_id: str, request: Request):
+        """Migrate the fixed M16 host receipts into the matching live event stream."""
+        client_host = request.client.host if request.client is not None else ""
+        try:
+            if not ipaddress.ip_address(client_host).is_loopback:
+                raise HTTPException(
+                    status_code=403,
+                    detail="场景变体生命周期注册仅允许本机回环调用",
+                )
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=403,
+                detail="场景变体生命周期注册仅允许本机回环调用",
+            ) from exc
+        try:
+            registered = load_registered_m16_lifecycle(PROJECT_ROOT)
+            agent_store.record_scene_candidate_evaluation(
+                run_id,
+                registered.evaluation,
+                action_id="m16-evaluation-445666ae184f",
+            )
+            agent_store.record_scene_candidate_adoption(
+                run_id,
+                registered.adoption,
+                action_id="m16-adoption-a9d761a38175",
+            )
+            agent_store.record_scene_variant_publication(
+                run_id,
+                registered.publication,
+                action_id="m16-publish-a38499432ad2",
+            )
+            agent_store.record_scene_variant_review(
+                run_id,
+                registered.review,
+                action_id="m16-review-e9f219a423c2",
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

@@ -28,6 +28,7 @@ from .production_memory import MemoryRecord, MemoryScorecard
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
 from .scene_session import SceneSession
+from .scene_variant_review import SceneVariantLineage
 from .tribunal import TribunalReport
 
 
@@ -95,6 +96,7 @@ class AgentRunProjection(BaseModel):
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
+    scene_variant_lineage: SceneVariantLineage | None = None
 
 
 class AgentRouteProjection(BaseModel):
@@ -120,6 +122,7 @@ class AgentStreamSnapshot(BaseModel):
     comparison_authorization: ComparisonAuthorizationDecision | None = None
     comparison_manifest: ProviderComparisonManifest | None = None
     scene_session: SceneSession | None = None
+    scene_variant_lineage: SceneVariantLineage | None = None
 
 
 class AgentStreamEnvelope(BaseModel):
@@ -255,6 +258,9 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
             else None
         ),
         scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
+        scene_variant_lineage=(
+            state.scene_variant_review.lineage if state.scene_variant_review else None
+        ),
     )
 
 
@@ -299,6 +305,9 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
                 else None
             ),
             scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
+            scene_variant_lineage=(
+                state.scene_variant_review.lineage if state.scene_variant_review else None
+            ),
         ),
     )
 
@@ -429,6 +438,26 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "Scene Session started",
             "Intent, selected domains and scene identity entered the durable ledger",
             "active",
+        ),
+        "scene_candidate_evaluated": (
+            "场景候选已评价",
+            "失败域与修正后的五域结果已绑定到当前 Scene Session",
+            "success",
+        ),
+        "scene_candidate_adopted": (
+            "候选已采用",
+            "Codex 采用决定已锁定评价与候选内容身份",
+            "success",
+        ),
+        "scene_variant_published": (
+            "场景变体已发布",
+            "内容寻址的 Published 关卡与 Unreal 回执已持久化",
+            "success",
+        ),
+        "scene_variant_reviewed": (
+            "Unreal 审阅完成",
+            "独立进程复检结果已进入当前运行的场景变化谱",
+            "success",
         ),
     }
     label, detail, tone = labels[event.event_type]

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 52,
+  "stateRevision": 53,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M17",
+  "currentMilestone": "M18",
   "milestones": [
     {
       "id": "M0",
@@ -186,7 +186,7 @@
     {
       "id": "M17",
       "title": "Durable live scene-variant lifecycle",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M16"],
       "outcome": "Evaluation, failed-domain correction, Codex adoption, Unreal publish and review become first-class append-only Scene Session events, so the live workspace projects the current run's real variant lifecycle instead of depending on frozen showcase data.",
       "acceptance": [
@@ -194,13 +194,25 @@
         "Loopback Unreal receipts append exactly once and restart reconstructs the same current variant without a parallel state machine",
         "The Scene Change Spectrum renders live projected lifecycle state for a real editor-originated Session while frozen showcase data remains an explicit demo fallback only"
       ]
+    },
+    {
+      "id": "M18",
+      "title": "Unreal-native lifecycle callback",
+      "status": "in_progress",
+      "dependsOn": ["M17"],
+      "outcome": "The Unreal-facing bridge appends registered evaluation, adoption, publish and review receipts directly to the matching current Scene Session, replacing the one-off historical migration route while preserving the same reducer and projection.",
+      "acceptance": [
+        "Unreal can submit only registered content identities for the current run and Session and cannot supply a host path or arbitrary lifecycle schema",
+        "Each callback transition appends exactly once, rejects reordered or mismatched receipts, and projects immediately in the live Scene Change Spectrum",
+        "The M16 migration route is retained only as a reproducible compatibility fixture and is not the normal product path"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M17-S1",
-    "milestone": "M17",
-    "title": "Append-only Session variant lifecycle and live projection",
-    "outcome": "Add the smallest durable lifecycle slice that records a bound candidate evaluation, Codex adoption, Unreal publish and review receipt as idempotent Agent events; reconstruct them through the existing reducer and expose the current Session lineage in AgentRunProjection. Ingest the frozen M16 receipt through the same loopback contract as a real migration case, then switch the Scene Change Spectrum to live projection for that run while preserving a clearly labeled showcase fallback.",
+    "id": "M18-S1",
+    "milestone": "M18",
+    "title": "Registered Unreal lifecycle callback",
+    "outcome": "Add the smallest Unreal-facing callback contract that resolves project-registered lifecycle artifacts by content identity, verifies they belong to the current persisted Scene Session and appends the next legal lifecycle event through AgentEventStore. Reuse the M17 reducer and projection, expose no caller path or arbitrary schema, and keep the fixed M16 endpoint only as a compatibility fixture.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
@@ -213,15 +225,15 @@
       "Do not spend time on broad test matrices, full event coverage or cosmetic screenshot expansion"
     ],
     "acceptance": [
-      "New typed events reject a lifecycle artifact whose run, Session, stage request, candidate, evaluation, decision or publish identity differs from persisted state",
-      "Appending the same lifecycle action or Unreal receipt twice creates one event and changed input under the same action identity is rejected",
-      "Closing and reopening AgentEventStore reconstructs the exact candidate evaluation, adoption, Published version and review state",
-      "A loopback-only API accepts the registered M16 publish/review artifacts, returns the projected live lineage and exposes no arbitrary local path",
-      "ScenePipelineOverview prefers the current AgentRunProjection lineage and labels frozen showcase lineage as demonstration data when no live lifecycle exists"
+      "The callback accepts a registered content identity and transition only, resolves artifacts server-side and rejects caller paths or unknown identities",
+      "Evaluation, adoption, publication and review callbacks must arrive in reducer order and bind to the current persisted Scene Session",
+      "Replaying the same callback is idempotent while changing transition or identity under the same action id is rejected",
+      "A loopback callback returns the updated AgentRunProjection and the Scene Change Spectrum changes without reading showcase state",
+      "The fixed M16 migration route and generated M17 fixture remain reproducible compatibility evidence"
     ],
     "stopConditions": [
-      "Stop if the current event schema cannot bind lifecycle state without changing or invalidating historical events",
-      "Stop if the M16 artifacts cannot be linked to one persisted Session and stage request without inventing identity",
+      "Stop if the registered artifact index would become a second authoritative lifecycle store",
+      "Stop if a callback cannot be linked to the current Session without inventing identity",
       "Stop if receipt ingestion would require accepting a filesystem path from the caller or a non-loopback request",
       "Stop if reducer replay and event idempotency cannot remain deterministic",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
@@ -245,9 +257,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0047.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0048.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M16 are complete. The Chinese Scene Change Spectrum now presents the real GPT Image 2 target, lighting-only failure, four retained domains, correction, Codex adoption, content-addressed publish and Unreal review as a six-step variant lineage. Two independent UE 5.8.1 processes inspected then reconciled /Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9 with 12 PCG instances, zero source saves and byte-identical ArtFlowDemo content. Desktop 1600x1000 and narrow 720x1200 captures show all six states with no page or lineage overflow and no browser console error. This lineage is still projected from frozen portfolio artifacts rather than first-class events in the current live Scene Session reducer.",
+  "evidenceCeiling": "M0-M17 are complete. The real editor-originated scene-session-784907467248 now reconstructs candidate evaluation, Codex adoption, content-addressed publish and Unreal review from four first-class append-only events. Replaying the registered M16 artifacts keeps the run at seven total events, changed input under the same action identity is rejected, and restart reproduces the same six-step lineage. The loopback migration endpoint accepts no caller path. Desktop 1600x1000 and narrow 720x1200 captures label the lineage as Current Scene Session with zero page or lineage overflow and zero browser console error or warning. Normal Unreal completion still uses a fixed compatibility migration endpoint rather than a general registered callback, which is M18.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

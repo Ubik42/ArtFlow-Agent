@@ -507,6 +507,7 @@ type AgentProjection = {
   };
   comparison_manifest: ComparisonManifest | null;
   scene_session: SceneSession | null;
+  scene_variant_lineage: SceneVariantLineage | null;
 };
 type SceneDomain = "image" | "material" | "asset" | "pcg" | "lighting";
 type SceneSpectrumNode = {
@@ -1371,20 +1372,27 @@ function SceneChangeSpectrum({
 }
 
 function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
-  const [lineage, setLineage] = useState<SceneVariantLineage | null>(null);
+  const liveLineage = agent.scene_variant_lineage;
+  const [fallbackLineage, setFallbackLineage] = useState<SceneVariantLineage | null>(null);
   useEffect(() => {
+    if (liveLineage) {
+      setFallbackLineage(null);
+      return;
+    }
     let active = true;
     void request<SceneVariantLineage>("/api/showcase/scene-variant-lineage")
       .then((next) => {
-        if (active) setLineage(next);
+        if (active) setFallbackLineage(next);
       })
       .catch(() => {
-        if (active) setLineage(null);
+        if (active) setFallbackLineage(null);
       });
     return () => {
       active = false;
     };
-  }, []);
+  }, [liveLineage]);
+  const lineage = liveLineage ?? fallbackLineage;
+  const lineageSource = liveLineage ? "当前 Scene Session" : "作品演示数据";
   const cases = [
     {
       id: "rain-wet-courtyard",
@@ -1469,7 +1477,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       </div>
 
       {activeCase.id === "sunlit-overgrown" && lineage && (
-        <SceneVariantLedger lineage={lineage} />
+        <SceneVariantLedger lineage={lineage} source={lineageSource} />
       )}
 
       <div className={`intent-to-world frames-${activeCase.frames.length}`}>
@@ -1511,7 +1519,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   );
 }
 
-function SceneVariantLedger({ lineage }: { lineage: SceneVariantLineage }) {
+function SceneVariantLedger({ lineage, source }: { lineage: SceneVariantLineage; source: string }) {
   const [copied, setCopied] = useState(false);
   const copyPublishedPath = async () => {
     await navigator.clipboard.writeText(lineage.published_scene);
@@ -1526,6 +1534,7 @@ function SceneVariantLedger({ lineage }: { lineage: SceneVariantLineage }) {
           <strong>一次失败，只改变一条支线；采用结果已进入 Unreal 版本</strong>
         </div>
         <div className="lineage-identity">
+          <small className="lineage-source">{source}</small>
           <small>内容身份</small>
           <code>{lineage.content_identity_sha256.slice(0, 12)}</code>
           <i />

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M17-S1",
+  "status": "completed",
+  "outcome": "The real M12 Scene Session now replays M13 evaluation, M15 adoption and publish, and M16 Unreal review as four first-class append-only lifecycle events. The loopback-only migration endpoint accepts no caller path, repeat registration remains seven total events, and AgentRunProjection supplies the live six-step lineage. Desktop and narrow captures display the current Scene Session label with zero overflow or console errors.",
+  "evidence": [
+    "artifacts/goal/m17-s1-live-lifecycle/verification.json",
+    "artifacts/goal/m17-s1-live-lifecycle/live-projection.json",
+    "artifacts/goal/m17-s1-live-lifecycle/live-scene-session-desktop.png",
+    "artifacts/goal/m17-s1-live-lifecycle/live-scene-session-narrow.png",
+    "docs/evidence/M17_S1_DURABLE_LIVE_VARIANT_LIFECYCLE_2026-08-30.md"
+  ]
+}

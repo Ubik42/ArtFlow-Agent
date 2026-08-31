@@ -40,6 +40,14 @@ from .scene_session import (
     build_scene_session,
     validate_scene_session_draft,
 )
+from .scene_variant_lifecycle import (
+    SceneCandidateAdoptionRecord,
+    SceneCandidateEvaluationRecord,
+    SceneVariantPublishRecord,
+    SceneVariantReviewRecord,
+    validate_session_binding,
+)
+from .scene_variant_review import compile_scene_variant_lineage
 from .tribunal import TribunalReport
 
 AgentEventType = Literal[
@@ -76,6 +84,10 @@ AgentEventType = Literal[
     "comparison_authorized",
     "comparison_manifest_recorded",
     "scene_session_started",
+    "scene_candidate_evaluated",
+    "scene_candidate_adopted",
+    "scene_variant_published",
+    "scene_variant_reviewed",
 ]
 AgentStage = Literal[
     "awaiting_scene",
@@ -204,6 +216,10 @@ class AgentRunState(BaseModel):
     comparison_authorization: dict[str, Any] | None = None
     comparison_manifest: dict[str, Any] | None = None
     scene_sessions: list[SceneSession] = Field(default_factory=list)
+    scene_candidate_evaluation: SceneCandidateEvaluationRecord | None = None
+    scene_candidate_adoption: SceneCandidateAdoptionRecord | None = None
+    scene_variant_publication: SceneVariantPublishRecord | None = None
+    scene_variant_review: SceneVariantReviewRecord | None = None
     approval: ApprovalState = "none"
     failures: list[str] = Field(default_factory=list)
     budgets: AgentBudget = Field(default_factory=AgentBudget)
@@ -377,6 +393,22 @@ class _SceneSessionStarted(BaseModel):
     session: SceneSession
 
 
+class _SceneCandidateEvaluated(BaseModel):
+    record: SceneCandidateEvaluationRecord
+
+
+class _SceneCandidateAdopted(BaseModel):
+    record: SceneCandidateAdoptionRecord
+
+
+class _SceneVariantPublished(BaseModel):
+    record: SceneVariantPublishRecord
+
+
+class _SceneVariantReviewed(BaseModel):
+    record: SceneVariantReviewRecord
+
+
 class AgentEventStore:
     """SQLite event log whose reducer, not the model, owns authoritative Agent state."""
 
@@ -473,6 +505,50 @@ class AgentEventStore:
             "scene_session_started",
             _SceneSessionStarted(session=session).model_dump(mode="json"),
             idempotency_key=f"scene_session_started:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_candidate_evaluation(
+        self, run_id: str, record: SceneCandidateEvaluationRecord, *, action_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_evaluated",
+            _SceneCandidateEvaluated(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_evaluated:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_candidate_adoption(
+        self, run_id: str, record: SceneCandidateAdoptionRecord, *, action_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_candidate_adopted",
+            _SceneCandidateAdopted(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_candidate_adopted:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_variant_publication(
+        self, run_id: str, record: SceneVariantPublishRecord, *, action_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_variant_published",
+            _SceneVariantPublished(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_variant_published:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_variant_review(
+        self, run_id: str, record: SceneVariantReviewRecord, *, action_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_variant_reviewed",
+            _SceneVariantReviewed(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_variant_reviewed:{action_id}",
         )
         return self.load(run_id)
 
@@ -1388,6 +1464,74 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             if any(item.session_id == session.session_id for item in state.scene_sessions):
                 raise AgentRuntimeError("scene_session_started duplicates a persisted session")
             state.scene_sessions.append(session)
+        elif event.event_type == "scene_candidate_evaluated":
+            if state.scene is None or not state.scene_sessions:
+                raise AgentRuntimeError("scene candidate evaluation requires a Scene Session")
+            if state.scene_candidate_evaluation is not None:
+                raise AgentRuntimeError("scene candidate evaluation is already persisted")
+            record = _SceneCandidateEvaluated.model_validate(event.data).record
+            try:
+                validate_session_binding(
+                    record,
+                    run_id=state.run_id,
+                    scene_package_sha256=state.scene.archive_sha256,
+                    session=state.scene_sessions[-1],
+                )
+            except ValueError as exc:
+                raise AgentRuntimeError(str(exc)) from exc
+            state.scene_candidate_evaluation = record
+        elif event.event_type == "scene_candidate_adopted":
+            evaluation = state.scene_candidate_evaluation
+            if evaluation is None:
+                raise AgentRuntimeError("scene candidate adoption requires persisted evaluation")
+            if state.scene_candidate_adoption is not None:
+                raise AgentRuntimeError("scene candidate adoption is already persisted")
+            record = _SceneCandidateAdopted.model_validate(event.data).record
+            decision = record.decision
+            corrected = evaluation.corrected_evaluation
+            corrected_plan = evaluation.corrected_plan
+            if (
+                decision.evaluation_sha256 != corrected.evaluation_sha256
+                or decision.plan_sha256 != corrected_plan.plan_sha256
+                or decision.candidate_scene != corrected.candidate_scene
+            ):
+                raise AgentRuntimeError("scene adoption references another evaluated candidate")
+            state.scene_candidate_adoption = record
+        elif event.event_type == "scene_variant_published":
+            adoption = state.scene_candidate_adoption
+            if adoption is None:
+                raise AgentRuntimeError("scene publication requires persisted adoption")
+            if state.scene_variant_publication is not None:
+                raise AgentRuntimeError("scene variant publication is already persisted")
+            record = _SceneVariantPublished.model_validate(event.data).record
+            if record.request.decision != adoption.decision:
+                raise AgentRuntimeError("scene publication references another adoption decision")
+            state.scene_variant_publication = record
+        elif event.event_type == "scene_variant_reviewed":
+            publication = state.scene_variant_publication
+            evaluation = state.scene_candidate_evaluation
+            if publication is None or evaluation is None:
+                raise AgentRuntimeError("scene review requires persisted evaluation and publication")
+            if state.scene_variant_review is not None:
+                raise AgentRuntimeError("scene variant review is already persisted")
+            record = _SceneVariantReviewed.model_validate(event.data).record
+            if (
+                record.request.publish_request_sha256 != publication.request.request_sha256
+                or record.request.decision_sha256
+                != publication.request.decision.decision_sha256
+            ):
+                raise AgentRuntimeError("scene review references another published variant")
+            expected = compile_scene_variant_lineage(
+                failed=evaluation.failed_evaluation,
+                corrected=evaluation.corrected_evaluation,
+                publish_request=publication.request,
+                publish_receipt=publication.receipt,
+                review_request=record.request,
+                review_receipt=record.receipt,
+            )
+            if record.lineage != expected:
+                raise AgentRuntimeError("scene review lineage differs from persisted artifacts")
+            state.scene_variant_review = record
         elif event.event_type == "approval_requested":
             if state.stage != "route_ready":
                 raise AgentRuntimeError(

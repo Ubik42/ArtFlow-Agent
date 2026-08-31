@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow Scene Lab：从定向纠正到 Unreal 场景版本](docs/assets/showcase/m16-scene-variant-lineage-desktop.png)
+![ArtFlow Scene Lab：当前 Scene Session 的场景变体谱系](artifacts/goal/m17-s1-live-lifecycle/live-scene-session-desktop.png)
 
 ## 项目定位
 
@@ -40,7 +40,7 @@ Candidate Plan。下面的雨湿庭院候选来自当前 RTX 4080 受审图执�
 
 ## 生产案例
 
-Scene Lab 当前聚焦两条来自同一 Unreal 场景、但走不同生成路线的生产案例。界面中的图像、领域状态和数字均来自本仓冻结的 UE 5.8、ComfyUI 与 Codex Image 回执。
+Scene Lab 当前聚焦两条来自同一 Unreal 场景、但走不同生成路线的生产案例。图像与宿主指标来自本仓冻结的 UE 5.8、ComfyUI 与 Codex Image 回执；当前 Session 的评价、采用、发布和审阅状态由 append-only 事件实时投影。
 
 ### 雨后庭院：跨管线场景改造
 
@@ -130,6 +130,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 发布包内容寻址验证 | 36 / 36 |
 | Scene Lab 浏览器检查 | 0 溢出、0 控制台错误、0 阻塞弹窗 |
 | Scene Session 重复启动 | 1 个持久事件、0 个重复事件 |
+| 场景变体生命周期重放 | 4 个类型化事件、重复注册后总事件仍为 7 |
 | 陈旧候选请求拦截 | 1 / 1 |
 | UE 原生 Scene Session 握手 | 1 次真实 UE 5.8 运行，源关卡哈希不变 |
 | 同一真实握手请求重放 | 1 个 Session 事件、0 个重复事件 |

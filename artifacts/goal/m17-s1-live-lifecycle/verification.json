@@ -1,0 +1,41 @@
+{
+  "schema_id": "artflow-m17-live-lifecycle-verification/1",
+  "status": "verified",
+  "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+  "event_count": 7,
+  "lifecycle_event_count": 4,
+  "replay_identical": true,
+  "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9",
+  "generated_instance_count": 12,
+  "database_sha256": "e8875a7d5aaedf22f24a2572e1a6fed2bd72b8b1cfefbffce1900c2ae4b4eb72",
+  "caller_path_fields": 0,
+  "browser_checks": {
+    "source_label": "当前 Scene Session",
+    "desktop": {
+      "viewport": [
+        1600,
+        1000
+      ],
+      "overflow": false
+    },
+    "narrow": {
+      "viewport": [
+        720,
+        1200
+      ],
+      "overflow": false
+    },
+    "console_errors": 0,
+    "console_warnings": 0
+  },
+  "screenshots": [
+    {
+      "path": "artifacts/goal/m17-s1-live-lifecycle/live-scene-session-desktop.png",
+      "sha256": "e51ed74e95b2e57a1176a4661675498d2df00dcb51885f1a80a4cc35680b9f62"
+    },
+    {
+      "path": "artifacts/goal/m17-s1-live-lifecycle/live-scene-session-narrow.png",
+      "sha256": "3be020e8e2bb4dff8545401ff40b1e04886dc84a52c1189500e0365024cc471b"
+    }
+  ]
+}

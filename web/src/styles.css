@@ -4248,6 +4248,15 @@ button:focus-visible {
   color: #708087;
   font-size: 9px;
 }
+.lineage-identity .lineage-source {
+  grid-column: 1 / -1;
+  width: max-content;
+  padding: 3px 7px;
+  color: var(--film-cyan);
+  border: 1px solid rgba(118, 215, 230, .24);
+  background: rgba(118, 215, 230, .07);
+  letter-spacing: .04em;
+}
 .lineage-identity code {
   color: #c4d1d1;
   font: 10px ui-monospace, Consolas, monospace;
