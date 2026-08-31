@@ -1,0 +1,214 @@
+{
+  "schema_id": "compiled-comfy-request/1",
+  "run_id": "local-artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6-130c94284deb",
+  "execution_id": "exec-130c94284deb5fddb18c",
+  "route_decision_id": "route-130c94284deb5fdd",
+  "route_fingerprint": "e3447db845897fff202cf8294ec10664f1ce9c22afe195418e6fa522b2d0c652",
+  "provider_id": "comfy-local",
+  "model_id": "flux-depth-local",
+  "scene_package_id": "artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6",
+  "scene_package_sha256": "130c94284deb5fddb18c52d604b615ca1a071e42afc8149604f76130fe412f76",
+  "attestation_environment_sha256": "fb554b803670614980b91e4b8eea209796e6a415b8f1e6e48bf50df4660afee0",
+  "recipe_id": "composition-preserving-v1",
+  "recipe_version": "1.1.0",
+  "workflow_sha256": "495f2949a8045fb88880551c25d620225d41b41b54faaefe4ab7daae759277c0",
+  "source_artifact_path": "passes/beauty.png",
+  "source_artifact_sha256": "f6d4005de3b73fa0a59b63f2924e76f40cede01797187f2527f6d45d74d466d9",
+  "workflow": {
+    "1": {
+      "class_type": "UNETLoader",
+      "inputs": {
+        "unet_name": "flux-2-klein-base-4b-fp8.safetensors",
+        "weight_dtype": "default"
+      }
+    },
+    "2": {
+      "class_type": "CLIPLoader",
+      "inputs": {
+        "clip_name": "qwen_3_4b.safetensors",
+        "type": "flux2",
+        "device": "default"
+      }
+    },
+    "3": {
+      "class_type": "VAELoader",
+      "inputs": {
+        "vae_name": "full_encoder_small_decoder.safetensors"
+      }
+    },
+    "4": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "ArtFlow/exec-130c94284deb5fddb18c/beauty.png"
+      }
+    },
+    "5": {
+      "class_type": "ImageScale",
+      "inputs": {
+        "image": [
+          "4",
+          0
+        ],
+        "upscale_method": "lanczos",
+        "width": 1024,
+        "height": 576,
+        "crop": "disabled"
+      }
+    },
+    "6": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "5",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette. Preserve: camera framing; protected blockout silhouette; ground-plane composition",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "8": {
+      "class_type": "CLIPTextEncode",
+      "inputs": {
+        "text": "new characters; logos; protected geometry redesign",
+        "clip": [
+          "2",
+          0
+        ]
+      }
+    },
+    "9": {
+      "class_type": "ReferenceLatent",
+      "inputs": {
+        "conditioning": [
+          "7",
+          0
+        ],
+        "latent": [
+          "6",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "ReferenceLatent",
+      "inputs": {
+        "conditioning": [
+          "8",
+          0
+        ],
+        "latent": [
+          "6",
+          0
+        ]
+      }
+    },
+    "11": {
+      "class_type": "CFGGuider",
+      "inputs": {
+        "model": [
+          "1",
+          0
+        ],
+        "positive": [
+          "9",
+          0
+        ],
+        "negative": [
+          "10",
+          0
+        ],
+        "cfg": 5.0
+      }
+    },
+    "12": {
+      "class_type": "RandomNoise",
+      "inputs": {
+        "noise_seed": 20260825
+      }
+    },
+    "13": {
+      "class_type": "KSamplerSelect",
+      "inputs": {
+        "sampler_name": "euler"
+      }
+    },
+    "14": {
+      "class_type": "Flux2Scheduler",
+      "inputs": {
+        "steps": 20,
+        "width": 1024,
+        "height": 576
+      }
+    },
+    "15": {
+      "class_type": "SplitSigmasDenoise",
+      "inputs": {
+        "sigmas": [
+          "14",
+          0
+        ],
+        "denoise": 0.35
+      }
+    },
+    "16": {
+      "class_type": "SamplerCustomAdvanced",
+      "inputs": {
+        "noise": [
+          "12",
+          0
+        ],
+        "guider": [
+          "11",
+          0
+        ],
+        "sampler": [
+          "13",
+          0
+        ],
+        "sigmas": [
+          "15",
+          1
+        ],
+        "latent_image": [
+          "6",
+          0
+        ]
+      }
+    },
+    "17": {
+      "class_type": "VAEDecode",
+      "inputs": {
+        "samples": [
+          "16",
+          0
+        ],
+        "vae": [
+          "3",
+          0
+        ]
+      }
+    },
+    "18": {
+      "class_type": "SaveImage",
+      "inputs": {
+        "filename_prefix": "ArtFlow/exec-130c94284deb5fddb18c/composition",
+        "images": [
+          "17",
+          0
+        ]
+      }
+    }
+  }
+}

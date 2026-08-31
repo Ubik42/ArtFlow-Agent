@@ -15,17 +15,6 @@ function Assert-CommandSucceeded([string]$Step) {
     }
 }
 
-if (-not (Test-Path -LiteralPath $Python)) {
-    python -m venv $VenvRoot
-    Assert-CommandSucceeded "创建 Python 虚拟环境"
-}
-
-& $Python -c "import artflow_agent" 2>$null
-if ($LASTEXITCODE -ne 0) {
-    & $Python -m pip install -e $ProjectRoot
-    Assert-CommandSucceeded "安装 ArtFlow Python 依赖"
-}
-
 if (-not (Test-Path -LiteralPath (Join-Path $WebRoot "node_modules"))) {
     Push-Location $WebRoot
     try {
@@ -44,6 +33,21 @@ try {
 }
 finally {
     Pop-Location
+}
+
+if (-not (Test-Path -LiteralPath $Python)) {
+    python -m venv $VenvRoot
+    Assert-CommandSucceeded "创建 Python 虚拟环境"
+}
+
+$PreviousErrorAction = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+& $Python -c "import artflow_agent" 2>$null
+$ImportExitCode = $LASTEXITCODE
+$ErrorActionPreference = $PreviousErrorAction
+if ($ImportExitCode -ne 0) {
+    & $Python -m pip install -e $ProjectRoot
+    Assert-CommandSucceeded "安装 ArtFlow Python 依赖"
 }
 
 Push-Location $ProjectRoot

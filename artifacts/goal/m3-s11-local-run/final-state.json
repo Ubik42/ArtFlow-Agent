@@ -1,0 +1,295 @@
+{
+  "run_id": "local-artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6-130c94284deb",
+  "stage": "execution_succeeded",
+  "created_at": "2026-08-25T23:28:37.466832Z",
+  "scene": {
+    "package": {
+      "schema_id": "scene-constraint-package/1",
+      "package_id": "artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6",
+      "camera": {
+        "projection": "perspective",
+        "world_transform": [
+          0.9510565162951535,
+          0.0,
+          -0.3090169943749474,
+          0.0,
+          0.0,
+          1.0,
+          0.0,
+          0.0,
+          0.3090169943749474,
+          0.0,
+          0.9510565162951535,
+          0.0,
+          -900.0,
+          0.0,
+          420.0,
+          1.0
+        ],
+        "horizontal_fov_degrees": 55.0,
+        "ortho_width": null,
+        "near_clip": 10.0,
+        "far_clip": 100000.0,
+        "width": 640,
+        "height": 360
+      },
+      "passes": [
+        {
+          "kind": "beauty",
+          "artifact": {
+            "path": "passes/beauty.png",
+            "sha256": "f6d4005de3b73fa0a59b63f2924e76f40cede01797187f2527f6d45d74d466d9",
+            "media_type": "image/png"
+          },
+          "encoding": "srgb8"
+        },
+        {
+          "kind": "depth",
+          "artifact": {
+            "path": "passes/depth.exr",
+            "sha256": "348e4e37c01c22e043617375a0617adbab892a0360aab28654f01925023c86de",
+            "media_type": "image/x-exr"
+          },
+          "encoding": "linear-distance-centimeters"
+        },
+        {
+          "kind": "world_normal",
+          "artifact": {
+            "path": "passes/world-normal.exr",
+            "sha256": "15de4b754e28de8941505e652a2b175850486a827d95379e908c8352383711ca",
+            "media_type": "image/x-exr"
+          },
+          "encoding": "unreal-world-normal-rgb"
+        },
+        {
+          "kind": "object_id",
+          "artifact": {
+            "path": "passes/object-id.png",
+            "sha256": "991868d3f51da54732f0eaa8bff206b56c67a6c322619bdc20b961d860d07706",
+            "media_type": "image/png"
+          },
+          "encoding": "custom-stencil-u8"
+        }
+      ],
+      "regions": [
+        {
+          "region_id": "protected-selection",
+          "mode": "protected",
+          "object_ids": [
+            "Protected_Blockout"
+          ]
+        },
+        {
+          "region_id": "editable-selection",
+          "mode": "editable",
+          "object_ids": [
+            "Editable_Form"
+          ]
+        }
+      ],
+      "art_intent": {
+        "goal": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette.",
+        "preserve": [
+          "camera framing",
+          "protected blockout silhouette",
+          "ground-plane composition"
+        ],
+        "prohibit": [
+          "new characters",
+          "logos",
+          "protected geometry redesign"
+        ],
+        "reference_assets": []
+      },
+      "provenance": {
+        "application": "Unreal Engine",
+        "application_version": "5.8.1-56057345+++UE5+Release-5.8",
+        "project_name": "ArtFlowBridgeHost",
+        "scene_name": "/Game/ArtFlowDemo",
+        "captured_at": "2026-08-25T23:01:31.509000Z"
+      },
+      "delivery": {
+        "color_space": "sRGB",
+        "file_format": "png",
+        "purpose": "art_direction"
+      }
+    },
+    "archive_sha256": "130c94284deb5fddb18c52d604b615ca1a071e42afc8149604f76130fe412f76",
+    "artifacts": [
+      {
+        "path": "passes/beauty.png",
+        "sha256": "f6d4005de3b73fa0a59b63f2924e76f40cede01797187f2527f6d45d74d466d9",
+        "size_bytes": 245237
+      },
+      {
+        "path": "passes/depth.exr",
+        "sha256": "348e4e37c01c22e043617375a0617adbab892a0360aab28654f01925023c86de",
+        "size_bytes": 50965
+      },
+      {
+        "path": "passes/world-normal.exr",
+        "sha256": "15de4b754e28de8941505e652a2b175850486a827d95379e908c8352383711ca",
+        "size_bytes": 167557
+      },
+      {
+        "path": "passes/object-id.png",
+        "sha256": "991868d3f51da54732f0eaa8bff206b56c67a6c322619bdc20b961d860d07706",
+        "size_bytes": 226434
+      }
+    ]
+  },
+  "pending_decisions": [],
+  "pending_tool_calls": [],
+  "observations": [],
+  "route_decision": {
+    "schema_id": "route-decision/1",
+    "decision_id": "route-130c94284deb5fdd",
+    "scene_package_id": "artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6",
+    "scene_package_sha256": "130c94284deb5fddb18c52d604b615ca1a071e42afc8149604f76130fe412f76",
+    "task": "scene_direction",
+    "selected": {
+      "provider_id": "comfy-local",
+      "model_id": "flux-depth-local",
+      "execution_kind": "local",
+      "privacy_class": "local_only",
+      "cost_class": "local_compute"
+    },
+    "rejected": [],
+    "execution_intent": {
+      "required_controls": [
+        "reference_image"
+      ],
+      "evaluation_evidence": [
+        "depth",
+        "world_normal",
+        "object_id"
+      ],
+      "output_count": 1,
+      "width": 1024,
+      "height": 576,
+      "delivery_format": "png",
+      "intent_sha256": "127ddb68f2e823cca5db5a49ccf1aca6265ab7aed497022d78859c5c7f0fc1b8"
+    },
+    "privacy_ceiling": "local_only",
+    "max_cost_usd": 0.0,
+    "requires_explicit_approval": false,
+    "rationale": "Selected comfy-local/flux-depth-local from 1 compatible routes using deterministic privacy, locality and cost rank."
+  },
+  "capability_attestations": [
+    {
+      "schema_id": "local-capability-attestation/1",
+      "attestation_id": "attestation-9f88cdf49a9142649c18613a9432e7c6",
+      "captured_at": "2026-08-25T23:28:37.784601Z",
+      "provider_id": "comfy-local",
+      "model_id": "flux-depth-local",
+      "recipe_id": "composition-preserving-v1",
+      "status": "supported",
+      "reasons": [],
+      "environment_sha256": "fb554b803670614980b91e4b8eea209796e6a415b8f1e6e48bf50df4660afee0",
+      "comfyui_version": "0.28.0",
+      "python_version": "3.12.13 (main, Mar 24 2026, 22:57:53) [MSC v.1944 64 bit (AMD64)]",
+      "pytorch_version": "2.13.0+cu130",
+      "device_name": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+      "vram_mb": 16375,
+      "observed_node_count": 1301,
+      "observed_model_count": 7,
+      "required_nodes": [
+        "CFGGuider",
+        "CLIPLoader",
+        "CLIPTextEncode",
+        "Flux2Scheduler",
+        "ImageScale",
+        "KSamplerSelect",
+        "LoadImage",
+        "RandomNoise",
+        "ReferenceLatent",
+        "SamplerCustomAdvanced",
+        "SaveImage",
+        "SplitSigmasDenoise",
+        "UNETLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
+      ],
+      "required_models": [
+        "flux-2-klein-base-4b-fp8.safetensors",
+        "full_encoder_small_decoder.safetensors",
+        "qwen_3_4b.safetensors"
+      ],
+      "verified_nodes": [
+        "CFGGuider",
+        "CLIPLoader",
+        "CLIPTextEncode",
+        "Flux2Scheduler",
+        "ImageScale",
+        "KSamplerSelect",
+        "LoadImage",
+        "RandomNoise",
+        "ReferenceLatent",
+        "SamplerCustomAdvanced",
+        "SaveImage",
+        "SplitSigmasDenoise",
+        "UNETLoader",
+        "VAEDecode",
+        "VAEEncode",
+        "VAELoader"
+      ],
+      "verified_models": [
+        "flux-2-klein-base-4b-fp8.safetensors",
+        "full_encoder_small_decoder.safetensors",
+        "qwen_3_4b.safetensors"
+      ],
+      "missing_nodes": [],
+      "missing_models": []
+    }
+  ],
+  "provider_executions": [
+    {
+      "execution_id": "exec-130c94284deb5fddb18c",
+      "idempotency_key": "comfy:exec-130c94284deb5fddb18c:composition-preserving-v1",
+      "route_decision_id": "route-130c94284deb5fdd",
+      "route_fingerprint": "e3447db845897fff202cf8294ec10664f1ce9c22afe195418e6fa522b2d0c652",
+      "attestation_environment_sha256": "fb554b803670614980b91e4b8eea209796e6a415b8f1e6e48bf50df4660afee0",
+      "provider_id": "comfy-local",
+      "model_id": "flux-depth-local",
+      "status": "succeeded",
+      "provider_request_id": "0f515f4b-d465-4132-ae72-b3ceb5dba465",
+      "unknown_reason": null,
+      "receipt": {
+        "schema_id": "provider-execution-receipt/1",
+        "execution_id": "exec-130c94284deb5fddb18c",
+        "route_decision_id": "route-130c94284deb5fdd",
+        "route_fingerprint": "e3447db845897fff202cf8294ec10664f1ce9c22afe195418e6fa522b2d0c652",
+        "provider_id": "comfy-local",
+        "model_id": "flux-depth-local",
+        "status": "succeeded",
+        "started_at": "2026-08-25T23:29:57.146032Z",
+        "completed_at": "2026-08-25T23:29:57.146032Z",
+        "provider_request_id": "0f515f4b-d465-4132-ae72-b3ceb5dba465",
+        "artifacts": [
+          {
+            "path": "ArtFlow\\exec-130c94284deb5fddb18c/composition_00001_.png",
+            "sha256": "8029f4a558e3bfefbbfa0f63a513c640d3080e31574ecfba9f0eb98ff6cd13e7",
+            "media_type": "image/png"
+          }
+        ],
+        "error_code": null
+      }
+    }
+  ],
+  "comparison_plan": null,
+  "comparison_authorization": null,
+  "comparison_manifest": null,
+  "approval": "approved",
+  "failures": [],
+  "budgets": {
+    "max_iterations": 12,
+    "used_iterations": 0,
+    "max_tool_calls": 24,
+    "used_tool_calls": 0,
+    "max_retries": 3,
+    "used_retries": 0,
+    "max_cost_usd": null
+  },
+  "last_sequence": 7
+}

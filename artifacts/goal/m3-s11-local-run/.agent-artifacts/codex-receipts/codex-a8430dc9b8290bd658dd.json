@@ -1,0 +1,48 @@
+{
+  "request": {
+    "schema_id": "codex-image-request/1",
+    "scene_package_id": "artflow-ue-7e66ea0f40432643e4ac63a8f39f98c6",
+    "scene_package_sha256": "130c94284deb5fddb18c52d604b615ca1a071e42afc8149604f76130fe412f76",
+    "beauty_sha256": "f6d4005de3b73fa0a59b63f2924e76f40cede01797187f2527f6d45d74d466d9",
+    "art_goal": "Explore lighting and atmosphere while preserving the camera and protected blockout silhouette.",
+    "preserve": [
+      "camera framing",
+      "protected blockout silhouette",
+      "ground-plane composition"
+    ],
+    "prohibit": [
+      "new characters",
+      "logos",
+      "protected geometry redesign"
+    ],
+    "sent_input_kinds": [
+      "beauty"
+    ],
+    "withheld_input_kinds": [
+      "depth",
+      "world_normal",
+      "object_id"
+    ],
+    "output_count": 1,
+    "output_aspect_ratio": "16:9",
+    "prompt_sha256": "88c30433a2229860f8ae6ab77bd384a4924bb021eba8a1d7fbd1633dffa8f265"
+  },
+  "receipt": {
+    "schema_id": "codex-image-candidate-receipt/1",
+    "candidate_id": "codex-a8430dc9b8290bd658dd",
+    "tool_id": "codex-builtin-imagegen",
+    "requested_model_family": "gpt-image-2",
+    "observed_model_id": null,
+    "request_binding_sha256": "b600180b885852f7d8817efa2663defba769c73712c62fdc3381cda7d8514d99",
+    "artifact": {
+      "path": "provider-outputs/a8430dc9b8290bd658dd276cc7e9a9c490ca6a25a5accff70145a2d6704f54d5.png",
+      "sha256": "a8430dc9b8290bd658dd276cc7e9a9c490ca6a25a5accff70145a2d6704f54d5",
+      "media_type": "image/png"
+    },
+    "width": 1672,
+    "height": 941,
+    "imported_at": "2026-08-25T23:58:56.928685Z",
+    "upstream_request_id": null,
+    "adoption_status": "unselected"
+  }
+}
