@@ -31,6 +31,7 @@
 #include "Framework/Notifications/NotificationManager.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
+#include "HAL/PlatformProcess.h"
 #include "ImageCore.h"
 #include "ImageUtils.h"
 #include "HttpModule.h"
@@ -2383,7 +2384,8 @@ void FArtFlowSceneBridgeModule::StartupModule()
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCaptureStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")))
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowClaimCandidateWork")))
     {
         AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
@@ -2412,6 +2414,12 @@ void FArtFlowSceneBridgeModule::RegisterMenus()
         LOCTEXT("StartSessionTooltip", "从当前关卡导出可验证场景包，并向本机 ArtFlow Agent 请求类型化候选方案。不会修改当前关卡。"),
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::StartSceneSession)));
+    Section.AddMenuEntry(
+        TEXT("ArtFlowExecuteCurrentCandidate"),
+        LOCTEXT("ExecuteCandidateLabel", "执行当前 ArtFlow 候选"),
+        LOCTEXT("ExecuteCandidateTooltip", "领取当前 Scene Session 已封存的候选工作项，在隔离关卡执行并把进度回传到场景变更谱。"),
+        FSlateIcon(),
+        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork)));
     Section.AddMenuEntry(
         TEXT("ArtFlowExportScenePackage"),
         LOCTEXT("ExportLabel", "仅导出场景包"),
@@ -2456,6 +2464,27 @@ void FArtFlowSceneBridgeModule::StartSceneSession()
         return;
     }
     LastExportPath = ArchivePath;
+}
+
+void FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork()
+{
+    FString Error;
+    if (SessionRunId.IsEmpty() || SessionSha256.IsEmpty())
+    {
+        Error = TEXT("请先从当前关卡启动 ArtFlow 场景任务，再在场景变更谱中把候选交给 Unreal。");
+    }
+    else
+    {
+        BeginSceneCandidateWorkDiscovery(false, Error);
+    }
+    if (!Error.IsEmpty())
+    {
+        FMessageDialog::Open(
+            EAppMsgType::Ok,
+            FText::Format(
+                LOCTEXT("CandidateWorkStartFailure", "ArtFlow 候选未开始：\n{0}\n\n源关卡未发生修改。"),
+                FText::FromString(Error)));
+    }
 }
 
 bool FArtFlowSceneBridgeModule::BeginSceneSessionHandshake(
@@ -2795,6 +2824,356 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
     }
 }
 
+bool FArtFlowSceneBridgeModule::BeginSceneCandidateWorkDiscovery(
+    const bool bAutomation,
+    FString& OutError)
+{
+    if (bSceneCandidateWorkRequestPending || bSessionCandidatePending)
+    {
+        OutError = TEXT("An ArtFlow candidate work request is already active.");
+        return false;
+    }
+    if (SessionRunId.IsEmpty() || !ArtFlowSceneBridge::IsSha256(SessionSha256) ||
+        SessionEndpointOrigin.IsEmpty())
+    {
+        OutError = TEXT("Candidate work requires the current ArtFlow Run, Session and localhost endpoint.");
+        return false;
+    }
+    SceneCandidateWorkerId = FString::Printf(
+        TEXT("ue-editor-%u"), FPlatformProcess::GetCurrentProcessId());
+    bSceneCandidateWorkAutomation = bAutomation;
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+        FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId);
+    HttpRequest->SetVerb(TEXT("GET"));
+    HttpRequest->SetTimeout(20.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this, &FArtFlowSceneBridgeModule::HandleSceneCandidateWorkDiscovery);
+    bSceneCandidateWorkRequestPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneCandidateWorkRequestPending = false;
+        OutError = TEXT("The current ArtFlow candidate work could not be requested.");
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneCandidateWorkDiscovery(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneCandidateWorkRequestPending = false;
+    FString Error;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid() || ResponseCode != 200 ||
+        !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(Response.IsValid() ? Response->GetContentAsString() : TEXT("")),
+            Projection) || !Projection.IsValid())
+    {
+        Error = TEXT("ArtFlow did not return the current candidate work projection.");
+    }
+    const TSharedPtr<FJsonObject>* Work = nullptr;
+    const TSharedPtr<FJsonObject>* Definition = nullptr;
+    FString Schema;
+    FString RunId;
+    FString Status;
+    FString SessionSha;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetStringField(TEXT("schema_id"), Schema) ||
+        !Projection->TryGetStringField(TEXT("run_id"), RunId) ||
+        !Projection->TryGetObjectField(TEXT("scene_candidate_work"), Work) || Work == nullptr ||
+        !(*Work)->TryGetStringField(TEXT("status"), Status) ||
+        !(*Work)->TryGetObjectField(TEXT("definition"), Definition) || Definition == nullptr ||
+        !(*Definition)->TryGetStringField(TEXT("work_sha256"), SceneCandidateWorkSha) ||
+        !(*Definition)->TryGetStringField(TEXT("session_sha256"), SessionSha) ||
+        Schema != TEXT("agent-run-projection/1") || RunId != SessionRunId ||
+        SessionSha != SessionSha256 || Status != TEXT("queued") ||
+        !ArtFlowSceneBridge::IsSha256(SceneCandidateWorkSha)))
+    {
+        Error = TEXT("The current Scene Session has no matching queued Unreal candidate work.");
+    }
+    if (Error.IsEmpty())
+    {
+        BeginSceneCandidateWorkClaim(Error);
+    }
+    if (!Error.IsEmpty())
+    {
+        UE_LOG(LogArtFlowSceneBridge, Error, TEXT("ARTFLOW_CANDIDATE_WORK_DISCOVERY_FAILED error=%s"), *Error);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(false, TEXT(""), Error);
+            FPlatformMisc::RequestExit(false);
+        }
+        else
+        {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("ArtFlow 候选无法领取：\n") + Error));
+        }
+    }
+}
+
+bool FArtFlowSceneBridgeModule::BeginSceneCandidateWorkClaim(FString& OutError)
+{
+    TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("schema_id"), TEXT("artflow-scene-candidate-claim/1"));
+    Payload->SetStringField(TEXT("work_sha256"), SceneCandidateWorkSha);
+    Payload->SetStringField(TEXT("session_sha256"), SessionSha256);
+    Payload->SetStringField(TEXT("worker_id"), SceneCandidateWorkerId);
+    FString Body;
+    FJsonSerializer::Serialize(Payload.ToSharedRef(), TJsonWriterFactory<>::Create(&Body));
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+        FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId +
+        TEXT("/scene-candidate-work/claim"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    HttpRequest->SetContentAsString(Body);
+    HttpRequest->SetTimeout(20.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this, &FArtFlowSceneBridgeModule::HandleSceneCandidateWorkClaim);
+    bSceneCandidateWorkRequestPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneCandidateWorkRequestPending = false;
+        OutError = TEXT("The candidate work claim could not be submitted.");
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneCandidateWorkClaim(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneCandidateWorkRequestPending = false;
+    FString Error;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid() || ResponseCode != 200 ||
+        !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(Response.IsValid() ? Response->GetContentAsString() : TEXT("")),
+            Projection) || !Projection.IsValid())
+    {
+        Error = FString::Printf(TEXT("ArtFlow rejected the candidate work claim (HTTP %d)."), ResponseCode);
+    }
+    const TSharedPtr<FJsonObject>* Work = nullptr;
+    const TSharedPtr<FJsonObject>* Definition = nullptr;
+    const TSharedPtr<FJsonObject>* CandidatePlan = nullptr;
+    FString Status;
+    FString WorkerId;
+    FString WorkSha;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetObjectField(TEXT("scene_candidate_work"), Work) || Work == nullptr ||
+        !(*Work)->TryGetStringField(TEXT("status"), Status) ||
+        !(*Work)->TryGetStringField(TEXT("worker_id"), WorkerId) ||
+        !(*Work)->TryGetObjectField(TEXT("definition"), Definition) || Definition == nullptr ||
+        !(*Definition)->TryGetStringField(TEXT("work_sha256"), WorkSha) ||
+        !(*Definition)->TryGetObjectField(TEXT("candidate_plan"), CandidatePlan) || CandidatePlan == nullptr ||
+        Status != TEXT("claimed") || WorkerId != SceneCandidateWorkerId ||
+        WorkSha != SceneCandidateWorkSha))
+    {
+        Error = TEXT("The claimed candidate work identity does not match this Unreal editor.");
+    }
+    if (Error.IsEmpty())
+    {
+        PendingSceneCandidatePlan = *CandidatePlan;
+        BeginSceneCandidateWorkProgress(
+            TEXT("executing"), TEXT(""), TEXT("Unreal 正在生成隔离候选关卡"), Error);
+    }
+    if (!Error.IsEmpty())
+    {
+        UE_LOG(LogArtFlowSceneBridge, Error, TEXT("ARTFLOW_CANDIDATE_WORK_CLAIM_FAILED error=%s"), *Error);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(false, TEXT(""), Error);
+            FPlatformMisc::RequestExit(false);
+        }
+        else
+        {
+            FMessageDialog::Open(EAppMsgType::Ok, FText::FromString(TEXT("ArtFlow 候选领取失败：\n") + Error));
+        }
+    }
+}
+
+bool FArtFlowSceneBridgeModule::BeginSceneCandidateWorkProgress(
+    const FString& Status,
+    const FString& OutcomeSha256,
+    const FString& Message,
+    FString& OutError)
+{
+    if (bSceneCandidateWorkRequestPending)
+    {
+        OutError = TEXT("Another ArtFlow candidate work request is pending.");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("schema_id"), TEXT("artflow-scene-candidate-progress/1"));
+    Payload->SetStringField(TEXT("work_sha256"), SceneCandidateWorkSha);
+    Payload->SetStringField(TEXT("worker_id"), SceneCandidateWorkerId);
+    Payload->SetStringField(TEXT("status"), Status);
+    Payload->SetStringField(TEXT("action_id"), TEXT("ue-") + Status + TEXT("-") + SceneCandidateWorkSha.Left(16));
+    if (!OutcomeSha256.IsEmpty()) Payload->SetStringField(TEXT("outcome_sha256"), OutcomeSha256);
+    if (!Message.IsEmpty()) Payload->SetStringField(TEXT("message"), Message);
+    FString Body;
+    FJsonSerializer::Serialize(Payload.ToSharedRef(), TJsonWriterFactory<>::Create(&Body));
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest = FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId +
+        TEXT("/scene-candidate-work/progress"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    HttpRequest->SetContentAsString(Body);
+    HttpRequest->SetTimeout(20.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this, &FArtFlowSceneBridgeModule::HandleSceneCandidateWorkProgress);
+    SceneCandidateProgressStatus = Status;
+    bSceneCandidateWorkRequestPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneCandidateWorkRequestPending = false;
+        OutError = TEXT("Candidate work progress could not be submitted.");
+        return false;
+    }
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneCandidateWorkProgress(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneCandidateWorkRequestPending = false;
+    FString Error;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid() || ResponseCode != 200 ||
+        !FJsonSerializer::Deserialize(
+            TJsonReaderFactory<>::Create(Response.IsValid() ? Response->GetContentAsString() : TEXT("")),
+            Projection) || !Projection.IsValid())
+    {
+        Error = FString::Printf(TEXT("ArtFlow rejected candidate progress (HTTP %d)."), ResponseCode);
+    }
+    const TSharedPtr<FJsonObject>* Work = nullptr;
+    FString Status;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetObjectField(TEXT("scene_candidate_work"), Work) || Work == nullptr ||
+        !(*Work)->TryGetStringField(TEXT("status"), Status) ||
+        Status != SceneCandidateProgressStatus))
+    {
+        Error = TEXT("Candidate progress response does not match the submitted state.");
+    }
+    if (Error.IsEmpty() && SceneCandidateProgressStatus == TEXT("executing"))
+    {
+        UPCGComponent* CandidatePCG = nullptr;
+        if (!PendingSceneCandidatePlan.IsValid() ||
+            !ArtFlowSceneBridge::StartSessionCandidateExecution(
+                *PendingSceneCandidatePlan,
+                CandidatePCG,
+                bSessionCandidateReconciled,
+                SessionCandidatePackage,
+                SessionCandidatePlanId,
+                SessionCandidatePlanSha,
+                SessionCandidateStageRequestSha,
+                SessionSourceLevelSha,
+                SessionCandidateProtectedHash,
+                Error))
+        {
+            if (Error.IsEmpty()) Error = TEXT("The claimed work contains no executable candidate plan.");
+        }
+        else
+        {
+            PendingSceneCandidatePlan.Reset();
+            SessionCandidatePCGComponent = CandidatePCG;
+            bSessionCandidatePending = true;
+            if (!AutomationTickHandle.IsValid())
+            {
+                AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
+                    FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
+            }
+            UE_LOG(
+                LogArtFlowSceneBridge,
+                Display,
+                TEXT("ARTFLOW_CANDIDATE_WORK_EXECUTING work=%s plan=%s worker=%s"),
+                *SceneCandidateWorkSha, *SessionCandidatePlanId, *SceneCandidateWorkerId);
+            return;
+        }
+    }
+    if (Error.IsEmpty() && SceneCandidateProgressStatus == TEXT("reconciling"))
+    {
+        BeginSceneCandidateWorkProgress(
+            TEXT("succeeded"),
+            SceneCandidateFinalOutcomeSha,
+            TEXT("候选关卡已完成并通过 Unreal 宿主复检"),
+            Error);
+        if (Error.IsEmpty()) return;
+    }
+    if (Error.IsEmpty() &&
+        (SceneCandidateProgressStatus == TEXT("succeeded") || SceneCandidateProgressStatus == TEXT("failed")))
+    {
+        const bool bSucceeded = SceneCandidateProgressStatus == TEXT("succeeded");
+        UE_LOG(
+            LogArtFlowSceneBridge,
+            Display,
+            TEXT("ARTFLOW_CANDIDATE_WORK_RESULT success=%s work=%s receipt=%s error=%s"),
+            bSucceeded ? TEXT("true") : TEXT("false"),
+            *SceneCandidateWorkSha,
+            *SceneCandidateFinalReceiptPath,
+            *SceneCandidateFinalError);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(
+                bSucceeded, SceneCandidateFinalReceiptPath, SceneCandidateFinalError);
+            FPlatformMisc::RequestExit(false);
+        }
+        else
+        {
+            FNotificationInfo Info(FText::FromString(
+                bSucceeded
+                    ? TEXT("ArtFlow 候选关卡已生成并同步到场景变更谱")
+                    : TEXT("ArtFlow 候选执行停止；源关卡未修改")));
+            Info.bFireAndForget = true;
+            Info.ExpireDuration = 12.0f;
+            const TSharedPtr<SNotificationItem> Notification =
+                FSlateNotificationManager::Get().AddNotification(Info);
+            if (Notification.IsValid())
+            {
+                Notification->SetCompletionState(
+                    bSucceeded ? SNotificationItem::CS_Success : SNotificationItem::CS_Fail);
+            }
+        }
+        return;
+    }
+    if (!Error.IsEmpty() && SceneCandidateProgressStatus == TEXT("executing"))
+    {
+        SceneCandidateFinalReceiptPath.Reset();
+        SceneCandidateFinalError = Error;
+        FString SyncError;
+        if (BeginSceneCandidateWorkProgress(
+            TEXT("failed"), TEXT(""), Error.Left(500), SyncError))
+        {
+            return;
+        }
+        Error += TEXT(" Final failure sync also failed: ") + SyncError;
+    }
+    if (!Error.IsEmpty())
+    {
+        UE_LOG(LogArtFlowSceneBridge, Error, TEXT("ARTFLOW_CANDIDATE_WORK_PROGRESS_FAILED error=%s"), *Error);
+        if (bSceneCandidateWorkAutomation)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(false, SceneCandidateFinalReceiptPath, Error);
+            FPlatformMisc::RequestExit(false);
+        }
+    }
+}
+
 bool FArtFlowSceneBridgeModule::BeginSceneLifecycleCallback(
     const FString& Transition,
     const FString& ArtifactSha256,
@@ -3071,6 +3450,42 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
             SessionCandidateProtectedHash,
             ReceiptPath,
             Error);
+        if (!SceneCandidateWorkSha.IsEmpty())
+        {
+            FString OutcomeSha;
+            bool bWorkSuccess = bSuccess;
+            if (bWorkSuccess && !ArtFlowSceneBridge::HashFile(ReceiptPath, OutcomeSha, Error))
+            {
+                bWorkSuccess = false;
+            }
+            SceneCandidateFinalReceiptPath = ReceiptPath;
+            SceneCandidateFinalError = Error;
+            FString ProgressError;
+            SceneCandidateFinalOutcomeSha = bWorkSuccess ? OutcomeSha : TEXT("");
+            const FString ProgressStatus = bWorkSuccess ? TEXT("reconciling") : TEXT("failed");
+            const FString ProgressMessage = bWorkSuccess
+                ? TEXT("候选关卡已生成，正在核对宿主回执与内容身份")
+                : (Error.IsEmpty() ? TEXT("候选执行失败，源关卡未修改") : Error.Left(500));
+            if (!BeginSceneCandidateWorkProgress(
+                ProgressStatus,
+                bWorkSuccess ? OutcomeSha : TEXT(""),
+                ProgressMessage,
+                ProgressError))
+            {
+                UE_LOG(
+                    LogArtFlowSceneBridge,
+                    Error,
+                    TEXT("ARTFLOW_CANDIDATE_WORK_FINAL_SYNC_FAILED error=%s"),
+                    *ProgressError);
+                if (bSceneCandidateWorkAutomation)
+                {
+                    ArtFlowSceneBridge::WriteAutomationResult(false, ReceiptPath, ProgressError);
+                    FPlatformMisc::RequestExit(false);
+                }
+            }
+            AutomationTickHandle.Reset();
+            return false;
+        }
         ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
         UE_LOG(
             LogArtFlowSceneBridge,
@@ -3107,7 +3522,26 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     FString ArchivePath;
     const bool bPrepareOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo"));
     bool bSuccess = false;
-    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")))
+    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowClaimCandidateWork")))
+    {
+        FString Endpoint;
+        if (!FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCandidateRun="), SessionRunId) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCandidateSession="), SessionSha256) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowEndpoint="), Endpoint) ||
+            !ArtFlowSceneBridge::NormalizeLoopbackOrigin(Endpoint, SessionEndpointOrigin, Error))
+        {
+            if (Error.IsEmpty())
+            {
+                Error = TEXT("Candidate work automation requires Run, Session and localhost endpoint identities.");
+            }
+        }
+        else if (ArtFlowSceneBridge::PrepareExistingAutomationScene(false, Error) &&
+            BeginSceneCandidateWorkDiscovery(true, Error))
+        {
+            return true;
+        }
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")))
     {
         FString Transition;
         FString ArtifactSha256;

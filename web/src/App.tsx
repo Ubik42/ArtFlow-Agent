@@ -1399,7 +1399,13 @@ function SceneChangeSpectrum({
               {shortId(work?.definition.work_sha256 ?? stageRequest?.request_sha256 ?? draft.draft_sha256)}
             </code>
             <div className="spectrum-actions">
-              {!isPersisted ? (
+              {work ? (
+                <div className={`candidate-work-pulse state-${work.status}`}>
+                  <span />
+                  <b>{workLabels[work.status]}</b>
+                  <small>{work.worker_id ? `写入者 ${work.worker_id}` : "已锁定当前 Session 与候选计划"}</small>
+                </div>
+              ) : !isPersisted ? (
                 <button type="button" disabled={busy} onClick={() => void startSession()}>
                   <ArrowUpRight size={13} /> 启动场景任务
                 </button>
@@ -1411,12 +1417,6 @@ function SceneChangeSpectrum({
                 <button type="button" disabled={busy} onClick={() => void queueCandidateWork()}>
                   <Layers3 size={13} /> 交给 Unreal 执行
                 </button>
-              ) : work ? (
-                <div className={`candidate-work-pulse state-${work.status}`}>
-                  <span />
-                  <b>{workLabels[work.status]}</b>
-                  <small>{work.worker_id ? `写入者 ${work.worker_id}` : "已锁定当前 Session 与候选计划"}</small>
-                </div>
               ) : null}
             </div>
           </>

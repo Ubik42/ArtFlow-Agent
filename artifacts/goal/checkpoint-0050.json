@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M19-S1",
+  "status": "completed",
+  "outcome": "A current editor-originated Scene Session now produces a content-bound candidate work item that one Unreal writer can claim, execute and reconcile through the existing event stream. UE 5.8.1 generated 12 PCG instances, returned a hashed host receipt, projected eight ordered events and left the source level unchanged.",
+  "evidence": [
+    "artifacts/goal/m19-s1-candidate-work/verification.json",
+    "artifacts/goal/m19-s1-candidate-work/live-projection.json",
+    "artifacts/goal/m19-s1-candidate-work/host-receipt.json",
+    "artifacts/goal/m19-s1-candidate-work/live-candidate-work-desktop.png",
+    "artifacts/goal/m19-s1-candidate-work/live-candidate-work-narrow.png",
+    "docs/evidence/M19_S1_LIVE_CANDIDATE_WORK_2026-08-30.md"
+  ]
+}

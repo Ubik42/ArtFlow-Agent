@@ -1,0 +1,17 @@
+{
+	"schema_id": "artflow-session-candidate-execution-receipt/1",
+	"plan_id": "candidate-plan-9039733f0b6b",
+	"plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+	"stage_request_sha256": "e31328f4b1f52ee07dbcb8720adb8ef60564a282fd295ed78fb9dfe846028c89",
+	"source_scene": "/Game/ArtFlowDemo",
+	"source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"source_level_unchanged": true,
+	"candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+	"candidate_level_sha256": "d7fac7758eb00bc96f81310bef0dcad1795a5c29f81e5cb32e9effa7531ae335",
+	"generated_instance_count": 12,
+	"reconciled": false,
+	"candidate_beauty_path": "D:/3D/_tools/ArtFlow-Agent/integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/SceneCandidates/candidate-plan-9039733f0b6b/candidate-beauty.png",
+	"candidate_beauty_sha256": "c487423666354550b44dd1dd7bcae53a84c2fe82a02f7671d9dbe2138881ae0f",
+	"completed_at": "2026-08-31T04:27:06.709Z"
+}

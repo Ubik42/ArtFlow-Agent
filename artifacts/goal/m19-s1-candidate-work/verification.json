@@ -1,0 +1,50 @@
+{
+  "schema_id": "artflow-m19-candidate-work-verification/1",
+  "status": "verified",
+  "engine_version": "5.8.1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "event_count": 8,
+  "event_order": [
+    "run_created",
+    "scene_attached",
+    "scene_session_started",
+    "scene_candidate_work_queued",
+    "scene_candidate_work_claimed",
+    "scene_candidate_work_progressed",
+    "scene_candidate_work_progressed",
+    "scene_candidate_work_progressed"
+  ],
+  "work_id": "scene-work-807e766c4393",
+  "work_sha256": "807e766c4393b6850a7308f7a1617d4c586e22b7558915ab3314d81d606c0485",
+  "worker_id": "ue-editor-47200",
+  "final_status": "succeeded",
+  "outcome_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+  "candidate_plan_sha256": "9039733f0b6b78e0eb6422cc109085df501147c2a98c8f6d7fc3379e6e1b2c79",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+  "generated_instance_count": 12,
+  "source_level_unchanged": true,
+  "host_receipt": "artifacts/goal/m19-s1-candidate-work/host-receipt.json",
+  "host_receipt_sha256": "fe19af26c0f3fea0a9cd1abb959b2ceaea9327dbc30714ace2f45678664a8f0e",
+  "screenshots": [
+    {
+      "path": "artifacts/goal/m19-s1-candidate-work/live-candidate-work-desktop.png",
+      "size": [
+        1600,
+        1000
+      ],
+      "sha256": "5ad7276a4286f37ed1231d18a5d3233b73f75af3eb1a20878c5cf8d3fc03dc98"
+    },
+    {
+      "path": "artifacts/goal/m19-s1-candidate-work/live-candidate-work-narrow.png",
+      "size": [
+        720,
+        1200
+      ],
+      "sha256": "6779f78b7c55e017782f7ed77b8d3ff118891c673619f40e9ae957bf48baf675"
+    }
+  ],
+  "browser_console_error_count": 0,
+  "horizontal_overflow_px": 0,
+  "database_sha256": "dce51c8af9dbc4c5ef297026c70d20bacd6013ea39fcd8c555baf76931e905d4"
+}

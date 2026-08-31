@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 54,
+  "stateRevision": 55,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M19",
+  "currentMilestone": "M20",
   "milestones": [
     {
       "id": "M0",
@@ -210,7 +210,7 @@
     {
       "id": "M19",
       "title": "Live candidate execution and progress",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M18"],
       "outcome": "A staged Candidate Plan becomes a content-bound work item that the Unreal editor can claim, execute and reconcile from the current Scene Session, with typed progress returning through the existing event stream and no manual command-line launch.",
       "acceptance": [
@@ -218,36 +218,48 @@
         "One Unreal writer claims a work item atomically, reports typed execution progress and reconciles unknown completion without duplicate scene or provider side effects",
         "The Scene Change Spectrum renders queued, claimed, executing, reconciled and failed states from the live AgentRunProjection"
       ]
+    },
+    {
+      "id": "M20",
+      "title": "Current-session tribunal and failed-domain correction",
+      "status": "in_progress",
+      "dependsOn": ["M19"],
+      "outcome": "The current Scene Session evaluates its own Unreal candidate rerender and 3D host receipt, classifies failed domains, preserves passed evidence, submits only a bounded correction plan and advances an accepted candidate toward adoption without loading historical M16 evaluation artifacts.",
+      "acceptance": [
+        "Technical checks and the visual critic evaluate the exact current work outcome and cannot cite another Session, candidate or showcase artifact",
+        "A failed domain produces one content-bound correction work item while passed domain evidence remains byte-identical and is not re-executed",
+        "A passing reevaluation appends the current candidate evaluation through AgentEventStore and projects the decision basis in the Scene Change Spectrum"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M19-S1",
-    "milestone": "M19",
-    "title": "Registered Unreal candidate work queue",
-    "outcome": "Add the smallest content-bound work queue over the existing StageRequest and AgentEventStore so the current Unreal editor can atomically claim the registered Candidate Plan, report typed progress and reconcile completion. Reuse the M12 executor and M18 callback identity boundary; do not introduce arbitrary commands, a second workflow engine or a manual command-line product path.",
+    "id": "M20-S1",
+    "milestone": "M20",
+    "title": "Current candidate evaluation intake",
+    "outcome": "Resolve the current succeeded candidate work and its registered Unreal receipt into a typed evaluation input, run deterministic 3D and image integrity checks against the exact current Scene Session, and append the resulting evaluation through AgentEventStore. Reuse the existing tribunal and correction contracts, but remove the normal-path dependency on frozen M13-M16 evaluation artifacts.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not redesign the Candidate Plan, rerun GPT Image or ComfyUI, or add new generation providers",
-      "Do not create a second database, workflow engine, event bus, job platform or MCP-owned state machine",
-      "Do not accept arbitrary commands, scripts, workflows, plans or filesystem paths from Unreal",
-      "Do not add multi-user scheduling, distributed workers, source control or packaged distribution",
-      "Do not spend time on broad test matrices, soak testing or visual redesign unrelated to live progress"
+      "Do not add new providers, rerun GPT Image or ComfyUI, or redesign the Scene Session planner",
+      "Do not create a second evaluator state store, workflow engine, event bus or generic job platform",
+      "Do not allow the evaluator to select, adopt, publish or override deterministic failures",
+      "Do not generalize receipt intake to caller filesystem paths or arbitrary evaluation schemas",
+      "Do not spend time on broad model benchmarks, browser matrices or unrelated visual redesign"
     ],
     "acceptance": [
-      "Creating work is allowed only for the current persisted Session and its exact registered StageRequest and Candidate Plan identities",
-      "A loopback Unreal worker can atomically claim one item, and a second claim returns the same owner or a typed unavailable result",
-      "Queued, claimed, executing, reconciled and failed progress appends through AgentEventStore and reconstructs deterministically after restart",
-      "Unknown completion reconciles against a registered Unreal receipt before retry and produces no duplicate scene mutation",
-      "The live Scene Change Spectrum renders execution state from AgentRunProjection without showcase data or manual command-line state"
+      "Evaluation input resolves only from the current succeeded work definition, outcome hash and registered Unreal receipt",
+      "Deterministic checks verify source invariants, candidate namespace, generated instance budget, receipt identity and same-camera rerender content before visual scoring",
+      "The evaluator returns per-domain pass or fail evidence with exact artifact hashes and cannot mutate or adopt the candidate",
+      "Appending the evaluation is idempotent and reducer replay reconstructs the same current-session result",
+      "No M13-M16 fixed evaluation record or showcase lineage is read on the normal current-session path"
     ],
     "stopConditions": [
-      "Stop if the queue would become a second authoritative workflow or job store",
-      "Stop if work cannot be bound to the current StageRequest and Candidate Plan without inventing identity",
-      "Stop if execution requires accepting host commands, scripts, workflows or filesystem paths from the caller",
-      "Stop if claim, progress, reconciliation and event replay cannot remain deterministic and idempotent",
+      "Stop if evaluation cannot be bound to the current work outcome and Session without inventing identity",
+      "Stop if a visual score would need to override a deterministic scene or receipt failure",
+      "Stop if the normal path still requires a fixed M13-M16 evaluation artifact",
+      "Stop if evaluation replay or future correction evidence cannot remain deterministic and idempotent",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -269,9 +281,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0049.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0050.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M18 are complete. Four independent Unreal Engine 5.8.1 processes submitted evaluation, adoption, publication and review through the registered path-free lifecycle callback for the current editor-originated Scene Session. The service resolved exact project-owned artifact identities, appended the legal four-event order into the existing AgentEventStore and returned one seven-event AgentRunProjection. Caller paths, unknown identities, reordered transitions, non-loopback clients and changed content under a reused action identity fail closed. Replay is idempotent and the historical M16 migration route remains a compatibility fixture only. Live candidate execution still requires a manually launched host process; replacing that product gap with a registered Unreal work queue is M19.",
+  "evidenceCeiling": "M0-M19 are complete. UE 5.8.1 exported the current project-owned ArtFlowDemo into a new Scene Package and Scene Session rather than reusing the M12 fixture. The current Session compiled one content-bound PCG and lighting work item; one Unreal writer claimed it, reported executing and reconciling, generated 12 PCG instances, returned a hashed host receipt and reached succeeded across eight ordered append-only events. The source level hash remained unchanged. A second writer, caller path, illegal transition and non-loopback claim fail closed. Desktop 1600x1000 and narrow 720x1200 captures show the live success pulse with zero horizontal overflow and no browser console error. Current-candidate evaluation still depends on fixed historical M13-M16 artifacts, which M20 replaces.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

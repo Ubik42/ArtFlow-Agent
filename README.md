@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow Scene Lab：当前 Scene Session 的场景变体谱系](artifacts/goal/m17-s1-live-lifecycle/live-scene-session-desktop.png)
+![ArtFlow Scene Lab：Unreal 已完成当前候选工作项](artifacts/goal/m19-s1-candidate-work/live-candidate-work-desktop.png)
 
 ## 项目定位
 
@@ -23,6 +23,8 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 视觉参考、材质、三维资产、空间布局和灯光是可独立编排的变更领域。ArtFlow 根据 Scene Digital Twin 与实际运行时能力标出可执行、待补齐和实验路线；确认后的 Scene Session 进入 append-only 账本，刷新或重启不会丢失。
 
 当所有选定领域满足前置条件时，系统生成一份与场景哈希、Session、策略版本和领域操作严格绑定的候选关卡请求。请求只能指向 ArtFlow 派生的隔离内容目录；截图中的状态表示“请求已封存”，不表示 Unreal 已经完成本次写入。
+
+封存后的 Candidate Plan 会进入当前 Scene Session 的注册工作项。使用者可在 Unreal 的 Tools 菜单选择“执行当前 ArtFlow 候选”；编辑器原子领取单一写入权，依次回传执行、对账和结果状态。当前 UE 5.8.1 实测由实时导出的场景包建立新 Session，生成 12 个 PCG 实例并保持源关卡哈希不变。
 
 在真实 UE 5.8 宿主中，当前已接入的 PCG 与灯光域可以进一步编译为具体 Candidate Plan。下面的候选由 Session 请求派生目录承载，生成 12 个 PCG 实例；新编辑器进程再次打开同一计划时完成对账而不重复生成，源关卡文件哈希保持不变。
 
@@ -133,6 +135,9 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 场景变体生命周期重放 | 4 个类型化事件、重复注册后总事件仍为 7 |
 | UE 原生生命周期回传 | 评价 / 采用 / 发布 / 审阅 4 / 4，顺序事件共 7 条 |
 | 生命周期回调路径输入 | 0 个调用方路径字段；未知身份与乱序转换关闭失败 |
+| 当前候选工作项 | 排队 / 领取 / 执行 / 对账 / 成功，8 条持久事件 |
+| UE 候选执行结果 | 12 个 PCG 实例，源关卡字节变化 0 |
+| 候选工作项写入者 | 1 个；第二写入者与非法状态跳转关闭失败 |
 | 陈旧候选请求拦截 | 1 / 1 |
 | UE 原生 Scene Session 握手 | 1 次真实 UE 5.8 运行，源关卡哈希不变 |
 | 同一真实握手请求重放 | 1 个 Session 事件、0 个重复事件 |

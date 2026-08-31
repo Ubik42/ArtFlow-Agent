@@ -5,6 +5,7 @@
 #include "Modules/ModuleManager.h"
 
 class UPCGComponent;
+class FJsonObject;
 
 class FArtFlowSceneBridgeModule final : public IModuleInterface
 {
@@ -16,6 +17,7 @@ private:
     void RegisterMenus();
     void ExportSelectedScene();
     void StartSceneSession();
+    void ExecuteCurrentCandidateWork();
     bool BeginSceneSessionHandshake(const FString& ArchivePath, bool bAutomation, FString& OutError);
     void HandleSceneSessionHandshake(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
     bool BeginSceneLifecycleCallback(
@@ -25,6 +27,16 @@ private:
         bool bAutomation,
         FString& OutError);
     void HandleSceneLifecycleCallback(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+    bool BeginSceneCandidateWorkDiscovery(bool bAutomation, FString& OutError);
+    void HandleSceneCandidateWorkDiscovery(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+    bool BeginSceneCandidateWorkClaim(FString& OutError);
+    void HandleSceneCandidateWorkClaim(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+    bool BeginSceneCandidateWorkProgress(
+        const FString& Status,
+        const FString& OutcomeSha256,
+        const FString& Message,
+        FString& OutError);
+    void HandleSceneCandidateWorkProgress(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
     void ReviewLastExport() const;
     bool TickAutomation(float DeltaTime);
 
@@ -35,6 +47,8 @@ private:
     bool bSessionHandshakeAutomation = false;
     bool bSceneLifecycleCallbackPending = false;
     bool bSceneLifecycleCallbackAutomation = false;
+    bool bSceneCandidateWorkRequestPending = false;
+    bool bSceneCandidateWorkAutomation = false;
     bool bSessionCandidatePending = false;
     bool bSessionCandidateReconciled = false;
     bool bStageReconciled = false;
@@ -55,6 +69,13 @@ private:
     FString SceneLifecycleTransition;
     FString SceneLifecycleArtifactSha256;
     FString SceneLifecycleActionId;
+    FString SceneCandidateWorkSha;
+    FString SceneCandidateWorkerId;
+    FString SceneCandidateProgressStatus;
+    FString SceneCandidateFinalReceiptPath;
+    FString SceneCandidateFinalOutcomeSha;
+    FString SceneCandidateFinalError;
+    TSharedPtr<FJsonObject> PendingSceneCandidatePlan;
     FString SessionCandidatePackage;
     FString SessionCandidatePlanId;
     FString SessionCandidatePlanSha;

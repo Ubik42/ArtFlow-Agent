@@ -2,7 +2,7 @@
   "width": 640,
   "height": 360,
   "goal": "在保持相机构图与受保护灰盒轮廓的前提下，探索雨后清晨的灯光、材质与空间层次。",
-  "artflow_endpoint": "http://127.0.0.1:8796",
+  "artflow_endpoint": "http://127.0.0.1:8804",
   "session_domains": [
     "pcg",
     "lighting"
