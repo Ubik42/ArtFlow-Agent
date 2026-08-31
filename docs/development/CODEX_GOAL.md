@@ -34,8 +34,10 @@ Unreal 当前场景
   在请求派生候选关卡执行注册工具、回渲并跨进程对账，重启没有重复 PCG 实例或源关卡写入。
 - **M13 · Cross-pipeline transformation and correction（已完成）**：雨后庭院由当前 ComfyUI PBR
   驱动多域联合候选；晴光庭院由 GPT Image 2 定义视觉目标，并在单一 lighting 失败后只执行灯光补丁。
-- **M14 · Embedded delivery and portfolio release（进行中）**：完成 Unreal-facing 入口、中文产品界面、多个可复现
-  案例、流程截图、教学文档和可验证发布包。
+- **M14 · Embedded delivery and portfolio release（已完成）**：中文只读展示可在 clean clone 中一键
+  启动，两条当前案例、Unreal 入口、流程截图、教学文档和 49 文件可验证发布包已对齐。
+- **M15 · Evidence-bound disposition and versioned Unreal publish（进行中）**：由编排器基于持久评价
+  证据决定采用或拒绝，把合格候选发布为版本化 Unreal 场景变体，并对丢失回执完成幂等对账。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

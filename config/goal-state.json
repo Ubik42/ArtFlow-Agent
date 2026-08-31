@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 49,
+  "stateRevision": 50,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M14",
+  "currentMilestone": "M15",
   "milestones": [
     {
       "id": "M0",
@@ -151,51 +151,63 @@
     {
       "id": "M14",
       "title": "Embedded delivery and portfolio release",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M13"],
       "outcome": "ArtFlow ships as a polished Chinese portfolio product with an Unreal-facing entry, multiple reproducible production cases, restrained documentation, real screenshots and a traceable release package.",
       "acceptance": [
         "A reviewer can understand, launch and verify the core workflow without reading development history",
         "Public claims and screenshots are generated from frozen host receipts and versioned cases"
       ]
+    },
+    {
+      "id": "M15",
+      "title": "Evidence-bound disposition and versioned Unreal publish",
+      "status": "in_progress",
+      "dependsOn": ["M14"],
+      "outcome": "The orchestrator adopts or rejects Session candidates from persisted evaluation evidence and publishes accepted work as a versioned Unreal scene variant with replayable provenance, without overwriting the source level or duplicating package side effects.",
+      "acceptance": [
+        "A typed disposition decision can reference only an accepted domain evaluation and exact candidate content identity",
+        "Unreal publishes an accepted candidate only into a content-addressed ArtFlow Published namespace while the source level remains byte-identical",
+        "A lost publish receipt is reconciled by a fresh process without creating a second package, and rejected candidates cannot enter the published namespace"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M14-S1",
-    "milestone": "M14",
-    "title": "Reviewer-first launch path and traceable portfolio release",
-    "outcome": "Turn the verified ArtFlow runtime into a reviewer-ready Chinese portfolio delivery: make the Unreal entry and local showcase launch path obvious, align README and demo guidance around the two current M13 cases, freeze a compact screenshot-rich walkthrough, and build a content-addressed release that can be independently verified without exposing development conversation, private state or generated runtime clutter.",
-    "risk": "R2",
+    "id": "M15-S1",
+    "milestone": "M15",
+    "title": "Typed candidate disposition and content-addressed Unreal scene variant",
+    "outcome": "Compile the accepted M13-S2 corrected-domain evaluation into a typed Codex-owned adoption decision, execute a narrow Unreal publish tool that duplicates the exact isolated candidate into a content-addressed /Game/ArtFlow/Published scene-variant namespace, persist provenance and source invariants, then reconcile the same decision in a fresh editor process with zero duplicate package side effect. Also prove that a correction-required or identity-mismatched evaluation cannot produce a publish request.",
+    "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not publish, merge or overwrite the active/source Unreal level",
-      "Do not rerun image, ComfyUI, asset import or PCG work whose frozen M13 receipts already satisfy the public case",
-      "Do not add another Provider, framework, protocol, Agent role or case only to enlarge the feature list",
-      "Do not redesign the whole frontend again; polish only issues that block reviewer understanding or target-size presentation",
-      "Do not modify shared engine installation files or unrelated Unreal projects",
-      "Do not delay delivery for packaged-runtime support, broad engine matrices, coverage targets or cosmetic test expansion"
+      "Do not overwrite, rename or save the source ArtFlowDemo level",
+      "Do not merge a candidate into an arbitrary user level; publish only a versioned project-owned scene variant",
+      "Do not rerun GPT Image, ComfyUI, asset import, material generation or PCG",
+      "Do not add another Provider, framework, workflow engine or generalized source-control integration",
+      "Do not redesign the Scene Lab or broaden this slice into packaged plugin distribution",
+      "Do not spend time on broad engine matrices, full test coverage or cosmetic evidence expansion"
     ],
     "acceptance": [
-      "A reviewer can start the fixed local showcase and understand the Unreal-to-Agent-to-candidate loop, two capability routes and failed-domain correction from the first README screen and current Chinese UI",
-      "The Unreal integration guide names the actual editor command, candidate-only mutation boundary and local Agent endpoint without requiring internal development knowledge",
-      "Desktop and narrow screenshots cover the current two-case interface with zero console errors, blocking overlays or invented statuses",
-      "The portfolio release manifest includes the current README, demo guide, key screenshots and evidence summaries, verifies content hashes independently, and excludes credentials, event databases, temporary candidates and conversation artifacts",
-      "A clean clone can run the documented lightweight showcase path using repository-owned frozen evidence"
+      "A strict disposition contract rejects failure evaluation, stale candidate hash, changed source hash, unknown strategy version and any publish destination outside /Game/ArtFlow/Published",
+      "The orchestrator decision cites the corrected accepted evaluation, Candidate Plan, UE execution receipt and policy version and requires no permission prompt",
+      "UE 5.8 creates exactly one versioned published scene package whose source candidate, source level, protected state, material binding and PCG instance count match the decision",
+      "A fresh UE process reconciles the same publish decision as already complete without creating another map or repeating any external tool",
+      "The source ArtFlowDemo.umap remains byte-identical, and publish plus negative-control receipts are frozen for the next UI/documentation slice"
     ],
     "stopConditions": [
-      "Stop before any source-level Unreal save or candidate adoption",
-      "Stop if release assembly would include secrets, local databases, ignored runtime state or unreviewed generated binaries",
-      "Stop if a public claim cannot cite a current frozen artifact, exact denominator or real host receipt",
-      "Stop if visual polish requires replacing the current Scene Change Spectrum product language with a generic template",
-      "Stop if launch documentation would depend on the user's login state or machine-private absolute paths",
+      "Stop if the corrected candidate package cannot be restored with the exact frozen hash from M13-S2",
+      "Stop if accepted evaluation, candidate plan, execution receipt and source scene identity do not agree exactly",
+      "Stop if Unreal would write outside the exact project-owned ArtFlow Published destination",
+      "Stop if publish would mutate or save the source level, rerun a successful domain or invoke an external Provider",
+      "Stop if a second process observes ambiguous completion rather than a single exact published package",
       "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": false}
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -211,9 +223,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0044.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0045.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M13 are complete. M13-S1 binds a current RTX 4080 ComfyUI capability snapshot and real 23.094-second PBR execution to a validated five-channel texture set, Unreal material instance, project asset, PCG and lighting candidate. M13-S2 binds a real Codex GPT Image 2 visual target to the same Session coordinator, classifies an injected 0.05 / 6500K failure as lighting only, applies one lighting patch, preserves image/material/asset/PCG evidence hashes, and reconciles the corrected UE 5.8 candidate in a new process with 12 instances and zero repeated external submission. Both keep source ArtFlowDemo.umap SHA-256 620e4814... unchanged and are shown in the current Chinese desktop and narrow UI. This evidence does not yet claim a packaged release, clean-clone launch verification or source-level publish.",
+  "evidenceCeiling": "M0-M14 are complete. Two current M13 routes bind real ComfyUI PBR and Codex GPT Image 2 work to isolated UE 5.8 candidates, including lighting-only correction with four successful-domain evidence hashes preserved, 12 PCG instances, zero repeated external submission and source ArtFlowDemo.umap SHA-256 620e4814... unchanged. The Chinese Scene Change Spectrum UI has desktop and narrow screenshots, a clean clone at f370694 starts from one PowerShell command, and a 49-file content-addressed portfolio archive passes both project and embedded standard-library verification under manifest 29eb651c... . This evidence does not yet claim that the new Session coordinator has adopted or published an M13 candidate into a versioned Unreal scene variant.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

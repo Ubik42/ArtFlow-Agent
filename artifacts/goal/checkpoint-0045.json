@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M14-S1",
+  "status": "completed",
+  "outcome": "The reviewer-facing Chinese showcase now starts from one PowerShell command on a clean local clone, builds the current Scene Change Spectrum UI, serves the two frozen M13 production cases without login or generation, and exposes their content-bound media. A 49-file content-addressed portfolio archive includes current documentation, real screenshots and M13 receipts; both the project verifier and the embedded standard-library verifier pass, while prompts, credentials, event databases and candidate runtime state remain excluded.",
+  "evidence": [
+    "docs/evidence/M14_S1_REVIEWER_RELEASE_2026-08-30.md",
+    "scripts/start_showcase.ps1",
+    "docs/DEMO_GUIDE.md",
+    "integrations/unreal/README.md",
+    "artifacts/goal/m14-s1-release/artflow-agent-portfolio-29eb651ceec19a82.zip",
+    "artifacts/goal/m14-s1-release/verification.json"
+  ]
+}
