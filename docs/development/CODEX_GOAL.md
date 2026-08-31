@@ -56,9 +56,10 @@ Unreal 当前场景
   双灯光组实测通过后已由 Codex 采用精确内容身份。
 - **M21 · Current-session publish and review（已完成）**：当前采用决定已接入已有版本化发布合同；
   Unreal 写入唯一内容寻址 Published 版本，新进程完成发布与审阅对账，源关卡字节未变化。
-- **M22 · Unreal-native operator lifecycle controls（进行中）**：把已经验证的发布与审阅合同接入
-  Unreal 中文 Tools 菜单。美术人员不再运行开发脚本，编辑器只依据当前投影推进唯一合法状态，
-  并把结果继续回传同一 Scene Session。
+- **M22 · Unreal-native operator lifecycle controls（进行中）**：S1 已把发布与审阅合同接入
+  Unreal 中文 Tools 菜单，并以插件内置固定能力完成真实宿主验证。当前 S2 负责编辑器重启后的
+  Scene Session 上下文恢复，同时移除公开菜单中的旧导出入口；无会话或身份歧义时必须在写入前
+  以清晰中文关闭失败。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

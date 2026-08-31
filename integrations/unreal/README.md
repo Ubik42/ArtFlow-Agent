@@ -1,6 +1,6 @@
 # Unreal 集成
 
-`ArtFlowSceneBridge/` 是可安装到 Unreal Engine 项目的 Editor 插件；
+`ArtFlowSceneBridge/` 是可安装到 Unreal Engine 项目的 Editor 插件，当前版本为 `1.2.0`；
 `ArtFlowBridgeHost/` 是仓库内随附的 UE 5.8 示例项目，用于复现截图、回执和自动化案例。
 Bridge 的能力不依赖这个示例项目，实际项目可以使用相同入口导出自己的关卡。
 
@@ -36,12 +36,23 @@ Scene Session 建立和候选请求验证。成功回执保存到：
 本次已经就绪的 PCG 与灯光域编译为 Candidate Plan，在请求派生的候选关卡中执行并保存回执。
 候选执行仍不等于发布，源关卡不会被覆盖。
 
+## 编辑器内生命周期操作
+
+插件在 `Tools > ArtFlow` 注册四个面向美术人员的中文入口：
+
+1. `启动 ArtFlow 场景任务`：导出当前场景事实并建立 Scene Session；
+2. `执行当前 ArtFlow 候选`：领取当前注册工作项，在隔离候选关卡执行或对账；
+3. `发布当前 ArtFlow 版本`：依据当前采用决定发布唯一内容寻址版本；
+4. `审阅当前 Published 版本`：打开采用决定绑定的精确 Published 关卡并回传审阅回执。
+
+发布与审阅实现随插件封装在 `Content/Python`，菜单不能选择或提交外部脚本、地图和文件路径。每个操作只使用经过校验的本地服务 Origin 与当前 Session 身份；重复调用优先对账已完成结果。当前版本在编辑器进程内保持 Session 身份，重启后的自动恢复将在后续版本补齐。
+
 作品集只读演示无需启动 Unreal，直接在仓库根目录运行 `scripts\start_showcase.ps1`。它读取冻结
 回执，不会把演示点击写回 UE 项目，也不需要任何账户登录态。
 
-## 审阅已发布场景版本
+## 固定审阅合同
 
-`review_published_variant.py` 是固定的 Published 版本审阅入口。它读取
+插件内置的 `review_published_variant.py` 是固定 Published 版本审阅实现。它读取
 `artflow-scene-variant-review-request/1`，要求编辑器当前打开的关卡、磁盘关卡哈希、采用决定和
 技术事实全部一致，然后输出 `artflow-scene-variant-review-receipt/1`。重复审阅会从项目 Saved
 目录对账，但仍重新检查当前关卡；脚本不保存源关卡，也不接受任意包路径或任意 Python 内容。

@@ -1,0 +1,51 @@
+{
+  "schema_id": "artflow-m22-unreal-operator-verification/1",
+  "status": "verified",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "event_count_before": 37,
+  "event_count_after": 37,
+  "menu_actions": [
+    "publish",
+    "review"
+  ],
+  "rejected_action": "delete",
+  "packaged_python": true,
+  "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "published_level_sha256": "a51e21be6b83365a85d00725ae6a237aaaad432f0c2101e270c23625eab0698c",
+  "generated_instance_count": 12,
+  "duplicate_side_effect_count": 0,
+  "source_save_count": 0,
+  "publish_log_sha256": "a106eb1a76db67bb2cecbfcad40d0aacce5718fecd2957acb0a6f55d680084f0",
+  "review_log_sha256": "bc4fb0168cc1a9da3170299df5c478a180146c8754d7763555f7032f2cc14697",
+  "screenshots": {
+    "publish-operator-window.png": {
+      "width": 1280,
+      "height": 720,
+      "bytes": 67208,
+      "sha256": "39a9cc22133f35cfa50d008af0e6556328be308a32ba11555e01ec2c4090a516"
+    },
+    "review-operator-window.png": {
+      "width": 1280,
+      "height": 720,
+      "bytes": 67208,
+      "sha256": "39a9cc22133f35cfa50d008af0e6556328be308a32ba11555e01ec2c4090a516"
+    },
+    "invalid-operator-window.png": {
+      "width": 1280,
+      "height": 720,
+      "bytes": 69084,
+      "sha256": "17053d24354e7cbc52b9b3c1c6c6de47f869c9ac6428b0fac1ae67804e22de8f"
+    },
+    "live-operator-spectrum.png": {
+      "width": 1600,
+      "height": 1000,
+      "bytes": 393092,
+      "sha256": "401c54853f87f8b4b6f63057f9a58f0e6e759e76ead39b5c063091325446af2d"
+    }
+  },
+  "ubt": {
+    "target": "ArtFlowBridgeHostEditor Win64 Development",
+    "status": "succeeded"
+  }
+}

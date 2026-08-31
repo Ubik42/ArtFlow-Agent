@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M22-S1",
+  "status": "completed",
+  "outcome": "Registered Unreal editor actions published or reconciled the current adopted candidate and reviewed its exact Published variant through plugin-packaged fixed capabilities, while invalid actions failed before script execution and the source level remained unchanged.",
+  "evidence": [
+    "artifacts/goal/m22-s1-unreal-operator/verification.json",
+    "artifacts/goal/m22-s1-unreal-operator/live-projection.json",
+    "artifacts/goal/m22-s1-unreal-operator/host-runs.json",
+    "artifacts/goal/m22-s1-unreal-operator/publish-packaged-result.json",
+    "artifacts/goal/m22-s1-unreal-operator/review-packaged-result.json",
+    "artifacts/goal/m22-s1-unreal-operator/invalid-operator-result.json",
+    "artifacts/goal/m22-s1-unreal-operator/publish-operator-window.png",
+    "artifacts/goal/m22-s1-unreal-operator/review-operator-window.png",
+    "artifacts/goal/m22-s1-unreal-operator/invalid-operator-window.png",
+    "artifacts/goal/m22-s1-unreal-operator/live-operator-spectrum.png",
+    "docs/evidence/M22_S1_UNREAL_OPERATOR_ACTIONS_2026-08-31.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

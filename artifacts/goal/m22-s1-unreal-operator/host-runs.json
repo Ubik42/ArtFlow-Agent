@@ -1,0 +1,28 @@
+{
+  "schema_id": "artflow-m22-operator-host-runs/1",
+  "engine": "Unreal Engine 5.8.1-56057345",
+  "plugin_version": "1.2.0",
+  "owned_processes": [
+    {
+      "action": "publish",
+      "pid": 46512,
+      "result": "reconciled",
+      "exited": true
+    },
+    {
+      "action": "review",
+      "pid": 18776,
+      "result": "reconciled",
+      "exited": true
+    },
+    {
+      "action": "delete",
+      "pid": 40708,
+      "result": "rejected_before_script",
+      "exited": true
+    }
+  ],
+  "terminated_by_test": [],
+  "remaining_owned_processes": [],
+  "note": "Other short-lived Unreal processes belonged to concurrent work and were neither attached nor terminated by this test."
+}

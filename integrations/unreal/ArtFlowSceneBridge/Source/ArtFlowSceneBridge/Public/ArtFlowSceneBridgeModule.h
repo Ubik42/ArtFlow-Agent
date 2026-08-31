@@ -60,6 +60,9 @@ private:
     bool bSceneLifecycleCallbackAutomation = false;
     bool bSceneCandidateWorkRequestPending = false;
     bool bSceneCandidateWorkAutomation = false;
+    bool bCurrentVariantAutomationPending = false;
+    bool bCurrentVariantAutomationSuccess = false;
+    int32 CurrentVariantAutomationTicks = 0;
     bool bSessionCandidatePending = false;
     bool bSessionCandidateReconciled = false;
     bool bStageReconciled = false;
@@ -86,6 +89,8 @@ private:
     FString SceneCandidateFinalReceiptPath;
     FString SceneCandidateFinalOutcomeSha;
     FString SceneCandidateFinalError;
+    FString CurrentVariantAutomationAction;
+    FString CurrentVariantAutomationError;
     TSharedPtr<FJsonObject> PendingSceneCandidatePlan;
     FString SceneCorrectionWorkSha;
     FString SceneCorrectionProgressStatus;

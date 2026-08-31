@@ -26,11 +26,17 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 
 封存后的 Candidate Plan 会进入当前 Scene Session 的注册工作项。使用者可在 Unreal 的 Tools 菜单选择“执行当前 ArtFlow 候选”；编辑器原子领取单一写入权，依次回传执行、对账和结果状态。当前 UE 5.8.1 实测由实时导出的场景包建立新 Session，生成 12 个 PCG 实例并保持源关卡哈希不变。
 
+评价通过后，使用者可以继续在同一组 Unreal 菜单中选择“发布当前 ArtFlow 版本”与“审阅当前 Published 版本”。两个入口只调用插件内置的固定能力，由 Agent 根据当前 Session 投影确定唯一合法候选和精确 Published 关卡；它们不接收文件路径、地图名称、脚本或自定义事件。提交后的完成状态未知时，系统先对账已有回执，再决定是否继续，重复操作不会重复发布。
+
 当前候选经独立评价后只判定 `lighting` 失败。第一次单灯纠正满足执行合同，但新的视觉复评仍识别到第二盏定向光主导画面。Agent 因此编译完整的注册灯光组补丁：主光调整为 `2.2 / 8500K` 与低角度方向，辅助定向光由 `6.0 / 6500K` 压低至 `0.25 / 9000K`。UE 回执证明保护结构未变、PCG 实例保持 `12 → 12`、源关卡哈希未变；七项技术检查与新视觉复评通过后，编排器采用精确内容身份并发布到 `/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a`。两个新的 UE 5.8.1 进程分别完成发布对账与精确版本审阅，没有创建第二个关卡包，也没有保存源关卡。
 
 | 当前 Session · Published 版本 | 窄屏场景变体状态 |
 | --- | --- |
 | ![当前 Scene Session 完成发布与审阅](artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png) | ![窄屏 Published 版本与 Unreal 复核状态](artifacts/goal/m21-s1-current-publish/live-published-review-narrow.png) |
+
+| Unreal 精确 Published 版本 | 同一 Session 的场景变更谱 |
+| --- | --- |
+| ![Unreal 编辑器打开由当前采用决定绑定的 Published 关卡](artifacts/goal/m22-s1-unreal-operator/publish-operator-window.png) | ![场景变更谱显示采用、发布与审阅状态](artifacts/goal/m22-s1-unreal-operator/live-operator-spectrum.png) |
 
 在真实 UE 5.8 宿主中，当前已接入的 PCG 与灯光域可以进一步编译为具体 Candidate Plan。下面的候选由 Session 请求派生目录承载，生成 12 个 PCG 实例；新编辑器进程再次打开同一计划时完成对账而不重复生成，源关卡文件哈希保持不变。
 
@@ -147,7 +153,9 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 当前候选视觉裁决 | image、PCG 通过；lighting 进入单域修正 |
 | 第一次灯光纠正复评 | 技术检查 7 / 7；视觉仍仅拒绝 lighting，未采用 |
 | 注册双灯光组纠正 | 主光与辅助定向光 6 个类型化字段；其他领域重跑 0 |
-| 当前候选复评与采用 | 技术检查 7 / 7；视觉 accepted；Codex 采用 1 次；发布 0 次 |
+| 当前候选复评与采用 | 技术检查 7 / 7；视觉 accepted；Codex 采用 1 次 |
+| UE 原生发布 / 审阅菜单 | 2 / 2；固定插件能力；重复执行事件总数 37 → 37 |
+| 非法 UE 操作拦截 | `delete` 1 / 1；执行插件脚本前关闭失败 |
 | 候选工作项写入者 | 1 个；第二写入者与非法状态跳转关闭失败 |
 | 陈旧候选请求拦截 | 1 / 1 |
 | UE 原生 Scene Session 握手 | 1 次真实 UE 5.8 运行，源关卡哈希不变 |
@@ -231,7 +239,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 | `src/artflow_agent/scene_lifecycle.py` | 多域执行、纠正、恢复与发布 |
 | `src/artflow_agent/scene_session.py` | Scene Session 草案、持久身份与候选关卡请求 |
 | `src/artflow_agent/scene_disposition.py` | 证据绑定的候选采用与版本化发布合同 |
-| `src/artflow_agent/scene_variant_review.py` | 版本谱系投影与固定 Unreal 审阅合同 |
+| `src/artflow_agent/scene_variant_review.py` | 版本谱系投影、精确 Published 身份与 Unreal 审阅合同 |
 | `src/artflow_agent/pbr.py` | PBR 合同、通道验证与受审图编译 |
 | `src/artflow_agent/image_to_3d.py` | 图生 3D 合同、GLB 预检与 UE 接纳 |
 | `src/artflow_agent/mcp_facade.py` | 内容寻址 MCP 薄适配层 |
@@ -244,6 +252,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 - 当前实机证据来自一套项目自有 Unreal 演示场景，不将其包装为开放域质量基准。
 - 图生 3D 路线当前用于几何草案验证，尚未覆盖高质量拓扑、UV、最终 PBR 和角色资产。
 - PBR 路线使用固定受审 ComfyUI 模板，不提供任意节点图执行。
+- Unreal 菜单目前在同一次编辑器会话内保持 Scene Session 身份；编辑器重启后的自动上下文恢复正在开发，现阶段可从“启动 ArtFlow 场景任务”重新建立入口状态。
 - C2PA sidecar 使用 2.4 断言词汇并验证内容哈希，但尚未嵌入 JUMBF，也没有证书签名。
 - 当前支持 Windows、Unreal 5.8 与本地 ComfyUI 工作流，其他宿主组合仍需单独验证。
 

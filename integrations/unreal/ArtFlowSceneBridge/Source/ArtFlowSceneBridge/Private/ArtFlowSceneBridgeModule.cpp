@@ -28,6 +28,7 @@
 #include "EngineUtils.h"
 #include "FileHelpers.h"
 #include "FileUtilities/ZipArchiveWriter.h"
+#include "Framework/Application/SlateApplication.h"
 #include "Framework/Notifications/NotificationManager.h"
 #include "HAL/FileManager.h"
 #include "HAL/PlatformFileManager.h"
@@ -64,6 +65,7 @@
 #include "ToolMenus.h"
 #include "UObject/SavePackage.h"
 #include "Widgets/Notifications/SNotificationList.h"
+#include "Widgets/SWindow.h"
 
 #define LOCTEXT_NAMESPACE "ArtFlowSceneBridge"
 
@@ -278,6 +280,31 @@ bool IsSha256(const FString& Value)
         }
     }
     return true;
+}
+
+bool IsSafeRunIdentity(const FString& Value)
+{
+    if (Value.Len() < 8 || Value.Len() > 192)
+    {
+        return false;
+    }
+    for (const TCHAR Character : Value)
+    {
+        if (!FChar::IsAlnum(Character) && Character != TEXT('-') && Character != TEXT('_'))
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+FString PythonStringLiteral(FString Value)
+{
+    Value.ReplaceInline(TEXT("\\"), TEXT("\\\\"));
+    Value.ReplaceInline(TEXT("'"), TEXT("\\'"));
+    Value.ReplaceInline(TEXT("\r"), TEXT("\\r"));
+    Value.ReplaceInline(TEXT("\n"), TEXT("\\n"));
+    return TEXT("'") + Value + TEXT("'");
 }
 
 bool HashBytes(const TArray<uint8>& Bytes, FString& OutSha256)
@@ -2673,12 +2700,57 @@ void WriteAutomationResult(bool bSuccess, const FString& ArchivePath, const FStr
     IFileManager::Get().MakeDirectory(*GetBridgeRoot(), true);
     FFileHelper::SaveStringToFile(Text, *ResultPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM);
 }
+
+bool CaptureOperatorWindow(const FString& Action, FString& OutPath, FString& OutError)
+{
+    if (!FSlateApplication::IsInitialized())
+    {
+        OutError = TEXT("Slate is not initialized for the operator screenshot.");
+        return false;
+    }
+    TSharedPtr<SWindow> Window = FSlateApplication::Get().GetActiveTopLevelWindow();
+    if (!Window.IsValid())
+    {
+        const TArray<TSharedRef<SWindow>>& Windows = FSlateApplication::Get().GetTopLevelWindows();
+        if (!Windows.IsEmpty())
+        {
+            Window = Windows[0];
+        }
+    }
+    if (!Window.IsValid())
+    {
+        OutError = TEXT("No Unreal editor window was available for the operator screenshot.");
+        return false;
+    }
+    TArray<FColor> Pixels;
+    FIntVector Size;
+    if (!FSlateApplication::Get().TakeScreenshot(Window.ToSharedRef(), Pixels, Size) ||
+        Size.X <= 0 || Size.Y <= 0 || Pixels.IsEmpty())
+    {
+        OutError = TEXT("Unreal could not capture the operator window.");
+        return false;
+    }
+    TArray<uint8> Encoded;
+    FImageUtils::ThumbnailCompressImageArray(Size.X, Size.Y, Pixels, Encoded);
+    OutPath = FPaths::Combine(
+        GetBridgeRoot(),
+        TEXT("CurrentVariant"),
+        FString::Printf(TEXT("operator-%s.png"), *Action));
+    IFileManager::Get().MakeDirectory(*FPaths::GetPath(OutPath), true);
+    if (Encoded.IsEmpty() || !FFileHelper::SaveArrayToFile(Encoded, *OutPath))
+    {
+        OutError = TEXT("Unreal could not save the operator screenshot.");
+        return false;
+    }
+    return true;
+}
 } // namespace ArtFlowSceneBridge
 
 void FArtFlowSceneBridgeModule::StartupModule()
 {
     ArtFlowSceneBridge::RecoverInterruptedExports();
     UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::RegisterMenus));
+    FString CurrentVariantAction;
     if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteSessionCandidate")) ||
@@ -2690,7 +2762,8 @@ void FArtFlowSceneBridgeModule::StartupModule()
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowClaimCandidateWork")))
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowClaimCandidateWork")) ||
+        FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCurrentVariantAction="), CurrentVariantAction))
     {
         AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
@@ -2808,7 +2881,7 @@ bool FArtFlowSceneBridgeModule::ExecuteRegisteredCurrentVariantScript(
     const FString& ScriptName,
     FString& OutError)
 {
-    if (SessionRunId.IsEmpty() || SessionEndpointOrigin.IsEmpty())
+    if (!ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) || SessionEndpointOrigin.IsEmpty())
     {
         OutError = TEXT("请先从当前关卡启动 ArtFlow 场景任务；发布与审阅只接受本次 Session 的注册身份。");
         return false;
@@ -2825,11 +2898,9 @@ bool FArtFlowSceneBridgeModule::ExecuteRegisteredCurrentVariantScript(
         OutError = TEXT("ArtFlowSceneBridge 插件目录不可用。");
         return false;
     }
-    const FString RepositoryRoot = FPaths::ConvertRelativePathToFull(
-        FPaths::Combine(Plugin->GetBaseDir(), TEXT(".."), TEXT(".."), TEXT("..")));
     const FString ScriptPath = FPaths::ConvertRelativePathToFull(
-        FPaths::Combine(RepositoryRoot, TEXT("integrations"), TEXT("unreal"), ScriptName));
-    if (!ArtFlowSceneBridge::IsPathInside(ScriptPath, RepositoryRoot) ||
+        FPaths::Combine(Plugin->GetBaseDir(), TEXT("Content"), TEXT("Python"), ScriptName));
+    if (!ArtFlowSceneBridge::IsPathInside(ScriptPath, Plugin->GetBaseDir()) ||
         !IFileManager::Get().FileExists(*ScriptPath))
     {
         OutError = TEXT("ArtFlow 注册的版本动作脚本缺失或越出项目目录。");
@@ -2842,23 +2913,32 @@ bool FArtFlowSceneBridgeModule::ExecuteRegisteredCurrentVariantScript(
         return false;
     }
 
-    const FString PriorRoot = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_REPO_ROOT"));
-    const FString PriorOrigin = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"));
-    const FString PriorRun = FPlatformMisc::GetEnvironmentVariable(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"));
-    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_REPO_ROOT"), *RepositoryRoot);
-    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"), *SessionEndpointOrigin);
-    FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"), *SessionRunId);
-    ON_SCOPE_EXIT
-    {
-        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_REPO_ROOT"), *PriorRoot);
-        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_ORIGIN"), *PriorOrigin);
-        FPlatformMisc::SetEnvironmentVar(TEXT("ARTFLOW_CURRENT_VARIANT_RUN"), *PriorRun);
-    };
-
     FPythonCommandEx Command;
     Command.ExecutionMode = EPythonCommandExecutionMode::ExecuteFile;
     Command.FileExecutionScope = EPythonFileExecutionScope::Private;
-    Command.Command = ScriptPath;
+    Command.Command = FString::Printf(
+        TEXT("import os, runpy\n")
+        TEXT("_keys = ('ARTFLOW_CURRENT_VARIANT_ORIGIN', 'ARTFLOW_CURRENT_VARIANT_RUN')\n")
+        TEXT("_prior = {key: os.environ.get(key) for key in _keys}\n")
+        TEXT("try:\n")
+        TEXT("    os.environ['ARTFLOW_CURRENT_VARIANT_ORIGIN'] = %s\n")
+        TEXT("    os.environ['ARTFLOW_CURRENT_VARIANT_RUN'] = %s\n")
+        TEXT("    runpy.run_path(%s, run_name='__main__')\n")
+        TEXT("finally:\n")
+        TEXT("    for key, value in _prior.items():\n")
+        TEXT("        if value is None:\n")
+        TEXT("            os.environ.pop(key, None)\n")
+        TEXT("        else:\n")
+        TEXT("            os.environ[key] = value\n"),
+        *ArtFlowSceneBridge::PythonStringLiteral(SessionEndpointOrigin),
+        *ArtFlowSceneBridge::PythonStringLiteral(SessionRunId),
+        *ArtFlowSceneBridge::PythonStringLiteral(ScriptPath));
+    UE_LOG(
+        LogArtFlowSceneBridge,
+        Display,
+        TEXT("ARTFLOW_CURRENT_VARIANT_SCRIPT run=%s script=%s"),
+        *SessionRunId,
+        *ScriptPath);
     if (!Python->ExecPythonCommandEx(Command))
     {
         OutError = Command.CommandResult.IsEmpty()
@@ -4195,6 +4275,39 @@ void FArtFlowSceneBridgeModule::ReviewLastExport() const
 
 bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
 {
+    if (bCurrentVariantAutomationPending)
+    {
+        if (--CurrentVariantAutomationTicks > 0)
+        {
+            return true;
+        }
+        bCurrentVariantAutomationPending = false;
+        FString ScreenshotPath;
+        FString ScreenshotError;
+        const bool bScreenshotCaptured = ArtFlowSceneBridge::CaptureOperatorWindow(
+            CurrentVariantAutomationAction,
+            ScreenshotPath,
+            ScreenshotError);
+        if (!bScreenshotCaptured && CurrentVariantAutomationError.IsEmpty())
+        {
+            CurrentVariantAutomationError = ScreenshotError;
+        }
+        const bool bSuccess = bCurrentVariantAutomationSuccess && bScreenshotCaptured;
+        ArtFlowSceneBridge::WriteAutomationResult(
+            bSuccess,
+            ScreenshotPath,
+            CurrentVariantAutomationError);
+        UE_LOG(
+            LogArtFlowSceneBridge,
+            Display,
+            TEXT("ARTFLOW_CURRENT_VARIANT_OPERATOR_RESULT action=%s success=%s screenshot=%s error=%s"),
+            *CurrentVariantAutomationAction,
+            bSuccess ? TEXT("true") : TEXT("false"),
+            *ScreenshotPath,
+            *CurrentVariantAutomationError);
+        FPlatformMisc::RequestExit(false);
+        return false;
+    }
     if (bSessionCandidatePending)
     {
         if (SessionCandidatePCGComponent.IsValid() &&
@@ -4287,6 +4400,52 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     FString ArchivePath;
     const bool bPrepareOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo"));
     bool bSuccess = false;
+    FString CurrentVariantAction;
+    if (FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCurrentVariantAction="), CurrentVariantAction))
+    {
+        FString Endpoint;
+        CurrentVariantAction = CurrentVariantAction.TrimStartAndEnd().ToLower();
+        if ((CurrentVariantAction != TEXT("publish") && CurrentVariantAction != TEXT("review")) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCurrentVariantRun="), SessionRunId) ||
+            !ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowEndpoint="), Endpoint) ||
+            !ArtFlowSceneBridge::NormalizeLoopbackOrigin(Endpoint, SessionEndpointOrigin, Error))
+        {
+            if (Error.IsEmpty())
+            {
+                Error = TEXT("Current variant automation requires publish/review, a registered run identity and a localhost endpoint.");
+            }
+        }
+        else
+        {
+            bSuccess = ExecuteRegisteredCurrentVariantScript(
+                CurrentVariantAction == TEXT("publish")
+                    ? TEXT("publish_session_candidate.py")
+                    : TEXT("review_published_variant.py"),
+                Error);
+        }
+        FNotificationInfo Info(FText::FromString(
+            bSuccess
+                ? (CurrentVariantAction == TEXT("publish")
+                    ? TEXT("当前 ArtFlow 版本已发布 / 对账完成")
+                    : TEXT("已打开并复核当前 Published 版本"))
+                : FString::Printf(TEXT("ArtFlow %s 动作失败：%s"), *CurrentVariantAction, *Error.Left(180))));
+        Info.bFireAndForget = true;
+        Info.ExpireDuration = 8.0f;
+        const TSharedPtr<SNotificationItem> Notification =
+            FSlateNotificationManager::Get().AddNotification(Info);
+        if (Notification.IsValid())
+        {
+            Notification->SetCompletionState(
+                bSuccess ? SNotificationItem::CS_Success : SNotificationItem::CS_Fail);
+        }
+        CurrentVariantAutomationAction = CurrentVariantAction;
+        CurrentVariantAutomationError = Error;
+        bCurrentVariantAutomationSuccess = bSuccess;
+        CurrentVariantAutomationTicks = 2;
+        bCurrentVariantAutomationPending = true;
+        return true;
+    }
     if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowClaimCandidateWork")))
     {
         FString Endpoint;

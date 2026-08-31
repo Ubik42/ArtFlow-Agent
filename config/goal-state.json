@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 61,
+  "stateRevision": 62,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
@@ -257,10 +257,10 @@
     }
   ],
   "nextSlice": {
-    "id": "M22-S1",
+    "id": "M22-S2",
     "milestone": "M22",
-    "title": "Add registered Unreal publish and review actions",
-    "outcome": "Expose the current-session publish and exact-version review lifecycle as product-facing Unreal editor actions that call only server-derived typed requests, report durable progress in Chinese and reuse the existing reconciliation path.",
+    "title": "Recover operator context and retire legacy menu surfaces",
+    "outcome": "After an editor restart, recover exactly one validated active Scene Session for the current project and source scene, expose only the four product lifecycle actions, and resume the legal next action without caller-supplied run identity, path or script.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
@@ -269,19 +269,21 @@
       "Do not add a generic command console, Python entry field, caller-selected map or filesystem browser",
       "Do not overwrite, rename or save the source ArtFlowDemo level",
       "Do not add a second publisher, review implementation, state machine or approval gate",
-      "Do not redesign the web workspace or add unrelated providers in this slice",
-      "Do not build a broad automation test matrix; verify the registered actions and one real lifecycle only"
+      "Do not redesign the web workspace, state machine or provider layer in this slice",
+      "Do not add a generic recent-session picker or silently choose among ambiguous runs",
+      "Do not build a broad automation test matrix; verify one clean restart recovery and the bounded failure cases only"
     ],
     "acceptance": [
-      "The Unreal Tools menu exposes Chinese publish and review actions whose request bodies contain no host path or caller event payload",
-      "The publish action uses the current projection to publish or reconcile the only adopted candidate and reports the resulting state",
-      "The review action opens only the server-derived Published map and returns its typed receipt",
-      "A short real-host walkthrough and screenshot show the editor action and matching Scene Change Spectrum state"
+      "The first product action after editor restart discovers exactly one current run bound to the active project and source scene without caller-supplied run identity or path",
+      "No matching run or more than one eligible run disables or rejects the action with clear Chinese status before any scene mutation",
+      "The public Tools menu contains only start task, execute current candidate or correction, publish current version and review current Published version; legacy export and review-last entries are removed",
+      "A fresh real UE process reviews the exact Published version through recovered context while the source level remains byte-identical"
     ],
     "stopConditions": [
-      "Stop if an editor action would need arbitrary Python, Shell, map or filesystem input",
-      "Stop if the action cannot reuse the M21 typed request and receipt validators",
-      "Stop if the source level hash changes or the server-derived target differs from the adopted content identity",
+      "Stop if recovery would require accepting arbitrary Python, Shell, run id, map or filesystem input",
+      "Stop if project and source-scene binding cannot select exactly one validated Session",
+      "Stop if the recovered target differs from the server projection or the adopted content identity",
+      "Stop if the source level hash changes",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -303,9 +305,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0056.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0057.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M21 are complete. The current Session now owns one continuous 37-event identity chain from candidate execution through two bounded lighting corrections, accepted technical and visual reevaluation, Codex adoption, content-addressed publish and exact Unreal review. UE 5.8.1 published /Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a; fresh processes reconciled publish and review with zero duplicate packages, 12 preserved PCG instances, zero source saves and a byte-identical ArtFlowDemo.umap. Desktop and narrow Scene Change Spectrum captures project the current-session lineage without broken images, console errors or horizontal overflow. Product-facing Unreal publish and review menu actions remain M22 work; the M21 host scripts are development automation, not the final artist entrypoint.",
+  "evidenceCeiling": "M0-M21 and M22-S1 are complete. ArtFlow Scene Bridge 1.2.0 exposes product-facing Unreal publish and exact-version review actions backed by plugin-packaged fixed capabilities. Fresh UE 5.8.1 processes reconciled both actions against one 37-event current Session with zero duplicate side effects, 12 preserved PCG instances, zero source saves and a byte-identical ArtFlowDemo.umap; an invalid delete action failed before script execution. The matching Scene Change Spectrum capture has no broken images, console errors or horizontal overflow. M22 remains in progress because editor-restart context recovery and removal of legacy public menu surfaces are not yet implemented.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

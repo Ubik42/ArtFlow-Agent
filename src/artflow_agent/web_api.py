@@ -664,7 +664,16 @@ def create_app(
         try:
             state = agent_store.load(run_id)
             if state.scene_variant_publication is not None:
-                if state.scene_variant_publication.receipt != payload:
+                record = validate_current_publish_receipt(
+                    resolved_project_root, state, payload
+                )
+                existing_outcome = state.scene_variant_publication.receipt.model_dump(
+                    mode="json", exclude={"completed_at", "receipt_sha256"}
+                )
+                repeated_outcome = payload.model_dump(
+                    mode="json", exclude={"completed_at", "receipt_sha256"}
+                )
+                if record is None or existing_outcome != repeated_outcome:
                     raise AgentRuntimeError(
                         "current variant already has a different publish receipt"
                     )
@@ -708,7 +717,14 @@ def create_app(
         try:
             state = agent_store.load(run_id)
             if state.scene_variant_review is not None:
-                if state.scene_variant_review.receipt != payload:
+                record = validate_current_review_receipt(state, payload)
+                existing_outcome = state.scene_variant_review.receipt.model_dump(
+                    mode="json", exclude={"completed_at", "receipt_sha256"}
+                )
+                repeated_outcome = payload.model_dump(
+                    mode="json", exclude={"completed_at", "receipt_sha256"}
+                )
+                if record is None or existing_outcome != repeated_outcome:
                     raise AgentRuntimeError(
                         "current variant already has a different review receipt"
                     )

@@ -1,12 +1,12 @@
 {
   "FileVersion": 3,
-  "Version": 2,
-  "VersionName": "1.1.0",
+  "Version": 3,
+  "VersionName": "1.2.0",
   "FriendlyName": "ArtFlow Scene Bridge",
-  "Description": "Exports camera-bound Unreal scene evidence, a 3D digital twin and a zero-write Scene Delta dry-run into an atomic ArtFlow package.",
+  "Description": "Starts verified Scene Sessions from Unreal, executes bounded candidate changes, and publishes or reviews exact ArtFlow scene variants.",
   "Category": "ArtFlow",
   "CreatedBy": "ArtFlow",
-  "CanContainContent": false,
+  "CanContainContent": true,
   "IsBetaVersion": true,
   "Installed": false,
   "Plugins": [

@@ -1,0 +1,110 @@
+Log started at 08/31/2026 00:44:47 (2026-08-31T06:44:47Z)
+No project argument provided while trying to parse Project File. Attempting fallback parsing to attempt to find a Project File.
+Resolved project argument D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\ArtFlowBridgeHost.uproject to D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\ArtFlowBridgeHost.uproject
+No config file at C:\ProgramData\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+No config file at C:\Users\Ubik\AppData\Local\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+No config file at C:\Users\Ubik\Documents\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Configuration will be read from:
+  C:\Users\Ubik\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Intermediate\Build\XmlConfigCache.bin): C:\Users\Ubik\AppData\Roaming\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Intermediate\Build\XmlConfigCache.bin): D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Saved\UnrealBuildTool\BuildConfiguration.xml
+Reading configuration file from cache (D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Intermediate\Build\XmlConfigCache.bin): C:\Users\Ubik\AppData\Local\UnrealEngine\Intermediate\Build\UnrealBuildTool.Env.BuildConfiguration.xml
+Setting temp directory to 'C:\Users\Ubik\AppData\Local\Temp\UnrealBuildTool\eb6d2d82'
+    Registering build platform: UnrealBuildTool.AndroidPlatformFactory
+    Registering build platform: UnrealBuildTool.IOSPlatformFactory
+    Registering build platform: UnrealBuildTool.LinuxPlatformFactory
+    Registering build platform: UnrealBuildTool.MacPlatformFactory
+    Registering build platform: UnrealBuildTool.TVOSPlatformFactory
+    Registering build platform: UnrealBuildTool.WindowsPlatformFactory
+Found Windows 10 SDK root at C:\Program Files (x86)\Windows Kits\10 (1)
+Found Windows 10 SDK root at C:\Program Files (x86)\Windows Kits\10 (2)
+Found Windows 10 SDK version 10.0.26100.0 at C:\Program Files (x86)\Windows Kits\10
+Found Universal CRT version 10.0.26100.0 at C:\Program Files (x86)\Windows Kits\10
+Win64 Installed SDK(s): MinVersion_Sdk=10.0.19041.0, MaxVersion_Sdk=10.9.99999.0, CurrentVersion_Sdk=10.0.26100.0, Version_AutoSdk=10.0.22621.0, CurrentVersion_AutoSdk=
+        Registering build platform: Win64 - buildable: True
+    Registering build platform: UnrealBuildTool.VisionOSPlatformFactory
+Command line: "C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\DotNET\UnrealBuildTool\UnrealBuildTool.dll" ArtFlowBridgeHostEditor Win64 Development D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\ArtFlowBridgeHost.uproject -WaitMutex -NoHotReloadFromIDE
+Log file: C:\Users\Ubik\AppData\Local\UnrealBuildTool\Log.txt
+Deleting old log file: C:\Users\Ubik\AppData\Local\UnrealBuildTool\Log-backup-2026.08.25-22.58.01.txt
+Deleting old log file: C:\Users\Ubik\AppData\Local\UnrealBuildTool\Log-backup-2026.08.25-22.58.01.json
+
+Determining max actions to execute in parallel (16 physical cores, 24 logical cores)
+  Executing up to 16 processes, one per physical core
+UbaStorageServer - Database loaded from C:\ProgramData\Epic\UnrealBuildAccelerator\cas\casdb (v32) in <1ms (contained 0 entries estimated to 0b)
+UbaServer - bind 0.0.0.0:1345 failed (An attempt was made to access a socket in a way forbidden by its access permissions.)
+Skipping C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\BuildRules\UE5Rules.dll: File is installed
+Skipping C:\Program Files\Epic Games\UE_5.8\Engine\Intermediate\Build\BuildRules\UE5ProgramRules.dll: File is installed
+Building UnrealEditor - ArtFlowBridgeHostEditor - Win64 - Development
+Generated code is up to date.
+Deleting outdated item: D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Binaries\Win64\UnrealEditor-ArtFlowSceneBridge.pdb
+Deleting outdated item: D:\3D\_tools\ArtFlow-Agent\integrations\unreal\ArtFlowBridgeHost\Intermediate\External\Build\Win64\x64\UnrealEditor\Development\ArtFlowSceneBridge\UnrealEditor-ArtFlowSceneBridge.lib
+Building ArtFlowBridgeHostEditor...
+===== Toolchain Information =====
+Using ISPC compiler (C:\Program Files\Epic Games\UE_5.8\Engine\Source\ThirdParty\Intel\ISPC\bin\Windows\ispc.exe)
+  Intel(r) Implicit SPMD Program Compiler (Intel(r) ISPC), 1.24.0 (build commit  @ 20250404, LLVM 18.1.2) 
+Using Visual Studio 14.44.35225 toolchain (C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.44.35207) and Windows 10.0.26100.0 SDK (C:\Program Files (x86)\Windows Kits\10).
+[Adaptive Build] Excluded from ArtFlowSceneBridge unity file: ArtFlowSceneBridgeModule.cpp
+=================================
+Using Unreal Build Accelerator local executor to run 4 action(s)
+  CPU 16 physical cores, 24 logical cores
+  Memory 63.79 GB physical, 48.15 GB/77.29 GB committed
+  UBA Storage capacity 40 GB
+  UBA RootDir C:\ProgramData\Epic\UnrealBuildAccelerator
+Cache bucket 1720369911 used. Action: Compile [x64] ArtFlowSceneBridgeModule.cpp ()
+Cache bucket 416513229 used. Action: Link [x64] UnrealEditor-ArtFlowSceneBridge.dll ()
+All processes queued
+[1/4] Compile [x64] ArtFlowSceneBridgeModule.cpp
+[2/4] Link [x64] UnrealEditor-ArtFlowSceneBridge.lib
+[3/4] Link [x64] UnrealEditor-ArtFlowSceneBridge.dll
+[4/4] WriteMetadata ArtFlowBridgeHostEditor.target [NoUba]
+
+Total time in Unreal Build Accelerator local executor: 12.64 seconds
+Output binary: C:\Program Files\Epic Games\UE_5.8\Engine\Binaries\Win64\UnrealEditor.exe
+UbaStorageServer - Database saved in 1ms (0 file entries, 0 cas entries. deleted 0 dropped cas files)
+WriteFileIfChanged() wrote 0 changed files of 1 requested writes.
+
+Timeline:
+[  0.000]  +0.298 Main
+   0.015          [  0.015]  +0.105 Apply XmlConfig
+   0.019             0.019          [  0.004]  +0.006 Find target files
+   0.122          [  0.122]  +0.068 AddTelemetry
+   0.225          [  0.225]  +0.073 RegisterPlatforms
+[  0.316]  +0.018 ParseCommandLine
+[  0.371]  +0.126 LoadMakefile
+   0.388          [  0.016]  +0.026 EngineRulesPlugins
+   0.417          [  0.045]  +0.004 EngineRulesFetchDirs
+   0.429          [  0.057]  +0.009 EngineRulesAssembly
+   0.438          [  0.066]  +0.000 ProgramRulesAssembly
+   0.439          [  0.067]  +0.013 ProjectRulesAssembly
+   0.453          [  0.081]  +0.298 CreateTargetRules
+   0.506             0.134          [  0.052]  +0.000 FindPlugins
+   0.524             0.152          [  0.070]  +0.053 MakefileValid
+[  0.498]  +0.296 <unknown>
+[  0.794]  +0.003 CppDependencyCache
+[  0.808]  +0.033 ArtFlowBridgeHostEditor Win64 Development
+[  0.843]  +0.009 UHTWait
+   0.844          [  0.000]  +0.007 UHTManifest
+   0.852          [  0.009]  +0.017 UHTTimestamps
+   0.869             0.026          [  0.017]  +0.002 CppDependencyCache
+[  0.872]  +0.048 Preparing ActionGraph
+   0.882          [  0.010]  +0.003 LinkActions
+   0.886             0.014          [  0.003]  +0.000 DetectActionGraphCycles
+   0.886          [  0.014]  +0.000 GatherPrerequisiteActions
+   0.888          [  0.016]  +0.000 CppDependencyCacheWait
+   0.888          [  0.016]  +0.019 GatherOutdatedActions
+   0.910          [  0.038]  +0.006 LinkActions
+   0.910             0.038          [  0.000]  +0.000 DetectActionGraphCycles
+   0.917          [  0.045]  +0.001 DeleteOutdatedProducedItems
+   0.918          [  0.046]  +0.000 SaveActionHistory
+   0.920          [  0.047]  +0.000 CreateDirectoriesForProducedItems
+[  0.930]  +0.102 GarbageCollect
+[  1.033] +12.534 <unknown>
+[ 13.567]  +0.000 Deploying targets
+[ 13.568]  +0.000 DisconnectCache
+[ 13.572]  +0.011 SaveCasTable
+[ 13.586]  +0.042 Saving caches
+[ 13.629]  +0.002 TelemetryService.FlushEvents
+[ 13.633]
+
+Result: Succeeded
+Total execution time: 13.63 seconds

@@ -743,6 +743,14 @@ def test_current_adoption_publishes_and_reviews_only_reconciled_variant(
         f"{lifecycle}/publish-receipt", json=publish_payload
     )
     assert reconciled_publish.status_code == 200
+    publish_payload["completed_at"] = "2026-08-30T15:01:30Z"
+    publish_payload["receipt_sha256"] = canonical_sha256(
+        {key: value for key, value in publish_payload.items() if key != "receipt_sha256"}
+    )
+    repeated_publish = client.post(
+        f"{lifecycle}/publish-receipt", json=publish_payload
+    )
+    assert repeated_publish.status_code == 200
 
     review_request = client.get(f"{lifecycle}/review-request")
     assert review_request.status_code == 200
@@ -776,7 +784,13 @@ def test_current_adoption_publishes_and_reviews_only_reconciled_variant(
         f"{lifecycle}/review-receipt", json=review_payload
     )
     assert reconciled_review.status_code == 200
-    lineage = reconciled_review.json()["scene_variant_lineage"]
+    review_payload["completed_at"] = "2026-08-30T15:03:30Z"
+    review_payload["receipt_sha256"] = canonical_sha256(
+        {key: value for key, value in review_payload.items() if key != "receipt_sha256"}
+    )
+    repeated_review = client.post(f"{lifecycle}/review-receipt", json=review_payload)
+    assert repeated_review.status_code == 200
+    lineage = repeated_review.json()["scene_variant_lineage"]
     assert lineage["case_id"] == "current-session"
     assert lineage["published_scene"] == decision["published_scene"]
     assert lineage["review_status"] == "reconciled"
