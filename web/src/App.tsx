@@ -702,7 +702,7 @@ type CurrentCorrectionEvaluationRecord = {
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
-  case_id: "sunlit-overgrown";
+  case_id: "sunlit-overgrown" | "current-session";
   status: "published";
   source_scene: string;
   candidate_scene: string;
@@ -1441,6 +1441,7 @@ function SceneChangeSpectrum({
   const correctionIntake = agent.scene_correction_intake;
   const correctionVerdict = agent.scene_correction_visual_verdict;
   const currentAdoption = agent.scene_candidate_adoption;
+  const currentLineage = agent.scene_variant_lineage;
   const workLabels: Record<SceneCandidateWorkState["status"], string> = {
     queued: "等待 Unreal 领取",
     claimed: "Unreal 已领取",
@@ -1528,7 +1529,9 @@ function SceneChangeSpectrum({
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
                 {correctionWork
-                  ? currentAdoption
+                  ? currentLineage
+                    ? "当前版本已发布并完成 Unreal 审阅"
+                  : currentAdoption
                     ? "当前纠正候选已由 Codex 采用，等待发布"
                     : correctionVerdict?.domain_evaluation.status === "correction_required"
                       ? "单灯纠正未通过复评，只需继续修正 lighting"
@@ -1574,10 +1577,12 @@ function SceneChangeSpectrum({
                       <ScanLine size={13} /> 封存灯光组补丁
                     </button>
                   ) : (
-                    <div className={`candidate-work-pulse state-${currentAdoption || correctionVerdict?.domain_evaluation.status === "accepted" ? "succeeded" : correctionVerdict ? "failed" : correctionWork.status}`}>
+                    <div className={`candidate-work-pulse state-${currentLineage || currentAdoption || correctionVerdict?.domain_evaluation.status === "accepted" ? "succeeded" : correctionVerdict ? "failed" : correctionWork.status}`}>
                       <span />
                       <b>
-                        {currentAdoption
+                        {currentLineage
+                          ? "Published 版本已复核"
+                          : currentAdoption
                           ? "内容身份已采用"
                           : correctionVerdict?.domain_evaluation.status === "accepted"
                             ? "纠正候选复评通过"
@@ -1587,7 +1592,7 @@ function SceneChangeSpectrum({
                                 ? "灯光纠正回渲已就绪"
                                 : `只重做 lighting · ${workLabels[correctionWork.status]}`}
                       </b>
-                      <small>{currentAdoption ? `Codex · ${shortId(currentAdoption.decision.decision_sha256)}` : correctionWork.worker_id ? `写入者 ${correctionWork.worker_id}` : `保留 ${Object.keys(correctionWork.definition.correction_plan.preserved_evidence_sha256s).join("、")}`}</small>
+                      <small>{currentLineage ? `Unreal · ${shortId(currentLineage.published_level_sha256)}` : currentAdoption ? `Codex · ${shortId(currentAdoption.decision.decision_sha256)}` : correctionWork.worker_id ? `写入者 ${correctionWork.worker_id}` : `保留 ${Object.keys(correctionWork.definition.correction_plan.preserved_evidence_sha256s).join("、")}`}</small>
                     </div>
                   )
                 ) : visualVerdict?.domain_evaluation.status === "correction_required" ? (
@@ -1680,6 +1685,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const correctionAccepted =
     agent.scene_correction_visual_verdict?.domain_evaluation.status === "accepted";
   const currentAdopted = Boolean(agent.scene_candidate_adoption);
+  const currentPublished = Boolean(liveLineage);
   const correctionNeedsAnotherPass =
     agent.scene_correction_visual_verdict?.domain_evaluation.status === "correction_required";
   const currentDomains = currentVerdict
@@ -1691,6 +1697,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
           pcg: "PCG",
           lighting: "灯光",
         };
+        if (finding.domain === "lighting" && currentPublished) {
+          return "灯光·已发布";
+        }
         if (finding.domain === "lighting" && currentAdopted) {
           return "灯光·已采用";
         }
@@ -1711,7 +1720,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       id: "rain-wet-courtyard",
       tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
       title: hasCurrentLifecycle
-        ? currentAdopted
+        ? currentPublished
+          ? "内容寻址版本已发布，并由 Unreal 新进程复核"
+          : currentAdopted
           ? "双灯光组通过复评，当前候选已由 Codex 采用"
           : correctionAccepted
             ? "双灯光组通过技术与视觉复评"
@@ -1722,7 +1733,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
           : "当前 Unreal 候选正在沿失败域收敛"
         : "从灰盒场景出发，编排材质、项目资产、PCG 与灯光",
       description: hasCurrentLifecycle
-        ? currentAdopted
+        ? currentPublished
+          ? `当前候选已写入 ${liveLineage?.published_scene}。发布与审阅分别由独立 UE 5.8 进程对账，重复关卡包为 0，源关卡保存为 0。`
+          : currentAdopted
           ? "Agent 将第二盏定向光从 6.0 压低至 0.25，并把主光改为冷蓝低角度方向。七项硬检查与独立视觉复评均通过；Codex 依据持久评价采用精确内容身份，尚未发布。"
           : correctionAccepted
             ? "第二盏中性顶光已被压低，主光方向与色温形成冷蓝清晨层次。通过域证据保持不变，当前候选已满足采用条件。"
@@ -1739,8 +1752,8 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
             {
               src: `/api/agent/runs/${agent.run_id}/scene-correction-work/beauty`,
               alt: "双定向灯修正后的 Unreal 同机位回渲",
-              label: currentAdopted ? "已采用候选" : "灯光纠正",
-              title: hasMultiLightReceipt ? "主光 2.2 / 8500K · 辅光 0.25 / 9000K" : "3.2 / 7200K · PCG 12→12",
+              label: currentPublished ? "Published 版本" : currentAdopted ? "已采用候选" : "灯光纠正",
+              title: currentPublished ? `V_${liveLineage?.content_identity_sha256.slice(0, 12)} · 已复核` : hasMultiLightReceipt ? "主光 2.2 / 8500K · 辅光 0.25 / 9000K" : "3.2 / 7200K · PCG 12→12",
             },
           ]
           : [
@@ -1757,7 +1770,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       metricB: "0",
       metricBLabel: "源关卡改写",
       note: hasCurrentLifecycle
-        ? currentAdopted
+        ? currentPublished
+          ? "当前谱系由事件 35–37 的采用、发布与审阅回执重建；新进程加载的是精确 Published 版本，源 ArtFlowDemo 字节未变化。"
+          : currentAdopted
           ? "采用决定引用当前双灯光组回执、新回渲与 accepted 评价；源关卡哈希和保护结构不变，发布仍是独立的后续动作。"
           : correctionAccepted
             ? "当前结果已经满足硬约束与视觉方向；采用与发布仍通过各自的类型化事件推进。"

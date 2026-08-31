@@ -46,6 +46,12 @@ from .current_scene_evaluation import (
     evaluate_current_candidate,
     resolve_current_candidate_beauty,
 )
+from .current_variant_lifecycle import (
+    compile_current_publish_request,
+    compile_current_review_request,
+    validate_current_publish_receipt,
+    validate_current_review_receipt,
+)
 from .current_visual_critic import (
     CurrentCandidateVisualObservation,
     compile_current_domain_verdict,
@@ -65,6 +71,7 @@ from .scene_correction_work import (
     compile_current_correction_work,
     resolve_current_correction_beauty,
 )
+from .scene_disposition import SceneVariantPublishReceipt, SceneVariantPublishRequest
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
     SceneSessionDraft,
@@ -84,7 +91,11 @@ from .scene_variant_lifecycle import (
     registered_artifact_sha256,
     resolve_registered_lifecycle_record,
 )
-from .scene_variant_review import SceneVariantLineage
+from .scene_variant_review import (
+    SceneVariantLineage,
+    SceneVariantReviewReceipt,
+    SceneVariantReviewRequest,
+)
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -623,6 +634,94 @@ def create_app(
             )
             return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.get(
+        "/api/agent/runs/{run_id}/current-variant/publish-request",
+        response_model=SceneVariantPublishRequest,
+    )
+    def get_current_variant_publish_request(run_id: str, request: Request):
+        _require_loopback(request, "当前场景版本发布仅允许本机 Unreal 宿主领取")
+        try:
+            return compile_current_publish_request(
+                resolved_project_root, agent_store.load(run_id)
+            )
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/current-variant/publish-receipt",
+        response_model=AgentRunProjection,
+    )
+    def record_current_variant_publish_receipt(
+        run_id: str,
+        payload: SceneVariantPublishReceipt,
+        request: Request,
+    ):
+        _require_loopback(request, "当前场景版本发布回执仅允许本机 Unreal 宿主回传")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_variant_publication is not None:
+                if state.scene_variant_publication.receipt != payload:
+                    raise AgentRuntimeError(
+                        "current variant already has a different publish receipt"
+                    )
+                return project_agent_run(agent_store, run_id)
+            record = validate_current_publish_receipt(
+                resolved_project_root, state, payload
+            )
+            if record is not None:
+                agent_store.record_scene_variant_publication(
+                    run_id,
+                    record,
+                    action_id=f"current-publish-{payload.receipt_sha256[:16]}",
+                )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.get(
+        "/api/agent/runs/{run_id}/current-variant/review-request",
+        response_model=SceneVariantReviewRequest,
+    )
+    def get_current_variant_review_request(run_id: str, request: Request):
+        _require_loopback(request, "当前场景版本审阅仅允许本机 Unreal 宿主领取")
+        try:
+            return compile_current_review_request(agent_store.load(run_id))
+        except (AgentRuntimeError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/current-variant/review-receipt",
+        response_model=AgentRunProjection,
+    )
+    def record_current_variant_review_receipt(
+        run_id: str,
+        payload: SceneVariantReviewReceipt,
+        request: Request,
+    ):
+        _require_loopback(request, "当前场景版本审阅回执仅允许本机 Unreal 宿主回传")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_variant_review is not None:
+                if state.scene_variant_review.receipt != payload:
+                    raise AgentRuntimeError(
+                        "current variant already has a different review receipt"
+                    )
+                return project_agent_run(agent_store, run_id)
+            record = validate_current_review_receipt(state, payload)
+            if record is not None:
+                agent_store.record_scene_variant_review(
+                    run_id,
+                    record,
+                    action_id=f"current-review-{payload.receipt_sha256[:16]}",
+                )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

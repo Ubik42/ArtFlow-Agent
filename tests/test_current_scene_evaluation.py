@@ -9,8 +9,9 @@ from fastapi.testclient import TestClient
 from PIL import Image
 
 from artflow_agent.agent_runtime import AgentEventStore
-from artflow_agent.scene_session import SceneDomainCorrectionPlan
 from artflow_agent.current_visual_critic import seal_visual_observation
+from artflow_agent.scene_disposition import canonical_sha256
+from artflow_agent.scene_session import SceneDomainCorrectionPlan
 from artflow_agent.web_api import create_app
 
 RUN_ID = "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3"
@@ -645,3 +646,138 @@ def test_failed_corrected_rerender_queues_complete_registered_light_rig(
         assert "complete rig" in str(exc)
     else:
         raise AssertionError("partial registered light rig must be rejected")
+
+
+def test_current_adoption_publishes_and_reviews_only_reconciled_variant(
+    tmp_path: Path,
+) -> None:
+    client, database, _before = _succeeded_correction(tmp_path)
+    base = f"/api/agent/runs/{RUN_ID}/scene-correction-work"
+    intake = client.post(f"{base}/evaluate").json()["scene_correction_intake"]
+    input_record = intake["evaluation_input"]
+    claims = [
+        ("camera_composition", "相机与画幅保持不变。"),
+        ("protected_structure", "保护结构没有变化。"),
+        ("spatial_readability", "PCG 空间层次保持清晰。"),
+        ("lighting_direction", "冷色低角度主光形成明确方向。"),
+        ("visual_coherence", "灯光与现有空间关系保持统一。"),
+    ]
+    observation = seal_visual_observation(
+        {
+            "input_sha256": input_record["input_sha256"],
+            "source_beauty_sha256": input_record["source_beauty_sha256"],
+            "candidate_beauty_sha256": input_record["corrected_beauty_sha256"],
+            "claims": [
+                {
+                    "dimension": dimension,
+                    "verdict": "passed",
+                    "confidence": 0.9,
+                    "rationale": rationale,
+                }
+                for dimension, rationale in claims
+            ],
+            "recommended_failed_domains": [],
+        }
+    ).model_dump(mode="json")
+    assert client.post(f"{base}/visual-observation", json=observation).status_code == 200
+    adopted = client.post(f"{base}/adopt").json()
+    decision = adopted["scene_candidate_adoption"]["decision"]
+
+    lifecycle = f"/api/agent/runs/{RUN_ID}/current-variant"
+    publish_request = client.get(f"{lifecycle}/publish-request")
+    assert publish_request.status_code == 200
+    request = publish_request.json()
+    assert set(request) == {
+        "schema_id",
+        "request_id",
+        "request_sha256",
+        "idempotency_key",
+        "decision",
+        "expected_protected_state_sha256",
+        "expected_material_path",
+        "expected_instance_count",
+    }
+    assert request["decision"] == decision
+    project_root = tmp_path / "project"
+    candidate = (
+        project_root
+        / "integrations/unreal/ArtFlowBridgeHost/Content"
+        / f"{decision['candidate_scene'].removeprefix('/Game/')}.umap"
+    )
+    published = (
+        project_root
+        / "integrations/unreal/ArtFlowBridgeHost/Content"
+        / f"{decision['published_scene'].removeprefix('/Game/')}.umap"
+    )
+    published.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(candidate, published)
+    published_sha = hashlib.sha256(published.read_bytes()).hexdigest()
+    publish_payload = {
+        "schema_id": "artflow-scene-variant-publish-receipt/1",
+        "request_id": request["request_id"],
+        "request_sha256": request["request_sha256"],
+        "decision_sha256": decision["decision_sha256"],
+        "status": "published",
+        "candidate_scene": decision["candidate_scene"],
+        "candidate_level_sha256": decision["candidate_level_sha256"],
+        "published_scene": decision["published_scene"],
+        "published_level_sha256": published_sha,
+        "source_level_sha256_before": decision["source_level_sha256"],
+        "source_level_sha256_after": decision["source_level_sha256"],
+        "protected_state_sha256": request["expected_protected_state_sha256"],
+        "material_path": request["expected_material_path"],
+        "generated_instance_count": request["expected_instance_count"],
+        "duplicate_side_effect_count": 0,
+        "completed_at": "2026-08-30T15:00:00Z",
+    }
+    publish_payload["receipt_sha256"] = canonical_sha256(publish_payload)
+    first_publish = client.post(f"{lifecycle}/publish-receipt", json=publish_payload)
+    assert first_publish.status_code == 200
+    assert first_publish.json()["scene_variant_lineage"] is None
+    publish_payload["status"] = "reconciled"
+    publish_payload["completed_at"] = "2026-08-30T15:01:00Z"
+    publish_payload["receipt_sha256"] = canonical_sha256(
+        {key: value for key, value in publish_payload.items() if key != "receipt_sha256"}
+    )
+    reconciled_publish = client.post(
+        f"{lifecycle}/publish-receipt", json=publish_payload
+    )
+    assert reconciled_publish.status_code == 200
+
+    review_request = client.get(f"{lifecycle}/review-request")
+    assert review_request.status_code == 200
+    review = review_request.json()
+    review_payload = {
+        "schema_id": "artflow-scene-variant-review-receipt/1",
+        "review_id": review["review_id"],
+        "review_sha256": review["review_sha256"],
+        "status": "inspected",
+        "engine_version": "5.8.1-test",
+        "published_scene": review["published_scene"],
+        "published_level_sha256": review["published_level_sha256"],
+        "source_level_sha256_before": review["source_level_sha256"],
+        "source_level_sha256_after": review["source_level_sha256"],
+        "protected_state_sha256": review["expected_protected_state_sha256"],
+        "material_path": review["expected_material_path"],
+        "generated_instance_count": review["expected_instance_count"],
+        "source_save_count": 0,
+        "completed_at": "2026-08-30T15:02:00Z",
+    }
+    review_payload["receipt_sha256"] = canonical_sha256(review_payload)
+    first_review = client.post(f"{lifecycle}/review-receipt", json=review_payload)
+    assert first_review.status_code == 200
+    assert first_review.json()["scene_variant_lineage"] is None
+    review_payload["status"] = "reconciled"
+    review_payload["completed_at"] = "2026-08-30T15:03:00Z"
+    review_payload["receipt_sha256"] = canonical_sha256(
+        {key: value for key, value in review_payload.items() if key != "receipt_sha256"}
+    )
+    reconciled_review = client.post(
+        f"{lifecycle}/review-receipt", json=review_payload
+    )
+    assert reconciled_review.status_code == 200
+    lineage = reconciled_review.json()["scene_variant_lineage"]
+    assert lineage["case_id"] == "current-session"
+    assert lineage["published_scene"] == decision["published_scene"]
+    assert lineage["review_status"] == "reconciled"
+    assert len(AgentEventStore(database).events(RUN_ID)) == 21

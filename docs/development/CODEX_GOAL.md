@@ -53,11 +53,12 @@ Unreal 当前场景
   的注册工作项；Unreal 菜单可领取单一写入权，执行、对账与结果由同一事件流投影。
 - **M20 · Current-session tribunal and correction（已完成）**：从当前工作项的真实回渲与三维回执生成
   独立评价，失败时只编译失败领域补丁，通过时进入采用与发布，不再读取 M16 历史评价制品。
-  当前候选与第一次单灯纠正均已完成内容绑定技术审查；新回渲的独立视觉复评确认 image 与 PCG 继续
-  通过，但第二盏定向光使 lighting 仍未达到冷湿清晨目标。下一步只对注册双灯光组执行类型化补丁，
-  回渲后重新裁决；双灯光组实测通过后已由 Codex 采用精确内容身份。
-- **M21 · Current-session publish and review（进行中）**：把当前采用决定接入已有版本化发布合同，由
-  Unreal 写入内容寻址 Published 命名空间，在新进程完成幂等对账，并通过注册审阅动作打开精确版本。
+  双灯光组实测通过后已由 Codex 采用精确内容身份。
+- **M21 · Current-session publish and review（已完成）**：当前采用决定已接入已有版本化发布合同；
+  Unreal 写入唯一内容寻址 Published 版本，新进程完成发布与审阅对账，源关卡字节未变化。
+- **M22 · Unreal-native operator lifecycle controls（进行中）**：把已经验证的发布与审阅合同接入
+  Unreal 中文 Tools 菜单。美术人员不再运行开发脚本，编辑器只依据当前投影推进唯一合法状态，
+  并把结果继续回传同一 Scene Session。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

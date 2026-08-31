@@ -1,0 +1,33 @@
+{
+  "schema_id": "artflow-m21-current-publish-verification/1",
+  "status": "verified",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "event_count": 37,
+  "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a",
+  "published_level_sha256": "a51e21be6b83365a85d00725ae6a237aaaad432f0c2101e270c23625eab0698c",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_unchanged": true,
+  "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "generated_instance_count": 12,
+  "duplicate_package_count": 0,
+  "source_save_count": 0,
+  "publish_statuses": [
+    "published",
+    "reconciled"
+  ],
+  "review_statuses": [
+    "inspected",
+    "reconciled"
+  ],
+  "lineage_case": "current-session",
+  "screenshots": {
+    "live-published-review-desktop.png": {
+      "bytes": 393092,
+      "sha256": "401c54853f87f8b4b6f63057f9a58f0e6e759e76ead39b5c063091325446af2d"
+    },
+    "live-published-review-narrow.png": {
+      "bytes": 132708,
+      "sha256": "f69b691876bdde8ee141f737ab96baeab3804b086410b37e40cc4b36f72db4d5"
+    }
+  }
+}

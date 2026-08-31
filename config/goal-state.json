@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 60,
+  "stateRevision": 61,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M21",
+  "currentMilestone": "M22",
   "milestones": [
     {
       "id": "M0",
@@ -234,7 +234,7 @@
     {
       "id": "M21",
       "title": "Current-session versioned publish and Unreal review",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M20"],
       "outcome": "The exact current candidate adopted by Codex is published into a content-addressed Unreal variant namespace, reconciled without duplicate packages and opened through the registered review action while the source level remains byte-identical.",
       "acceptance": [
@@ -242,36 +242,46 @@
         "A fresh UE process reconciles the same published package and receipt without a second package or source-level write",
         "The live Scene Change Spectrum projects adopted, published and reviewed as distinct current-session states"
       ]
+    },
+    {
+      "id": "M22",
+      "title": "Unreal-native operator lifecycle controls",
+      "status": "in_progress",
+      "dependsOn": ["M21"],
+      "outcome": "An artist can advance the current Scene Session from candidate execution through correction, publish and exact-version review from registered Unreal editor actions, while the Scene Change Spectrum reflects each durable state without command-line operation.",
+      "acceptance": [
+        "Editor actions derive the only legal next lifecycle command from the current Agent projection and never accept an arbitrary script, path, map or event payload",
+        "Publish and review show clear Chinese in-editor progress and reconcile an unknown completion before any retry",
+        "One continuous recorded walkthrough starts from the project-owned scene and reaches the exact Published variant using only product-facing entrypoints"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M21-S1",
-    "milestone": "M21",
-    "title": "Publish and review the current adopted variant",
-    "outcome": "Compile the current Codex adoption into the existing typed publish lifecycle, let UE create or reconcile the exact content-addressed variant, and return a registered in-editor review receipt through the same append-only Scene Session.",
-    "risk": "R3",
-    "evidenceTarget": "A4",
+    "id": "M22-S1",
+    "milestone": "M22",
+    "title": "Add registered Unreal publish and review actions",
+    "outcome": "Expose the current-session publish and exact-version review lifecycle as product-facing Unreal editor actions that call only server-derived typed requests, report durable progress in Chinese and reuse the existing reconciliation path.",
+    "risk": "R2",
+    "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not rerun generation, correction or evaluation after the adopted content identity is frozen",
+      "Do not add a generic command console, Python entry field, caller-selected map or filesystem browser",
       "Do not overwrite, rename or save the source ArtFlowDemo level",
-      "Do not accept a caller-selected candidate path, publish path, map or review target",
-      "Do not add a second publisher, state machine or manual approval gate",
-      "Do not spend time on broad benchmarks, provider additions or unrelated interface redesign"
+      "Do not add a second publisher, review implementation, state machine or approval gate",
+      "Do not redesign the web workspace or add unrelated providers in this slice",
+      "Do not build a broad automation test matrix; verify the registered actions and one real lifecycle only"
     ],
     "acceptance": [
-      "The publish request is derived from event 35's adoption, accepted evaluation, correction receipt and current candidate file hash without user-supplied host paths",
-      "UE writes exactly one package under the adoption decision's content-addressed Published namespace and leaves the source level hash unchanged",
-      "A fresh UE process reconciles the same package and registered receipt with zero duplicate package, Actor, PCG or provider side effects",
-      "The registered review action opens only the exact published variant and appends one typed review event",
-      "Desktop and narrow live UI evidence distinguishes adopted, published and reviewed states and maps each claim to current-session receipts"
+      "The Unreal Tools menu exposes Chinese publish and review actions whose request bodies contain no host path or caller event payload",
+      "The publish action uses the current projection to publish or reconcile the only adopted candidate and reports the resulting state",
+      "The review action opens only the server-derived Published map and returns its typed receipt",
+      "A short real-host walkthrough and screenshot show the editor action and matching Scene Change Spectrum state"
     ],
     "stopConditions": [
-      "Stop before publish if the current adoption, accepted evaluation, correction receipt or candidate bytes no longer match",
-      "Stop if the derived destination is outside the registered ArtFlow Published namespace",
-      "Stop if the source level hash changes or an existing different package occupies the content identity",
-      "Stop if fresh-process reconciliation cannot distinguish completed from unknown publication",
+      "Stop if an editor action would need arbitrary Python, Shell, map or filesystem input",
+      "Stop if the action cannot reuse the M21 typed request and receipt validators",
+      "Stop if the source level hash changes or the server-derived target differs from the adopted content identity",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -293,9 +303,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0055.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0056.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M20 are complete. The persisted lighting-only failure produced a second correction whose complete typed contract could address only the registered primary and secondary directional lights. UE 5.8.1 changed the primary from 3.2/7200K at -81/-25 degrees to 2.2/8500K at -18/-45 degrees and the secondary from 6.0/6500K to 0.25/9000K; source hash, protected-state fingerprint and 12 PCG instances remained unchanged. Seven technical checks and a fresh visual observation accepted the new same-camera rerender. Event 35 records Codex adoption of the exact current candidate without a permission prompt or publish side effect. Desktop and narrow live UI captures have no broken image, console error or horizontal overflow. Content-addressed publish, fresh-process reconciliation and exact Unreal review remain M21 work.",
+  "evidenceCeiling": "M0-M21 are complete. The current Session now owns one continuous 37-event identity chain from candidate execution through two bounded lighting corrections, accepted technical and visual reevaluation, Codex adoption, content-addressed publish and exact Unreal review. UE 5.8.1 published /Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a; fresh processes reconciled publish and review with zero duplicate packages, 12 preserved PCG instances, zero source saves and a byte-identical ArtFlowDemo.umap. Desktop and narrow Scene Change Spectrum captures project the current-session lineage without broken images, console errors or horizontal overflow. Product-facing Unreal publish and review menu actions remain M22 work; the M21 host scripts are development automation, not the final artist entrypoint.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

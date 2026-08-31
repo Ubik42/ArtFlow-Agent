@@ -2,7 +2,7 @@
 
 面向 Unreal Engine 美术生产的场景智能体。ArtFlow 将二维视觉意图转化为可审查、可回滚、可追溯的材质、资产、PCG 与灯光变更，并在隔离候选关卡中完成执行、评价、纠正和发布。
 
-![ArtFlow 场景导演台：双灯光组通过复评并由 Codex 采用](artifacts/goal/m20-s5-multilight-correction/live-adopted-multilight-desktop.png)
+![ArtFlow 场景导演台：当前候选完成内容寻址发布与 Unreal 复核](artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png)
 
 ## 项目定位
 
@@ -26,7 +26,11 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 
 封存后的 Candidate Plan 会进入当前 Scene Session 的注册工作项。使用者可在 Unreal 的 Tools 菜单选择“执行当前 ArtFlow 候选”；编辑器原子领取单一写入权，依次回传执行、对账和结果状态。当前 UE 5.8.1 实测由实时导出的场景包建立新 Session，生成 12 个 PCG 实例并保持源关卡哈希不变。
 
-当前候选经独立评价后只判定 `lighting` 失败。第一次单灯纠正满足执行合同，但新的视觉复评仍识别到第二盏定向光主导画面。Agent 因此编译完整的注册灯光组补丁：主光调整为 `2.2 / 8500K` 与低角度方向，辅助定向光由 `6.0 / 6500K` 压低至 `0.25 / 9000K`。UE 回执证明保护结构未变、PCG 实例保持 `12 → 12`、源关卡哈希未变；七项技术检查与新视觉复评通过后，Codex 依据持久评价采用当前内容身份，尚未发布。
+当前候选经独立评价后只判定 `lighting` 失败。第一次单灯纠正满足执行合同，但新的视觉复评仍识别到第二盏定向光主导画面。Agent 因此编译完整的注册灯光组补丁：主光调整为 `2.2 / 8500K` 与低角度方向，辅助定向光由 `6.0 / 6500K` 压低至 `0.25 / 9000K`。UE 回执证明保护结构未变、PCG 实例保持 `12 → 12`、源关卡哈希未变；七项技术检查与新视觉复评通过后，编排器采用精确内容身份并发布到 `/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a`。两个新的 UE 5.8.1 进程分别完成发布对账与精确版本审阅，没有创建第二个关卡包，也没有保存源关卡。
+
+| 当前 Session · Published 版本 | 窄屏场景变体状态 |
+| --- | --- |
+| ![当前 Scene Session 完成发布与审阅](artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png) | ![窄屏 Published 版本与 Unreal 复核状态](artifacts/goal/m21-s1-current-publish/live-published-review-narrow.png) |
 
 在真实 UE 5.8 宿主中，当前已接入的 PCG 与灯光域可以进一步编译为具体 Candidate Plan。下面的候选由 Session 请求派生目录承载，生成 12 个 PCG 实例；新编辑器进程再次打开同一计划时完成对账而不重复生成，源关卡文件哈希保持不变。
 

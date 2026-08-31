@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -26,6 +27,18 @@ def file_sha256(path: Path) -> str:
 
 def fail(message: str) -> None:
     raise RuntimeError(f"ArtFlow Session publish failed closed: {message}")
+
+
+def request_json(url: str, *, payload: dict[str, object] | None = None) -> dict:
+    body = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"} if body is not None else {},
+        method="POST" if body is not None else "GET",
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return json.load(response)
 
 
 def actor_state(actor: unreal.Actor) -> str:
@@ -80,11 +93,35 @@ def inspect_loaded_scene() -> dict[str, object]:
 
 
 repo_root = Path(os.environ["ARTFLOW_REPO_ROOT"]).resolve()
-request_path = Path(os.environ["ARTFLOW_SCENE_PUBLISH_REQUEST"]).resolve()
-result_path = Path(os.environ["ARTFLOW_SCENE_PUBLISH_RESULT"]).resolve()
-if not request_path.is_relative_to(repo_root) or not result_path.is_relative_to(repo_root):
-    fail("request or result escaped the repository")
-request = json.loads(request_path.read_text(encoding="utf-8"))
+current_origin = os.environ.get("ARTFLOW_CURRENT_VARIANT_ORIGIN")
+current_run = os.environ.get("ARTFLOW_CURRENT_VARIANT_RUN")
+if current_origin or current_run:
+    if (
+        not current_origin
+        or not current_run
+        or not current_origin.startswith("http://127.0.0.1:")
+        or "/" in current_run
+        or "\\" in current_run
+    ):
+        fail("current publish requires a localhost origin and registered run identity")
+    request = request_json(
+        f"{current_origin}/api/agent/runs/{current_run}/current-variant/publish-request"
+    )
+    result_path = (
+        Path(unreal.Paths.project_saved_dir()).resolve()
+        / "ArtFlowSceneBridge"
+        / "CurrentVariant"
+        / request["request_id"]
+        / "publish-receipt.json"
+    )
+else:
+    request_path = Path(os.environ["ARTFLOW_SCENE_PUBLISH_REQUEST"]).resolve()
+    result_path = Path(os.environ["ARTFLOW_SCENE_PUBLISH_RESULT"]).resolve()
+    if not request_path.is_relative_to(repo_root):
+        fail("request escaped the repository")
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+if not result_path.is_relative_to(repo_root):
+    fail("result escaped the repository")
 if request.get("schema_id") != "artflow-scene-variant-publish-request/1":
     fail("unsupported request schema")
 request_payload = {
@@ -237,6 +274,11 @@ result_path.parent.mkdir(parents=True, exist_ok=True)
 temporary = result_path.with_suffix(result_path.suffix + ".tmp")
 temporary.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 temporary.replace(result_path)
+if current_origin and current_run:
+    request_json(
+        f"{current_origin}/api/agent/runs/{current_run}/current-variant/publish-receipt",
+        payload=result,
+    )
 unreal.log(
     f"ARTFLOW_SESSION_PUBLISH status={result['status']} path={published_scene} "
     f"instances={published_facts['generated_instance_count']}"

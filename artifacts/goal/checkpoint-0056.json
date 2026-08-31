@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M21-S1",
+  "status": "completed",
+  "outcome": "The exact current candidate was published once into its content-addressed Unreal namespace, reconciled and reviewed by fresh UE 5.8.1 processes, then projected as one 37-event current-session lineage while the source level remained byte-identical.",
+  "evidence": [
+    "artifacts/goal/m21-s1-current-publish/verification.json",
+    "artifacts/goal/m21-s1-current-publish/live-projection.json",
+    "artifacts/goal/m21-s1-current-publish/publish-created-receipt.json",
+    "artifacts/goal/m21-s1-current-publish/publish-reconciled-receipt.json",
+    "artifacts/goal/m21-s1-current-publish/review-inspected-receipt.json",
+    "artifacts/goal/m21-s1-current-publish/review-reconciled-receipt.json",
+    "artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png",
+    "artifacts/goal/m21-s1-current-publish/live-published-review-narrow.png",
+    "docs/evidence/M21_S1_CURRENT_PUBLISH_REVIEW_2026-08-31.md",
+    "tests/test_current_scene_evaluation.py"
+  ]
+}

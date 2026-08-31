@@ -1,0 +1,19 @@
+{
+  "schema_id": "artflow-scene-variant-publish-receipt/1",
+  "request_id": "scene-publish-9f0707ed5729c34b",
+  "request_sha256": "9f0707ed5729c34b0ff53a60524dde5045ac06d1e4eb20c89293971fb32bd14a",
+  "decision_sha256": "38b161a29c15340354758e048058738bdf86d3119f612a691590ee8bece3e263",
+  "status": "reconciled",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/C_e31328f4b1f5",
+  "candidate_level_sha256": "9e05f7ecbcb64db6df58fd50bf2ef63ef963812536137c5bbff4be9597b84ed7",
+  "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a",
+  "published_level_sha256": "a51e21be6b83365a85d00725ae6a237aaaad432f0c2101e270c23625eab0698c",
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "material_path": "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial",
+  "generated_instance_count": 12,
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-08-31T06:04:00.680321Z",
+  "receipt_sha256": "5c2b3b7e5f3477a7d41202971b0fde5ba09a0887307e3ebb190c4a304f354fdc"
+}

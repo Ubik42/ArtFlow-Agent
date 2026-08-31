@@ -1,0 +1,35 @@
+{
+  "schema_id": "artflow-m21-host-runs/1",
+  "runs": [
+    {
+      "phase": "contract-mismatch-negative-control",
+      "pid": 23016,
+      "result": "rejected_before_mutation",
+      "detail": "A C++-semantic protected fingerprint did not match the Python publish contract; no Published package or event was created."
+    },
+    {
+      "phase": "publish",
+      "pid": 30772,
+      "result": "published",
+      "log": "publish-first-success.log"
+    },
+    {
+      "phase": "publish-reconcile",
+      "pid": 46256,
+      "result": "reconciled",
+      "log": "publish-reconcile.log"
+    },
+    {
+      "phase": "review",
+      "pid": 44660,
+      "result": "inspected",
+      "log": "review-first.log"
+    },
+    {
+      "phase": "review-reconcile",
+      "pid": 41884,
+      "result": "reconciled",
+      "log": "review-reconcile.log"
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -26,6 +27,18 @@ def file_sha256(path: Path) -> str:
 
 def fail(message: str) -> None:
     raise RuntimeError(f"ArtFlow published variant review failed closed: {message}")
+
+
+def request_json(url: str, *, payload: dict[str, object] | None = None) -> dict:
+    body = None if payload is None else json.dumps(payload).encode("utf-8")
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json"} if body is not None else {},
+        method="POST" if body is not None else "GET",
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return json.load(response)
 
 
 def actor_state(actor: unreal.Actor) -> str:
@@ -53,11 +66,35 @@ def actor_state(actor: unreal.Actor) -> str:
 
 
 repo_root = Path(os.environ["ARTFLOW_REPO_ROOT"]).resolve()
-request_path = Path(os.environ["ARTFLOW_SCENE_REVIEW_REQUEST"]).resolve()
-result_path = Path(os.environ["ARTFLOW_SCENE_REVIEW_RESULT"]).resolve()
-if not request_path.is_relative_to(repo_root) or not result_path.is_relative_to(repo_root):
-    fail("request or result escaped the repository")
-request = json.loads(request_path.read_text(encoding="utf-8"))
+current_origin = os.environ.get("ARTFLOW_CURRENT_VARIANT_ORIGIN")
+current_run = os.environ.get("ARTFLOW_CURRENT_VARIANT_RUN")
+if current_origin or current_run:
+    if (
+        not current_origin
+        or not current_run
+        or not current_origin.startswith("http://127.0.0.1:")
+        or "/" in current_run
+        or "\\" in current_run
+    ):
+        fail("current review requires a localhost origin and registered run identity")
+    request = request_json(
+        f"{current_origin}/api/agent/runs/{current_run}/current-variant/review-request"
+    )
+    result_path = (
+        Path(unreal.Paths.project_saved_dir()).resolve()
+        / "ArtFlowSceneBridge"
+        / "CurrentVariant"
+        / request["review_id"]
+        / "review-receipt.json"
+    )
+else:
+    request_path = Path(os.environ["ARTFLOW_SCENE_REVIEW_REQUEST"]).resolve()
+    result_path = Path(os.environ["ARTFLOW_SCENE_REVIEW_RESULT"]).resolve()
+    if not request_path.is_relative_to(repo_root):
+        fail("request escaped the repository")
+    request = json.loads(request_path.read_text(encoding="utf-8"))
+if not result_path.is_relative_to(repo_root):
+    fail("result escaped the repository")
 if request.get("schema_id") != "artflow-scene-variant-review-request/1":
     fail("unsupported review request schema")
 payload = {
@@ -74,7 +111,7 @@ if request.get("idempotency_key") != f"scene-review:{review_sha}":
     fail("review idempotency key mismatch")
 published_scene = request["published_scene"]
 match = re.fullmatch(
-    r"/Game/ArtFlow/Published/AF_784907467248/V_([a-f0-9]{12})",
+    r"/Game/ArtFlow/Published/AF_[a-f0-9]{12}/V_([a-f0-9]{12})",
     published_scene,
 )
 if match is None or match.group(1) != request["content_identity_sha256"][:12]:
@@ -91,6 +128,9 @@ if not source_file.is_file() or file_sha256(source_file) != request["source_leve
 if not published_file.is_file() or file_sha256(published_file) != request["published_level_sha256"]:
     fail("published level bytes differ from the publish receipt")
 source_before = file_sha256(source_file)
+
+if current_origin and current_run and not unreal.EditorLoadingAndSavingUtils.load_map(published_scene):
+    fail("Unreal could not open the exact Published variant for review")
 
 world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()
 if world is None or world.get_outermost().get_name() != published_scene:
@@ -162,6 +202,11 @@ for path in (ledger_path, result_path):
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(encoded, encoding="utf-8")
     temporary.replace(path)
+if current_origin and current_run:
+    request_json(
+        f"{current_origin}/api/agent/runs/{current_run}/current-variant/review-receipt",
+        payload=result,
+    )
 unreal.log(
     f"ARTFLOW_SCENE_REVIEW status={result['status']} path={published_scene} "
     f"instances={facts['generated_instance_count']}"

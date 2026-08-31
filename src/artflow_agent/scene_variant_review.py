@@ -48,11 +48,15 @@ class SceneVariantReviewRequest(BaseModel):
             raise ValueError("scene variant review id is invalid")
         if self.idempotency_key != f"scene-review:{expected}":
             raise ValueError("scene variant review idempotency key is invalid")
-        expected_path = (
-            "/Game/ArtFlow/Published/AF_784907467248/"
-            f"V_{self.content_identity_sha256[:12]}"
-        )
-        if self.published_scene != expected_path:
+        segments = self.published_scene.split("/")
+        if (
+            len(segments) != 6
+            or segments[:4] != ["", "Game", "ArtFlow", "Published"]
+            or not segments[4].startswith("AF_")
+            or len(segments[4]) != 15
+            or any(character not in "0123456789abcdef" for character in segments[4][3:])
+            or segments[5] != f"V_{self.content_identity_sha256[:12]}"
+        ):
             raise ValueError("review request escaped the registered Published variant")
         return self
 
@@ -103,7 +107,7 @@ class SceneVariantLineage(BaseModel):
     schema_id: Literal["artflow-scene-variant-lineage/1"] = (
         "artflow-scene-variant-lineage/1"
     )
-    case_id: Literal["sunlit-overgrown"]
+    case_id: Literal["sunlit-overgrown", "current-session"]
     status: Literal["published"]
     source_scene: str
     candidate_scene: str
@@ -199,8 +203,9 @@ def compile_scene_variant_lineage(
     ):
         raise ValueError("Unreal review facts differ from the published decision")
 
+    is_legacy_showcase = len(failed.findings) == 5
     return SceneVariantLineage(
-        case_id="sunlit-overgrown",
+        case_id="sunlit-overgrown" if is_legacy_showcase else "current-session",
         status="published",
         source_scene=decision.source_scene,
         candidate_scene=decision.candidate_scene,
@@ -215,10 +220,10 @@ def compile_scene_variant_lineage(
         review_status=review_receipt.status,
         review_id=review_request.review_id,
         steps=[
-            VariantLineageStep(index=1, kind="target", label="视觉目标", state="retained", detail="GPT Image 2 构图与保持项已绑定", identity=failed.evaluation_sha256[:12]),
-            VariantLineageStep(index=2, kind="candidate", label="初次候选", state="failed", detail="灯光域未通过，其他四域保留", identity=failed.plan_sha256[:12]),
-            VariantLineageStep(index=3, kind="correction", label="定向纠正", state="corrected", detail="只重做 lighting，5.5 / 4200K", identity=corrected.plan_sha256[:12]),
-            VariantLineageStep(index=4, kind="adoption", label="Codex 采用", state="adopted", detail="五域通过，锁定候选内容身份", identity=decision.decision_sha256[:12]),
+            VariantLineageStep(index=1, kind="target", label="视觉目标" if is_legacy_showcase else "场景意图", state="retained", detail="GPT Image 2 构图与保持项已绑定" if is_legacy_showcase else "当前 Scene Session 意图与场景约束已绑定", identity=failed.evaluation_sha256[:12]),
+            VariantLineageStep(index=2, kind="candidate", label="初次候选", state="failed", detail=f"灯光域未通过，其他 {len(retained)} 域保留", identity=failed.plan_sha256[:12]),
+            VariantLineageStep(index=3, kind="correction", label="定向纠正", state="corrected", detail="只重做 lighting，5.5 / 4200K" if is_legacy_showcase else "只重做 lighting，最终双灯光组通过复评", identity=corrected.plan_sha256[:12]),
+            VariantLineageStep(index=4, kind="adoption", label="Codex 采用", state="adopted", detail=f"{len(corrected.findings)} 域通过，锁定候选内容身份", identity=decision.decision_sha256[:12]),
             VariantLineageStep(index=5, kind="publish", label="版本发布", state="published", detail="写入唯一 Published 场景变体", identity=decision.content_identity_sha256[:12]),
             VariantLineageStep(index=6, kind="review", label="Unreal 审阅", state="inspected", detail="新进程加载复检，源关卡未保存", identity=review_request.review_sha256[:12]),
         ],
