@@ -1,0 +1,3 @@
+[2026.08.31-01.55.35:899][10] ARTFLOW_SESSION_CANDIDATE_SUBMITTED plan=candidate-plan-8d9643cd0a5a candidate=/Game/ArtFlow/Sessions/AF_784907467248/Candidates/C_5e39f4fb72dc reconciled=false
+[2026.08.31-01.55.36:457][62] ARTFLOW_SESSION_CANDIDATE_RESULT success=true receipt=candidate-plan-8d9643cd0a5a/candidate-execution-receipt.json reconciled=false error=
+[2026.08.31-01.57.07:537][94] ARTFLOW_SESSION_CANDIDATE_RESULT success=true receipt=candidate-plan-8d9643cd0a5a/candidate-execution-receipt.json reconciled=true error=

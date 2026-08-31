@@ -19,6 +19,7 @@ from .contracts import (
     ProviderExecutionReceipt,
     RouteDecision,
     SceneConstraintPackage,
+    SceneDigitalTwin,
 )
 from .harness_contracts import HarnessScorecard
 from .multimodal_critic import MultimodalTribunalReport
@@ -114,6 +115,7 @@ class SceneAttachment(BaseModel):
     package: SceneConstraintPackage
     archive_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     artifacts: list[VerifiedSceneArtifact] = Field(min_length=4)
+    digital_twin: SceneDigitalTwin | None = None
 
 
 class PendingToolCall(BaseModel):
@@ -439,6 +441,7 @@ class AgentEventStore:
             package=preview.package,
             archive_sha256=preview.archive_sha256,
             artifacts=preview.artifacts,
+            digital_twin=preview.digital_twin,
         )
         self._append(
             run_id,

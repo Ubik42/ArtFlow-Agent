@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 46,
+  "stateRevision": 47,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M12",
+  "currentMilestone": "M13",
   "milestones": [
     {
       "id": "M0",
@@ -129,7 +129,7 @@
     {
       "id": "M12",
       "title": "Unreal editor session bridge and candidate execution",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M11"],
       "outcome": "The Unreal editor can initiate a Scene Session, receive a typed candidate-stage request and execute registered scene tools in an isolated candidate level with durable receipts and reconciliation.",
       "acceptance": [
@@ -140,7 +140,7 @@
     {
       "id": "M13",
       "title": "Cross-pipeline scene transformation and failed-domain correction",
-      "status": "pending",
+      "status": "in_progress",
       "dependsOn": ["M12"],
       "outcome": "Reviewed ComfyUI graphs, GPT Image 2 development orchestration, PBR materials, project and generated assets, PCG and lighting cooperate through one typed plan, with independent evaluation and failed-domain-only correction.",
       "acceptance": [
@@ -161,34 +161,34 @@
     }
   ],
   "nextSlice": {
-    "id": "M12-S2",
-    "milestone": "M12",
-    "title": "Typed candidate level materialization and registered tool dispatch",
-    "outcome": "Compile the persisted Scene Session into one concrete content-bound candidate plan, let the project-owned UE 5.8 host materialize the exact /Game/ArtFlow/Sessions candidate level and dispatch only registered domain tools, then reconcile a durable operation receipt while the source level remains byte-identical.",
+    "id": "M13-S1",
+    "milestone": "M13",
+    "title": "Rain-wet courtyard cross-pipeline production case",
+    "outcome": "Drive one editor-originated rain-wet courtyard Session through a reviewed ComfyUI PBR route, verified Unreal material binding, project asset reuse, PCG layout and lighting in one dependency-aware Candidate Plan, then rerender and independently evaluate the isolated result without publishing it.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
       "Do not publish, merge or overwrite the active/source level in this slice",
-      "Do not accept arbitrary operation names, content destinations, Blueprint, Python, Shell or model-authored host code",
-      "Do not invoke a new image, material or image-to-3D generation Provider merely to populate the candidate",
-      "Do not add a second Unreal execution state machine outside the append-only Agent ledger",
+      "Do not execute an arbitrary ComfyUI graph; use only the reviewed PBR template and verified Production Nodes capability",
+      "Do not add image-to-3D or a new asset Provider when project-owned assets satisfy the case",
+      "Do not implement the second production case or failed-domain correction in this slice",
       "Do not modify shared engine installation files or unrelated Unreal projects",
-      "Do not delay candidate execution for packaged-runtime support, broad engine matrices or cosmetic test expansion"
+      "Do not delay the production case for packaged-runtime support, broad engine matrices or cosmetic test expansion"
     ],
     "acceptance": [
-      "The candidate plan is derived from the active persisted Session and binds source level, Scene Package, draft, strategy, stage request, ordered operations and concrete bounded parameters",
-      "UE duplicates the project-owned source into the exact requested /Game/ArtFlow/Sessions candidate namespace before any registered tool runs and never saves the source level",
-      "A fixed registry maps supported domains to typed Unreal tools and rejects unknown operations, stale hashes and escaped destinations before candidate mutation",
-      "Retry or restart reconciles the same candidate and operation identities without duplicate map, Actor, PCG instance or material side effects",
-      "A real UE 5.8 host log, candidate receipt and source-versus-candidate screenshots prove execution and source-level byte identity"
+      "One Scene Session binds the reviewed ComfyUI capability attestation, PBR set, material instance, project asset set, PCG and lighting operations into a single ordered plan",
+      "The PBR route validates every channel and only the generated material branch waits on ComfyUI while project assets and non-engine preparation can proceed independently",
+      "UE serially applies the verified material, project assets, PCG and lighting only inside the request-derived candidate and preserves source camera, protected actor and source map bytes",
+      "Technical evaluation records channel, shader, instance, protected-region and source-invariant results separately from visual evaluation of the same-camera rerender",
+      "Real ComfyUI and UE receipts plus source, intermediate and final Chinese workflow screenshots reproduce the case"
     ],
     "stopConditions": [
       "Stop before publish or any source-level save",
-      "Stop if the candidate destination cannot be proven to be the exact request-derived project namespace",
-      "Stop if any operation lacks a registered typed handler, bounded parameters or a verification signal",
-      "Stop if source-level bytes change or replay would create a duplicate side effect",
+      "Stop if the reviewed ComfyUI graph, required nodes or model inventory cannot be attested on the current host",
+      "Stop if a PBR channel, Unreal material compile, candidate target identity or protected invariant fails verification",
+      "Stop if source-level bytes change or the pipeline cannot cite the exact Candidate Plan and provider receipts",
       "Stop if project-owned UE host changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -210,9 +210,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0041.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0042.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M11 retain their frozen evidence and bounded claims. M12-S1 adds one real UE 5.8 editor-originated localhost-only Scene Session handshake. The host validates and saves a receipt binding the source level, Scene Package, run, Session, draft, strategy and stage request; the exact source .umap SHA-256 is unchanged before and after. Replaying the same real ZIP and action leaves the event timeline at 3 events with exactly one scene_session_started. The focused API suite passes 11/11, Ruff passes and UnrealBuildTool succeeds. The candidate request remains unexecuted: no candidate map, Actor, asset, PCG, lighting or Provider side effect is claimed.",
+  "evidenceCeiling": "M0-M12 are complete. M12-S1 proves a real UE 5.8 editor-originated localhost-only Scene Session handshake with exactly one persisted Session event on request replay and byte-identical source level. M12-S2 persists the verified Scene Digital Twin in event context, compiles a content-bound Candidate Plan for the registered PCG and lighting tools, creates the exact request-derived /Game/ArtFlow/Sessions candidate, produces 12 PCG instances and a same-camera rerender, and reconciles the same candidate in a fresh UE process with zero duplicate instances. The source .umap SHA-256 remains 620e4814... before and after. This evidence does not yet claim that the new Session plan executes image, material or asset domains, independent visual evaluation, correction or publish.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -180,6 +180,82 @@ class SceneStageRequest(BaseModel):
         }
 
 
+class SceneCandidatePCGToolCall(BaseModel):
+    operation_type: Literal["apply_pcg_layout"] = "apply_pcg_layout"
+    operation_id: str
+    domain: Literal["pcg"] = "pcg"
+    tool_name: Literal["unreal.pcg.layout.apply"] = "unreal.pcg.layout.apply"
+    target_actor_id: str
+    target_actor_label: str
+    expected_source_fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+    component_id: str
+    approved_graph_path: str
+    seed: int = Field(ge=0, le=2_147_483_647)
+    max_generated_instances: int = Field(ge=1, le=10_000)
+
+
+class SceneCandidateLightingToolCall(BaseModel):
+    operation_type: Literal["set_lighting_rig"] = "set_lighting_rig"
+    operation_id: str
+    domain: Literal["lighting"] = "lighting"
+    tool_name: Literal["unreal.lighting.rig.patch"] = "unreal.lighting.rig.patch"
+    target_actor_id: str
+    target_actor_label: str
+    expected_source_fingerprint: str = Field(pattern=r"^[a-f0-9]{64}$")
+    intensity: float = Field(ge=0, le=1_000_000)
+    use_temperature: Literal[True] = True
+    temperature_kelvin: float = Field(ge=1_000, le=20_000)
+
+
+SceneCandidateToolCall = Annotated[
+    SceneCandidatePCGToolCall | SceneCandidateLightingToolCall,
+    Field(discriminator="operation_type"),
+]
+
+
+class SceneCandidatePlan(BaseModel):
+    schema_id: Literal["artflow-scene-candidate-plan/1"] = (
+        "artflow-scene-candidate-plan/1"
+    )
+    plan_id: str
+    plan_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    run_id: str
+    basis_sequence: int = Field(ge=1)
+    scene_package_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    session_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    draft_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    stage_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    strategy_version: Literal["scene-session-strategy/1"] = SCENE_SESSION_STRATEGY_VERSION
+    source_scene: str
+    candidate_destination: str
+    operations: list[SceneCandidateToolCall] = Field(min_length=1, max_length=5)
+
+    @model_validator(mode="after")
+    def verify_identity(self) -> SceneCandidatePlan:
+        expected = _content_sha256(self._identity_payload())
+        if self.plan_sha256 != expected:
+            raise ValueError("scene candidate plan content hash is invalid")
+        if self.plan_id != f"candidate-plan-{expected[:12]}":
+            raise ValueError("scene candidate plan id is invalid")
+        if not self.candidate_destination.startswith("/Game/ArtFlow/Sessions/"):
+            raise ValueError("scene candidate plan escaped the ArtFlow Sessions namespace")
+        return self
+
+    def _identity_payload(self) -> dict[str, object]:
+        return {
+            "run_id": self.run_id,
+            "basis_sequence": self.basis_sequence,
+            "scene_package_sha256": self.scene_package_sha256,
+            "session_sha256": self.session_sha256,
+            "draft_sha256": self.draft_sha256,
+            "stage_request_sha256": self.stage_request_sha256,
+            "strategy_version": self.strategy_version,
+            "source_scene": self.source_scene,
+            "candidate_destination": self.candidate_destination,
+            "operations": [item.model_dump(mode="json") for item in self.operations],
+        }
+
+
 class SceneSessionHandshakeReceipt(BaseModel):
     schema_id: Literal["artflow-scene-session-handshake/1"] = (
         "artflow-scene-session-handshake/1"
@@ -193,6 +269,7 @@ class SceneSessionHandshakeReceipt(BaseModel):
     event_sequence: int = Field(ge=1)
     session: SceneSession
     stage_request: SceneStageRequest
+    candidate_plan: SceneCandidatePlan | None = None
 
     @model_validator(mode="after")
     def verify_identity(self) -> SceneSessionHandshakeReceipt:
@@ -215,10 +292,17 @@ class SceneSessionHandshakeReceipt(BaseModel):
             raise ValueError("scene session handshake stage request references another source scene")
         if self.event_sequence != self.stage_request.basis_sequence:
             raise ValueError("scene session handshake event sequence is invalid")
+        if self.candidate_plan is not None:
+            if self.candidate_plan.run_id != self.run_id:
+                raise ValueError("scene candidate plan references another run")
+            if self.candidate_plan.session_sha256 != self.session.session_sha256:
+                raise ValueError("scene candidate plan references another Session")
+            if self.candidate_plan.stage_request_sha256 != self.stage_request.request_sha256:
+                raise ValueError("scene candidate plan references another stage request")
         return self
 
     def _identity_payload(self) -> dict[str, object]:
-        return {
+        payload: dict[str, object] = {
             "action_id": self.action_id,
             "run_id": self.run_id,
             "source_scene": self.source_scene,
@@ -227,6 +311,9 @@ class SceneSessionHandshakeReceipt(BaseModel):
             "session": self.session.model_dump(mode="json"),
             "stage_request": self.stage_request.model_dump(mode="json"),
         }
+        if self.candidate_plan is not None:
+            payload["candidate_plan"] = self.candidate_plan.model_dump(mode="json")
+        return payload
 
 
 def compile_scene_session_draft(
@@ -445,6 +532,96 @@ def compile_scene_stage_request(
     )
 
 
+def compile_scene_candidate_plan(
+    state: AgentRunState,
+    *,
+    expected_stage_request_sha256: str,
+) -> SceneCandidatePlan:
+    if state.scene is None or state.scene.digital_twin is None:
+        raise ValueError("scene candidate plan requires a Scene Digital Twin")
+    session = state.scene_sessions[-1] if state.scene_sessions else None
+    if session is None:
+        raise ValueError("scene candidate plan requires a persisted Scene Session")
+    stage_request = compile_scene_stage_request(
+        state,
+        expected_draft_sha256=session.draft.draft_sha256,
+    )
+    if stage_request.request_sha256 != expected_stage_request_sha256:
+        raise ValueError("scene candidate plan rejected a stale stage request identity")
+    domains = [operation.domain for operation in stage_request.operations]
+    unsupported = sorted(set(domains) - {"pcg", "lighting"})
+    if unsupported:
+        raise ValueError(
+            "scene candidate execution is not registered for domains: "
+            + ", ".join(unsupported)
+        )
+
+    twin = state.scene.digital_twin
+    pcg_targets = [
+        (actor, component)
+        for actor in twin.actors
+        if actor.editable
+        for component in actor.pcg_components
+    ]
+    light_targets = [
+        actor for actor in twin.actors if actor.light is not None and not actor.protected
+    ]
+    named_key_lights = [actor for actor in light_targets if actor.label == "ArtFlow_KeyLight"]
+    if named_key_lights:
+        light_targets = named_key_lights
+    tool_calls: list[SceneCandidateToolCall] = []
+    for operation in stage_request.operations:
+        if operation.domain == "pcg":
+            if len(pcg_targets) != 1:
+                raise ValueError("registered PCG execution requires exactly one editable component")
+            actor, component = pcg_targets[0]
+            tool_calls.append(
+                SceneCandidatePCGToolCall(
+                    operation_id="pcg-layout-main",
+                    target_actor_id=actor.actor_id,
+                    target_actor_label=actor.label,
+                    expected_source_fingerprint=actor.source_fingerprint,
+                    component_id=component.component_id,
+                    approved_graph_path=component.graph_path,
+                    seed=240_827,
+                    max_generated_instances=64,
+                )
+            )
+        elif operation.domain == "lighting":
+            if len(light_targets) != 1:
+                raise ValueError("registered lighting execution requires exactly one light target")
+            actor = light_targets[0]
+            tool_calls.append(
+                SceneCandidateLightingToolCall(
+                    operation_id="lighting-rig-main",
+                    target_actor_id=actor.actor_id,
+                    target_actor_label=actor.label,
+                    expected_source_fingerprint=actor.source_fingerprint,
+                    intensity=5.5,
+                    temperature_kelvin=4_200,
+                )
+            )
+
+    payload = {
+        "run_id": state.run_id,
+        "basis_sequence": state.last_sequence,
+        "scene_package_sha256": state.scene.archive_sha256,
+        "session_sha256": session.session_sha256,
+        "draft_sha256": session.draft.draft_sha256,
+        "stage_request_sha256": stage_request.request_sha256,
+        "strategy_version": session.strategy_version,
+        "source_scene": session.source_scene,
+        "candidate_destination": stage_request.candidate_destination,
+        "operations": [item.model_dump(mode="json") for item in tool_calls],
+    }
+    digest = _content_sha256(payload)
+    return SceneCandidatePlan(
+        plan_id=f"candidate-plan-{digest[:12]}",
+        plan_sha256=digest,
+        **payload,
+    )
+
+
 def build_scene_session_handshake_receipt(
     state: AgentRunState,
     *,
@@ -459,6 +636,15 @@ def build_scene_session_handshake_receipt(
         state,
         expected_draft_sha256=session.draft.draft_sha256,
     )
+    selected_domains = {operation.domain for operation in stage_request.operations}
+    candidate_plan = (
+        compile_scene_candidate_plan(
+            state,
+            expected_stage_request_sha256=stage_request.request_sha256,
+        )
+        if selected_domains and selected_domains <= {"pcg", "lighting"}
+        else None
+    )
     payload = {
         "action_id": action_id,
         "run_id": state.run_id,
@@ -468,6 +654,8 @@ def build_scene_session_handshake_receipt(
         "session": session.model_dump(mode="json"),
         "stage_request": stage_request.model_dump(mode="json"),
     }
+    if candidate_plan is not None:
+        payload["candidate_plan"] = candidate_plan.model_dump(mode="json")
     digest = _content_sha256(payload)
     return SceneSessionHandshakeReceipt(
         handshake_id=f"scene-handshake-{digest[:12]}",
@@ -479,6 +667,7 @@ def build_scene_session_handshake_receipt(
         event_sequence=state.last_sequence,
         session=session,
         stage_request=stage_request,
+        candidate_plan=candidate_plan,
     )
 
 

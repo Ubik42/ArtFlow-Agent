@@ -1409,6 +1409,316 @@ FString ProtectedSemanticFingerprint(AActor* Actor)
     return HashText(Stable);
 }
 
+bool StartSessionCandidateExecution(
+    const FJsonObject& Plan,
+    UPCGComponent*& OutPCG,
+    bool& OutReconciled,
+    FString& OutCandidatePackage,
+    FString& OutPlanId,
+    FString& OutPlanSha,
+    FString& OutStageRequestSha,
+    FString& OutSourceHash,
+    FString& OutProtectedHash,
+    FString& OutError)
+{
+    UWorld* SourceWorld = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    FString Schema;
+    FString SourceScene;
+    if (SourceWorld == nullptr ||
+        !Plan.TryGetStringField(TEXT("schema_id"), Schema) ||
+        Schema != TEXT("artflow-scene-candidate-plan/1") ||
+        !Plan.TryGetStringField(TEXT("plan_id"), OutPlanId) ||
+        !Plan.TryGetStringField(TEXT("plan_sha256"), OutPlanSha) ||
+        !Plan.TryGetStringField(TEXT("stage_request_sha256"), OutStageRequestSha) ||
+        !Plan.TryGetStringField(TEXT("source_scene"), SourceScene) ||
+        !Plan.TryGetStringField(TEXT("candidate_destination"), OutCandidatePackage) ||
+        !IsSha256(OutPlanSha) || !IsSha256(OutStageRequestSha) ||
+        SourceWorld->GetOutermost()->GetName() != SourceScene ||
+        !OutCandidatePackage.StartsWith(TEXT("/Game/ArtFlow/Sessions/AF_")) ||
+        !OutCandidatePackage.Contains(TEXT("/Candidates/C_")) ||
+        OutCandidatePackage.Contains(TEXT("..")))
+    {
+        OutError = TEXT("Candidate plan identity, source scene or destination is invalid.");
+        return false;
+    }
+
+    const TArray<TSharedPtr<FJsonValue>>* Operations = nullptr;
+    if (!Plan.TryGetArrayField(TEXT("operations"), Operations) || Operations == nullptr || Operations->Num() != 2)
+    {
+        OutError = TEXT("Candidate plan must contain exactly the registered PCG and lighting operations.");
+        return false;
+    }
+    FString PCGActorId;
+    FString PCGActorLabel;
+    FString PCGFingerprint;
+    FString PCGComponentId;
+    FString PCGGraphPath;
+    int32 PCGSeed = -1;
+    int32 MaxInstances = 0;
+    FString LightActorId;
+    FString LightActorLabel;
+    FString LightFingerprint;
+    double LightIntensity = -1.0;
+    double LightTemperature = -1.0;
+    for (const TSharedPtr<FJsonValue>& Value : *Operations)
+    {
+        const TSharedPtr<FJsonObject>* Operation = nullptr;
+        FString Type;
+        FString ToolName;
+        if (!Value.IsValid() || !Value->TryGetObject(Operation) || Operation == nullptr ||
+            !(*Operation)->TryGetStringField(TEXT("operation_type"), Type) ||
+            !(*Operation)->TryGetStringField(TEXT("tool_name"), ToolName))
+        {
+            OutError = TEXT("Candidate plan contains a malformed registered tool call.");
+            return false;
+        }
+        if (Type == TEXT("apply_pcg_layout") && ToolName == TEXT("unreal.pcg.layout.apply"))
+        {
+            double Seed = -1.0;
+            double Budget = 0.0;
+            if (!(*Operation)->TryGetStringField(TEXT("target_actor_id"), PCGActorId) ||
+                !(*Operation)->TryGetStringField(TEXT("target_actor_label"), PCGActorLabel) ||
+                !(*Operation)->TryGetStringField(TEXT("expected_source_fingerprint"), PCGFingerprint) ||
+                !(*Operation)->TryGetStringField(TEXT("component_id"), PCGComponentId) ||
+                !(*Operation)->TryGetStringField(TEXT("approved_graph_path"), PCGGraphPath) ||
+                !(*Operation)->TryGetNumberField(TEXT("seed"), Seed) ||
+                !(*Operation)->TryGetNumberField(TEXT("max_generated_instances"), Budget) ||
+                !IsSha256(PCGFingerprint) ||
+                !PCGGraphPath.StartsWith(TEXT("/Game/ArtFlow/PCG/")) ||
+                Seed < 0 || Seed > 2147483647.0 || Budget < 1 || Budget > 10000)
+            {
+                OutError = TEXT("Candidate PCG tool call failed its typed parameter bounds.");
+                return false;
+            }
+            PCGSeed = static_cast<int32>(Seed);
+            MaxInstances = static_cast<int32>(Budget);
+        }
+        else if (Type == TEXT("set_lighting_rig") && ToolName == TEXT("unreal.lighting.rig.patch"))
+        {
+            if (!(*Operation)->TryGetStringField(TEXT("target_actor_id"), LightActorId) ||
+                !(*Operation)->TryGetStringField(TEXT("target_actor_label"), LightActorLabel) ||
+                !(*Operation)->TryGetStringField(TEXT("expected_source_fingerprint"), LightFingerprint) ||
+                !(*Operation)->TryGetNumberField(TEXT("intensity"), LightIntensity) ||
+                !(*Operation)->TryGetNumberField(TEXT("temperature_kelvin"), LightTemperature) ||
+                !IsSha256(LightFingerprint) || LightIntensity < 0 || LightIntensity > 1000000 ||
+                LightTemperature < 1000 || LightTemperature > 20000)
+            {
+                OutError = TEXT("Candidate lighting tool call failed its typed parameter bounds.");
+                return false;
+            }
+        }
+        else
+        {
+            OutError = TEXT("Candidate plan requested an unregistered Unreal tool.");
+            return false;
+        }
+    }
+    if (PCGActorId.IsEmpty() || LightActorId.IsEmpty())
+    {
+        OutError = TEXT("Candidate plan omitted a required registered domain tool.");
+        return false;
+    }
+
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(
+        SourceScene, FPackageName::GetMapPackageExtension());
+    if (!HashFile(SourceFilename, OutSourceHash, OutError))
+    {
+        return false;
+    }
+    AActor* SourcePCGActor = FindActorByLabel(SourceWorld, PCGActorLabel);
+    AActor* SourceLightActor = FindActorByLabel(SourceWorld, LightActorLabel);
+    AActor* SourceProtected = FindActorByLabel(SourceWorld, TEXT("Protected_Blockout"));
+    const auto ActorId = [](const AActor* Actor)
+    {
+        return Actor == nullptr
+            ? FString()
+            : Actor->GetActorGuid().ToString(EGuidFormats::Digits).ToLower();
+    };
+    if (ActorId(SourcePCGActor) != PCGActorId || ActorId(SourceLightActor) != LightActorId ||
+        SourceProtected == nullptr || ActorFingerprint(SourcePCGActor) != PCGFingerprint ||
+        ActorFingerprint(SourceLightActor) != LightFingerprint)
+    {
+        OutError = TEXT("Candidate plan source Actor identity or fingerprint is stale.");
+        return false;
+    }
+    OutProtectedHash = ProtectedSemanticFingerprint(SourceProtected);
+
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(
+        OutCandidatePackage, FPackageName::GetMapPackageExtension());
+    const bool bCandidateExists = IFileManager::Get().FileExists(*CandidateFilename);
+    if (!bCandidateExists)
+    {
+        IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>(TEXT("AssetTools")).Get();
+        UWorld* Duplicated = Cast<UWorld>(AssetTools.DuplicateAsset(
+            FPackageName::GetLongPackageAssetName(OutCandidatePackage),
+            FPackageName::GetLongPackagePath(OutCandidatePackage),
+            SourceWorld));
+        if (Duplicated == nullptr)
+        {
+            OutError = TEXT("Could not duplicate the source into the request-derived candidate namespace.");
+            return false;
+        }
+        UPackage* CandidatePackageObject = Duplicated->GetOutermost();
+        FSavePackageArgs SaveArgs;
+        SaveArgs.TopLevelFlags = RF_Public | RF_Standalone;
+        SaveArgs.SaveFlags = SAVE_NoError;
+        IFileManager::Get().MakeDirectory(*FPaths::GetPath(CandidateFilename), true);
+        if (!UPackage::SavePackage(CandidatePackageObject, Duplicated, *CandidateFilename, SaveArgs))
+        {
+            OutError = TEXT("Could not persist the request-derived candidate level.");
+            return false;
+        }
+        Duplicated = nullptr;
+        FText UnloadError;
+        if (!UPackageTools::UnloadPackages({CandidatePackageObject}, UnloadError, true))
+        {
+            OutError = TEXT("Could not release the duplicated candidate before loading it.");
+            return false;
+        }
+    }
+    if (!FEditorFileUtils::LoadMap(CandidateFilename, false, false))
+    {
+        OutError = TEXT("Could not load the request-derived candidate level.");
+        return false;
+    }
+    UWorld* CandidateWorld = GEditor->GetEditorWorldContext().World();
+    AActor* CandidatePCGActor = FindActorByLabel(CandidateWorld, PCGActorLabel);
+    AActor* CandidateLightActor = FindActorByLabel(CandidateWorld, LightActorLabel);
+    AActor* CandidateProtected = FindActorByLabel(CandidateWorld, TEXT("Protected_Blockout"));
+    OutPCG = CandidatePCGActor == nullptr ? nullptr : CandidatePCGActor->FindComponentByClass<UPCGComponent>();
+    ULightComponent* Light = CandidateLightActor == nullptr
+        ? nullptr
+        : CandidateLightActor->FindComponentByClass<ULightComponent>();
+    UPCGGraph* Graph = LoadObject<UPCGGraph>(nullptr, *PCGGraphPath);
+    if (CandidateProtected == nullptr || OutPCG == nullptr || Light == nullptr || Graph == nullptr ||
+        ProtectedSemanticFingerprint(CandidateProtected) != OutProtectedHash)
+    {
+        OutError = FString::Printf(
+            TEXT("Candidate target validation failed: pcg_actor=%s light_actor=%s protected=%s pcg_component=%s light_component=%s graph=%s protected_hash=%s."),
+            CandidatePCGActor == nullptr ? TEXT("missing") : TEXT("derived"),
+            CandidateLightActor == nullptr ? TEXT("missing") : TEXT("derived"),
+            CandidateProtected == nullptr ? TEXT("missing") : TEXT("present"),
+            OutPCG == nullptr ? TEXT("missing") : TEXT("present"),
+            Light == nullptr ? TEXT("missing") : TEXT("present"),
+            Graph == nullptr ? TEXT("missing") : TEXT("present"),
+            CandidateProtected != nullptr && ProtectedSemanticFingerprint(CandidateProtected) == OutProtectedHash
+                ? TEXT("match") : TEXT("mismatch"));
+        return false;
+    }
+    const int32 ExistingInstances = CountGeneratedInstances(CandidateWorld);
+    const bool bExactExistingResult = bCandidateExists && ExistingInstances == 12 &&
+        OutPCG->GetGraph() == Graph && OutPCG->Seed == PCGSeed &&
+        FMath::IsNearlyEqual(Light->Intensity, static_cast<float>(LightIntensity)) &&
+        Light->bUseTemperature &&
+        FMath::IsNearlyEqual(Light->Temperature, static_cast<float>(LightTemperature));
+    if (bCandidateExists && !bExactExistingResult)
+    {
+        OutError = TEXT("An existing candidate does not match the content-bound plan; refusing overwrite.");
+        return false;
+    }
+    OutReconciled = bExactExistingResult;
+    if (!OutReconciled)
+    {
+        OutPCG->SetGraph(Graph);
+        OutPCG->Seed = PCGSeed;
+        Light->SetIntensity(static_cast<float>(LightIntensity));
+        Light->SetUseTemperature(true);
+        Light->SetTemperature(static_cast<float>(LightTemperature));
+        OutPCG->CleanupLocalImmediate(true, true);
+        OutPCG->GenerateLocal(true);
+    }
+    if (ExistingInstances > MaxInstances)
+    {
+        OutError = TEXT("Candidate already exceeds the plan instance budget.");
+        return false;
+    }
+    return true;
+}
+
+bool FinalizeSessionCandidateExecution(
+    const bool bReconciled,
+    const FString& CandidatePackagePath,
+    const FString& PlanId,
+    const FString& PlanSha,
+    const FString& StageRequestSha,
+    const FString& SourceHash,
+    const FString& ProtectedHash,
+    FString& OutReceiptPath,
+    FString& OutError)
+{
+    UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    if (World == nullptr || World->GetOutermost()->GetName() != CandidatePackagePath)
+    {
+        OutError = TEXT("The candidate world changed before reconciliation.");
+        return false;
+    }
+    const int32 InstanceCount = CountGeneratedInstances(World);
+    AActor* Protected = FindActorByLabel(World, TEXT("Protected_Blockout"));
+    AActor* Camera = FindActorByLabel(World, TEXT("ArtFlow_Camera"));
+    if (InstanceCount != 12 || Protected == nullptr || Camera == nullptr ||
+        ProtectedSemanticFingerprint(Protected) != ProtectedHash)
+    {
+        OutError = TEXT("Candidate output or protected invariant failed reconciliation.");
+        return false;
+    }
+    const FString CandidateFilename = FPackageName::LongPackageNameToFilename(
+        CandidatePackagePath, FPackageName::GetMapPackageExtension());
+    if (!FEditorFileUtils::SaveLevel(World->PersistentLevel, CandidateFilename))
+    {
+        OutError = TEXT("Could not save the isolated candidate level.");
+        return false;
+    }
+    FString CandidateSha;
+    FString SourceAfter;
+    const FString SourceFilename = FPackageName::LongPackageNameToFilename(
+        TEXT("/Game/ArtFlowDemo"), FPackageName::GetMapPackageExtension());
+    if (!HashFile(CandidateFilename, CandidateSha, OutError) ||
+        !HashFile(SourceFilename, SourceAfter, OutError) || SourceAfter != SourceHash)
+    {
+        OutError = TEXT("Candidate save changed the source level or failed content hashing.");
+        return false;
+    }
+    const FString OutputRoot = FPaths::Combine(GetBridgeRoot(), TEXT("SceneCandidates"), PlanId);
+    IFileManager::Get().MakeDirectory(*OutputRoot, true);
+    const FString BeautyPath = FPaths::Combine(OutputRoot, TEXT("candidate-beauty.png"));
+    FCaptureRequest Request;
+    if (!LoadCaptureRequest(Request, OutError) ||
+        !CapturePass(World, Cast<ACameraActor>(Camera), Request, SCS_FinalColorLDR, false, BeautyPath, nullptr, {}, OutError))
+    {
+        return false;
+    }
+    FString BeautySha;
+    if (!HashFile(BeautyPath, BeautySha, OutError))
+    {
+        return false;
+    }
+    TSharedPtr<FJsonObject> Receipt = MakeShared<FJsonObject>();
+    Receipt->SetStringField(TEXT("schema_id"), TEXT("artflow-session-candidate-execution-receipt/1"));
+    Receipt->SetStringField(TEXT("plan_id"), PlanId);
+    Receipt->SetStringField(TEXT("plan_sha256"), PlanSha);
+    Receipt->SetStringField(TEXT("stage_request_sha256"), StageRequestSha);
+    Receipt->SetStringField(TEXT("source_scene"), TEXT("/Game/ArtFlowDemo"));
+    Receipt->SetStringField(TEXT("source_level_sha256_before"), SourceHash);
+    Receipt->SetStringField(TEXT("source_level_sha256_after"), SourceAfter);
+    Receipt->SetBoolField(TEXT("source_level_unchanged"), true);
+    Receipt->SetStringField(TEXT("candidate_scene"), CandidatePackagePath);
+    Receipt->SetStringField(TEXT("candidate_level_sha256"), CandidateSha);
+    Receipt->SetNumberField(TEXT("generated_instance_count"), InstanceCount);
+    Receipt->SetBoolField(TEXT("reconciled"), bReconciled);
+    Receipt->SetStringField(TEXT("candidate_beauty_path"), BeautyPath);
+    Receipt->SetStringField(TEXT("candidate_beauty_sha256"), BeautySha);
+    Receipt->SetStringField(TEXT("completed_at"), FDateTime::UtcNow().ToIso8601());
+    FString Text;
+    FJsonSerializer::Serialize(Receipt.ToSharedRef(), TJsonWriterFactory<>::Create(&Text));
+    OutReceiptPath = FPaths::Combine(OutputRoot, TEXT("candidate-execution-receipt.json"));
+    if (!FFileHelper::SaveStringToFile(Text, *OutReceiptPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+    {
+        OutError = TEXT("Could not persist the candidate execution receipt.");
+        return false;
+    }
+    return true;
+}
+
 bool StartCandidateExecution(UPCGComponent*& OutPCG, bool& OutReconciled, FString& OutSourceHash, FString& OutProtectedHash, FString& OutError, bool bApplyReviewedDelta = true)
 {
     UWorld* SourceWorld = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
@@ -1961,6 +2271,8 @@ void FArtFlowSceneBridgeModule::StartupModule()
     UToolMenus::RegisterStartupCallback(FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::RegisterMenus));
     if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCreateDemoAndExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteSessionCandidate")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowReconcileSessionCandidate")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDryRunExport")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
@@ -2192,6 +2504,7 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
     FString ScenePackageSha;
     const TSharedPtr<FJsonObject>* Session = nullptr;
     const TSharedPtr<FJsonObject>* StageRequest = nullptr;
+    const TSharedPtr<FJsonObject>* CandidatePlan = nullptr;
     if (Error.IsEmpty() &&
         (!BackendReceipt->TryGetStringField(TEXT("schema_id"), Schema) ||
         !BackendReceipt->TryGetStringField(TEXT("handshake_id"), HandshakeId) ||
@@ -2210,6 +2523,7 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
     FString StageSchema;
     FString StageSessionSha;
     FString StageSceneSha;
+    FString StageRequestSha;
     FString CandidateDestination;
     if (Error.IsEmpty())
     {
@@ -2218,6 +2532,7 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
         (*StageRequest)->TryGetStringField(TEXT("schema_id"), StageSchema);
         (*StageRequest)->TryGetStringField(TEXT("session_sha256"), StageSessionSha);
         (*StageRequest)->TryGetStringField(TEXT("scene_package_sha256"), StageSceneSha);
+        (*StageRequest)->TryGetStringField(TEXT("request_sha256"), StageRequestSha);
         (*StageRequest)->TryGetStringField(TEXT("candidate_destination"), CandidateDestination);
         if (Schema != TEXT("artflow-scene-session-handshake/1") ||
             SessionSchema != TEXT("artflow-scene-session/1") ||
@@ -2229,6 +2544,25 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
             !CandidateDestination.StartsWith(TEXT("/Game/ArtFlow/Sessions/")))
         {
             Error = TEXT("ArtFlow handshake identity or candidate boundary did not match the exact exported scene.");
+        }
+    }
+    if (Error.IsEmpty() && BackendReceipt->HasField(TEXT("candidate_plan")))
+    {
+        FString CandidatePlanSchema;
+        FString CandidatePlanStageSha;
+        FString CandidatePlanDestination;
+        FString CandidatePlanSource;
+        if (!BackendReceipt->TryGetObjectField(TEXT("candidate_plan"), CandidatePlan) ||
+            CandidatePlan == nullptr ||
+            !(*CandidatePlan)->TryGetStringField(TEXT("schema_id"), CandidatePlanSchema) ||
+            !(*CandidatePlan)->TryGetStringField(TEXT("stage_request_sha256"), CandidatePlanStageSha) ||
+            !(*CandidatePlan)->TryGetStringField(TEXT("candidate_destination"), CandidatePlanDestination) ||
+            !(*CandidatePlan)->TryGetStringField(TEXT("source_scene"), CandidatePlanSource) ||
+            CandidatePlanSchema != TEXT("artflow-scene-candidate-plan/1") ||
+            CandidatePlanStageSha != StageRequestSha ||
+            CandidatePlanDestination != CandidateDestination || CandidatePlanSource != SourceScene)
+        {
+            Error = TEXT("ArtFlow candidate plan is not bound to this exact stage request.");
         }
     }
 
@@ -2272,6 +2606,39 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
         }
     }
 
+    if (Error.IsEmpty() && FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteSessionCandidate")))
+    {
+        UPCGComponent* CandidatePCG = nullptr;
+        if (CandidatePlan == nullptr || !ArtFlowSceneBridge::StartSessionCandidateExecution(
+            **CandidatePlan,
+            CandidatePCG,
+            bSessionCandidateReconciled,
+            SessionCandidatePackage,
+            SessionCandidatePlanId,
+            SessionCandidatePlanSha,
+            SessionCandidateStageRequestSha,
+            SessionSourceLevelSha,
+            SessionCandidateProtectedHash,
+            Error))
+        {
+            if (Error.IsEmpty())
+            {
+                Error = TEXT("ArtFlow did not return an executable candidate plan.");
+            }
+        }
+        else
+        {
+            SessionCandidatePCGComponent = CandidatePCG;
+            bSessionCandidatePending = true;
+            UE_LOG(
+                LogArtFlowSceneBridge,
+                Display,
+                TEXT("ARTFLOW_SESSION_CANDIDATE_SUBMITTED plan=%s candidate=%s reconciled=%s"),
+                *SessionCandidatePlanId,
+                *SessionCandidatePackage,
+                bSessionCandidateReconciled ? TEXT("true") : TEXT("false"));
+        }
+    }
     const bool bSuccess = Error.IsEmpty();
     UE_LOG(
         LogArtFlowSceneBridge,
@@ -2284,8 +2651,11 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
         *Error);
     if (bSessionHandshakeAutomation)
     {
-        ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
-        FPlatformMisc::RequestExit(false);
+        if (!bSessionCandidatePending)
+        {
+            ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
+            FPlatformMisc::RequestExit(false);
+        }
     }
     else
     {
@@ -2325,6 +2695,38 @@ void FArtFlowSceneBridgeModule::ReviewLastExport() const
 
 bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
 {
+    if (bSessionCandidatePending)
+    {
+        if (SessionCandidatePCGComponent.IsValid() &&
+            SessionCandidatePCGComponent->IsGenerating())
+        {
+            return true;
+        }
+        bSessionCandidatePending = false;
+        FString Error;
+        FString ReceiptPath;
+        const bool bSuccess = ArtFlowSceneBridge::FinalizeSessionCandidateExecution(
+            bSessionCandidateReconciled,
+            SessionCandidatePackage,
+            SessionCandidatePlanId,
+            SessionCandidatePlanSha,
+            SessionCandidateStageRequestSha,
+            SessionSourceLevelSha,
+            SessionCandidateProtectedHash,
+            ReceiptPath,
+            Error);
+        ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
+        UE_LOG(
+            LogArtFlowSceneBridge,
+            Display,
+            TEXT("ARTFLOW_SESSION_CANDIDATE_RESULT success=%s receipt=%s reconciled=%s error=%s"),
+            bSuccess ? TEXT("true") : TEXT("false"),
+            *ReceiptPath,
+            bSessionCandidateReconciled ? TEXT("true") : TEXT("false"),
+            *Error);
+        FPlatformMisc::RequestExit(false);
+        return false;
+    }
     if (bStageGenerationPending)
     {
         if (StagePCGComponent.IsValid() && StagePCGComponent->IsGenerating())
@@ -2372,7 +2774,52 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     {
         bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(true, Error);
     }
-    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")))
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowReconcileSessionCandidate")))
+    {
+        FString ReceiptPath;
+        FString ReceiptText;
+        TSharedPtr<FJsonObject> HostReceipt;
+        const TSharedPtr<FJsonObject>* ArtFlowReceipt = nullptr;
+        const TSharedPtr<FJsonObject>* CandidatePlan = nullptr;
+        if (!FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCandidateReceipt="), ReceiptPath) ||
+            !ArtFlowSceneBridge::IsPathInside(
+                ReceiptPath,
+                FPaths::Combine(ArtFlowSceneBridge::GetBridgeRoot(), TEXT("SceneSessions"))) ||
+            FPaths::GetExtension(ReceiptPath).ToLower() != TEXT("json") ||
+            !FFileHelper::LoadFileToString(ReceiptText, *ReceiptPath) ||
+            !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(ReceiptText), HostReceipt) ||
+            !HostReceipt.IsValid() ||
+            !HostReceipt->TryGetObjectField(TEXT("artflow_receipt"), ArtFlowReceipt) ||
+            ArtFlowReceipt == nullptr ||
+            !(*ArtFlowReceipt)->TryGetObjectField(TEXT("candidate_plan"), CandidatePlan) ||
+            CandidatePlan == nullptr)
+        {
+            Error = TEXT("Candidate reconciliation requires a verified ArtFlow handshake receipt.");
+        }
+        else
+        {
+            UPCGComponent* CandidatePCG = nullptr;
+            bSuccess = ArtFlowSceneBridge::StartSessionCandidateExecution(
+                **CandidatePlan,
+                CandidatePCG,
+                bSessionCandidateReconciled,
+                SessionCandidatePackage,
+                SessionCandidatePlanId,
+                SessionCandidatePlanSha,
+                SessionCandidateStageRequestSha,
+                SessionSourceLevelSha,
+                SessionCandidateProtectedHash,
+                Error);
+            if (bSuccess)
+            {
+                SessionCandidatePCGComponent = CandidatePCG;
+                bSessionCandidatePending = true;
+                return true;
+            }
+        }
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowSessionHandshake")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteSessionCandidate")))
     {
         bSuccess = ArtFlowSceneBridge::PrepareExistingAutomationScene(false, Error) &&
             ArtFlowSceneBridge::ExportSelection(ArchivePath, Error);

@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M12-S2",
+  "status": "completed",
+  "outcome": "A persisted Scene Session now compiles a content-bound Candidate Plan for registered PCG and lighting tools; the real UE 5.8 host duplicates the source into the exact request-derived /Game/ArtFlow/Sessions namespace, produces 12 PCG instances and a candidate rerender, saves a durable receipt, and a fresh editor process reconciles the same candidate with zero duplicate instances while the source map remains byte-identical.",
+  "evidence": [
+    "docs/evidence/M12_S2_TYPED_CANDIDATE_EXECUTION_2026-08-30.md",
+    "artifacts/goal/m12-s2-live-candidate-v2/candidate-execution-receipt.json",
+    "artifacts/goal/m12-s2-live-candidate-v2/source-beauty.png",
+    "artifacts/goal/m12-s2-live-candidate-v2/candidate-beauty.png"
+  ]
+}

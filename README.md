@@ -24,6 +24,12 @@ ArtFlow 在生成模型与 Unreal 之间增加一层受约束的 Agent 控制平
 
 当所有选定领域满足前置条件时，系统生成一份与场景哈希、Session、策略版本和领域操作严格绑定的候选关卡请求。请求只能指向 ArtFlow 派生的隔离内容目录；截图中的状态表示“请求已封存”，不表示 Unreal 已经完成本次写入。
 
+在真实 UE 5.8 宿主中，当前已接入的 PCG 与灯光域可以进一步编译为具体 Candidate Plan。下面的候选由 Session 请求派生目录承载，生成 12 个 PCG 实例；新编辑器进程再次打开同一计划时完成对账而不重复生成，源关卡文件哈希保持不变。
+
+| 源关卡同机位 | PCG 与灯光候选 |
+| --- | --- |
+| ![Scene Session 源关卡](artifacts/goal/m12-s2-live-candidate-v2/source-beauty.png) | ![请求派生候选关卡](artifacts/goal/m12-s2-live-candidate-v2/candidate-beauty.png) |
+
 ## 生产案例
 
 Scene Lab 使用同一套 Agent 控制平面呈现四类典型任务。界面中的状态、指标和结果均来自实际运行回执。
@@ -149,6 +155,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 陈旧候选请求拦截 | 1 / 1 |
 | UE 原生 Scene Session 握手 | 1 次真实 UE 5.8 运行，源关卡哈希不变 |
 | 同一真实握手请求重放 | 1 个 Session 事件、0 个重复事件 |
+| Session 派生候选执行 | PCG 12 个实例，源关卡字节变化 0 |
+| 新 UE 进程候选对账 | `reconciled=true`，重复实例 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

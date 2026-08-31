@@ -7,9 +7,10 @@ ArtFlow 是 **Unreal 原生的二维视觉意图到可验证三维场景变更 A
 从引擎场景发起任务，编排受限管线，并在候选关卡完成执行、评价、纠正和发布。
 
 M0–M11 已建立持久事件、类型化工具、真实 Unreal Scene Digital Twin、ComfyUI PBR、四域 Scene
-Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session 和“场景变更谱”。M12-S1 已完成
-真实 UE 5.8 编辑器到本地 Agent 的 Scene Session 握手，并证明源关卡字节不变。这些能力作为稳定
-底座保留，后续不重复造轮子，也不再以历史审批/证据控制台作为产品主叙事。
+Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session 和“场景变更谱”。M12 已完成
+真实 UE 5.8 编辑器握手、请求派生候选关卡、注册 PCG/灯光工具执行、同机位回渲和新进程对账，
+并证明源关卡字节不变。这些能力作为稳定底座保留，后续不重复造轮子，也不再以历史审批/证据
+控制台作为产品主叙事。
 
 ## 产品闭环
 
@@ -28,8 +29,8 @@ Unreal 当前场景
 
 - **M11 · Live Scene Session and Scene Change Spectrum（已完成）**：真实场景、意图和域选择已经能
   编译为确定性内容寻址草案，持久 Session 与候选暂存请求已进入“场景变更谱”。
-- **M12 · Unreal editor session bridge and candidate execution**：从 UE 编辑器发起 Session，在项目
-  自有候选关卡执行注册工具、回渲并对账，证明重启与重试没有重复副作用。
+- **M12 · Unreal editor session bridge and candidate execution（已完成）**：UE 编辑器可发起 Session，
+  在请求派生候选关卡执行注册工具、回渲并跨进程对账，重启没有重复 PCG 实例或源关卡写入。
 - **M13 · Cross-pipeline transformation and correction**：将审阅过的 ComfyUI、GPT Image 2 开发编排、
   PBR、项目/生成资产、PCG 与灯光纳入同一计划，用多个真实生产案例证明路由和失败域纠正。
 - **M14 · Embedded delivery and portfolio release**：完成 Unreal-facing 入口、中文产品界面、多个可复现

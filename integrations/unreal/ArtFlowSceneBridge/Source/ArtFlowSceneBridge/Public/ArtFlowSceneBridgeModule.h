@@ -26,8 +26,11 @@ private:
     bool bStageGenerationPending = false;
     bool bSessionHandshakePending = false;
     bool bSessionHandshakeAutomation = false;
+    bool bSessionCandidatePending = false;
+    bool bSessionCandidateReconciled = false;
     bool bStageReconciled = false;
     TWeakObjectPtr<UPCGComponent> StagePCGComponent;
+    TWeakObjectPtr<UPCGComponent> SessionCandidatePCGComponent;
     FString StageSourceHash;
     FString StageProtectedHash;
     FString LastExportPath;
@@ -38,4 +41,9 @@ private:
     FString SessionSourceLevelSha;
     FString SessionActionId;
     FString SessionEndpointOrigin;
+    FString SessionCandidatePackage;
+    FString SessionCandidatePlanId;
+    FString SessionCandidatePlanSha;
+    FString SessionCandidateStageRequestSha;
+    FString SessionCandidateProtectedHash;
 };

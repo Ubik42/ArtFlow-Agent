@@ -7,7 +7,7 @@ from zipfile import BadZipFile, ZipFile, ZipInfo
 
 from pydantic import BaseModel, Field
 
-from .contracts import SceneConstraintPackage
+from .contracts import SceneConstraintPackage, SceneDigitalTwin
 from .contracts.scene import ArtifactRef
 
 MAX_ARCHIVE_FILES = 256
@@ -29,6 +29,7 @@ class ScenePackagePreview(BaseModel):
     package: SceneConstraintPackage
     archive_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     artifacts: list[VerifiedSceneArtifact]
+    digital_twin: SceneDigitalTwin | None = None
 
     @property
     def protected_region_ids(self) -> list[str]:
@@ -81,6 +82,16 @@ class ScenePackageArchive:
                             size_bytes=info.file_size,
                         )
                     )
+                digital_twin = None
+                if package.scene_digital_twin is not None:
+                    try:
+                        digital_twin = SceneDigitalTwin.model_validate_json(
+                            archive.read(package.scene_digital_twin.path)
+                        )
+                    except (UnicodeDecodeError, ValueError) as exc:
+                        raise ScenePackageImportError(
+                            f"Invalid Scene Digital Twin: {exc}"
+                        ) from exc
         except BadZipFile as exc:
             raise ScenePackageImportError("Scene package is not a valid ZIP archive") from exc
 
@@ -88,6 +99,7 @@ class ScenePackageArchive:
             package=package,
             archive_sha256=archive_sha256,
             artifacts=verified,
+            digital_twin=digital_twin,
         )
 
 
