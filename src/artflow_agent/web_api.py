@@ -53,7 +53,12 @@ from .scene_session import (
     compile_scene_stage_request,
 )
 from .scene_variant_review import SceneVariantLineage
-from .scene_variant_lifecycle import load_registered_m16_lifecycle
+from .scene_variant_lifecycle import (
+    SceneVariantLifecycleCallbackRequest,
+    load_registered_m16_lifecycle,
+    registered_artifact_sha256,
+    resolve_registered_lifecycle_record,
+)
 
 MAX_UI_SCENE_PACKAGE_BYTES = 64 * 1024 * 1024
 
@@ -295,6 +300,46 @@ def create_app(
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 
     @app.post(
+        "/api/agent/runs/{run_id}/scene-variant-lifecycle/callback",
+        response_model=AgentRunProjection,
+    )
+    def append_scene_variant_lifecycle_callback(
+        run_id: str,
+        payload: SceneVariantLifecycleCallbackRequest,
+        request: Request,
+    ):
+        client_host = request.client.host if request.client is not None else ""
+        try:
+            if not ipaddress.ip_address(client_host).is_loopback:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Unreal 场景生命周期回传仅允许本机调用",
+                )
+        except ValueError as exc:
+            raise HTTPException(
+                status_code=403,
+                detail="Unreal 场景生命周期回传仅允许本机调用",
+            ) from exc
+        try:
+            state = agent_store.load(run_id)
+            session = state.scene_sessions[-1] if state.scene_sessions else None
+            if session is None:
+                raise AgentRuntimeError("scene lifecycle callback requires a persisted Scene Session")
+            if session.session_sha256 != payload.session_sha256:
+                raise AgentRuntimeError("scene lifecycle callback references another Scene Session")
+            record = resolve_registered_lifecycle_record(PROJECT_ROOT, payload)
+            agent_store.record_scene_lifecycle_callback(
+                run_id,
+                payload.transition,
+                record,
+                action_id=payload.action_id,
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
         "/api/agent/runs/{run_id}/scene-variant-lifecycle/m16",
         response_model=AgentRunProjection,
     )
@@ -314,26 +359,34 @@ def create_app(
             ) from exc
         try:
             registered = load_registered_m16_lifecycle(PROJECT_ROOT)
-            agent_store.record_scene_candidate_evaluation(
-                run_id,
-                registered.evaluation,
-                action_id="m16-evaluation-445666ae184f",
+            session_sha256 = registered.evaluation.stage_request.session_sha256
+            callbacks = (
+                ("evaluation", "m16-evaluation-445666ae184f"),
+                ("adoption", "m16-adoption-a9d761a38175"),
+                ("publication", "m16-publish-a38499432ad2"),
+                ("review", "m16-review-e9f219a423c2"),
             )
-            agent_store.record_scene_candidate_adoption(
-                run_id,
-                registered.adoption,
-                action_id="m16-adoption-a9d761a38175",
-            )
-            agent_store.record_scene_variant_publication(
-                run_id,
-                registered.publication,
-                action_id="m16-publish-a38499432ad2",
-            )
-            agent_store.record_scene_variant_review(
-                run_id,
-                registered.review,
-                action_id="m16-review-e9f219a423c2",
-            )
+            for transition, action_id in callbacks:
+                callback = SceneVariantLifecycleCallbackRequest(
+                    transition=transition,
+                    session_sha256=session_sha256,
+                    artifact_sha256=registered_artifact_sha256(
+                        registered, transition
+                    ),
+                    action_id=action_id,
+                )
+                state = agent_store.load(run_id)
+                current = state.scene_sessions[-1] if state.scene_sessions else None
+                if current is None or current.session_sha256 != callback.session_sha256:
+                    raise AgentRuntimeError(
+                        "registered M16 lifecycle references another Scene Session"
+                    )
+                agent_store.record_scene_lifecycle_callback(
+                    run_id,
+                    callback.transition,
+                    resolve_registered_lifecycle_record(PROJECT_ROOT, callback),
+                    action_id=callback.action_id,
+                )
             return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409

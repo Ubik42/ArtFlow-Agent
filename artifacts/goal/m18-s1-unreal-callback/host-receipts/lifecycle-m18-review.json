@@ -1,0 +1,12 @@
+{
+	"schema": "artflow-unreal-lifecycle-callback-receipt/1",
+	"success": true,
+	"endpoint_origin": "http://127.0.0.1:8802",
+	"run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+	"session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+	"transition": "review",
+	"artifact_sha256": "d5bf70caa1592b4fce17f801fae1c24130ce4773b90df0cd070d5ba9319f2a09",
+	"action_id": "m18-review",
+	"event_type": "scene_variant_reviewed",
+	"received_at": "2026-08-31T04:03:33.464Z"
+}

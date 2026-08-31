@@ -7,7 +7,10 @@ import pytest
 from fastapi.testclient import TestClient
 
 from artflow_agent.agent_runtime import AgentEventStore, AgentRuntimeError
-from artflow_agent.scene_variant_lifecycle import load_registered_m16_lifecycle
+from artflow_agent.scene_variant_lifecycle import (
+    load_registered_m16_lifecycle,
+    registered_artifact_sha256,
+)
 from artflow_agent.web_api import create_app
 
 
@@ -100,3 +103,66 @@ def test_loopback_registration_returns_live_projection_without_path_input(tmp_pa
         client=("203.0.113.10", 51234),
     )
     assert remote.post(url).status_code == 403
+
+
+def test_registered_unreal_callback_is_ordered_idempotent_and_path_free(
+    tmp_path: Path,
+) -> None:
+    root = Path(__file__).parents[1]
+    database = _database(tmp_path)
+    client = TestClient(
+        create_app(runs_dir=tmp_path / "runs", agent_database=database),
+        client=("127.0.0.1", 51234),
+    )
+    lifecycle = load_registered_m16_lifecycle(root)
+    session_sha256 = lifecycle.evaluation.stage_request.session_sha256
+    endpoint = f"/api/agent/runs/{RUN_ID}/scene-variant-lifecycle/callback"
+
+    def payload(transition: str, action_id: str) -> dict[str, str]:
+        return {
+            "schema_id": "artflow-scene-variant-callback/1",
+            "transition": transition,
+            "session_sha256": session_sha256,
+            "artifact_sha256": registered_artifact_sha256(lifecycle, transition),
+            "action_id": action_id,
+        }
+
+    out_of_order = client.post(endpoint, json=payload("adoption", "ue-callback-order"))
+    assert out_of_order.status_code == 409
+    assert len(AgentEventStore(database).events(RUN_ID)) == 3
+
+    evaluation = payload("evaluation", "ue-callback-evaluation")
+    first = client.post(endpoint, json=evaluation)
+    replay = client.post(endpoint, json=evaluation)
+    assert first.status_code == replay.status_code == 200
+    assert len(AgentEventStore(database).events(RUN_ID)) == 4
+
+    reused_action = payload("adoption", evaluation["action_id"])
+    assert client.post(endpoint, json=reused_action).status_code == 409
+    unknown = payload("adoption", "ue-callback-unknown")
+    unknown["artifact_sha256"] = "f" * 64
+    assert client.post(endpoint, json=unknown).status_code == 409
+    with_path = {**payload("adoption", "ue-callback-path"), "receipt_path": "D:/tmp/x.json"}
+    assert client.post(endpoint, json=with_path).status_code == 422
+
+    projection = None
+    for transition in ("adoption", "publication", "review"):
+        response = client.post(
+            endpoint,
+            json=payload(transition, f"ue-callback-{transition}"),
+        )
+        assert response.status_code == 200
+        projection = response.json()
+    assert projection is not None
+    assert projection["timeline"][-1]["event_type"] == "scene_variant_reviewed"
+    assert projection["scene_variant_lineage"]["review_status"] == "reconciled"
+    assert len(AgentEventStore(database).events(RUN_ID)) == 7
+
+    remote = TestClient(
+        create_app(
+            runs_dir=tmp_path / "remote-callback",
+            agent_database=_database(tmp_path / "remote-callback-db"),
+        ),
+        client=("203.0.113.10", 51234),
+    )
+    assert remote.post(endpoint, json=evaluation).status_code == 403

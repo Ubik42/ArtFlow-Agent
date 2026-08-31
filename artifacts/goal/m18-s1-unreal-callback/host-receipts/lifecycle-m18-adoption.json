@@ -1,0 +1,12 @@
+{
+	"schema": "artflow-unreal-lifecycle-callback-receipt/1",
+	"success": true,
+	"endpoint_origin": "http://127.0.0.1:8802",
+	"run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+	"session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+	"transition": "adoption",
+	"artifact_sha256": "a9d761a381755f55d40b7bfbf3c9d017c87dc7d0e36c5b65ea209ca1c2cb4104",
+	"action_id": "m18-adoption",
+	"event_type": "scene_candidate_adopted",
+	"received_at": "2026-08-31T04:02:40.651Z"
+}

@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M18-S1",
+  "status": "completed",
+  "outcome": "The UE 5.8.1 Scene Bridge now submits evaluation, adoption, publication and review through one path-free registered lifecycle callback. Four independent Unreal processes appended the legal four-event sequence to the current Scene Session, producing seven total events and verified host receipts while replay remains idempotent.",
+  "evidence": [
+    "artifacts/goal/m18-s1-unreal-callback/verification.json",
+    "artifacts/goal/m18-s1-unreal-callback/live-projection.json",
+    "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-evaluation.json",
+    "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-adoption.json",
+    "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-publication.json",
+    "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-review.json",
+    "docs/evidence/M18_S1_UNREAL_LIFECYCLE_CALLBACK_2026-08-30.md"
+  ]
+}

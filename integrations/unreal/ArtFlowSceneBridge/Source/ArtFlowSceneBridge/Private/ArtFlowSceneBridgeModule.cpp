@@ -2382,7 +2382,8 @@ void FArtFlowSceneBridgeModule::StartupModule()
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowExecuteStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowCaptureStage")) ||
         FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) ||
-        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")) ||
+        FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")))
     {
         AutomationTickHandle = FTSTicker::GetCoreTicker().AddTicker(
             FTickerDelegate::CreateRaw(this, &FArtFlowSceneBridgeModule::TickAutomation), 1.0f);
@@ -2669,6 +2670,11 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
             Error = TEXT("ArtFlow candidate plan is not bound to this exact stage request.");
         }
     }
+    if (Error.IsEmpty())
+    {
+        SessionRunId = RunId;
+        SessionSha256 = SessionSha;
+    }
 
     FString SourceAfterSha;
     if (Error.IsEmpty() &&
@@ -2789,6 +2795,252 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
     }
 }
 
+bool FArtFlowSceneBridgeModule::BeginSceneLifecycleCallback(
+    const FString& Transition,
+    const FString& ArtifactSha256,
+    const FString& ActionId,
+    const bool bAutomation,
+    FString& OutError)
+{
+    if (bSceneLifecycleCallbackPending)
+    {
+        OutError = TEXT("An ArtFlow scene lifecycle callback is already pending.");
+        return false;
+    }
+    const TSet<FString> AllowedTransitions = {
+        TEXT("evaluation"), TEXT("adoption"), TEXT("publication"), TEXT("review")};
+    const FString NormalizedTransition = Transition.TrimStartAndEnd().ToLower();
+    if (!AllowedTransitions.Contains(NormalizedTransition))
+    {
+        OutError = TEXT("Lifecycle transition is not registered by ArtFlow.");
+        return false;
+    }
+    if (!ArtFlowSceneBridge::IsSha256(ArtifactSha256) ||
+        !ArtFlowSceneBridge::IsSha256(SessionSha256))
+    {
+        OutError = TEXT("Lifecycle callback requires exact lowercase SHA-256 identities.");
+        return false;
+    }
+    if (SessionRunId.IsEmpty() || SessionRunId.Len() > 120 ||
+        ActionId.Len() < 3 || ActionId.Len() > 120)
+    {
+        OutError = TEXT("Lifecycle callback run or action identity is invalid.");
+        return false;
+    }
+    for (const TCHAR Character : ActionId)
+    {
+        if (!FChar::IsAlnum(Character) && Character != TEXT('.') &&
+            Character != TEXT('_') && Character != TEXT('-'))
+        {
+            OutError = TEXT("Lifecycle callback action identity contains unsupported characters.");
+            return false;
+        }
+    }
+    ArtFlowSceneBridge::FCaptureRequest CaptureRequest;
+    if (!ArtFlowSceneBridge::LoadCaptureRequest(CaptureRequest, OutError) ||
+        !ArtFlowSceneBridge::NormalizeLoopbackOrigin(
+            CaptureRequest.ArtFlowEndpoint,
+            SessionEndpointOrigin,
+            OutError))
+    {
+        return false;
+    }
+
+    TSharedPtr<FJsonObject> Payload = MakeShared<FJsonObject>();
+    Payload->SetStringField(TEXT("schema_id"), TEXT("artflow-scene-variant-callback/1"));
+    Payload->SetStringField(TEXT("transition"), NormalizedTransition);
+    Payload->SetStringField(TEXT("session_sha256"), SessionSha256);
+    Payload->SetStringField(TEXT("artifact_sha256"), ArtifactSha256);
+    Payload->SetStringField(TEXT("action_id"), ActionId);
+    FString PayloadText;
+    FJsonSerializer::Serialize(
+        Payload.ToSharedRef(),
+        TJsonWriterFactory<>::Create(&PayloadText));
+
+    SceneLifecycleTransition = NormalizedTransition;
+    SceneLifecycleArtifactSha256 = ArtifactSha256;
+    SceneLifecycleActionId = ActionId;
+    bSceneLifecycleCallbackAutomation = bAutomation;
+    const TSharedRef<IHttpRequest, ESPMode::ThreadSafe> HttpRequest =
+        FHttpModule::Get().CreateRequest();
+    HttpRequest->SetURL(
+        SessionEndpointOrigin + TEXT("/api/agent/runs/") + SessionRunId +
+        TEXT("/scene-variant-lifecycle/callback"));
+    HttpRequest->SetVerb(TEXT("POST"));
+    HttpRequest->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
+    HttpRequest->SetContentAsString(PayloadText);
+    HttpRequest->SetTimeout(30.0f);
+    HttpRequest->OnProcessRequestComplete().BindRaw(
+        this,
+        &FArtFlowSceneBridgeModule::HandleSceneLifecycleCallback);
+    bSceneLifecycleCallbackPending = true;
+    if (!HttpRequest->ProcessRequest())
+    {
+        bSceneLifecycleCallbackPending = false;
+        OutError = TEXT("The localhost lifecycle callback could not be submitted.");
+        return false;
+    }
+    UE_LOG(
+        LogArtFlowSceneBridge,
+        Display,
+        TEXT("ARTFLOW_LIFECYCLE_CALLBACK_SUBMITTED transition=%s artifact=%s action=%s run=%s"),
+        *SceneLifecycleTransition,
+        *SceneLifecycleArtifactSha256,
+        *SceneLifecycleActionId,
+        *SessionRunId);
+    return true;
+}
+
+void FArtFlowSceneBridgeModule::HandleSceneLifecycleCallback(
+    FHttpRequestPtr Request,
+    FHttpResponsePtr Response,
+    const bool bConnectedSuccessfully)
+{
+    static_cast<void>(Request);
+    bSceneLifecycleCallbackPending = false;
+    FString Error;
+    FString ReceiptPath;
+    TSharedPtr<FJsonObject> Projection;
+    const int32 ResponseCode = Response.IsValid() ? Response->GetResponseCode() : 0;
+    if (!bConnectedSuccessfully || !Response.IsValid())
+    {
+        Error = TEXT("The localhost ArtFlow runtime did not return a lifecycle response.");
+    }
+    else if (ResponseCode != 200)
+    {
+        Error = FString::Printf(
+            TEXT("ArtFlow rejected the lifecycle callback (HTTP %d): %s"),
+            ResponseCode,
+            *Response->GetContentAsString().Left(800));
+    }
+    else if (!FJsonSerializer::Deserialize(
+        TJsonReaderFactory<>::Create(Response->GetContentAsString()),
+        Projection) || !Projection.IsValid())
+    {
+        Error = TEXT("ArtFlow returned invalid lifecycle projection JSON.");
+    }
+
+    FString Schema;
+    FString RunId;
+    const TSharedPtr<FJsonObject>* Session = nullptr;
+    const TArray<TSharedPtr<FJsonValue>>* Timeline = nullptr;
+    if (Error.IsEmpty() &&
+        (!Projection->TryGetStringField(TEXT("schema_id"), Schema) ||
+        !Projection->TryGetStringField(TEXT("run_id"), RunId) ||
+        !Projection->TryGetObjectField(TEXT("scene_session"), Session) ||
+        Session == nullptr ||
+        !Projection->TryGetArrayField(TEXT("timeline"), Timeline) ||
+        Timeline == nullptr || Timeline->IsEmpty()))
+    {
+        Error = TEXT("ArtFlow lifecycle projection is missing required typed fields.");
+    }
+    FString ReturnedSessionSha;
+    if (Error.IsEmpty())
+    {
+        (*Session)->TryGetStringField(TEXT("session_sha256"), ReturnedSessionSha);
+    }
+    FString ExpectedEventType;
+    if (SceneLifecycleTransition == TEXT("evaluation")) ExpectedEventType = TEXT("scene_candidate_evaluated");
+    else if (SceneLifecycleTransition == TEXT("adoption")) ExpectedEventType = TEXT("scene_candidate_adopted");
+    else if (SceneLifecycleTransition == TEXT("publication")) ExpectedEventType = TEXT("scene_variant_published");
+    else ExpectedEventType = TEXT("scene_variant_reviewed");
+    bool bExpectedEventFound = false;
+    if (Error.IsEmpty())
+    {
+        for (const TSharedPtr<FJsonValue>& TimelineValue : *Timeline)
+        {
+            const TSharedPtr<FJsonObject>* Event = nullptr;
+            FString EventType;
+            if (TimelineValue.IsValid() && TimelineValue->TryGetObject(Event) &&
+                Event != nullptr && (*Event)->TryGetStringField(TEXT("event_type"), EventType) &&
+                EventType == ExpectedEventType)
+            {
+                bExpectedEventFound = true;
+                break;
+            }
+        }
+    }
+    if (Error.IsEmpty() &&
+        (Schema != TEXT("agent-run-projection/1") || RunId != SessionRunId ||
+        ReturnedSessionSha != SessionSha256 || !bExpectedEventFound))
+    {
+        Error = TEXT("Lifecycle response does not match the current Run, Session or transition.");
+    }
+
+    if (Error.IsEmpty())
+    {
+        TSharedPtr<FJsonObject> HostReceipt = MakeShared<FJsonObject>();
+        HostReceipt->SetStringField(
+            TEXT("schema"), TEXT("artflow-unreal-lifecycle-callback-receipt/1"));
+        HostReceipt->SetBoolField(TEXT("success"), true);
+        HostReceipt->SetStringField(TEXT("endpoint_origin"), SessionEndpointOrigin);
+        HostReceipt->SetStringField(TEXT("run_id"), SessionRunId);
+        HostReceipt->SetStringField(TEXT("session_sha256"), SessionSha256);
+        HostReceipt->SetStringField(TEXT("transition"), SceneLifecycleTransition);
+        HostReceipt->SetStringField(TEXT("artifact_sha256"), SceneLifecycleArtifactSha256);
+        HostReceipt->SetStringField(TEXT("action_id"), SceneLifecycleActionId);
+        HostReceipt->SetStringField(TEXT("event_type"), ExpectedEventType);
+        HostReceipt->SetStringField(TEXT("received_at"), FDateTime::UtcNow().ToIso8601());
+        FString ReceiptText;
+        FJsonSerializer::Serialize(
+            HostReceipt.ToSharedRef(),
+            TJsonWriterFactory<>::Create(&ReceiptText));
+        const FString ReceiptRoot =
+            FPaths::Combine(ArtFlowSceneBridge::GetBridgeRoot(), TEXT("SceneSessions"));
+        IFileManager::Get().MakeDirectory(*ReceiptRoot, true);
+        ReceiptPath = FPaths::Combine(
+            ReceiptRoot,
+            TEXT("lifecycle-") + SceneLifecycleActionId + TEXT(".json"));
+        if (!FFileHelper::SaveStringToFile(
+            ReceiptText,
+            *ReceiptPath,
+            FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
+        {
+            Error = TEXT("The verified lifecycle callback receipt could not be saved.");
+            ReceiptPath.Reset();
+        }
+    }
+
+    const bool bSuccess = Error.IsEmpty();
+    UE_LOG(
+        LogArtFlowSceneBridge,
+        Display,
+        TEXT("ARTFLOW_LIFECYCLE_CALLBACK_RESULT success=%s transition=%s artifact=%s receipt=%s error=%s"),
+        bSuccess ? TEXT("true") : TEXT("false"),
+        *SceneLifecycleTransition,
+        *SceneLifecycleArtifactSha256,
+        *ReceiptPath,
+        *Error);
+    if (bSceneLifecycleCallbackAutomation)
+    {
+        ArtFlowSceneBridge::WriteAutomationResult(bSuccess, ReceiptPath, Error);
+        FPlatformMisc::RequestExit(false);
+    }
+    else if (bSuccess)
+    {
+        FNotificationInfo Info(FText::Format(
+            LOCTEXT("LifecycleCallbackSuccess", "ArtFlow 场景状态已同步\n{0} 已进入当前 Scene Session"),
+            FText::FromString(SceneLifecycleTransition)));
+        Info.bFireAndForget = true;
+        Info.bUseLargeFont = false;
+        Info.ExpireDuration = 12.0f;
+        const TSharedPtr<SNotificationItem> Notification =
+            FSlateNotificationManager::Get().AddNotification(Info);
+        if (Notification.IsValid())
+        {
+            Notification->SetCompletionState(SNotificationItem::CS_Success);
+        }
+    }
+    else
+    {
+        FMessageDialog::Open(
+            EAppMsgType::Ok,
+            FText::Format(
+                LOCTEXT("LifecycleCallbackFailure", "ArtFlow 场景状态同步失败：\n{0}"),
+                FText::FromString(Error)));
+    }
+}
+
 void FArtFlowSceneBridgeModule::ReviewLastExport() const
 {
     const FString Message = LastExportPath.IsEmpty()
@@ -2855,7 +3107,30 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     FString ArchivePath;
     const bool bPrepareOnly = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPrepareDemo"));
     bool bSuccess = false;
-    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) || FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
+    if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowLifecycleCallback")))
+    {
+        FString Transition;
+        FString ArtifactSha256;
+        FString ActionId;
+        if (!FParse::Value(FCommandLine::Get(), TEXT("ArtFlowLifecycleRun="), SessionRunId) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowLifecycleSession="), SessionSha256) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowLifecycleTransition="), Transition) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowLifecycleArtifact="), ArtifactSha256) ||
+            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowLifecycleAction="), ActionId))
+        {
+            Error = TEXT("Lifecycle callback automation requires Run, Session, transition, artifact and action identities.");
+        }
+        else if (BeginSceneLifecycleCallback(
+            Transition,
+            ArtifactSha256,
+            ActionId,
+            true,
+            Error))
+        {
+            return true;
+        }
+    }
+    else if (FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage")) || FParse::Param(FCommandLine::Get(), TEXT("ArtFlowDiscardStage")))
     {
         const bool bPublish = FParse::Param(FCommandLine::Get(), TEXT("ArtFlowPublishStage"));
         bSuccess = ArtFlowSceneBridge::ExecuteStageDisposition(bPublish, ArchivePath, Error);

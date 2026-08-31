@@ -45,6 +45,8 @@ from .scene_variant_lifecycle import (
     SceneCandidateEvaluationRecord,
     SceneVariantPublishRecord,
     SceneVariantReviewRecord,
+    SceneVariantLifecycleRecord,
+    SceneVariantLifecycleTransition,
     validate_session_binding,
 )
 from .scene_variant_review import compile_scene_variant_lineage
@@ -549,6 +551,39 @@ class AgentEventStore:
             "scene_variant_reviewed",
             _SceneVariantReviewed(record=record).model_dump(mode="json"),
             idempotency_key=f"scene_variant_reviewed:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_lifecycle_callback(
+        self,
+        run_id: str,
+        transition: SceneVariantLifecycleTransition,
+        record: SceneVariantLifecycleRecord,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        """Append one registered host callback under a transition-independent action key."""
+        event_type: AgentEventType
+        data: dict[str, Any]
+        if transition == "evaluation" and isinstance(record, SceneCandidateEvaluationRecord):
+            event_type = "scene_candidate_evaluated"
+            data = _SceneCandidateEvaluated(record=record).model_dump(mode="json")
+        elif transition == "adoption" and isinstance(record, SceneCandidateAdoptionRecord):
+            event_type = "scene_candidate_adopted"
+            data = _SceneCandidateAdopted(record=record).model_dump(mode="json")
+        elif transition == "publication" and isinstance(record, SceneVariantPublishRecord):
+            event_type = "scene_variant_published"
+            data = _SceneVariantPublished(record=record).model_dump(mode="json")
+        elif transition == "review" and isinstance(record, SceneVariantReviewRecord):
+            event_type = "scene_variant_reviewed"
+            data = _SceneVariantReviewed(record=record).model_dump(mode="json")
+        else:
+            raise AgentRuntimeError("lifecycle transition and registered artifact type differ")
+        self._append(
+            run_id,
+            event_type,
+            data,
+            idempotency_key=f"scene_variant_lifecycle:{action_id}",
         )
         return self.load(run_id)
 

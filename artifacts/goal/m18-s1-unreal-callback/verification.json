@@ -1,0 +1,51 @@
+{
+  "schema_id": "artflow-m18-unreal-callback-verification/1",
+  "status": "verified",
+  "engine_version": "5.8.1",
+  "run_id": "unreal-artflow-ue-c4f262344b71ecfb5bf65580af4f5a1f-207d24a911c3",
+  "session_sha256": "78490746724848bde42be8ce2fbd2eed9ffe5d45a18cfdd81794681d40b0bf19",
+  "event_count": 7,
+  "lifecycle_event_count": 4,
+  "event_order": [
+    "run_created",
+    "scene_attached",
+    "scene_session_started",
+    "scene_candidate_evaluated",
+    "scene_candidate_adopted",
+    "scene_variant_published",
+    "scene_variant_reviewed"
+  ],
+  "host_receipts": [
+    {
+      "transition": "evaluation",
+      "artifact_sha256": "445666ae184f9feb18f9d957210dc430cd70ca5fba0c26b0525cbdd8add3145a",
+      "event_type": "scene_candidate_evaluated",
+      "receipt": "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-evaluation.json",
+      "receipt_sha256": "b4f0764a6d743598697be6da0acf8c1df0795e1e5cc9ad0fe1000c8235f4eedd"
+    },
+    {
+      "transition": "adoption",
+      "artifact_sha256": "a9d761a381755f55d40b7bfbf3c9d017c87dc7d0e36c5b65ea209ca1c2cb4104",
+      "event_type": "scene_candidate_adopted",
+      "receipt": "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-adoption.json",
+      "receipt_sha256": "eae1a2b7a736f2e810143a1e40924e14268c66f7c0f045a653adf622b57ac86d"
+    },
+    {
+      "transition": "publication",
+      "artifact_sha256": "de134a05e4408a89f7baad5558489a55bcce49dac5f02def7bb9e0e010733699",
+      "event_type": "scene_variant_published",
+      "receipt": "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-publication.json",
+      "receipt_sha256": "b0cb2d220e369a836efa2250c12d1c556bad5f7e0235d2318872220784b5e306"
+    },
+    {
+      "transition": "review",
+      "artifact_sha256": "d5bf70caa1592b4fce17f801fae1c24130ce4773b90df0cd070d5ba9319f2a09",
+      "event_type": "scene_variant_reviewed",
+      "receipt": "artifacts/goal/m18-s1-unreal-callback/host-receipts/lifecycle-m18-review.json",
+      "receipt_sha256": "3fa51bc1ec0557310f2a5ab1fda10d8d4a8c3d0c3cfd71d35b700a86e5864e21"
+    }
+  ],
+  "published_scene": "/Game/ArtFlow/Published/AF_784907467248/V_baeeeb76ada9",
+  "caller_path_fields": 0,
+  "database_sha256": "86a1e1b11495d4a126cfb96a10c2599370afe8433b4b08556f67b267b6a3b2aa"
+}

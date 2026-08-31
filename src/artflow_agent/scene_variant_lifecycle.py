@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, model_validator
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .scene_disposition import (
     SceneCandidateAdoptionDecision,
@@ -100,6 +101,61 @@ class RegisteredSceneVariantLifecycle(BaseModel):
     adoption: SceneCandidateAdoptionRecord
     publication: SceneVariantPublishRecord
     review: SceneVariantReviewRecord
+
+
+SceneVariantLifecycleTransition = Literal[
+    "evaluation", "adoption", "publication", "review"
+]
+
+
+class SceneVariantLifecycleCallbackRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    schema_id: Literal["artflow-scene-variant-callback/1"] = (
+        "artflow-scene-variant-callback/1"
+    )
+    transition: SceneVariantLifecycleTransition
+    session_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    artifact_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    action_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$")
+
+
+SceneVariantLifecycleRecord = (
+    SceneCandidateEvaluationRecord
+    | SceneCandidateAdoptionRecord
+    | SceneVariantPublishRecord
+    | SceneVariantReviewRecord
+)
+
+
+def registered_artifact_sha256(
+    lifecycle: RegisteredSceneVariantLifecycle,
+    transition: SceneVariantLifecycleTransition,
+) -> str:
+    if transition == "evaluation":
+        return lifecycle.evaluation.corrected_evaluation.evaluation_sha256
+    if transition == "adoption":
+        return lifecycle.adoption.decision.decision_sha256
+    if transition == "publication":
+        return lifecycle.publication.receipt.receipt_sha256
+    return lifecycle.review.receipt.receipt_sha256
+
+
+def resolve_registered_lifecycle_record(
+    project_root: Path,
+    request: SceneVariantLifecycleCallbackRequest,
+) -> SceneVariantLifecycleRecord:
+    lifecycle = load_registered_m16_lifecycle(project_root)
+    expected = registered_artifact_sha256(lifecycle, request.transition)
+    if request.artifact_sha256 != expected:
+        raise ValueError("unknown registered lifecycle artifact identity")
+    if request.transition == "evaluation":
+        return lifecycle.evaluation
+    if request.transition == "adoption":
+        return lifecycle.adoption
+    if request.transition == "publication":
+        return lifecycle.publication
+    return lifecycle.review
 
 
 def validate_session_binding(

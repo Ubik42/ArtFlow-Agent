@@ -13,7 +13,8 @@ Delta、失败域纠正、MCP 边界、实验图生 3D、持久 Scene Session �
 真实验证了只纠正 lighting、四个成功域证据哈希不变。M15 已把通过复检的精确候选正式采用并
 发布为内容寻址 Unreal 场景变体，新进程对账没有重复关卡包。M16 已把纠正、采用、发布与 UE
 审阅组织成六段场景变体谱系，并完成桌面与窄屏实测。M17 已将评价、采用、发布和审阅写入
-同一条 Scene Session 事件流，实时工作区直接投影当前运行；冻结数据只作为明确标记的演示回退。这些能力作为稳定底座保留，后续不重复
+同一条 Scene Session 事件流；M18 已完成 Unreal 原生注册回调，四类宿主回执直接进入当前运行，
+实时工作区不再依赖一次性迁移。这些能力作为稳定底座保留，后续不重复
 造轮子，也不再以历史审批/证据控制台作为产品主叙事。
 
 ## 产品闭环
@@ -46,8 +47,10 @@ Unreal 当前场景
   光谱，但加入空间化场景框、版本胶片和明确发布刻度，避免聊天框、节点画布和通用 AI 仪表盘。
 - **M17 · Durable live scene-variant lifecycle（已完成）**：候选评价、纠正、采用、发布和审阅已
   纳入现有 append-only Scene Session 事件与 Reducer；当前运行投影实时谱系，冻结展示数据仅作演示回退。
-- **M18 · Unreal-native lifecycle callback（进行中）**：把一次性历史迁移入口收口为 Unreal 面向当前
-  Session 的注册回执回传，让候选评价、采用、发布和审阅完成后直接进入同一事件流。
+- **M18 · Unreal-native lifecycle callback（已完成）**：Unreal 以内容身份回传评价、采用、发布和审阅，
+  服务端解析项目注册制品并按顺序写入同一事件流；回调不接收主机路径，重放不会重复事件。
+- **M19 · Live candidate execution and progress（进行中）**：把已封存 Candidate Plan 变成当前 Session
+  可领取的注册工作项，由 Unreal 串行认领、执行和回传进度，使真实工作区不再依赖手工命令行启动。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 
