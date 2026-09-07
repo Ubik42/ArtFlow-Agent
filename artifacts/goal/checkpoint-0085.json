@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M43-S1",
+  "status": "completed",
+  "outcome": "Blender generated a bounded editable 72-frame deformation source and Alembic cache; Unreal imported it as Geometry Cache, placed it in a derived candidate and registered one Level Sequence binding, track and section. Repeated return reconciled with zero duplicate assets and unchanged upstream candidate identity.",
+  "evidence": [
+    "artifacts/goal/m43-s1-simulation-cache/simulation-cache-request.json",
+    "artifacts/goal/m43-s1-simulation-cache/blender-simulation-cache-receipt.json",
+    "artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-receipt.json",
+    "artifacts/goal/m43-s1-simulation-cache/AF_WindVeil_036.png",
+    "artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-candidate.png",
+    "docs/evidence/M43_S1_SIMULATION_CACHE_2026-09-07.md"
+  ]
+}

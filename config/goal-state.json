@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 91,
+  "stateRevision": 92,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M43",
+  "currentMilestone": "M44",
   "milestones": [
     {
       "id": "M0",
@@ -507,7 +507,7 @@
     {
       "id": "M43",
       "title": "Simulation cache and Sequencer handoff",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M42"],
       "outcome": "Blender simulation and cache operations become a finite current-session capability that returns editable time-based content to an isolated Unreal candidate and Level Sequence.",
       "acceptance": [
@@ -516,39 +516,51 @@
         "One real Unreal run imports the cache into a derived candidate and registers it in a project-owned Level Sequence",
         "A repeated return reconciles the same cache, sequence and candidate without changing upstream scenes"
       ]
+    },
+    {
+      "id": "M44",
+      "title": "Live simulation-cache dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M43"],
+      "outcome": "The proven Blender-to-Alembic-to-Unreal time-based route becomes a fourteenth finite current-session capability dispatched and recovered through the existing durable DCC work lifecycle.",
+      "acceptance": [
+        "The work item binds the exact terrain candidate, Blender source, Alembic, Geometry Cache, Level Sequence and derived candidate identities",
+        "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate side effects",
+        "The Chinese Scene Change Spectrum presents source terrain, Blender cache frames and Unreal time-based result as one route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M43-S1",
-    "milestone": "M43",
-    "title": "Return a bounded Blender simulation cache to Sequencer",
-    "outcome": "Use the current terrain candidate to author one finite Blender simulation, export its animation cache and attach the result to a derived Unreal candidate and Level Sequence.",
+    "id": "M44-S1",
+    "milestone": "M44",
+    "title": "Dispatch and present the live simulation-cache route",
+    "outcome": "Register M43 as the fourteenth current-session capability and expose its durable lifecycle and real three-stage media in the existing product surface.",
     "risk": "R2",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not expose arbitrary Blender Python, solver settings or Sequencer tracks",
-      "Do not build a general simulation farm or cache manager",
-      "Do not add fluid or cloth dependencies in this first slice",
-      "Do not modify the M42 terrain candidate or source ArtFlowDemo in place"
+      "Do not add another scheduler, event store or approval gate",
+      "Do not rerun Blender or Unreal when the frozen M43 receipts verify",
+      "Do not redesign unrelated screens or add a general cache browser",
+      "Do not modify the M43 candidate or upstream scenes"
     ],
     "acceptance": [
-      "The typed request binds the exact M42 terrain candidate, finite object set, frame range, solver recipe and budgets",
-      "Blender produces an editable source file, preview and bounded Alembic cache",
-      "Unreal imports the cache into a derived candidate and a project-owned Level Sequence",
-      "A repeated return reconciles with zero duplicate assets or upstream mutation"
+      "The existing DCC work contract binds all M43 request, Blender and Unreal receipt identities",
+      "One queue-to-reconcile projection emits the existing five lifecycle events and replays equivalently",
+      "The Scene Change Spectrum renders M42 source, Blender frames and Unreal candidate from real artifacts",
+      "Focused backend and frontend checks pass without broad regression work"
     ],
     "stopConditions": [
-      "Stop if the M42 candidate identity no longer verifies",
-      "Stop if the simulated geometry or cache exceeds the registered frame, object or size budget",
+      "Stop if any frozen M43 artifact identity no longer verifies",
+      "Stop if the current DCC worker cannot represent the route without a parallel state machine",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "terrain_candidate", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json", "required": true}
+      {"id": "simulation_request", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/simulation-cache-request.json", "required": true},
+      {"id": "blender_simulation", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/blender-simulation-cache-receipt.json", "required": true},
+      {"id": "unreal_simulation", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -564,9 +576,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0084.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0085.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M42 are complete. A fixed ComfyUI subgraph produced content-addressed height and biome fields with 27.6345 percent coverage and zero protected leakage; Blender 5.2 authored an editable 3072-vertex terrain with Geometry Nodes, named UV, collision proxy and GLB; Unreal 5.8.1 imported it into a derived candidate and a project-owned PCG graph produced 18 instances. A second return reconciled with zero duplicate side effects and unchanged upstream level hashes. Bounded simulation cache and Sequencer handoff is M43-S1 scope.",
+  "evidenceCeiling": "M0-M43 are complete. Blender 5.2 authored a bounded 72-frame deformation source and 5,980,896-byte Alembic cache from the exact M42 terrain candidate. Unreal 5.8.1 imported one Geometry Cache into a derived candidate and created one Level Sequence binding, track and section. Repeated return reconciled the same assets with zero duplicates and unchanged upstream candidate hash. Live simulation-cache dispatch is M44-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

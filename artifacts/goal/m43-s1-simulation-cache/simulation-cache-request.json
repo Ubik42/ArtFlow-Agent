@@ -1,0 +1,22 @@
+{
+  "schema_id": "artflow-simulation-cache-request/1",
+  "request_id": "simulation-cache-3818974788ae1413",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "terrain_receipt_sha256": "393a92fd803a1eeb65a42544ee844d53b373ae84694898a0685c0e717a3aae9e",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Terrain_B_dfa6418e8729",
+  "source_candidate_sha256": "3f116545694e2af69376c3048e4a9d9db42790f8d13ac4a630c51f090dbf8710",
+  "source_blend_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m42-s1-terrain-biome/AF_BiomeTerrain.blend",
+  "source_blend_sha256": "0c81632c3ffcbbab914dfcb1d34279eb921cf7789072fb5529b95090f5ae8655",
+  "capability_id": "blender.cache.wind_veil.v1",
+  "consumer_capability_id": "unreal.geometry_cache.sequence.v1",
+  "frame_start": 1,
+  "frame_end": 72,
+  "frame_rate": 24,
+  "mesh_columns": 32,
+  "mesh_rows": 12,
+  "amplitude_m": 0.42,
+  "max_cache_bytes": 33554432,
+  "output_stem": "AF_WindVeil_Cache",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_WindVeil_831ce40985d6.LS_AF_WindVeil_831ce40985d6",
+  "request_sha256": "e9e803c97da153d9ba52ad2e871cf3fc415d4b5ee9495e396b84d643a1a67dcb"
+}

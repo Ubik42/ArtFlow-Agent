@@ -1,0 +1,51 @@
+{
+  "schema_id": "artflow-blender-simulation-cache-receipt/1",
+  "request_sha256": "e9e803c97da153d9ba52ad2e871cf3fc415d4b5ee9495e396b84d643a1a67dcb",
+  "capability_id": "blender.cache.wind_veil.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "object_name": "AF_WindVeil",
+  "frame_range": [
+    1,
+    72
+  ],
+  "sample_count": 72,
+  "vertex_count": 384,
+  "face_count": 341,
+  "max_displacement_m": 0.42,
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_WindVeil_Cache.blend",
+      "sha256": "2524be39bdd57d683d2e84b40208a14c50522ead241b7a7238848028c1beca8e",
+      "size_bytes": 190182
+    },
+    {
+      "kind": "alembic",
+      "relative_path": "AF_WindVeil_Cache.abc",
+      "sha256": "9e3c58fe7b6b27a6c1e59dd7784668b8dd5b6b57cbb5a09f11838d6399f75069",
+      "size_bytes": 5980896
+    },
+    {
+      "kind": "preview_start",
+      "relative_path": "AF_WindVeil_001.png",
+      "sha256": "e23cfc81d43aa545da421db1fde88959670dbccc50342648736587dc75f8f6d0",
+      "size_bytes": 636726
+    },
+    {
+      "kind": "preview_middle",
+      "relative_path": "AF_WindVeil_036.png",
+      "sha256": "0c4286b82574b43960de828835d05edc5174ea06482522d0f6777fef5380984b",
+      "size_bytes": 636246
+    },
+    {
+      "kind": "preview_end",
+      "relative_path": "AF_WindVeil_072.png",
+      "sha256": "83c363331e0b2c45b11a151a28bc66de895ffa9c02797dded92651b27aa19b5c",
+      "size_bytes": 639285
+    }
+  ],
+  "elapsed_seconds": 1.792,
+  "completed_at": "2026-09-07T15:12:17.348326Z",
+  "receipt_sha256": "ad2aa60dee5cf791b3b2a2473adb442f9ebbf24b516a96b09cb6bd9401609192"
+}

@@ -25,6 +25,14 @@
     {
       "Name": "EditorScriptingUtilities",
       "Enabled": true
+    },
+    {
+      "Name": "AlembicImporter",
+      "Enabled": true
+    },
+    {
+      "Name": "GeometryCache",
+      "Enabled": true
     }
   ]
 }

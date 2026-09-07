@@ -13,6 +13,15 @@
 | --- | --- |
 | ![Blender 根据 ComfyUI 高度场生成外围地形](artifacts/goal/m42-s1-terrain-biome/AF_BiomeTerrain-preview.png) | ![Unreal 接收地形并以原生 PCG 布置模块](artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-candidate.png) |
 
+时间维度也进入同一生产链。Agent 将 M42 地形候选、72 帧范围、24 fps、网格密度、形变幅度和
+32 MB 缓存预算编译为固定模拟任务。Blender 输出可编辑 Wave/Solidify 源与 5.98 MB Alembic
+顶点缓存；Unreal 将其导入 Geometry Cache，在派生候选中创建 Actor，并生成包含一个绑定、一个
+Geometry Cache Track 和一个区段的 Level Sequence。重复回流对账已有缓存、序列和候选，重复资产为 0。
+
+| Blender 形变缓存预演（第 36 帧） | Unreal Geometry Cache 候选 |
+| --- | --- |
+| ![Blender 风幕形变缓存](artifacts/goal/m43-s1-simulation-cache/AF_WindVeil_036.png) | ![Unreal Geometry Cache 候选](artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-candidate.png) |
+
 当前 DCC 路线已接入 Blender 5.2 LTS。Agent 将 Session 的场景尺度与视觉意图编译为类型化建模规格，固定 Blender 能力生成可编辑 `.blend`、嵌入式 GLB 和预览，随后由 Unreal Interchange 导入 Session 派生候选关卡。首个模块化祭坛包含 26 个 Blender 可编辑构件、3 个材质和 4,888 个生成三角面；回流后的 Unreal StaticMesh 为 952 个构建三角面并带 1 个简单碰撞，源关卡哈希未变化。
 
 | Blender 可编辑生成结果 | Unreal 隔离候选回流 |
