@@ -1,0 +1,203 @@
+{
+  "schema_id": "artflow-procedural-kit-receipt/1",
+  "request_id": "procedural-kit-a94adfd552225913",
+  "request_sha256": "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a",
+  "capability_id": "blender.geometry_nodes.modular_wayfinder_kit.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "variants": [
+    {
+      "variant_id": "wayfinder-a",
+      "object_name": "SM_AF_Wayfinder_A",
+      "base_glb": "SM_AF_Wayfinder_A.glb",
+      "base_sha256": "c97810ce70111cd69891f4d6abf2167ae3f444741635210444c5efe0dccfbb0d",
+      "lod1_glb": "SM_AF_Wayfinder_A_LOD1.glb",
+      "lod1_sha256": "5b579044c6c21bc87c28a590d6d26e9ea653f9108b0c13057e3ce3d0b7f26e21",
+      "base_triangles": 116,
+      "lod1_triangles": 36,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "material_slots": [
+        "M_AF_Stone",
+        "M_AF_GeneratedInlay"
+      ],
+      "collision_kind": "box",
+      "collision_extent_m": [
+        0.62,
+        0.52,
+        1.75
+      ]
+    },
+    {
+      "variant_id": "wayfinder-b",
+      "object_name": "SM_AF_Wayfinder_B",
+      "base_glb": "SM_AF_Wayfinder_B.glb",
+      "base_sha256": "03d224f27d683e83c28abf8e7ddd1efd31eee53ed79396f87a37ae285baa4bb1",
+      "lod1_glb": "SM_AF_Wayfinder_B_LOD1.glb",
+      "lod1_sha256": "ddfe86adb51901aa9b4b4f5da991531d001cbd5d0eaab78f3b2444dbc03bd82b",
+      "base_triangles": 160,
+      "lod1_triangles": 36,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "material_slots": [
+        "M_AF_Stone",
+        "M_AF_GeneratedInlay"
+      ],
+      "collision_kind": "box",
+      "collision_extent_m": [
+        0.62,
+        0.52,
+        2.05
+      ]
+    },
+    {
+      "variant_id": "wayfinder-c",
+      "object_name": "SM_AF_Wayfinder_C",
+      "base_glb": "SM_AF_Wayfinder_C.glb",
+      "base_sha256": "c419a37fd41589446128b1145cb49870d7e37e991a10ff00d9bf00ce3b54abda",
+      "lod1_glb": "SM_AF_Wayfinder_C_LOD1.glb",
+      "lod1_sha256": "a20af70c55ef23b5e72813b809c4d5c182ac7c8d3e8e997aca37e0a0b622baf6",
+      "base_triangles": 124,
+      "lod1_triangles": 36,
+      "uv_layers": [
+        "UVMap"
+      ],
+      "material_slots": [
+        "M_AF_Stone",
+        "M_AF_GeneratedInlay"
+      ],
+      "collision_kind": "box",
+      "collision_extent_m": [
+        0.62,
+        0.52,
+        1.88
+      ]
+    }
+  ],
+  "placements": [
+    {
+      "point_id": "kit-point-01",
+      "variant_id": "wayfinder-a",
+      "location_m": [
+        4.03527,
+        -0.2804,
+        0.0
+      ],
+      "yaw_deg": 86.025,
+      "scale": 0.9664
+    },
+    {
+      "point_id": "kit-point-02",
+      "variant_id": "wayfinder-b",
+      "location_m": [
+        2.72094,
+        2.01205,
+        0.0
+      ],
+      "yaw_deg": 126.482,
+      "scale": 0.9294
+    },
+    {
+      "point_id": "kit-point-03",
+      "variant_id": "wayfinder-c",
+      "location_m": [
+        0.60392,
+        3.7251,
+        0.0
+      ],
+      "yaw_deg": 170.791,
+      "scale": 0.9991
+    },
+    {
+      "point_id": "kit-point-04",
+      "variant_id": "wayfinder-a",
+      "location_m": [
+        -2.01954,
+        2.9486,
+        0.0
+      ],
+      "yaw_deg": 214.408,
+      "scale": 1.0205
+    },
+    {
+      "point_id": "kit-point-05",
+      "variant_id": "wayfinder-b",
+      "location_m": [
+        -3.13733,
+        1.19696,
+        0.0
+      ],
+      "yaw_deg": 249.117,
+      "scale": 1.0932
+    },
+    {
+      "point_id": "kit-point-06",
+      "variant_id": "wayfinder-c",
+      "location_m": [
+        -3.20001,
+        -0.89744,
+        0.0
+      ],
+      "yaw_deg": 285.666,
+      "scale": 1.06
+    },
+    {
+      "point_id": "kit-point-07",
+      "variant_id": "wayfinder-a",
+      "location_m": [
+        -1.64221,
+        -2.71252,
+        0.0
+      ],
+      "yaw_deg": 328.808,
+      "scale": 0.9341
+    },
+    {
+      "point_id": "kit-point-08",
+      "variant_id": "wayfinder-b",
+      "location_m": [
+        0.67827,
+        -3.58559,
+        0.0
+      ],
+      "yaw_deg": 370.712,
+      "scale": 0.9603
+    },
+    {
+      "point_id": "kit-point-09",
+      "variant_id": "wayfinder-c",
+      "location_m": [
+        2.77613,
+        -2.24167,
+        0.0
+      ],
+      "yaw_deg": 411.08,
+      "scale": 1.0038
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_Wayfinder_Kit.blend",
+      "sha256": "87d98b72d0b057d99c67c049a26ad498d5bc155ce2fbb175c460e2d8808f5634",
+      "size_bytes": 105279
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_Wayfinder_Kit-preview.png",
+      "sha256": "e6f7ea081407f39be0525a4e3ac091279144e34b6626cb16b14218592b1cec42",
+      "size_bytes": 706004
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_Wayfinder_Kit-manifest.json",
+      "sha256": "18ad450f7cf1da11864ac54224ca38fd046d4dad1439f8712099f73457a4b82c",
+      "size_bytes": 4406
+    }
+  ],
+  "elapsed_seconds": 1.768,
+  "completed_at": "2026-09-07T12:20:18.789981Z",
+  "receipt_sha256": "d5dadabaa47f8220e249956723011fa837f8a5ac8688951aa0694b1b28fa13d3"
+}

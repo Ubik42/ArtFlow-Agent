@@ -1,0 +1,35 @@
+{
+  "schema_id": "artflow-procedural-kit-request/1",
+  "request_id": "procedural-kit-a94adfd552225913",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Detail_B_57113c2ebabd",
+  "visual_target_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m30-s1-surface-detail/AF_Inlay_ProjectionTexture.png",
+  "visual_target_sha256": "b320aadea2b749fdf5f830a656b1879709f8cc9028659f44536b9dab189f6578",
+  "capability_id": "blender.geometry_nodes.modular_wayfinder_kit.v1",
+  "consumer_capability_id": "unreal.pcg.modular_kit_scatter.v1",
+  "kit_family": "oxidized-wayfinder",
+  "variant_count": 3,
+  "bounds": {
+    "min_m": [
+      -4.8,
+      -4.8,
+      0.0
+    ],
+    "max_m": [
+      4.8,
+      4.8,
+      4.0
+    ]
+  },
+  "placement_count": 9,
+  "seed": 320907,
+  "material_slots": [
+    "M_AF_Stone",
+    "M_AF_GeneratedInlay"
+  ],
+  "lod_policy": "lod1-at-most-60-percent-triangles",
+  "collision_policy": "explicit-box-proxy-per-variant",
+  "request_sha256": "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a"
+}

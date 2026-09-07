@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M32-S1",
+  "status": "completed",
+  "outcome": "A scene-bound ComfyUI visual target now drives a three-variant editable Blender procedural kit with UV, material, LOD and collision data; a typed Unreal PCG consumer places nine validated points in an isolated candidate and replay reconciles with zero actor changes or source mutation.",
+  "evidence": [
+    "artifacts/goal/m32-s1-procedural-kit/procedural-kit-request.json",
+    "artifacts/goal/m32-s1-procedural-kit/procedural-kit-receipt.json",
+    "artifacts/goal/m32-s1-procedural-kit/AF_Wayfinder_Kit-preview.png",
+    "artifacts/goal/m32-s1-procedural-kit/unreal-procedural-kit-return-receipt.json",
+    "artifacts/goal/m32-s1-procedural-kit/unreal-procedural-kit-candidate.png",
+    "artifacts/goal/m32-s1-procedural-kit/verification.json",
+    "docs/evidence/M32_S1_PROCEDURAL_KIT_2026-09-07.md"
+  ]
+}

@@ -106,10 +106,14 @@ Unreal 当前场景
 - **M31 · Live surface-detail dispatch（已完成）**：把 M30 的请求、ComfyUI 回执、Blender 编辑源、
   烘焙结果和 Unreal 候选登记为当前 Session 的第八项 DCC 能力，接入现有 queue / claim /
   execute / reconcile 生命周期与场景变更谱，不增加调度器或确认门禁。
-- **M32 · Cross-host procedural scene assembly（进行中）**：继续把 Blender 作为完整 DCC 执行面，
-  组合 Geometry Nodes、材质与 UV、模拟、LOD/碰撞、格式转换和渲染预演；ComfyUI 提供登记的
-  ControlNet/LoRA/材质/深度节点子图；Unreal 负责 Scene Digital Twin、PCG、灯光、候选关卡和
-  最终采用。优先完成一个“视觉方向 → 模块/材质 → PCG 布局 → 同机位回渲”的短闭环。
+- **M32 · Cross-host procedural scene assembly（已完成）**：已完成“视觉方向 → 模块/材质 → PCG
+  布局 → 同机位回渲”的短闭环。当前场景边界和已登记的 ComfyUI 表面目标被编译为三变体
+  Wayfinder 套件；Blender 5.2 保留 Geometry Nodes recipe、UV、双材质槽、LOD1 与碰撞元数据，
+  Unreal 5.8 将九个确定性点位写入新的隔离候选。三项资产均有 2 级 LOD 和 1 个简单碰撞体；
+  重复回流创建与更新对象均为 0，源关卡不变。
+- **M33 · Live procedural assembly dispatch（进行中）**：把 M32 的精确请求、Blender 套件回执、
+  清单和 Unreal 候选登记为当前 Session 的第九项 DCC 能力，继续复用现有 Worker、事件账本和
+  场景变更谱。界面只展示艺术目标、DCC 加工、PCG 装配和候选结果，不暴露开发脚本或任意节点图。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

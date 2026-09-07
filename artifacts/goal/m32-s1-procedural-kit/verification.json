@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-procedural-kit-verification/1",
+  "status": "passed",
+  "request_sha256": "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a",
+  "blender_receipt_sha256": "d5dadabaa47f8220e249956723011fa837f8a5ac8688951aa0694b1b28fa13d3",
+  "unreal_receipt_sha256": "cd4fe8c7cbc0567f7a37dfa75056724d2fc0e2003472d6cea85de4e3807d6954",
+  "variant_count": 3,
+  "placement_count": 9,
+  "lod_count_per_variant": 2,
+  "collision_count_per_variant": 1,
+  "repeat_created_actor_count": 0,
+  "repeat_updated_actor_count": 0,
+  "duplicate_side_effect_count": 0,
+  "source_level_unchanged": true,
+  "blender_version": "5.2.0 LTS",
+  "unreal_version": "5.8.1-56057345+++UE5+Release-5.8"
+}

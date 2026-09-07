@@ -348,3 +348,29 @@ failure-injected run and verify all of the following:
 8. trace, event, receipt, evaluation and artifact identities correlated;
 9. a C2PA-compatible delivery credential validated independently;
 10. a frozen evaluation report quantified capability, failure and cost rather than listing features.
+
+## 14. Cross-host production plane
+
+Blender is a complete DCC execution surface, not a synonym for mesh generation. Registered fixed
+capabilities may cover modifiers and Geometry Nodes, UV and material assembly, baking, LOD and
+collision preparation, simulation, layout, camera/lighting exchange and render preview. ComfyUI is
+the reviewed node-graph generation surface for image, conditioning and material artifacts. Unreal
+owns scene facts, isolated candidates, PCG/lighting consumers and final publish.
+
+The coordinator connects them with immutable content identities and typed receipts:
+
+```text
+Unreal scene facts + visual intent
+  → reviewed ComfyUI capability
+  → editable Blender DCC artifact
+  → validated exchange manifest
+  → typed Unreal PCG / lighting consumer
+  → same-camera candidate evidence
+```
+
+M32 proves this boundary with a three-variant procedural kit. The ComfyUI-derived visual target is
+bound into Blender material work; each variant retains an editable Geometry Nodes recipe, UV,
+two material slots, a reduced LOD and collision metadata. The Unreal consumer admits only matching
+hashes, attaches LOD1 and simple collision, then materializes nine deterministic placement points in
+a candidate derived from the prior surface-detail scene. Replay reconciles all identities with zero
+new or updated actors and a byte-identical source level.

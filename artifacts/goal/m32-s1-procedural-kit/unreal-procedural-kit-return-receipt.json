@@ -1,0 +1,87 @@
+{
+  "schema_id": "artflow-unreal-procedural-kit-return-receipt/1",
+  "request_id": "procedural-kit-a94adfd552225913",
+  "request_sha256": "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a",
+  "blender_receipt_sha256": "d5dadabaa47f8220e249956723011fa837f8a5ac8688951aa0694b1b28fa13d3",
+  "consumer_capability_id": "unreal.pcg.modular_kit_scatter.v1",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Detail_B_57113c2ebabd",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Kit_B_084ec73721a5",
+  "imported_mesh_paths": [
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_A/StaticMeshes/SM_AF_Wayfinder_A.SM_AF_Wayfinder_A",
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_B/StaticMeshes/SM_AF_Wayfinder_B.SM_AF_Wayfinder_B",
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_C/StaticMeshes/SM_AF_Wayfinder_C.SM_AF_Wayfinder_C"
+  ],
+  "lod_counts": {
+    "wayfinder-a": 2,
+    "wayfinder-b": 2,
+    "wayfinder-c": 2
+  },
+  "collision_counts": {
+    "wayfinder-a": 1,
+    "wayfinder-b": 1,
+    "wayfinder-c": 1
+  },
+  "pcg_operation": {
+    "seed": 320907,
+    "point_count": 9,
+    "placements": [
+      {
+        "point_id": "kit-point-01",
+        "actor_label": "ArtFlow_PCG_kit-point-01",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_A/StaticMeshes/SM_AF_Wayfinder_A.SM_AF_Wayfinder_A"
+      },
+      {
+        "point_id": "kit-point-02",
+        "actor_label": "ArtFlow_PCG_kit-point-02",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_B/StaticMeshes/SM_AF_Wayfinder_B.SM_AF_Wayfinder_B"
+      },
+      {
+        "point_id": "kit-point-03",
+        "actor_label": "ArtFlow_PCG_kit-point-03",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_C/StaticMeshes/SM_AF_Wayfinder_C.SM_AF_Wayfinder_C"
+      },
+      {
+        "point_id": "kit-point-04",
+        "actor_label": "ArtFlow_PCG_kit-point-04",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_A/StaticMeshes/SM_AF_Wayfinder_A.SM_AF_Wayfinder_A"
+      },
+      {
+        "point_id": "kit-point-05",
+        "actor_label": "ArtFlow_PCG_kit-point-05",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_B/StaticMeshes/SM_AF_Wayfinder_B.SM_AF_Wayfinder_B"
+      },
+      {
+        "point_id": "kit-point-06",
+        "actor_label": "ArtFlow_PCG_kit-point-06",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_C/StaticMeshes/SM_AF_Wayfinder_C.SM_AF_Wayfinder_C"
+      },
+      {
+        "point_id": "kit-point-07",
+        "actor_label": "ArtFlow_PCG_kit-point-07",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_A/StaticMeshes/SM_AF_Wayfinder_A.SM_AF_Wayfinder_A"
+      },
+      {
+        "point_id": "kit-point-08",
+        "actor_label": "ArtFlow_PCG_kit-point-08",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_B/StaticMeshes/SM_AF_Wayfinder_B.SM_AF_Wayfinder_B"
+      },
+      {
+        "point_id": "kit-point-09",
+        "actor_label": "ArtFlow_PCG_kit-point-09",
+        "mesh_path": "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_C/StaticMeshes/SM_AF_Wayfinder_C.SM_AF_Wayfinder_C"
+      }
+    ]
+  },
+  "created_actor_count": 0,
+  "updated_actor_count": 0,
+  "duplicate_side_effect_count": 0,
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "screenshot_path": "unreal-procedural-kit-candidate.png",
+  "screenshot_sha256": "2e3fca02c379de198cc69c057a3ae1cd450e3e8b4bc1cdc56e67e7b3c6da7edb",
+  "capture_status": "completed",
+  "completed_at": "2026-09-07T12:23:58.185351Z",
+  "receipt_sha256": "cd4fe8c7cbc0567f7a37dfa75056724d2fc0e2003472d6cea85de4e3807d6954"
+}

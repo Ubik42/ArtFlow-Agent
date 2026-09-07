@@ -88,6 +88,16 @@ ComfyUI 生成、Blender 转化和引擎回流，并沿用同一条可恢复事�
 
 ![当前 Session 的表面细节生产路线](artifacts/goal/m31-s1-live-surface-detail/live-surface-detail-desktop.png)
 
+第九条路线把二维视觉方向继续扩展为可复用的场景模块，而不是只生成单件模型。Agent 读取当前
+Session 的庭院边界和已登记的 ComfyUI 表面目标，编译三变体 Wayfinder 套件；Blender 保留每个
+变体的 Geometry Nodes recipe、UV、双材质槽、独立 LOD1 与碰撞代理，Unreal 再由类型化 PCG
+consumer 将九个确定性点位写入新的隔离候选。三项资产在 UE 中均验证为 2 级 LOD 和 1 个简单
+碰撞体；第二次回流没有创建或更新 Actor，源关卡哈希保持不变。
+
+| Blender 程序化模块套件 | Unreal PCG 场景装配候选 |
+| --- | --- |
+| ![Blender 生成三变体可编辑 Wayfinder 套件](artifacts/goal/m32-s1-procedural-kit/AF_Wayfinder_Kit-preview.png) | ![Unreal 将验证后的模块布置进隔离候选](artifacts/goal/m32-s1-procedural-kit/unreal-procedural-kit-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 80,
+  "stateRevision": 81,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M32",
+  "currentMilestone": "M33",
   "milestones": [
     {
       "id": "M0",
@@ -372,7 +372,7 @@
     {
       "id": "M32",
       "title": "Cross-host procedural scene assembly",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M31"],
       "outcome": "A current Scene Session composes registered ComfyUI visual subgraphs, Blender procedural DCC operations and Unreal PCG or lighting tools into one bounded scene-assembly task whose intermediate artifacts remain editable.",
       "acceptance": [
@@ -380,40 +380,51 @@
         "At least one route combines a non-modeling Blender capability with ComfyUI output and an Unreal PCG or lighting consumer",
         "The resulting candidate can be compared, adopted and published through the existing Scene Session lifecycle"
       ]
+    },
+    {
+      "id": "M33",
+      "title": "Live procedural assembly dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M32"],
+      "outcome": "The proven scene-conditioned procedural-kit route becomes a ninth registered current-session DCC capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
+      "acceptance": [
+        "The work item binds the exact kit request, Blender receipt, manifest and Unreal return identities",
+        "The existing worker reconciles and replays the ninth capability without another scheduler, arbitrary graph surface or approval gate",
+        "The Chinese product UI presents visual target, Blender kit, typed placement and Unreal candidate as one real route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M32-S1",
-    "milestone": "M32",
-    "title": "Assemble a scene-conditioned modular kit into Unreal PCG",
-    "outcome": "Compile current scene bounds and a registered visual target into a small Blender procedural kit with engine-ready material, LOD and collision metadata, then let a typed Unreal PCG tool place the validated variants in a new candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
+    "id": "M33-S1",
+    "milestone": "M33",
+    "title": "Expose procedural scene assembly in the live Scene Session",
+    "outcome": "Register the proven procedural-kit identities as the ninth finite DCC capability, replay it through the existing worker and present its four production stages in the Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
       "Do not build a general asset factory, open-ended graph editor or arbitrary host execution surface",
-      "Do not require a new model download when existing ComfyUI outputs can seed the material direction",
+      "Do not rerun Blender, ComfyUI or Unreal; consume the frozen M32 evidence",
       "Do not add a new queue, worker, approval layer or orchestration framework",
-      "Do not overwrite the source Unreal level or shared Blender sources"
+      "Do not redesign unrelated pages or expand the public arbitrary-graph surface"
     ],
     "acceptance": [
-      "A typed request binds current scene bounds, registered source target, kit family, finite variant count and Unreal PCG consumer",
-      "Blender produces an editable procedural kit with at least three variants, UV/material assignment and explicit LOD/collision metadata",
-      "Unreal imports only validated kit assets and a typed PCG operation places them inside a new isolated candidate",
-      "A repeated return reconciles asset and placement identities without source-level mutation"
+      "The DCC work definition admits the exact M32 request, Blender receipt, manifest and Unreal return identity as a ninth finite capability",
+      "Queue, claim, execute, reconcile and replay use the existing append-only worker",
+      "The Scene Change Spectrum renders four real production stages at desktop and narrow widths with no horizontal overflow or console errors"
     ],
     "stopConditions": [
-      "Stop if the selected kit cannot be represented by fixed Blender and Unreal capabilities without model-authored host code",
-      "Stop if existing source evidence cannot support a bounded PCG placement region",
+      "Stop if M32 identities cannot be admitted without weakening existing worker validation",
+      "Stop if the UI requires a new scheduler or arbitrary graph editor",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "scene_session", "kind": "file", "value": "artifacts/goal/m30-s1-surface-detail/surface-detail-request.json", "required": true}
+      {"id": "m32_request", "kind": "repo_path", "value": "artifacts/goal/m32-s1-procedural-kit/procedural-kit-request.json", "required": true},
+      {"id": "m32_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m32-s1-procedural-kit/procedural-kit-receipt.json", "required": true},
+      {"id": "m32_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m32-s1-procedural-kit/unreal-procedural-kit-return-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -429,9 +440,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0073.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0074.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M31 are complete. Scene-conditioned surface detail is the eighth current-session DCC capability: four content identities replay through the existing worker, and the Scene Change Spectrum loads four real production frames at 1600x1000 and 980x1000 with zero overflow, failed images or console messages. Cross-host procedural kit assembly into Unreal PCG is M32-S1 scope.",
+  "evidenceCeiling": "M0-M32 are complete. A registered ComfyUI visual target and current scene bounds drive three editable Blender procedural variants with UV, dual materials, LOD1 and collision metadata. Unreal 5.8 imports all three with two LODs and one collision each, places nine typed deterministic PCG points in an isolated candidate, and replay creates or updates zero actors while the source level remains byte-identical. Live ninth-capability dispatch is M33-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
