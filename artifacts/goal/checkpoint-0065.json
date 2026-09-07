@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M24-S1",
+  "status": "completed",
+  "outcome": "A live RTX 4080 ComfyUI host used a reviewed FLUX.2 graph to transform a content-bound Unreal Beauty plus normalized Depth condition into a 1024x576 visual target, after two invalid depth interpretations were rejected and corrected only in preprocessing.",
+  "evidence": [
+    "artifacts/goal/m24-s1-scene-conditioning/conditioning-request.json",
+    "artifacts/goal/m24-s1-scene-conditioning/conditioning-receipt.json",
+    "artifacts/goal/m24-s1-scene-conditioning/agent-events.sqlite3",
+    "artifacts/goal/m24-s1-scene-conditioning/depth.exr",
+    "artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png",
+    "artifacts/goal/m24-s1-scene-conditioning/scene-conditioning.png",
+    "artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png",
+    "artifacts/goal/m24-s1-scene-conditioning/verification.json",
+    "docs/evidence/M24_S1_REAL_COMFY_SCENE_CONDITIONING_2026-09-07.md"
+  ]
+}

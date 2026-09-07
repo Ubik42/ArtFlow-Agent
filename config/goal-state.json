@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 71,
+  "stateRevision": 72,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
@@ -283,32 +283,31 @@
     }
   ],
   "nextSlice": {
-    "id": "M24-S1",
+    "id": "M24-S2",
     "milestone": "M24",
-    "title": "Real ComfyUI scene-conditioning baseline",
-    "outcome": "Discover the live local ComfyUI and ComfyUI-Production-Nodes runtime, bind one current Unreal scene pass into a typed depth or normal conditioning request, execute one reviewed fixed workflow on the RTX 4080 and persist a content-addressed candidate with a declared downstream Blender/Unreal use.",
+    "title": "Scene-conditioned lookdev handoff",
+    "outcome": "Turn the accepted Beauty-plus-Depth ComfyUI candidate into actual lookdev input: bind its palette and lighting intent to the current Scene Session, compile bounded Blender/Unreal parameters and return one visible isolated candidate instead of ending at an image file.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not expose arbitrary ComfyUI JSON graphs, checkpoint paths, filesystem paths or custom-node property writes",
-      "Do not install or modify the shared ComfyUI runtime or download large models before inspecting what is already configured",
-      "Do not add another state machine, provider abstraction, approval gate, canvas editor or test framework",
-      "Do not train a LoRA, add a hosted provider or implement image-to-3D in this slice",
-      "Do not rerun Blender or Unreal stages unrelated to the selected conditioning output",
-      "Do not build a broad workflow or model matrix; prove one useful scene-conditioned route on the real host"
+      "Do not rerun ComfyUI, add a model, train LoRA or expand the workflow catalog in this slice",
+      "Do not infer arbitrary Unreal properties or Blender code from image pixels",
+      "Do not add another planner, state machine, approval gate or visual-analysis framework",
+      "Do not overwrite the source ArtFlowDemo level or the existing Blender shot candidate",
+      "Do not implement decals, animation, simulation, image-to-3D or general relighting in this slice"
     ],
     "acceptance": [
-      "Live /object_info and runtime inventory prove the available ComfyUI and Production Nodes conditioning capabilities",
-      "One typed request binds a current Unreal pass SHA, a registered fixed workflow version and bounded parameters",
-      "The RTX 4080 executes the reviewed workflow and produces a non-empty content-addressed output with a real receipt",
-      "The receipt declares and validates its next Blender or Unreal consumer rather than ending as an isolated image"
+      "A typed lookdev request binds the accepted ComfyUI artifact, current Session identity and a finite palette/light parameter schema",
+      "Only registered camera, key/fill/rim and material tint parameters can be compiled from the visual target",
+      "A real Blender preview and isolated Unreal candidate visibly reflect the accepted lookdev direction",
+      "The source level remains byte-identical and a repeated return reconciles without duplicate actors or assets"
     ],
     "stopConditions": [
-      "Stop if ComfyUI is already running under an unowned process that would need destructive restart",
-      "Stop if no installed model supports the selected fixed conditioning route and the alternative would require a large download",
-      "Stop if the workflow can only run by accepting model-authored graph JSON or arbitrary host paths",
+      "Stop if the accepted conditioning artifact identity no longer matches its receipt",
+      "Stop if useful lookdev requires arbitrary material graph, Python, Blueprint or actor-property generation",
+      "Stop if Unreal return would overwrite an existing source or non-ArtFlow asset",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -331,9 +330,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0064.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0065.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M23 are complete. The Session-bound Blender route covers editable modeling, reviewed ComfyUI PBR assembly, Geometry Nodes layout, exact Unreal-Blender camera/light exchange and a product-triggered local DCC Worker. The 4-capability work reached succeeded through 42 replayable events, reconciled /Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75 and repeated zero external side effects. Live scene-conditioned ComfyUI generation has not yet been reconfirmed against the current runtime; that is M24-S1 scope.",
+  "evidenceCeiling": "M0-M23 and M24-S1 are complete. A project-owned ComfyUI 0.28.0 host exposed 826 nodes and three Production Nodes on the RTX 4080. With no ControlNet or LoRA weights installed, ArtFlow truthfully selected a fixed FLUX.2 ReferenceLatent route, corrected two invalid EXR depth interpretations, and generated a 1024x576 Beauty-plus-Depth-conditioned target in 9.41 seconds. The output is content-bound and declares unreal.visual_target, but has not yet driven a new Blender/Unreal lookdev candidate; that is M24-S2 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

@@ -143,6 +143,12 @@ MCP 作为薄互操作层，只投影已经存在的固定资源与窄工具。�
 
 ComfyUI 的节点画布可以直接参与这套管线，但职责位于 Agent 下面：项目登记和版本化可复用的生成、ControlNet、LoRA 与 PBR 技术图子图，Agent 依据 Scene Session 选择能力、填充类型化参数并读取回执。这样既保留节点生态的组合效率，也避免让模型在生产时临时拼接任意工作流。生成结果可继续进入 Blender 的材质与几何处理，再由 Unreal 工具完成 PCG、布光和候选回填。
 
+当前实机没有安装 ControlNet 或 LoRA 权重，Agent 因而选择已验证的 FLUX.2 Klein `ReferenceLatent` 路线：先将 Unreal 同机位 Beauty 与归一化 Depth 合成为场景条件，再由受审图生成暖色穿透光候选。它保留方块、球体与立面轮廓关系，同时形成可继续驱动 Blender / Unreal lookdev 的视觉目标。
+
+| Unreal Beauty + Depth 条件 | ComfyUI 场景条件候选 |
+| --- | --- |
+| ![Beauty 与 Depth 合成的固定条件图](artifacts/goal/m24-s1-scene-conditioning/scene-conditioning.png) | ![FLUX.2 Klein 生成的暖色场景候选](artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png) |
+
 ## Agent 工程设计
 
 | 能力 | 实现方式 | 生产约束 |
@@ -207,6 +213,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Blender → Unreal 回流 | 1 个 StaticMesh、3 个材质槽、1 个简单碰撞；源关卡字节变化 0 |
 | Geometry Nodes 场景布局 | 14 个支撑组合、3 个原型、934 个 Unreal 构建三角面 |
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
+| ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

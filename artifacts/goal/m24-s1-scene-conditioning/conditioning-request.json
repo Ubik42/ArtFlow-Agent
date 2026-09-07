@@ -1,0 +1,19 @@
+{
+  "schema_id": "artflow-scene-conditioning-request/1",
+  "request_id": "scene-condition-df81f3510d36e4d2",
+  "request_sha256": "df81f3510d36e4d29cb7e95be10b63da33e4fccffcbd43987f0e7249b5bf4bef",
+  "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+  "reference_beauty_sha256": "7608762ff5b95ea7261fb9d5fe82a6f6f8e71d851516859df8360bf11f77046e",
+  "conditioning_pass": "depth",
+  "conditioning_pass_sha256": "1d614fa55d26a034097a1410274d47930f2f588b3fe36dcd8a7af366ae7a56e2",
+  "conditioning_input_sha256": "ba213adab71071df09395ed8446f6010cd03690e4ea19f2c6a9aa631b0a724d4",
+  "capability_id": "comfy.scene_depth_reference.flux2_klein.v1",
+  "recipe_id": "composition-preserving-v1",
+  "prompt": "cinematic rain-breakthrough shrine courtyard, weathered stone, wet reflective ground, warm key light through cold storm atmosphere, preserve the supplied depth silhouette",
+  "negative_prompt": "characters, text, logo, camera drift, silhouette redesign, floating geometry",
+  "seed": 20260907,
+  "denoise": 0.65,
+  "width": 1024,
+  "height": 576,
+  "downstream_consumer": "unreal.visual_target"
+}

@@ -70,7 +70,10 @@ Unreal 当前场景
 - **M24 · Scene-conditioned ComfyUI production route（进行中）**：把 ComfyUI 节点生态用于真实
   场景条件生成。优先接入 Unreal Depth / World Normal / Object ID 与 Production Nodes 的版本化
   ControlNet/LoRA/PBR 子图，让 Agent 编译类型化参数并把输出继续交给 Blender/Unreal，而不是
-  在产品中开放任意 workflow 编辑或把 ComfyUI 变成第二套控制平面。
+  在产品中开放任意 workflow 编辑或把 ComfyUI 变成第二套控制平面。当前实机没有 ControlNet/LoRA
+  权重，首条路线已根据运行时事实选择 FLUX.2 `ReferenceLatent`：固定预处理器融合 Unreal Beauty
+  与有效范围 Depth，真实生成结构保持的暖色光照目标。下一切片把该目标继续落实为 Blender/Unreal
+  lookdev 候选，而不是停留在图像文件。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

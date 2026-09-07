@@ -1,0 +1,20 @@
+{
+  "schema_id": "artflow-scene-conditioning-receipt/1",
+  "request_id": "scene-condition-df81f3510d36e4d2",
+  "request_sha256": "df81f3510d36e4d29cb7e95be10b63da33e4fccffcbd43987f0e7249b5bf4bef",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "observed_node_count": 826,
+  "production_nodes": [
+    "ProductionConstraintCheck",
+    "ProductionDependencyCheck",
+    "ProductionReportPreview"
+  ],
+  "provider_request_id": "538f7cdf-2487-42b7-87c6-b8ad4d4c5210",
+  "workflow_sha256": "28ffe27436be1db2850d27156a28675c448085b558243e725b474b7908b8b824",
+  "artifact_path": "depth-guided-candidate.png",
+  "artifact_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "elapsed_seconds": 9.41,
+  "downstream_consumer": "unreal.visual_target"
+}

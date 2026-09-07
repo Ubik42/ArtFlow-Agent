@@ -1,0 +1,20 @@
+{
+  "schema_id": "artflow-goal-verification/1",
+  "slice_id": "M24-S1",
+  "status": "passed",
+  "checks": {
+    "live_comfyui_version": "0.28.0",
+    "observed_node_count": 826,
+    "production_node_count": 3,
+    "controlnet_model_count": 0,
+    "lora_model_count": 0,
+    "typed_scene_conditioning_request": true,
+    "unreal_depth_sha_bound": true,
+    "real_gpu_execution": true,
+    "output_width": 1024,
+    "output_height": 576,
+    "mean_absolute_rgb_change": 26.968,
+    "downstream_consumer_declared": true
+  },
+  "focused_tests": 8
+}

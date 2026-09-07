@@ -6,7 +6,7 @@ import time
 from collections.abc import Mapping
 from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Protocol
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel, Field
 
@@ -66,6 +66,13 @@ class ComfyWorkflowCompiler:
         execution_id: str,
         recipe_id: str,
         values: dict[str, Any],
+        *,
+        source_pass: Literal["beauty", "depth", "world_normal"] = "beauty",
+        prepared_source_name: Literal[
+            "depth-normalized.png", "world-normal.png", "scene-conditioning.png"
+        ]
+        | None = None,
+        prepared_source_sha256: str | None = None,
     ) -> CompiledComfyRequest:
         state = self.store.load(run_id)
         if state.scene is None or state.route_decision is None:
@@ -100,13 +107,31 @@ class ComfyWorkflowCompiler:
             "height"
         ) != decision.execution_intent.height:
             raise ComfyExecutionBoundaryError("Workflow dimensions do not match approved intent")
+        pass_suffix = {
+            "beauty": "beauty.png",
+            "depth": "depth.exr",
+            "world_normal": "world-normal.exr",
+        }[source_pass]
         source = next(
-            (item for item in state.scene.artifacts if item.path.endswith("beauty.png")),
+            (item for item in state.scene.artifacts if item.path.endswith(pass_suffix)),
             None,
         )
         if source is None:
-            raise ComfyExecutionBoundaryError("Scene Package has no verified beauty input")
-        expected_remote = f"ArtFlow/{execution_id}/{Path(source.path).name}"
+            raise ComfyExecutionBoundaryError(
+                f"Scene Package has no verified {source_pass} input"
+            )
+        source_name = Path(source.path).name
+        source_sha256 = source.sha256
+        source_artifact_path = source.path
+        if prepared_source_name is not None or prepared_source_sha256 is not None:
+            if source_pass == "beauty" or prepared_source_name is None:
+                raise ComfyExecutionBoundaryError("Prepared input is only valid for scene passes")
+            if prepared_source_sha256 is None or len(prepared_source_sha256) != 64:
+                raise ComfyExecutionBoundaryError("Prepared scene pass identity is invalid")
+            source_name = prepared_source_name
+            source_sha256 = prepared_source_sha256
+            source_artifact_path = f"derived/{prepared_source_name}"
+        expected_remote = f"ArtFlow/{execution_id}/{source_name}"
         expected_prefix = f"ArtFlow/{execution_id}/composition"
         if values.get("source_image") != expected_remote:
             raise ComfyExecutionBoundaryError("Source image path is not compiler-owned")
@@ -134,8 +159,8 @@ class ComfyWorkflowCompiler:
             recipe_id=recipe.definition.recipe_id,
             recipe_version=recipe.definition.version,
             workflow_sha256=workflow_sha256,
-            source_artifact_path=source.path,
-            source_artifact_sha256=source.sha256,
+            source_artifact_path=source_artifact_path,
+            source_artifact_sha256=source_sha256,
             workflow=workflow,
         )
 
