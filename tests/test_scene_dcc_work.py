@@ -50,6 +50,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.geometry_nodes.biome_foliage_kit.v1",
         "blender.geometry_nodes.modular_environment.v1",
         "blender.geometry_nodes.spline_infrastructure.v1",
+        "blender.armature.articulated_gate.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -97,7 +98,13 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["spline_infrastructure_request_sha256"] == (
         "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Spline_B_63cab976001a")
+    assert work["definition"]["mechanism_rig_request_sha256"] == (
+        "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c"
+    )
+    assert work["definition"]["mechanism_fbx_sha256"] == (
+        "fc1c49dc622da2e3dd958aa94f5927d3440cd73444805edc5e326c88ed30e594"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Mechanism_B_2762b53baeec")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

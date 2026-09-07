@@ -171,9 +171,12 @@ Unreal 当前场景
   编译为有限机械结构、关节角度与帧段；Blender 以可编辑 Armature、骨骼层级和 Action 制作短动画，
   Unreal 已真实导入 Skeletal Mesh、Skeleton 与 Animation Sequence 并放入派生候选。重跑没有新增
   Actor、重复副作用或上游写入；该路线覆盖绑定、动画、FBX 单位适配和引擎时序资产。
-- **M52 · Live mechanism-animation dispatch（进行中）**：把 M51 的精确请求、Blender 编辑源、FBX、
+- **M52 · Live mechanism-animation dispatch（已完成）**：把 M51 的精确请求、Blender 编辑源、FBX、
   骨骼/动作清单和 Unreal 候选登记为第十八项当前 Session DCC 能力，复用已有 Worker、事件账本和
-  场景变更谱。此阶段不再运行 DCC，只接入已验证身份、恢复语义与产品状态投影。
+  场景变更谱。五段生命周期、重复派发和 Reducer 重放已经通过，桌面与窄屏使用三段真实媒体展示。
+- **M53 · Sequenced mechanism shot handoff（进行中）**：以 M51 骨骼机关及动画为输入，在 Unreal
+  派生候选中创建有限 Level Sequence、骨骼动画段、CineCamera 和灯光提示，形成可编辑的机关镜头包。
+  任务只允许登记资产和固定轨道模板，不开放任意 Sequencer 脚本或通用轨道编辑器。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

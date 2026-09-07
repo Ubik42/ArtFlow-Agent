@@ -659,6 +659,11 @@ type SceneDccWorkState = {
     comfy_route_corridor_receipt_sha256?: string;
     blender_spline_infrastructure_receipt_sha256?: string;
     unreal_spline_infrastructure_receipt_sha256?: string;
+    mechanism_rig_request_sha256?: string;
+    blender_mechanism_rig_receipt_sha256?: string;
+    mechanism_manifest_sha256?: string;
+    mechanism_fbx_sha256?: string;
+    unreal_mechanism_rig_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1867,8 +1872,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasFoliageKit = Boolean(agent.scene_dcc_work?.definition.foliage_kit_request_sha256);
   const hasModularEnvironment = Boolean(agent.scene_dcc_work?.definition.modular_environment_request_sha256);
   const hasSplineInfrastructure = Boolean(agent.scene_dcc_work?.definition.spline_infrastructure_request_sha256);
+  const hasMechanismRig = Boolean(agent.scene_dcc_work?.definition.mechanism_rig_request_sha256);
   const cases = [
-    ...(hasSplineInfrastructure
+    ...(hasMechanismRig
+      ? [{
+          id: "mechanism-rig-roundtrip",
+          tab: "当前 Session · 机关动画",
+          title: "把场景意图转化为可编辑绑定与引擎动画资产",
+          description: "Agent 将当前视觉方向和样条候选编译为有限双扇机关任务。Blender 保留网格、Armature、刚性权重与开合 Action；Unreal 接收 Skeletal Mesh、Skeleton 和 AnimSequence，并把结果放入派生候选。",
+          frames: [
+            { src: "/api/showcase/production/m51-mechanism-target", alt: "当前 Scene Session 的视觉结构目标", label: "场景意图", title: "视觉目标 + 上游候选 · 身份已绑定" },
+            { src: "/api/showcase/production/m51-mechanism-blender", alt: "Blender 中可编辑的双扇机关绑定与开门动作", label: "绑定与动作", title: "3 骨骼 · 2 关节 · 48 帧" },
+            { src: "/api/showcase/production/m51-mechanism-unreal", alt: "Unreal 中导入的骨骼机关候选", label: "引擎动画资产", title: "Skeletal Mesh · Skeleton · AnimSequence" },
+          ],
+          transition: "结构意图编译为可编辑机关动作",
+          metricA: "3 / 2",
+          metricALabel: "变形骨骼 / 关节",
+          metricB: "0",
+          metricBLabel: "重放新增 Actor",
+          note: `机关请求 ${shortId(agent.scene_dcc_work?.definition.mechanism_rig_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；FBX 单位适配、骨骼层级和动画身份均来自宿主回执。`,
+          domains: ["场景·已绑定", "绑定·可编辑", "动作·已烘焙", "动画资产·已导入", "重放·已对账"],
+        }]
+      : hasSplineInfrastructure
       ? [{
           id: "spline-infrastructure-roundtrip",
           tab: "当前 Session · 样条设施",

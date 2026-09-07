@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M52-S1",
+  "status": "completed",
+  "outcome": "The verified articulated-gate request, Blender rig, FBX, manifest and Unreal skeletal result are now the eighteenth content-bound current-session DCC capability. The existing worker completed five lifecycle events; repeat dispatch and reducer replay preserved one terminal identity with zero duplicate external side effects. The Chinese Scene Change Spectrum presents the route through three real media stages at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m52-s1-live-mechanism-rig/live-mechanism-rig-work-receipt.json",
+    "artifacts/goal/m52-s1-live-mechanism-rig/live-mechanism-rig-desktop.png",
+    "artifacts/goal/m52-s1-live-mechanism-rig/live-mechanism-rig-narrow.png",
+    "docs/evidence/M52_S1_LIVE_MECHANISM_RIG_2026-09-07.md"
+  ]
+}

@@ -13,6 +13,7 @@ from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
+from .mechanism_rig import MechanismRigRequest
 from .modular_environment import ModularEnvironmentRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
@@ -57,8 +58,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.geometry_nodes.biome_foliage_kit.v1",
             "blender.geometry_nodes.modular_environment.v1",
             "blender.geometry_nodes.spline_infrastructure.v1",
+            "blender.armature.articulated_gate.v1",
         ]
-    ] = Field(min_length=2, max_length=17)
+    ] = Field(min_length=2, max_length=18)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -157,9 +159,18 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_spline_infrastructure_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    mechanism_rig_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_mechanism_rig_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    mechanism_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    mechanism_fbx_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_mechanism_rig_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline|Mechanism)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -338,6 +349,19 @@ class SceneDccWorkDefinition(BaseModel):
             if self.modular_environment_request_sha256 is None:
                 raise ValueError("spline infrastructure requires the modular environment route")
             expected_capabilities.append("blender.geometry_nodes.spline_infrastructure.v1")
+        mechanism_identities = (
+            self.mechanism_rig_request_sha256,
+            self.blender_mechanism_rig_receipt_sha256,
+            self.mechanism_manifest_sha256,
+            self.mechanism_fbx_sha256,
+            self.unreal_mechanism_rig_receipt_sha256,
+        )
+        if any(item is not None for item in mechanism_identities):
+            if not all(item is not None for item in mechanism_identities):
+                raise ValueError("DCC work requires every mechanism-animation identity")
+            if self.spline_infrastructure_request_sha256 is None:
+                raise ValueError("mechanism animation requires the registered spline route")
+            expected_capabilities.append("blender.armature.articulated_gate.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -1047,6 +1071,57 @@ def compile_current_blender_dcc_work(
         payload["unreal_spline_infrastructure_receipt_sha256"] = spline_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = spline_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = spline_unreal["candidate_scene_path"]
+    mechanism_root = project_root / "artifacts/goal/m51-s1-mechanism-rig"
+    mechanism_request_path = mechanism_root / "mechanism-rig-request.json"
+    mechanism_blender_path = mechanism_root / "blender-mechanism-rig-receipt.json"
+    mechanism_manifest_path = mechanism_root / "AF_ArticulatedGate-manifest.json"
+    mechanism_unreal_path = mechanism_root / "unreal-mechanism-rig-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            mechanism_request_path,
+            mechanism_blender_path,
+            mechanism_manifest_path,
+            mechanism_unreal_path,
+        )
+    ):
+        mechanism_request = MechanismRigRequest.model_validate_json(
+            mechanism_request_path.read_text(encoding="utf-8")
+        )
+        mechanism_blender = json.loads(mechanism_blender_path.read_text(encoding="utf-8"))
+        mechanism_manifest = json.loads(mechanism_manifest_path.read_text(encoding="utf-8"))
+        mechanism_unreal = json.loads(mechanism_unreal_path.read_text(encoding="utf-8"))
+        if mechanism_request.session_id != session_id:
+            raise ValueError("mechanism rig references another Scene Session")
+        if mechanism_blender.get("request_sha256") != mechanism_request.request_sha256:
+            raise ValueError("Blender mechanism receipt references another request")
+        if mechanism_manifest.get("request_sha256") != mechanism_request.request_sha256:
+            raise ValueError("mechanism manifest references another request")
+        if mechanism_unreal.get("blender_receipt_sha256") != mechanism_blender.get(
+            "receipt_sha256"
+        ):
+            raise ValueError("Unreal mechanism result references another Blender receipt")
+        if mechanism_unreal.get("source_candidate_scene_path") != spline_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("mechanism no longer derives from the spline candidate")
+        if (
+            mechanism_unreal.get("status") != "reconciled"
+            or mechanism_unreal.get("capture_status") != "captured"
+        ):
+            raise ValueError("Unreal mechanism is not reconciled with captured evidence")
+        fbx = next(item for item in mechanism_blender["artifacts"] if item["kind"] == "fbx")
+        manifest_artifact = next(
+            item for item in mechanism_blender["artifacts"] if item["kind"] == "manifest"
+        )
+        payload["capability_ids"].append("blender.armature.articulated_gate.v1")
+        payload["mechanism_rig_request_sha256"] = mechanism_request.request_sha256
+        payload["blender_mechanism_rig_receipt_sha256"] = mechanism_blender["receipt_sha256"]
+        payload["mechanism_manifest_sha256"] = manifest_artifact["sha256"]
+        payload["mechanism_fbx_sha256"] = fbx["sha256"]
+        payload["unreal_mechanism_rig_receipt_sha256"] = mechanism_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = mechanism_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = mechanism_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

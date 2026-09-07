@@ -1554,6 +1554,15 @@ def create_app(
             "m49-spline-unreal": goal_root
             / "m49-s1-spline-infrastructure"
             / "unreal-spline-infrastructure-candidate.png",
+            "m51-mechanism-target": goal_root
+            / "m24-s1-scene-conditioning"
+            / "depth-guided-candidate.png",
+            "m51-mechanism-blender": goal_root
+            / "m51-s1-mechanism-rig"
+            / "AF_ArticulatedGate-open-preview.png",
+            "m51-mechanism-unreal": goal_root
+            / "m51-s1-mechanism-rig"
+            / "unreal-mechanism-rig-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():
