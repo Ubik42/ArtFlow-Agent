@@ -9,6 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 EVIDENCE_ROOTS = {
     "model": ROOT / "artifacts/goal/m23-s1-blender-modeling",
     "pbr": ROOT / "artifacts/goal/m23-s2-blender-pbr",
+    "layout": ROOT / "artifacts/goal/m23-s4-geometry-layout",
 }
 
 

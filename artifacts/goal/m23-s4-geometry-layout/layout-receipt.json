@@ -1,0 +1,41 @@
+{
+  "schema_id": "artflow-blender-geometry-layout-receipt/1",
+  "request_id": "blender-layout-d362067a5e3d59d1",
+  "request_sha256": "add8b6794d46ab9936f7e7b474f0122d4d50324cebf186de009ea2880da7d7f7",
+  "capability_id": "blender.geometry_nodes.shrine_courtyard.v1",
+  "blender_version": "5.2.0 LTS",
+  "status": "succeeded",
+  "node_group": "AF_GN_ShrineCourtyard_v1",
+  "support_element_count": 14,
+  "prototype_count": 3,
+  "realized_vertex_count": 322,
+  "realized_triangle_count": 476,
+  "bounds_cm": [
+    1143.067,
+    1104.458,
+    293.249
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ShrineCourtyard_GN.blend",
+      "sha256": "67baeaa3b04caed0e1808930f0ded227ded2861d154576c78315c64a2e85a576",
+      "size_bytes": 149525
+    },
+    {
+      "kind": "glb",
+      "relative_path": "AF_ShrineCourtyard_GN.glb",
+      "sha256": "4e194b4b530f944aea1766b808afe7d6fb6ddd6a8e5e3b05443e2d3198038be5",
+      "size_bytes": 5954684
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ShrineCourtyard_GN-preview.png",
+      "sha256": "c4b547e9b365b6266334f6de45d17f2816aaf04ee54b2a7dae6d3bd404c363db",
+      "size_bytes": 725131
+    }
+  ],
+  "elapsed_seconds": 1.572,
+  "completed_at": "2026-09-07T08:41:42.494587Z",
+  "receipt_sha256": "112f2feb815b7ff4cddc32b8b13442c1f8983a7409cd1d8d7b648c27b0901577"
+}

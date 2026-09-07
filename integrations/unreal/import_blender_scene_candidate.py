@@ -25,11 +25,20 @@ def fail(message: str) -> None:
 
 repo_root = Path(__file__).resolve().parents[2]
 variant = os.environ.get("ARTFLOW_BLENDER_VARIANT", "model")
-if variant not in {"model", "pbr"}:
+if variant not in {"model", "pbr", "layout"}:
     fail("未注册的 Blender 回流变体")
 model_root = repo_root / "artifacts/goal/m23-s1-blender-modeling"
 source_request = json.loads((model_root / "modeling-request.json").read_text(encoding="utf-8"))
-if variant == "pbr":
+if variant == "layout":
+    evidence_root = repo_root / "artifacts/goal/m23-s4-geometry-layout"
+    request = json.loads((evidence_root / "layout-request.json").read_text(encoding="utf-8"))
+    receipt = json.loads((evidence_root / "layout-receipt.json").read_text(encoding="utf-8"))
+    expected_schema = "artflow-blender-geometry-layout-request/1"
+    glb_kind = "glb"
+    active_request_id = request["request_id"]
+    asset_name = "SM_AF_ShrineCourtyard_GN"
+    actor_label = "ArtFlow_Blender_ShrineCourtyard_GN"
+elif variant == "pbr":
     evidence_root = repo_root / "artifacts/goal/m23-s2-blender-pbr"
     request = json.loads((evidence_root / "pbr-assembly-request.json").read_text(encoding="utf-8"))
     receipt = json.loads((evidence_root / "pbr-assembly-receipt.json").read_text(encoding="utf-8"))

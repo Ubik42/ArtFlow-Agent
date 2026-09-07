@@ -18,6 +18,12 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 | --- | --- |
 | ![ComfyUI PBR 装配后的 Blender 资产](artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR-preview.png) | ![带 PBR 材质回流 Unreal 的候选资产](artifacts/goal/m23-s2-blender-pbr/unreal-blender-candidate.png) |
 
+第三条 DCC 路线把当前 Session 的空间范围编译为固定 Geometry Nodes 布局：14 个程序化支撑组合由三个原型、确定性种子和 580 cm 半径生成，节点组保留在可编辑 `.blend` 中；用于引擎的实例被实现为单一交换资产并进入新的 Unreal 候选关卡。它展示的是场景级组合能力，而不是再生成一个孤立模型。
+
+| Geometry Nodes 程序化庭院 | Unreal 场景级候选回流 |
+| --- | --- |
+| ![Blender Geometry Nodes 生成的祭坛庭院](artifacts/goal/m23-s4-geometry-layout/AF_ShrineCourtyard_GN-preview.png) | ![Geometry Nodes 庭院回流 Unreal](artifacts/goal/m23-s4-geometry-layout/unreal-blender-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

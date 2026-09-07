@@ -605,7 +605,7 @@ type SceneDccWorkState = {
     schema_id: "artflow-scene-dcc-work/1";
     work_id: string;
     work_sha256: string;
-    capability_ids: [string, string];
+    capability_ids: string[];
     modeling_request_sha256: string;
     pbr_request_sha256: string;
     candidate_scene_path: string;

@@ -1,0 +1,16 @@
+{
+  "schema_id": "artflow-goal-verification/1",
+  "slice_id": "M23-S4",
+  "status": "passed",
+  "checks": {
+    "typed_layout_request": true,
+    "editable_geometry_nodes_graph": true,
+    "support_element_count": 14,
+    "prototype_count": 3,
+    "real_blender_execution": true,
+    "unreal_candidate_reconciled": true,
+    "source_level_unchanged": true,
+    "duplicate_side_effect_count": 0
+  },
+  "focused_tests": 1
+}

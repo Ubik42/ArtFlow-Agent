@@ -22,12 +22,17 @@ class SceneDccWorkDefinition(BaseModel):
     run_id: str
     session_id: str
     session_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
-    capability_ids: tuple[
-        Literal["blender.architectural_prop.weathered_shrine.v1"],
-        Literal["blender.comfy_pbr.assembly.v1"],
-    ]
+    capability_ids: list[
+        Literal[
+            "blender.architectural_prop.weathered_shrine.v1",
+            "blender.comfy_pbr.assembly.v1",
+            "blender.geometry_nodes.shrine_courtyard.v1",
+        ]
+    ] = Field(min_length=2, max_length=3)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    layout_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
         pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/Blender_B_[a-f0-9]{12}$"
@@ -35,7 +40,19 @@ class SceneDccWorkDefinition(BaseModel):
 
     @model_validator(mode="after")
     def verify_identity(self) -> SceneDccWorkDefinition:
-        expected = dcc_work_sha256(self.model_dump(mode="json", exclude={"work_id", "work_sha256"}))
+        expected = dcc_work_sha256(
+            self.model_dump(mode="json", exclude={"work_id", "work_sha256"}, exclude_none=True)
+        )
+        expected_capabilities = [
+            "blender.architectural_prop.weathered_shrine.v1",
+            "blender.comfy_pbr.assembly.v1",
+        ]
+        if self.layout_request_sha256 is not None or self.layout_receipt_sha256 is not None:
+            if self.layout_request_sha256 is None or self.layout_receipt_sha256 is None:
+                raise ValueError("DCC work requires both Geometry Nodes identities")
+            expected_capabilities.append("blender.geometry_nodes.shrine_courtyard.v1")
+        if self.capability_ids != expected_capabilities:
+            raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
             raise ValueError("DCC work content identity is invalid")
         return self
@@ -119,6 +136,25 @@ def compile_current_blender_dcc_work(
         "unreal_return_receipt_sha256": unreal_receipt["receipt_sha256"],
         "candidate_scene_path": unreal_receipt["candidate_scene_path"],
     }
+    layout_root = project_root / "artifacts/goal/m23-s4-geometry-layout"
+    layout_request_path = layout_root / "layout-request.json"
+    layout_receipt_path = layout_root / "layout-receipt.json"
+    layout_unreal_path = layout_root / "unreal-return-receipt.json"
+    if layout_request_path.is_file() and layout_receipt_path.is_file() and layout_unreal_path.is_file():
+        layout_request = json.loads(layout_request_path.read_text(encoding="utf-8"))
+        layout_receipt = json.loads(layout_receipt_path.read_text(encoding="utf-8"))
+        layout_unreal = json.loads(layout_unreal_path.read_text(encoding="utf-8"))
+        if layout_request["session_id"] != session_id:
+            raise ValueError("Geometry Nodes layout references another Scene Session")
+        if layout_receipt["request_sha256"] != layout_request["request_sha256"]:
+            raise ValueError("Geometry Nodes receipt references another request")
+        if layout_unreal["blender_receipt_sha256"] != layout_receipt["receipt_sha256"]:
+            raise ValueError("Geometry Nodes Unreal return references another Blender receipt")
+        payload["capability_ids"].append("blender.geometry_nodes.shrine_courtyard.v1")
+        payload["layout_request_sha256"] = layout_request["request_sha256"]
+        payload["layout_receipt_sha256"] = layout_receipt["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = layout_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = layout_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-blender-geometry-layout-request/1",
+  "request_id": "blender-layout-d362067a5e3d59d1",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_blend_sha256": "9b92d3d3d67532a9f773281a96aafea2acc76a3f02eb8d6f79fd8ce5d8776b4e",
+  "pbr_receipt_sha256": "8f60a98b3b70e2a608d0b81bd6c93d8e36d099cbc011254b07a5c8e2b6f91187",
+  "capability_id": "blender.geometry_nodes.shrine_courtyard.v1",
+  "layout_style": "shrine_courtyard",
+  "radius_cm": 580.0,
+  "support_count": 14,
+  "height_variation": 0.28,
+  "seed": 1546778350,
+  "output_stem": "AF_ShrineCourtyard_GN",
+  "request_sha256": "add8b6794d46ab9936f7e7b474f0122d4d50324cebf186de009ea2880da7d7f7"
+}
