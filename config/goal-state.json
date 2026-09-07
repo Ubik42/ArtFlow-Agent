@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 76,
+  "stateRevision": 77,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M28",
+  "currentMilestone": "M29",
   "milestones": [
     {
       "id": "M0",
@@ -322,7 +322,7 @@
     {
       "id": "M28",
       "title": "Physics-assisted set dressing round-trip",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M27"],
       "outcome": "A current Scene Session can use a bounded Blender rigid-body settle capability for deterministic prop dressing, then return a validated transform manifest and editable source to a new isolated Unreal candidate.",
       "acceptance": [
@@ -331,40 +331,49 @@
         "A verifier rejects out-of-bounds, overlapping or unstable transforms before Unreal import",
         "Unreal applies only validated transforms to a new candidate and reconciles a repeated return without modifying the source level"
       ]
+    },
+    {
+      "id": "M29",
+      "title": "Live set-dressing dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M28"],
+      "outcome": "The verified physics-assisted set-dressing route becomes a seventh registered current-session DCC capability and is visible through the existing worker lifecycle and Scene Change Spectrum.",
+      "acceptance": [
+        "The DCC Work binds the exact set-dressing request, Blender receipt, transform manifest and Unreal return identities",
+        "The existing worker reconciles and replays the seventh capability without another scheduler or approval gate",
+        "The UI presents the physics solve and Unreal dressing candidate with real media and bounded simulation facts"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M28-S1",
-    "milestone": "M28",
-    "title": "Bounded Blender rigid-body set dressing",
-    "outcome": "Compile one current-session set-dressing task for registered rubble props, settle them in Blender within a fixed courtyard volume and frame budget, validate the resulting transforms and return them to a new Unreal isolated candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": true,
-    "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M29-S1",
+    "milestone": "M29",
+    "title": "Dispatch physics set dressing through Scene DCC Worker",
+    "outcome": "Register the frozen M28 rigid-body dressing route as the seventh Scene DCC capability, replay it through the existing durable worker and present the current-session solve in Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A2",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun ComfyUI or generate a new visual target",
-      "Do not expose arbitrary Blender simulation settings, scripts or caller paths",
-      "Do not implement cloth, fluid, destruction, animation export or a general simulation framework",
-      "Do not add another queue, approval layer or broad test matrix"
+      "Do not rerun Blender, Unreal, ComfyUI or an image provider",
+      "Do not add a new queue, worker, approval layer or simulation framework",
+      "Do not start another DCC production domain"
     ],
     "acceptance": [
-      "A typed set-dressing request binds the current Session, source blend, fixed courtyard volume, registered rubble prototype, seed, count and frame limit",
-      "A real Blender 5.2 run creates an editable rigid-body setup, settles the requested props and writes a content-bound transform manifest plus preview",
-      "A focused verifier confirms every transform is finite, stable, inside bounds and within overlap and object budgets",
-      "A real Unreal 5.8 process applies the manifest only in a new isolated candidate; a repeated return reconciles and the source level remains byte-identical"
+      "SceneDccWorkDefinition validates and binds the M28 request, Blender receipt, transform manifest, Unreal receipt and artifact hashes",
+      "The existing DCC Worker persists one idempotent seven-capability work item through queue, claim, execute, reconcile and replay",
+      "Scene Change Spectrum shows the M28 input, solve preview, transform facts and Unreal candidate from real artifacts"
     ],
     "stopConditions": [
-      "Stop if the frozen surface blend identity no longer matches its receipt",
-      "Stop if no stable registered rubble prototype or courtyard scope exists",
-      "Stop if Unreal return would overwrite a non-ArtFlow asset or source map",
+      "Stop if the frozen M28 identities no longer validate",
+      "Stop if integration would require a second work lifecycle",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": false},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": false}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -380,9 +389,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0069.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0070.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M27 are complete. The existing Scene DCC Work now binds six registered capabilities through the M26 Surface Request and final Unreal candidate. One product run persisted five queue-to-success events, repeated dispatch kept work 5160e7d8d699, replay reconstructed the same state and duplicate external side effects remained zero. Scene Change Spectrum displays Lookdev input, UV atlas, Blender result and Unreal candidate at desktop and narrow widths with four of four media loaded and zero console errors. Physics-assisted set dressing is not yet implemented; that is M28-S1 scope.",
+  "evidenceCeiling": "M0-M28 are complete. A content-bound rigid-body task used Blender 5.2 to settle twelve registered rubble instances by frame 96 inside the current courtyard, with maximum final-frame motion 0.000002 m and minimum center separation 0.767912 m. Unreal 5.8 imported the single prototype, applied twelve validated transforms to Dressing_B_c496854357de and reconciled a repeated return with zero new actors or duplicate side effects. The source level remained byte-identical. Product dispatch is M29-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

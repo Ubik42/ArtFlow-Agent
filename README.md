@@ -60,6 +60,14 @@ Blender 结果和 Unreal 候选组织为同一条可恢复路线；六项 DCC �
 
 ![当前 Session 的 Surface Bake 生产路线](artifacts/goal/m27-s1-live-surface/live-surface-route.png)
 
+Blender 的确定性物理求解也可以作为场景布景工具。当前 Session 将庭院边界、登记碎石原型、数量、
+随机种子和 96 帧预算编译为固定刚体任务；Blender 求解 12 个落点并输出变换清单，Unreal 只读取
+通过边界、稳定性和间距检查的结果，在新的候选关卡生成实例。重复回流不会再次创建 Actor。
+
+| Blender 刚体散落预演 | Unreal 布景候选 |
+| --- | --- |
+| ![Blender 物理解算后的庭院碎石](artifacts/goal/m28-s1-set-dressing/AF_Courtyard_SettledRubble-preview.png) | ![Unreal 应用验证后变换清单](artifacts/goal/m28-s1-set-dressing/unreal-set-dressing-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

@@ -1,0 +1,31 @@
+{
+  "schema_id": "artflow-blender-set-dressing-request/1",
+  "request_id": "set-dressing-19afd4c91a594b43",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "surface_request_sha256": "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55",
+  "surface_receipt_sha256": "15da49c17f068876d28681a69ca8688711cd317de444004b55714e69dfd6aa27",
+  "source_blend_sha256": "1640c9ecfe7c35574f43ee0fe0e72271533e427639509796a91139ddadf51db1",
+  "capability_id": "blender.rigidbody.rubble_settle.v1",
+  "prototype": "AF_Rubble_01",
+  "bounds": {
+    "min_m": [
+      -4.8,
+      -4.8,
+      0.0
+    ],
+    "max_m": [
+      4.8,
+      4.8,
+      4.0
+    ]
+  },
+  "object_count": 12,
+  "seed": 260907,
+  "frame_end": 96,
+  "max_final_motion_m": 0.03,
+  "min_center_separation_m": 0.08,
+  "output_stem": "AF_Courtyard_SettledRubble",
+  "request_sha256": "c496854357decac61a42c1339e9d8fc3e281846a4e4ba5edfd0fdd0be99061b7"
+}

@@ -1,0 +1,259 @@
+{
+  "schema_id": "artflow-blender-set-dressing-receipt/1",
+  "request_id": "set-dressing-19afd4c91a594b43",
+  "request_sha256": "c496854357decac61a42c1339e9d8fc3e281846a4e4ba5edfd0fdd0be99061b7",
+  "capability_id": "blender.rigidbody.rubble_settle.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "instance_count": 12,
+  "settled_frame": 96,
+  "max_final_motion_m": 2e-06,
+  "min_center_separation_m": 0.767912,
+  "transforms": [
+    {
+      "instance_id": "rubble-01",
+      "location_m": [
+        2.493317,
+        -0.340977,
+        0.038907
+      ],
+      "rotation_deg": [
+        180.0,
+        0.0,
+        -6.2556
+      ],
+      "scale": [
+        1.04778,
+        1.04778,
+        1.04778
+      ]
+    },
+    {
+      "instance_id": "rubble-02",
+      "location_m": [
+        3.382474,
+        1.847524,
+        0.065113
+      ],
+      "rotation_deg": [
+        -89.9999,
+        -0.0001,
+        -126.7545
+      ],
+      "scale": [
+        0.99791,
+        0.99791,
+        0.99791
+      ]
+    },
+    {
+      "instance_id": "rubble-03",
+      "location_m": [
+        2.650825,
+        1.615493,
+        0.041868
+      ],
+      "rotation_deg": [
+        -180.0,
+        0.0,
+        -11.4371
+      ],
+      "scale": [
+        1.08268,
+        1.08268,
+        1.08268
+      ]
+    },
+    {
+      "instance_id": "rubble-04",
+      "location_m": [
+        0.027074,
+        2.972447,
+        0.02496
+      ],
+      "rotation_deg": [
+        -180.0,
+        0.0,
+        71.1368
+      ],
+      "scale": [
+        0.88338,
+        0.88338,
+        0.88338
+      ]
+    },
+    {
+      "instance_id": "rubble-05",
+      "location_m": [
+        -1.873304,
+        1.97174,
+        0.037736
+      ],
+      "rotation_deg": [
+        -40.2052,
+        89.9998,
+        0.0
+      ],
+      "scale": [
+        0.82223,
+        0.82223,
+        0.82223
+      ]
+    },
+    {
+      "instance_id": "rubble-06",
+      "location_m": [
+        -2.705554,
+        2.385711,
+        0.075325
+      ],
+      "rotation_deg": [
+        -171.4627,
+        89.9999,
+        0.0
+      ],
+      "scale": [
+        1.17456,
+        1.17456,
+        1.17456
+      ]
+    },
+    {
+      "instance_id": "rubble-07",
+      "location_m": [
+        -4.569988,
+        -0.970526,
+        0.057637
+      ],
+      "rotation_deg": [
+        0.0,
+        0.0,
+        156.9764
+      ],
+      "scale": [
+        1.26855,
+        1.26855,
+        1.26855
+      ]
+    },
+    {
+      "instance_id": "rubble-08",
+      "location_m": [
+        -2.728592,
+        -1.689456,
+        0.092164
+      ],
+      "rotation_deg": [
+        -86.5506,
+        89.9999,
+        0.0
+      ],
+      "scale": [
+        1.33239,
+        1.33239,
+        1.33239
+      ]
+    },
+    {
+      "instance_id": "rubble-09",
+      "location_m": [
+        -1.800227,
+        -3.016487,
+        0.039962
+      ],
+      "rotation_deg": [
+        -0.0,
+        -0.0001,
+        60.0539
+      ],
+      "scale": [
+        1.06022,
+        1.06022,
+        1.06022
+      ]
+    },
+    {
+      "instance_id": "rubble-10",
+      "location_m": [
+        -0.17265,
+        -4.288122,
+        0.036601
+      ],
+      "rotation_deg": [
+        -180.0,
+        -0.0,
+        -7.3858
+      ],
+      "scale": [
+        1.0206,
+        1.0206,
+        1.0206
+      ]
+    },
+    {
+      "instance_id": "rubble-11",
+      "location_m": [
+        1.445363,
+        -2.886918,
+        0.037855
+      ],
+      "rotation_deg": [
+        -0.0,
+        0.0,
+        114.6732
+      ],
+      "scale": [
+        1.03537,
+        1.03537,
+        1.03537
+      ]
+    },
+    {
+      "instance_id": "rubble-12",
+      "location_m": [
+        3.542797,
+        -0.936322,
+        0.048721
+      ],
+      "rotation_deg": [
+        0.0,
+        -0.0,
+        156.3669
+      ],
+      "scale": [
+        1.16346,
+        1.16346,
+        1.16346
+      ]
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_Courtyard_SettledRubble.blend",
+      "sha256": "d7049e4e258ef6d63c1ba0905e1d1dc110ae42df3400ccf0e9ea454700660261",
+      "size_bytes": 1596057
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_Courtyard_SettledRubble-preview.png",
+      "sha256": "0475573e0a6f48e128b46ecbf94a7ce4a4a99b502cef37077a9f7cc21edbd2ea",
+      "size_bytes": 741586
+    },
+    {
+      "kind": "prototype_glb",
+      "relative_path": "AF_Rubble_Prototype.glb",
+      "sha256": "be4d59b161a3807775fd4fdca28439af9c8d4275c3e40e099578faea2294b48c",
+      "size_bytes": 14444
+    },
+    {
+      "kind": "transform_manifest",
+      "relative_path": "AF_Courtyard_SettledRubble-transforms.json",
+      "sha256": "4cd3f45413402d3e482ffeb16b5b4db741a845b091c7a9191f2e2e18655044ee",
+      "size_bytes": 3993
+    }
+  ],
+  "elapsed_seconds": 1.686,
+  "completed_at": "2026-09-07T10:41:34.398973Z",
+  "receipt_sha256": "3b9f60dd549314548278dbeeeda3d562a532e05d92991c620dc5892f9327cd07"
+}

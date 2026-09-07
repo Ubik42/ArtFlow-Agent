@@ -91,9 +91,13 @@ Unreal 当前场景
   Scene Session 的第六项 DCC 能力，复用现有 DCC Worker 的 queue / claim / execute / reconcile
   生命周期，并在场景变更谱展示 Lookdev、UV 图集、Blender 结果和 Unreal 候选之间的连续关系。
   桌面与窄屏产品检查均无横向溢出，四张真实媒体成功加载，控制台错误与警告为 0。
-- **M28 · Physics-assisted set dressing round-trip（进行中）**：继续使用 Blender 的非建模能力，
+- **M28 · Physics-assisted set dressing round-trip（已完成）**：继续使用 Blender 的非建模能力，
   把当前场景边界、登记原型、确定性种子和有限帧预算编译为刚体散落任务。Blender 负责求解并返回
   可编辑 `.blend`、预览和变换清单；Unreal 只在新的隔离候选中应用经过边界检查的最终变换。
+  当前实测 12 个实例在第 96 帧稳定，重复回流对账且源关卡不变。
+- **M29 · Live set-dressing dispatch（进行中）**：把刚体布景登记为 Scene Session 的第七项 DCC
+  能力，复用已有 Worker 与事件账本，并在场景变更谱展示 Surface 输入、物理解算、变换清单和
+  Unreal 布景候选之间的连续关系。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

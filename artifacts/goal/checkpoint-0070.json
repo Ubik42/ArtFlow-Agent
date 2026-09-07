@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M28-S1",
+  "status": "completed",
+  "outcome": "A bounded current-session rigid-body task now uses Blender 5.2 to settle twelve registered rubble props inside the courtyard, persists an editable blend and content-bound transform manifest, and returns the validated transforms to a new Unreal 5.8 candidate. A repeated return reconciles the imported prototype and twelve actors without changing the source level.",
+  "evidence": [
+    "artifacts/goal/m28-s1-set-dressing/set-dressing-request.json",
+    "artifacts/goal/m28-s1-set-dressing/set-dressing-receipt.json",
+    "artifacts/goal/m28-s1-set-dressing/AF_Courtyard_SettledRubble-preview.png",
+    "artifacts/goal/m28-s1-set-dressing/AF_Courtyard_SettledRubble-transforms.json",
+    "artifacts/goal/m28-s1-set-dressing/unreal-set-dressing-candidate.png",
+    "artifacts/goal/m28-s1-set-dressing/unreal-set-dressing-return-receipt.json",
+    "artifacts/goal/m28-s1-set-dressing/verification.json",
+    "docs/evidence/M28_S1_PHYSICS_SET_DRESSING_2026-09-07.md"
+  ]
+}

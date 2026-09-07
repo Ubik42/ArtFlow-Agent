@@ -1,0 +1,21 @@
+{
+  "schema_id": "artflow-m28-s1-verification/1",
+  "slice_id": "M28-S1",
+  "status": "passed",
+  "checks": {
+    "focused_tests": "1/1",
+    "blender_version": "5.2.0 LTS",
+    "registered_prototype": "AF_Rubble_01",
+    "instance_count": 12,
+    "settled_frame": 96,
+    "max_final_motion_m": 0.000002,
+    "min_center_separation_m": 0.767912,
+    "finite_transforms": "12/12",
+    "in_bounds_transforms": "12/12",
+    "unreal_version": "5.8.1-56057345+++UE5+Release-5.8",
+    "unreal_candidate": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Dressing_B_c496854357de",
+    "reconcile_status": "reconciled",
+    "duplicate_side_effect_count": 0,
+    "source_level_unchanged": true
+  }
+}
