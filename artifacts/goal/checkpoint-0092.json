@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M50-S1",
+  "status": "completed",
+  "outcome": "The frozen M49 route corridor, editable Blender curves and Unreal spline topology are now the seventeenth content-bound current-session capability. The existing durable worker verified two splines, fourteen controls, twelve segments and eight supports; repeat dispatch and reducer replay produced one terminal identity with zero duplicate side effects.",
+  "evidence": [
+    "artifacts/goal/m50-s1-live-spline-infrastructure/live-spline-infrastructure-work-receipt.json",
+    "artifacts/goal/m50-s1-live-spline-infrastructure/live-spline-infrastructure-desktop.png",
+    "artifacts/goal/m50-s1-live-spline-infrastructure/live-spline-infrastructure-narrow.png",
+    "docs/evidence/M50_S1_LIVE_SPLINE_INFRASTRUCTURE_2026-09-07.md"
+  ]
+}
+

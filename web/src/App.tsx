@@ -655,6 +655,10 @@ type SceneDccWorkState = {
     comfy_module_zone_receipt_sha256?: string;
     blender_modular_environment_receipt_sha256?: string;
     unreal_modular_environment_receipt_sha256?: string;
+    spline_infrastructure_request_sha256?: string;
+    comfy_route_corridor_receipt_sha256?: string;
+    blender_spline_infrastructure_receipt_sha256?: string;
+    unreal_spline_infrastructure_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1862,8 +1866,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSimulationCache = Boolean(agent.scene_dcc_work?.definition.simulation_cache_request_sha256);
   const hasFoliageKit = Boolean(agent.scene_dcc_work?.definition.foliage_kit_request_sha256);
   const hasModularEnvironment = Boolean(agent.scene_dcc_work?.definition.modular_environment_request_sha256);
+  const hasSplineInfrastructure = Boolean(agent.scene_dcc_work?.definition.spline_infrastructure_request_sha256);
   const cases = [
-    ...(hasModularEnvironment
+    ...(hasSplineInfrastructure
+      ? [{
+          id: "spline-infrastructure-roundtrip",
+          tab: "当前 Session · 样条设施",
+          title: "让二维空间走廊成为引擎里可继续编辑的管线系统",
+          description: "Agent 从当前深度、保护区和模块候选中编译两条有限路线。ComfyUI 计算无泄漏走廊，Blender 以 Curve 与 Geometry Nodes 保留电缆、管线和支架，Unreal 重建真实 SplineComponent 与可见线路段。",
+          frames: [
+            { src: "/api/showcase/production/m49-route-corridor", alt: "ComfyUI 计算的样条路线走廊", label: "空间走廊", title: "13.3179% 覆盖 · 0 泄漏" },
+            { src: "/api/showcase/production/m49-spline-blender", alt: "Blender 中可编辑的曲线与 Geometry Nodes 线路", label: "曲线加工", title: "2 条路线 · 14 个控制点" },
+            { src: "/api/showcase/production/m49-spline-unreal", alt: "Unreal 中重建的样条基础设施候选", label: "引擎样条", title: "12 段线路 · 8 个支架" },
+          ],
+          transition: "空间条件编译为可编辑样条拓扑",
+          metricA: "2 / 14",
+          metricALabel: "Spline / 控制点",
+          metricB: "0",
+          metricBLabel: "重放新增 Actor",
+          note: `样条请求 ${shortId(agent.scene_dcc_work?.definition.spline_infrastructure_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；源模块候选保持字节不变。`,
+          domains: ["场景·已绑定", "走廊·已生成", "曲线·可编辑", "Spline·已重建", "重放·已对账"],
+        }]
+      : hasModularEnvironment
       ? [{
           id: "modular-environment-roundtrip",
           tab: "当前 Session · 模块装配",

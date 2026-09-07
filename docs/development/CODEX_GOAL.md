@@ -164,9 +164,13 @@ Unreal 当前场景
   有限路线场；固定 ComfyUI 子图负责空间走廊，Blender 曲线与 Geometry Nodes 生成可编辑管线/电缆
   和支架，Unreal 通过登记的 SplineComponent 与资产工具在派生候选中重建。该路线用于验证 Blender
   不只是建模器，也是程序化路径、装配和引擎数据交换的 DCC 执行面。
-- **M50 · Live spline-infrastructure dispatch（进行中）**：把 M49 的空间走廊、Blender 曲线编辑源、
+- **M50 · Live spline-infrastructure dispatch（已完成）**：把 M49 的空间走廊、Blender 曲线编辑源、
   两种交换资产、支架清单和 Unreal SplineComponent 候选登记为第十七项当前 Session 能力，继续
   使用同一持久 Worker 与场景变更谱，不增加第二套调度系统。
+- **M51 · Procedural mechanism rig and animation handoff（进行中）**：把当前模块/样条候选和视觉意图
+  编译为有限机械结构、关节角度与帧段；Blender 以可编辑 Armature、骨骼层级和 Action 制作短动画，
+  Unreal 导入 Skeletal Mesh 与 Animation Sequence 并放入派生候选。该路线用于覆盖绑定、动画、
+  FBX 交换和引擎时序资产，而不是继续增加静态模型变体。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

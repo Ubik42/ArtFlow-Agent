@@ -49,6 +49,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.cache.wind_veil.v1",
         "blender.geometry_nodes.biome_foliage_kit.v1",
         "blender.geometry_nodes.modular_environment.v1",
+        "blender.geometry_nodes.spline_infrastructure.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -93,7 +94,10 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["modular_environment_request_sha256"] == (
         "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Modular_B_991e0fa20ff4")
+    assert work["definition"]["spline_infrastructure_request_sha256"] == (
+        "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Spline_B_63cab976001a")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

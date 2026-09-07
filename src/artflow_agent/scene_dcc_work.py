@@ -18,6 +18,7 @@ from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .shot_package import ShotPackageRequest
 from .simulation_cache import BlenderSimulationCacheReceipt, SimulationCacheRequest
+from .spline_infrastructure import SplineInfrastructureRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -55,8 +56,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.cache.wind_veil.v1",
             "blender.geometry_nodes.biome_foliage_kit.v1",
             "blender.geometry_nodes.modular_environment.v1",
+            "blender.geometry_nodes.spline_infrastructure.v1",
         ]
-    ] = Field(min_length=2, max_length=16)
+    ] = Field(min_length=2, max_length=17)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -145,9 +147,19 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_modular_environment_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    spline_infrastructure_request_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    comfy_route_corridor_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_spline_infrastructure_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_spline_infrastructure_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -314,6 +326,18 @@ class SceneDccWorkDefinition(BaseModel):
             if self.foliage_kit_request_sha256 is None:
                 raise ValueError("modular environment requires the registered foliage route")
             expected_capabilities.append("blender.geometry_nodes.modular_environment.v1")
+        spline_identities = (
+            self.spline_infrastructure_request_sha256,
+            self.comfy_route_corridor_receipt_sha256,
+            self.blender_spline_infrastructure_receipt_sha256,
+            self.unreal_spline_infrastructure_receipt_sha256,
+        )
+        if any(item is not None for item in spline_identities):
+            if not all(item is not None for item in spline_identities):
+                raise ValueError("DCC work requires every spline-infrastructure identity")
+            if self.modular_environment_request_sha256 is None:
+                raise ValueError("spline infrastructure requires the modular environment route")
+            expected_capabilities.append("blender.geometry_nodes.spline_infrastructure.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -977,6 +1001,52 @@ def compile_current_blender_dcc_work(
         payload["unreal_modular_environment_receipt_sha256"] = modular_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = modular_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = modular_unreal["candidate_scene_path"]
+    spline_root = project_root / "artifacts/goal/m49-s1-spline-infrastructure"
+    spline_request_path = spline_root / "spline-infrastructure-request.json"
+    spline_corridor_path = spline_root / "comfy-route-corridor-receipt.json"
+    spline_blender_path = spline_root / "blender-spline-infrastructure-receipt.json"
+    spline_unreal_path = spline_root / "unreal-spline-infrastructure-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            spline_request_path,
+            spline_corridor_path,
+            spline_blender_path,
+            spline_unreal_path,
+        )
+    ):
+        spline_request = SplineInfrastructureRequest.model_validate_json(
+            spline_request_path.read_text(encoding="utf-8")
+        )
+        spline_corridor = json.loads(spline_corridor_path.read_text(encoding="utf-8"))
+        spline_blender = json.loads(spline_blender_path.read_text(encoding="utf-8"))
+        spline_unreal = json.loads(spline_unreal_path.read_text(encoding="utf-8"))
+        if spline_request.session_id != session_id:
+            raise ValueError("spline infrastructure references another Scene Session")
+        if spline_corridor.get("request_sha256") != spline_request.request_sha256:
+            raise ValueError("route corridor references another spline request")
+        if spline_blender.get("corridor_receipt_sha256") != spline_corridor.get("receipt_sha256"):
+            raise ValueError("Blender spline source references another corridor")
+        if spline_unreal.get("blender_receipt_sha256") != spline_blender.get("receipt_sha256"):
+            raise ValueError("Unreal spline result references another Blender source")
+        if spline_unreal.get("source_candidate_scene_path") != modular_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("spline infrastructure no longer derives from the modular candidate")
+        if (
+            spline_unreal.get("status") != "reconciled"
+            or spline_unreal.get("capture_status") != "captured"
+        ):
+            raise ValueError(
+                "Unreal spline infrastructure is not reconciled with captured evidence"
+            )
+        payload["capability_ids"].append("blender.geometry_nodes.spline_infrastructure.v1")
+        payload["spline_infrastructure_request_sha256"] = spline_request.request_sha256
+        payload["comfy_route_corridor_receipt_sha256"] = spline_corridor["receipt_sha256"]
+        payload["blender_spline_infrastructure_receipt_sha256"] = spline_blender["receipt_sha256"]
+        payload["unreal_spline_infrastructure_receipt_sha256"] = spline_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = spline_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = spline_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

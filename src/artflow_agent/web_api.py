@@ -1547,6 +1547,13 @@ def create_app(
             "m47-modular-unreal": goal_root
             / "m47-s1-modular-environment"
             / "unreal-modular-environment-candidate.png",
+            "m49-route-corridor": goal_root / "m49-s1-spline-infrastructure" / "route-corridor.png",
+            "m49-spline-blender": goal_root
+            / "m49-s1-spline-infrastructure"
+            / "AF_SplineInfrastructure-preview.png",
+            "m49-spline-unreal": goal_root
+            / "m49-s1-spline-infrastructure"
+            / "unreal-spline-infrastructure-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

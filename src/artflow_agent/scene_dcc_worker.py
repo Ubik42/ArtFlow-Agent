@@ -25,6 +25,7 @@ from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_p
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 from .shot_package import ShotPackageRequest
 from .simulation_cache import BlenderSimulationCacheReceipt, SimulationCacheRequest
+from .spline_infrastructure import SplineInfrastructureRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -89,6 +90,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "simulation_cache": project_root / "artifacts/goal/m43-s1-simulation-cache",
         "foliage": project_root / "artifacts/goal/m45-s1-foliage-kit",
         "modular": project_root / "artifacts/goal/m47-s1-modular-environment",
+        "spline": project_root / "artifacts/goal/m49-s1-spline-infrastructure",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -627,7 +629,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             raise ValueError("registered module-zone receipt changed")
         if blender_receipt.get("zone_receipt_sha256") != zone.get("receipt_sha256"):
             raise ValueError("registered Blender modular receipt changed")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.spline_infrastructure_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("modular-environment candidate changed")
         if (
             unreal_receipt.get("status") != "reconciled"
@@ -644,6 +649,54 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["modular"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal modular-environment screenshot identity changed")
+
+    if work.spline_infrastructure_request_sha256 is not None:
+        request = SplineInfrastructureRequest.model_validate_json(
+            (roots["spline"] / "spline-infrastructure-request.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.spline_infrastructure_request_sha256:
+            raise ValueError("registered spline-infrastructure request changed")
+        corridor = _load_receipt(
+            roots["spline"] / "comfy-route-corridor-receipt.json",
+            expected_sha256=str(work.comfy_route_corridor_receipt_sha256),
+        )
+        blender_receipt = _load_receipt(
+            roots["spline"] / "blender-spline-infrastructure-receipt.json",
+            expected_sha256=str(work.blender_spline_infrastructure_receipt_sha256),
+        )
+        _verify_artifacts(roots["spline"], blender_receipt)
+        unreal_receipt = _load_receipt(
+            roots["spline"] / "unreal-spline-infrastructure-receipt.json",
+            expected_sha256=str(work.unreal_spline_infrastructure_receipt_sha256),
+        )
+        if corridor.get("request_sha256") != request.request_sha256:
+            raise ValueError("registered route-corridor receipt changed")
+        if blender_receipt.get("corridor_receipt_sha256") != corridor.get("receipt_sha256"):
+            raise ValueError("registered Blender spline receipt changed")
+        if unreal_receipt.get("blender_receipt_sha256") != blender_receipt.get("receipt_sha256"):
+            raise ValueError("registered Unreal spline receipt changed")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("spline-infrastructure candidate changed")
+        if (
+            unreal_receipt.get("status") != "reconciled"
+            or unreal_receipt.get("spline_component_count") != 2
+            or unreal_receipt.get("control_point_count") != 14
+            or unreal_receipt.get("segment_actor_count") != 12
+            or unreal_receipt.get("support_actor_count") != 8
+        ):
+            raise ValueError("spline-infrastructure topology changed")
+        if (
+            unreal_receipt.get("created_actor_count") != 0
+            or unreal_receipt.get("duplicate_side_effect_count") != 0
+        ):
+            raise ValueError("spline-infrastructure replay created duplicate actors")
+        if unreal_receipt.get("source_candidate_sha256_before") != unreal_receipt.get(
+            "source_candidate_sha256_after"
+        ):
+            raise ValueError("spline infrastructure changed its source candidate")
+        screenshot = roots["spline"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal spline-infrastructure screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
