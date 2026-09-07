@@ -1,0 +1,24 @@
+{
+  "schema_id": "artflow-m25-s1-verification/1",
+  "slice_id": "M25-S1",
+  "checks": {
+    "focused_contract_tests": "4/4",
+    "registered_capabilities": "5/5",
+    "dcc_lifecycle_events": "5/5",
+    "repeat_dispatch_same_work": true,
+    "event_replay_equivalent": true,
+    "duplicate_external_side_effect_count": 0,
+    "frontend_build": "passed",
+    "desktop_viewport": "1600x1000",
+    "narrow_viewport": "760x1000",
+    "narrow_horizontal_overflow_px": 0,
+    "browser_console_errors": 0,
+    "browser_console_warnings": 0
+  },
+  "work_sha256": "a3f7ad1e4374a08a68b531eb67117b53257846db3a5d5561b27668ec83127ed4",
+  "outcome_sha256": "7d69227269f4eb043807546abddd301a8933bff778f2535b18fc3de77dde2e8f",
+  "event_store_sha256": "4c0d46ae6f052bf180ae9e3ddef97e1370d13467a183262ed4c95f508f8da6e3",
+  "desktop_screenshot_sha256": "99284229e7ad814cce9a6e62055818120f0260c546d4b9798ef3a890557660a7",
+  "route_screenshot_sha256": "69cefbcb2b2672447f00ca6aee7910e34918756cdca6bee5be6eea2582e5870e",
+  "narrow_screenshot_sha256": "087ee7a5ec30b475461657ba0aaec617329da0548713d22f7f452ccbb25eaea2"
+}

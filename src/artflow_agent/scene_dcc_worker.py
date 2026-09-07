@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .agent_runtime import AgentEventStore, AgentRuntimeError
+from .lookdev_handoff import SceneLookdevRequest
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 
 WORKER_ID = "artflow-local-blender-worker-v1"
@@ -50,6 +51,8 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "pbr": project_root / "artifacts/goal/m23-s2-blender-pbr",
         "layout": project_root / "artifacts/goal/m23-s4-geometry-layout",
         "shot": project_root / "artifacts/goal/m23-s5-camera-light",
+        "conditioning": project_root / "artifacts/goal/m24-s1-scene-conditioning",
+        "lookdev": project_root / "artifacts/goal/m24-s2-scene-lookdev",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -75,9 +78,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         _verify_artifacts(roots["layout"], layout_receipt)
 
     if work.shot_request_sha256 is not None:
-        shot_request = json.loads(
-            (roots["shot"] / "shot-request.json").read_text(encoding="utf-8")
-        )
+        shot_request = json.loads((roots["shot"] / "shot-request.json").read_text(encoding="utf-8"))
         if shot_request["request_sha256"] != work.shot_request_sha256:
             raise ValueError("registered camera-light request changed")
         shot_receipt = _load_receipt(
@@ -89,11 +90,47 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["shot"] / "unreal-shot-return-receipt.json",
             expected_sha256=str(work.unreal_shot_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.lookdev_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal shot candidate changed")
         screenshot = roots["shot"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal shot screenshot identity changed")
+
+    if work.lookdev_request_sha256 is not None:
+        lookdev_request = SceneLookdevRequest.model_validate_json(
+            (roots["lookdev"] / "lookdev-request.json").read_text(encoding="utf-8")
+        )
+        if lookdev_request.request_sha256 != work.lookdev_request_sha256:
+            raise ValueError("registered scene-conditioned lookdev request changed")
+        if lookdev_request.accepted_artifact_sha256 != work.accepted_visual_target_sha256:
+            raise ValueError("registered visual target identity changed")
+        target = roots["conditioning"] / "depth-guided-candidate.png"
+        if _file_sha256(target) != work.accepted_visual_target_sha256:
+            raise ValueError("accepted visual target bytes changed")
+        lookdev_receipt = _load_receipt(
+            roots["lookdev"] / "lookdev-receipt.json",
+            expected_sha256=str(work.lookdev_receipt_sha256),
+        )
+        _verify_artifacts(roots["lookdev"], lookdev_receipt)
+        unreal_receipt = _load_receipt(
+            roots["lookdev"] / "unreal-lookdev-return-receipt.json",
+            expected_sha256=str(work.unreal_lookdev_return_receipt_sha256),
+        )
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal lookdev candidate changed")
+        shot_return = json.loads(
+            (roots["shot"] / "unreal-shot-return-receipt.json").read_text(encoding="utf-8")
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != shot_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("Unreal lookdev candidate no longer derives from the registered shot")
+        screenshot = roots["lookdev"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal lookdev screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -130,7 +167,9 @@ class SceneDccWorker:
                 assert work is not None
             outcome = reconcile_registered_chain(self._project_root, work.definition)
             if work.status == "executing":
-                self._progress(run_id, work.definition, "reconciling", "正在对账 Blender 与 Unreal 回执")
+                self._progress(
+                    run_id, work.definition, "reconciling", "正在对账 Blender 与 Unreal 回执"
+                )
             work = self._store.load(run_id).scene_dcc_work
             assert work is not None
             if work.status == "reconciling":
@@ -138,7 +177,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes 与镜头灯光已回流",
+                    "建模、PBR、Geometry Nodes、镜头灯光与场景 Lookdev 已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

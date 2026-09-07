@@ -609,6 +609,12 @@ type SceneDccWorkState = {
     modeling_request_sha256: string;
     pbr_request_sha256: string;
     candidate_scene_path: string;
+    conditioning_request_sha256?: string;
+    conditioning_receipt_sha256?: string;
+    accepted_visual_target_sha256?: string;
+    lookdev_request_sha256?: string;
+    lookdev_receipt_sha256?: string;
+    unreal_lookdev_return_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1622,7 +1628,10 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  ComfyUI PBR → Blender → Unreal · {shortId(dccWork.definition.work_sha256)}
+                  {dccWork.definition.lookdev_request_sha256
+                    ? "ComfyUI 场景目标 → Blender Lookdev → Unreal"
+                    : "ComfyUI PBR → Blender → Unreal"}
+                  {" · "}{shortId(dccWork.definition.work_sha256)}
                 </small>
               </div>
             ) : null}
@@ -1785,7 +1794,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const currentInput = agent.scene_candidate_intake?.evaluation_input;
   const currentCorrection = agent.scene_correction_intake?.evaluation_input;
   const hasMultiLightReceipt = currentCorrection?.secondary_intensity_after !== undefined;
+  const hasSceneLookdev = Boolean(agent.scene_dcc_work?.definition.lookdev_request_sha256);
   const cases = [
+    ...(hasSceneLookdev
+      ? [{
+          id: "scene-conditioned-lookdev",
+          tab: "当前 Session · 场景 Lookdev",
+          title: "把二维视觉方向落实为可编辑 DCC 与引擎候选",
+          description: "Agent 绑定当前场景、ComfyUI 条件图与 Unreal 镜头，只编译三组登记材质色板和 key / fill / rim 灯光。Blender 保留可编辑场景，Unreal 接收内容寻址候选；再次执行只对账已有结果。",
+          frames: [
+            { src: "/api/showcase/production/m24-lookdev-target", alt: "ComfyUI 根据 Unreal Beauty 与 Depth 生成的视觉目标", label: "视觉目标", title: "Beauty + Depth · FLUX.2" },
+            { src: "/api/showcase/production/m24-lookdev-blender", alt: "Blender 根据视觉目标生成的可编辑 Lookdev", label: "DCC 预演", title: "3 组材质色板 · 三点布光" },
+            { src: "/api/showcase/production/m24-lookdev-unreal", alt: "Unreal 接收 Blender Lookdev 后的隔离候选", label: "UE 候选", title: "3 个材质槽 · 已对账" },
+          ],
+          transition: "类型化参数",
+          metricA: "3 + 3",
+          metricALabel: "材质目标与灯光角色",
+          metricB: "0",
+          metricBLabel: "重复回流副作用",
+          note: `当前工作项 ${shortId(agent.scene_dcc_work?.definition.work_sha256 ?? "")} 由同一事件流恢复；最终候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}，源关卡字节未变化。`,
+          domains: ["图像·已绑定", "材质·已编译", "灯光·已编译", "DCC·已回流"],
+        }]
+      : []),
     {
       id: "rain-wet-courtyard",
       tab: hasCurrentLifecycle ? "当前 Session · 雨后庭院" : "雨后庭院 · 全管线",
@@ -1874,6 +1904,11 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     },
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
+  useEffect(() => {
+    if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
+      setCaseId("scene-conditioned-lookdev");
+    }
+  }, [caseId, hasSceneLookdev]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

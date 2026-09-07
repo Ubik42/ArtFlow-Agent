@@ -7,9 +7,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-SceneDccWorkStatus = Literal[
-    "queued", "claimed", "executing", "reconciling", "succeeded", "failed"
-]
+from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
+
+SceneDccWorkStatus = Literal["queued", "claimed", "executing", "reconciling", "succeeded", "failed"]
 SceneDccProgressStatus = Literal["executing", "reconciling", "succeeded", "failed"]
 
 
@@ -28,20 +28,27 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.comfy_pbr.assembly.v1",
             "blender.geometry_nodes.shrine_courtyard.v1",
             "blender.shot.rain_breakthrough.v1",
+            "blender.lookdev.scene_target.v1",
         ]
-    ] = Field(min_length=2, max_length=4)
+    ] = Field(min_length=2, max_length=5)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     layout_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     shot_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     shot_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    unreal_shot_return_receipt_sha256: str | None = Field(
+    unreal_shot_return_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    conditioning_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    conditioning_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    accepted_visual_target_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    lookdev_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    lookdev_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_lookdev_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -68,6 +75,20 @@ class SceneDccWorkDefinition(BaseModel):
             if self.layout_receipt_sha256 is None:
                 raise ValueError("camera-light exchange requires the Geometry Nodes layout")
             expected_capabilities.append("blender.shot.rain_breakthrough.v1")
+        lookdev_identities = (
+            self.conditioning_request_sha256,
+            self.conditioning_receipt_sha256,
+            self.accepted_visual_target_sha256,
+            self.lookdev_request_sha256,
+            self.lookdev_receipt_sha256,
+            self.unreal_lookdev_return_receipt_sha256,
+        )
+        if any(item is not None for item in lookdev_identities):
+            if not all(item is not None for item in lookdev_identities):
+                raise ValueError("DCC work requires every scene-conditioned lookdev identity")
+            if self.shot_receipt_sha256 is None:
+                raise ValueError("scene-conditioned lookdev requires the camera-light exchange")
+            expected_capabilities.append("blender.lookdev.scene_target.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -129,9 +150,13 @@ def compile_current_blender_dcc_work(
 ) -> SceneDccWorkDefinition:
     model_root = project_root / "artifacts/goal/m23-s1-blender-modeling"
     pbr_root = project_root / "artifacts/goal/m23-s2-blender-pbr"
-    modeling_request = json.loads((model_root / "modeling-request.json").read_text(encoding="utf-8"))
+    modeling_request = json.loads(
+        (model_root / "modeling-request.json").read_text(encoding="utf-8")
+    )
     pbr_request = json.loads((pbr_root / "pbr-assembly-request.json").read_text(encoding="utf-8"))
-    unreal_receipt = json.loads((pbr_root / "unreal-return-receipt.json").read_text(encoding="utf-8"))
+    unreal_receipt = json.loads(
+        (pbr_root / "unreal-return-receipt.json").read_text(encoding="utf-8")
+    )
     if modeling_request["session_id"] != session_id or pbr_request["session_id"] != session_id:
         raise ValueError("Blender DCC artifacts reference another Scene Session")
     if unreal_receipt["request_sha256"] != pbr_request["request_sha256"]:
@@ -157,7 +182,11 @@ def compile_current_blender_dcc_work(
     layout_request_path = layout_root / "layout-request.json"
     layout_receipt_path = layout_root / "layout-receipt.json"
     layout_unreal_path = layout_root / "unreal-return-receipt.json"
-    if layout_request_path.is_file() and layout_receipt_path.is_file() and layout_unreal_path.is_file():
+    if (
+        layout_request_path.is_file()
+        and layout_receipt_path.is_file()
+        and layout_unreal_path.is_file()
+    ):
         layout_request = json.loads(layout_request_path.read_text(encoding="utf-8"))
         layout_receipt = json.loads(layout_receipt_path.read_text(encoding="utf-8"))
         layout_unreal = json.loads(layout_unreal_path.read_text(encoding="utf-8"))
@@ -194,6 +223,50 @@ def compile_current_blender_dcc_work(
         payload["unreal_shot_return_receipt_sha256"] = shot_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = shot_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = shot_unreal["candidate_scene_path"]
+    conditioning_root = project_root / "artifacts/goal/m24-s1-scene-conditioning"
+    lookdev_root = project_root / "artifacts/goal/m24-s2-scene-lookdev"
+    lookdev_request_path = lookdev_root / "lookdev-request.json"
+    lookdev_receipt_path = lookdev_root / "lookdev-receipt.json"
+    lookdev_unreal_path = lookdev_root / "unreal-lookdev-return-receipt.json"
+    if (
+        lookdev_request_path.is_file()
+        and lookdev_receipt_path.is_file()
+        and lookdev_unreal_path.is_file()
+    ):
+        lookdev_request = SceneLookdevRequest.model_validate_json(
+            lookdev_request_path.read_text(encoding="utf-8")
+        )
+        lookdev_receipt = BlenderLookdevReceipt.model_validate_json(
+            lookdev_receipt_path.read_text(encoding="utf-8")
+        )
+        lookdev_unreal = json.loads(lookdev_unreal_path.read_text(encoding="utf-8"))
+        conditioning_request_path = conditioning_root / "conditioning-request.json"
+        conditioning_receipt_path = conditioning_root / "conditioning-receipt.json"
+        conditioning_request = json.loads(conditioning_request_path.read_text(encoding="utf-8"))
+        if lookdev_request.session_id != session_id:
+            raise ValueError("scene-conditioned lookdev references another Scene Session")
+        if lookdev_receipt.request_sha256 != lookdev_request.request_sha256:
+            raise ValueError("Blender lookdev receipt references another request")
+        if lookdev_unreal.get("blender_lookdev_receipt_sha256") != lookdev_receipt.receipt_sha256:
+            raise ValueError("Unreal lookdev return references another Blender receipt")
+        if lookdev_unreal.get("capture_status") != "completed":
+            raise ValueError("Unreal lookdev return capture is not complete")
+        if lookdev_request.conditioning_request_sha256 != conditioning_request["request_sha256"]:
+            raise ValueError("lookdev request references another conditioning request")
+        if (
+            lookdev_request.conditioning_receipt_sha256
+            != hashlib.sha256(conditioning_receipt_path.read_bytes()).hexdigest()
+        ):
+            raise ValueError("lookdev conditioning receipt identity changed")
+        payload["capability_ids"].append("blender.lookdev.scene_target.v1")
+        payload["conditioning_request_sha256"] = lookdev_request.conditioning_request_sha256
+        payload["conditioning_receipt_sha256"] = lookdev_request.conditioning_receipt_sha256
+        payload["accepted_visual_target_sha256"] = lookdev_request.accepted_artifact_sha256
+        payload["lookdev_request_sha256"] = lookdev_request.request_sha256
+        payload["lookdev_receipt_sha256"] = lookdev_receipt.receipt_sha256
+        payload["unreal_lookdev_return_receipt_sha256"] = lookdev_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = lookdev_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = lookdev_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

@@ -196,8 +196,7 @@ def create_app(
     )
     revision_artifact_root = PROJECT_ROOT / "artifacts" / "goal" / "m4-s3-bounded-revision"
     resolved_delivery_artifact_root = (
-        delivery_artifact_root
-        or PROJECT_ROOT / "artifacts" / "goal" / "m6-s1-unreal-return"
+        delivery_artifact_root or PROJECT_ROOT / "artifacts" / "goal" / "m6-s1-unreal-return"
     ).resolve()
     jobs = JobRegistry()
     app = FastAPI(title="ArtFlow Agent", version="0.2.0")
@@ -235,9 +234,7 @@ def create_app(
             else:
                 os.replace(temporary_path, final_path)
 
-            run_id = (
-                f"unreal-{preview.package.package_id[:88]}-{preview.archive_sha256[:12]}"
-            )
+            run_id = f"unreal-{preview.package.package_id[:88]}-{preview.archive_sha256[:12]}"
             agent_store.create_run(run_id)
             agent_store.attach_scene(
                 run_id,
@@ -287,7 +284,9 @@ def create_app(
         try:
             return list_agent_runs(agent_store)
         except AgentRuntimeError as exc:
-            raise HTTPException(status_code=409, detail=f"Agent event store is corrupt: {exc}") from exc
+            raise HTTPException(
+                status_code=409, detail=f"Agent event store is corrupt: {exc}"
+            ) from exc
 
     @app.get("/api/agent/runs/{run_id}", response_model=AgentRunProjection)
     def get_durable_agent_run(run_id: str):
@@ -386,7 +385,9 @@ def create_app(
             state = agent_store.load(run_id)
             session = state.scene_sessions[-1] if state.scene_sessions else None
             if session is None:
-                raise AgentRuntimeError("scene lifecycle callback requires a persisted Scene Session")
+                raise AgentRuntimeError(
+                    "scene lifecycle callback requires a persisted Scene Session"
+                )
             if session.session_sha256 != payload.session_sha256:
                 raise AgentRuntimeError("scene lifecycle callback references another Scene Session")
             record = resolve_registered_lifecycle_record(PROJECT_ROOT, payload)
@@ -503,9 +504,7 @@ def create_app(
         "/api/agent/runs/{run_id}/scene-dcc-work/claim",
         response_model=AgentRunProjection,
     )
-    def claim_scene_dcc_work(
-        run_id: str, payload: SceneDccWorkClaimRequest, request: Request
-    ):
+    def claim_scene_dcc_work(run_id: str, payload: SceneDccWorkClaimRequest, request: Request):
         _require_loopback(request, "Blender DCC 工作项仅允许本机领取")
         try:
             state = agent_store.load(run_id)
@@ -609,9 +608,7 @@ def create_app(
     @app.get("/api/agent/runs/{run_id}/scene-candidate-work/beauty")
     def current_scene_candidate_beauty(run_id: str):
         try:
-            path = resolve_current_candidate_beauty(
-                resolved_project_root, agent_store.load(run_id)
-            )
+            path = resolve_current_candidate_beauty(resolved_project_root, agent_store.load(run_id))
             return FileResponse(path, media_type="image/png")
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
@@ -662,8 +659,7 @@ def create_app(
                 run_id,
                 record,
                 action_id=(
-                    "correction-intake-"
-                    f"{record.technical_evaluation.evaluation_sha256[:16]}"
+                    f"correction-intake-{record.technical_evaluation.evaluation_sha256[:16]}"
                 ),
             )
             return project_agent_run(agent_store, run_id)
@@ -739,9 +735,7 @@ def create_app(
     def get_current_variant_publish_request(run_id: str, request: Request):
         _require_loopback(request, "当前场景版本发布仅允许本机 Unreal 宿主领取")
         try:
-            return compile_current_publish_request(
-                resolved_project_root, agent_store.load(run_id)
-            )
+            return compile_current_publish_request(resolved_project_root, agent_store.load(run_id))
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
@@ -759,9 +753,7 @@ def create_app(
         try:
             state = agent_store.load(run_id)
             if state.scene_variant_publication is not None:
-                record = validate_current_publish_receipt(
-                    resolved_project_root, state, payload
-                )
+                record = validate_current_publish_receipt(resolved_project_root, state, payload)
                 existing_outcome = state.scene_variant_publication.receipt.model_dump(
                     mode="json", exclude={"completed_at", "receipt_sha256"}
                 )
@@ -773,9 +765,7 @@ def create_app(
                         "current variant already has a different publish receipt"
                     )
                 return project_agent_run(agent_store, run_id)
-            record = validate_current_publish_receipt(
-                resolved_project_root, state, payload
-            )
+            record = validate_current_publish_receipt(resolved_project_root, state, payload)
             if record is not None:
                 agent_store.record_scene_variant_publication(
                     run_id,
@@ -909,9 +899,7 @@ def create_app(
                 callback = SceneVariantLifecycleCallbackRequest(
                     transition=transition,
                     session_sha256=session_sha256,
-                    artifact_sha256=registered_artifact_sha256(
-                        registered, transition
-                    ),
+                    artifact_sha256=registered_artifact_sha256(registered, transition),
                     action_id=action_id,
                 )
                 state = agent_store.load(run_id)
@@ -1051,23 +1039,17 @@ def create_app(
                 detail=f"Persisted Scene Package failed verification: {exc}",
             ) from exc
 
-    @app.get(
-        "/api/agent/runs/{run_id}/executions/{execution_id}/artifacts/{artifact_sha256}"
-    )
+    @app.get("/api/agent/runs/{run_id}/executions/{execution_id}/artifacts/{artifact_sha256}")
     def get_provider_artifact(run_id: str, execution_id: str, artifact_sha256: str):
         try:
             state = agent_store.load(run_id)
             execution = next(
-                item
-                for item in state.provider_executions
-                if item.execution_id == execution_id
+                item for item in state.provider_executions if item.execution_id == execution_id
             )
             if execution.receipt is None or execution.status != "succeeded":
                 raise AgentRuntimeError("Provider execution has no verified successful receipt")
             artifact = next(
-                item
-                for item in execution.receipt.artifacts
-                if item.sha256 == artifact_sha256
+                item for item in execution.receipt.artifacts if item.sha256 == artifact_sha256
             )
             path = provider_artifact_root / f"{artifact.sha256}.png"
             if not path.is_file():
@@ -1088,9 +1070,7 @@ def create_app(
             status_code = 404 if "Unknown" in message or "not persisted" in message else 409
             raise HTTPException(status_code=status_code, detail=message) from exc
 
-    @app.get(
-        "/api/agent/runs/{run_id}/codex-candidates/{candidate_id}/artifacts/{artifact_sha256}"
-    )
+    @app.get("/api/agent/runs/{run_id}/codex-candidates/{candidate_id}/artifacts/{artifact_sha256}")
     def get_codex_candidate_artifact(
         run_id: str,
         candidate_id: str,
@@ -1125,9 +1105,7 @@ def create_app(
             status_code = 404 if "Unknown" in message or "not persisted" in message else 409
             raise HTTPException(status_code=status_code, detail=message) from exc
 
-    @app.get(
-        "/api/agent/runs/{run_id}/negative-controls/{control_id}/artifacts/{artifact_sha256}"
-    )
+    @app.get("/api/agent/runs/{run_id}/negative-controls/{control_id}/artifacts/{artifact_sha256}")
     def get_negative_control_artifact(
         run_id: str,
         control_id: str,
@@ -1136,9 +1114,7 @@ def create_app(
         try:
             state = agent_store.load(run_id)
             record = next(
-                item
-                for item in state.negative_controls
-                if item.receipt.control_id == control_id
+                item for item in state.negative_controls if item.receipt.control_id == control_id
             )
             artifact = record.receipt.artifact
             if artifact.sha256 != artifact_sha256:
@@ -1329,9 +1305,7 @@ def create_app(
             )
             return project_agent_run(
                 agent_store,
-                agent_store.record_comparison_authorization(
-                    run_id, authorization
-                ).run_id,
+                agent_store.record_comparison_authorization(run_id, authorization).run_id,
             )
         except (AgentRuntimeError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
@@ -1431,13 +1405,7 @@ def create_app(
     )
     def get_scene_variant_lineage():
         """Project the fixed correction-to-Unreal lineage from frozen host receipts."""
-        path = (
-            PROJECT_ROOT
-            / "artifacts"
-            / "goal"
-            / "m16-s1-variant-lineage"
-            / "lineage.json"
-        )
+        path = PROJECT_ROOT / "artifacts" / "goal" / "m16-s1-variant-lineage" / "lineage.json"
         try:
             return SceneVariantLineage.model_validate_json(path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
@@ -1459,36 +1427,31 @@ def create_app(
             / "m8-s2-pbr-material"
             / "validated"
             / "ruin_altar_basalt_base_color.png",
-            "pbr-unreal": goal_root
-            / "m8-s2-pbr-material"
-            / "candidate-material-beauty.png",
-            "scene-authored": goal_root
-            / "m9-s2-unreal-multi-domain"
-            / "authored-camera.png",
-            "scene-validation": goal_root
-            / "m9-s2-unreal-multi-domain"
-            / "validation-camera.png",
+            "pbr-unreal": goal_root / "m8-s2-pbr-material" / "candidate-material-beauty.png",
+            "scene-authored": goal_root / "m9-s2-unreal-multi-domain" / "authored-camera.png",
+            "scene-validation": goal_root / "m9-s2-unreal-multi-domain" / "validation-camera.png",
             "lighting-failure": goal_root
             / "m9-s3-correction-release"
             / "failure-authored-camera.png",
             "lighting-corrected": goal_root
             / "m9-s3-correction-release"
             / "corrected-authored-camera.png",
-            "m13-rain-source": goal_root
-            / "m13-s1-rain-wet-courtyard"
-            / "source-beauty.png",
-            "m13-rain-candidate": goal_root
-            / "m13-s1-rain-wet-courtyard"
-            / "candidate-beauty.png",
+            "m13-rain-source": goal_root / "m13-s1-rain-wet-courtyard" / "source-beauty.png",
+            "m13-rain-candidate": goal_root / "m13-s1-rain-wet-courtyard" / "candidate-beauty.png",
             "m13-sun-target": goal_root
             / "m13-s2-sunlit-overgrown"
             / "gpt-image-2-visual-target.png",
-            "m13-sun-failure": goal_root
-            / "m13-s2-sunlit-overgrown"
-            / "failure-candidate.png",
-            "m13-sun-corrected": goal_root
-            / "m13-s2-sunlit-overgrown"
-            / "corrected-candidate.png",
+            "m13-sun-failure": goal_root / "m13-s2-sunlit-overgrown" / "failure-candidate.png",
+            "m13-sun-corrected": goal_root / "m13-s2-sunlit-overgrown" / "corrected-candidate.png",
+            "m24-lookdev-target": goal_root
+            / "m24-s1-scene-conditioning"
+            / "depth-guided-candidate.png",
+            "m24-lookdev-blender": goal_root
+            / "m24-s2-scene-lookdev"
+            / "AF_ShrineCourtyard_Lookdev-preview.png",
+            "m24-lookdev-unreal": goal_root
+            / "m24-s2-scene-lookdev"
+            / "unreal-lookdev-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

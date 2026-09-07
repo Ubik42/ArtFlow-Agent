@@ -75,11 +75,17 @@ Unreal 当前场景
   与有效范围 Depth，真实生成结构保持的暖色光照目标。该目标现已继续编译为三组登记材质色板与
   key / fill / rim 参数，在 Blender 5.2 生成可编辑 lookdev 预演并回流 Unreal 5.8 隔离候选；
   重复执行完成对账且源关卡字节不变。
-- **M25 · DCC capability graph and live dispatch（进行中）**：把已经实测的建模、ComfyUI PBR、
+- **M25 · DCC capability graph and live dispatch（已完成）**：把已经实测的建模、ComfyUI PBR、
   Geometry Nodes、镜头灯光和场景条件 lookdev 统一成当前 Scene Session 的生产能力图。Blender
   继续作为覆盖 UV、材质节点、Bake、布局、灯光及后续缓存的完整 DCC 执行面；ComfyUI 以受审
   节点子图参与图像、控制图和材质生成；Unreal 始终通过候选关卡接收结果。当前最短切片先把
-  scene-conditioned lookdev 接入已有 DCC Worker 与产品状态投影，不另建编排器。
+  scene-conditioned lookdev 已接入已有 DCC Worker 与产品状态投影，没有新增编排器。当前工作项
+  依次记录 queue / claim / execute / reconcile / success，场景变更谱显示目标图、Blender 预演与
+  Unreal 候选三段真实媒体。
+- **M26 · Surface authoring and bake round-trip（进行中）**：扩展 Blender 的非建模生产能力，
+  从当前 Lookdev `.blend` 编译有界 UV 与材质 Bake 任务，生成可复用贴图和带 UV 的交换资产，
+  完成最小 UV/贴图/材质槽检查后回到新的 Unreal 隔离候选。该阶段复用已有 ComfyUI PBR 输入和
+  DCC Worker，不重新生成视觉图，也不开放任意 Blender 操作。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

@@ -11,7 +11,7 @@ Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，�
 【每轮恢复】
 1. 确认仓库、独立 Git 和 remote；读取根 AGENTS.md。
 2. 运行 scripts/goal.ps1 -Action Resume 和 -Action Doctor，读取 config/goal-state.json、
-   lastCheckpoint、CODEX_GOAL.md、CODEX_LOOP.md 及可观察代码/证据。
+   lastCheckpoint、CODEX_GOAL.md、CODEX_GOAL_PROMPT.md、CODEX_LOOP.md 及可观察代码/证据。
 3. 检查工作树并保护用户已有修改。只实施 nextSlice 的最短真实纵向切片；接受条件通过后才更新
    goal-state、checkpoint 和下一个切片。聊天摘要不是进度事实。
 

@@ -38,6 +38,10 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 | --- | --- |
 | ![Blender 将场景条件目标落实为材质与灯光预演](artifacts/goal/m24-s2-scene-lookdev/AF_ShrineCourtyard_Lookdev-preview.png) | ![Unreal 中应用候选专属材质与三灯参数](artifacts/goal/m24-s2-scene-lookdev/unreal-lookdev-candidate.png) |
 
+这条路线现已进入 Scene Session 的产品工作流。现有 DCC Worker 将建模、ComfyUI PBR、Geometry Nodes、镜头灯光和场景 Lookdev 组织为同一个内容寻址工作项；`queue / claim / execute / reconcile` 五个事件写入原有账本，刷新后可恢复相同状态。场景变更谱直接呈现三段媒体和最终 Unreal 候选，不要求用户运行脚本或操作 ComfyUI 节点画布。
+
+![当前 Scene Session 中的 ComfyUI → Blender → Unreal Lookdev 路线](artifacts/goal/m25-s1-live-lookdev/live-lookdev-route.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -223,6 +227,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 | ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
 | 场景条件目标 → Blender / Unreal Lookdev | 3 个登记材质目标、3 盏登记灯光；重复回流副作用 0；源关卡字节变化 0 |
+| Scene Session DCC 能力链 | 5 个登记能力、5 个持久生命周期事件；重复派发保持同一工作身份 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
