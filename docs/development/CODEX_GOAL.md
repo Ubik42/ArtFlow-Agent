@@ -56,10 +56,12 @@ Unreal 当前场景
   双灯光组实测通过后已由 Codex 采用精确内容身份。
 - **M21 · Current-session publish and review（已完成）**：当前采用决定已接入已有版本化发布合同；
   Unreal 写入唯一内容寻址 Published 版本，新进程完成发布与审阅对账，源关卡字节未变化。
-- **M22 · Unreal-native operator lifecycle controls（进行中）**：S1 已把发布与审阅合同接入
-  Unreal 中文 Tools 菜单，并以插件内置固定能力完成真实宿主验证。当前 S2 负责编辑器重启后的
-  Scene Session 上下文恢复，同时移除公开菜单中的旧导出入口；无会话或身份歧义时必须在写入前
-  以清晰中文关闭失败。
+- **M22 · Unreal-native operator lifecycle controls（已完成）**：发布与审阅合同已接入 Unreal
+  中文 Tools 菜单；编辑器重启后可从项目持久指针恢复受验证的 Scene Session，公开菜单只保留
+  四个产品生命周期入口。恢复不接受调用方 Run、路径或脚本，源关卡身份不一致时关闭失败。
+- **M23 · Live PBR material operator route（进行中）**：把现有 ComfyUI Production Nodes 受审
+  PBR 能力接入当前 Scene Session 的注册工作项，使 Unreal 操作者可从视觉意图生成、校验并绑定
+  一组真实 PBR 材质候选，而不是只在历史案例中展示固定制品。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

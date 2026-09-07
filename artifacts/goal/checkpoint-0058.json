@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M22-S2",
+  "status": "completed",
+  "outcome": "A fresh Unreal process recovered the exact current Scene Session from a project-owned pointer bound to its verified handshake receipt, reviewed the Published variant without caller-supplied run or endpoint identity, and the public menu was reduced to four lifecycle actions.",
+  "evidence": [
+    "artifacts/goal/m22-s2-session-recovery/verification.json",
+    "artifacts/goal/m22-s2-session-recovery/current-session.json",
+    "artifacts/goal/m22-s2-session-recovery/review-result.json",
+    "artifacts/goal/m22-s2-session-recovery/review-recovered-final.log",
+    "artifacts/goal/m22-s2-session-recovery/review-recovered.png",
+    "docs/evidence/M22_S2_SESSION_RECOVERY_2026-09-07.md"
+  ]
+}

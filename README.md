@@ -252,7 +252,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 - 当前实机证据来自一套项目自有 Unreal 演示场景，不将其包装为开放域质量基准。
 - 图生 3D 路线当前用于几何草案验证，尚未覆盖高质量拓扑、UV、最终 PBR 和角色资产。
 - PBR 路线使用固定受审 ComfyUI 模板，不提供任意节点图执行。
-- Unreal 菜单目前在同一次编辑器会话内保持 Scene Session 身份；编辑器重启后的自动上下文恢复正在开发，现阶段可从“启动 ArtFlow 场景任务”重新建立入口状态。
+- Unreal 菜单会在项目 `Saved` 目录保存可回溯到原始握手回执的当前 Session 指针；编辑器重启后会重新核对活动源关卡、源文件哈希、localhost Origin 与 Run / Session 身份，不一致时不会猜测或自动切换任务。
 - C2PA sidecar 使用 2.4 断言词汇并验证内容哈希，但尚未嵌入 JUMBF，也没有证书签名。
 - 当前支持 Windows、Unreal 5.8 与本地 ComfyUI 工作流，其他宿主组合仍需单独验证。
 

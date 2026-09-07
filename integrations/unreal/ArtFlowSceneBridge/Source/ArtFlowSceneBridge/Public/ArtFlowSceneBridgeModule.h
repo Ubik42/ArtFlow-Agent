@@ -20,6 +20,8 @@ private:
     void ExecuteCurrentCandidateWork();
     void PublishCurrentVariant();
     void ReviewCurrentVariant();
+    bool RestoreSessionContext(FString& OutError);
+    bool PersistCurrentSessionContext(const FString& HandshakeReceiptPath, FString& OutError) const;
     bool ExecuteRegisteredCurrentVariantScript(const FString& ScriptName, FString& OutError);
     bool BeginSceneSessionHandshake(const FString& ArchivePath, bool bAutomation, FString& OutError);
     void HandleSceneSessionHandshake(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);

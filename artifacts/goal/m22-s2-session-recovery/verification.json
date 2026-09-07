@@ -1,0 +1,18 @@
+{
+  "schema_id": "artflow-m22-session-recovery-verification/1",
+  "status": "verified",
+  "engine": "Unreal Engine 5.8.1-56057345",
+  "plugin_version": "1.2.1",
+  "owned_process_id": 29904,
+  "caller_run_identity": false,
+  "caller_endpoint": false,
+  "context_recovered": true,
+  "review_succeeded": true,
+  "public_menu_action_count": 4,
+  "legacy_menu_actions_removed": ["ArtFlowExportScenePackage", "ArtFlowReviewLastExport"],
+  "source_scene": "/Game/ArtFlowDemo",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_6851eebe8a5a",
+  "ubt_status": "succeeded",
+  "test_scope": "one compile and one fresh-process recovery walkthrough"
+}

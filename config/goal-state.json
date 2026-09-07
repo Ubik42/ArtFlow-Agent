@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 62,
+  "stateRevision": 63,
   "strategyVersion": "4.0.0",
   "goalId": "artflow-agent",
   "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
   "status": "active",
-  "currentMilestone": "M22",
+  "currentMilestone": "M23",
   "milestones": [
     {
       "id": "M0",
@@ -246,7 +246,7 @@
     {
       "id": "M22",
       "title": "Unreal-native operator lifecycle controls",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M21"],
       "outcome": "An artist can advance the current Scene Session from candidate execution through correction, publish and exact-version review from registered Unreal editor actions, while the Scene Change Spectrum reflects each durable state without command-line operation.",
       "acceptance": [
@@ -254,36 +254,48 @@
         "Publish and review show clear Chinese in-editor progress and reconcile an unknown completion before any retry",
         "One continuous recorded walkthrough starts from the project-owned scene and reaches the exact Published variant using only product-facing entrypoints"
       ]
+    },
+    {
+      "id": "M23",
+      "title": "Live PBR material operator route",
+      "status": "in_progress",
+      "dependsOn": ["M22"],
+      "outcome": "A current Scene Session can route a registered, reviewed ComfyUI Production Nodes PBR capability, validate its maps and bind a material candidate in Unreal through the same durable work and evaluation lifecycle instead of relying on historical fixed artifacts.",
+      "acceptance": [
+        "The Agent derives PBR work from current scene facts and intent and selects only a versioned reviewed subgraph with bounded slots",
+        "Generated maps pass the existing semantic and content checks before Unreal material binding",
+        "The Unreal operator sees one current material work item and its real candidate rerender in the existing Scene Change Spectrum",
+        "Failure reruns only the PBR material branch and does not repeat PCG, asset or lighting work"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M22-S2",
-    "milestone": "M22",
-    "title": "Recover operator context and retire legacy menu surfaces",
-    "outcome": "After an editor restart, recover exactly one validated active Scene Session for the current project and source scene, expose only the four product lifecycle actions, and resume the legal next action without caller-supplied run identity, path or script.",
+    "id": "M23-S1",
+    "milestone": "M23",
+    "title": "Register current-session PBR material work",
+    "outcome": "Compile one current Scene Session material intent into a durable registered PBR work item that selects the existing versioned ComfyUI Production Nodes subgraph and bounded inputs, then projects its honest ready, running and verified states without executing a second workflow engine.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not add a generic command console, Python entry field, caller-selected map or filesystem browser",
+      "Do not add a generic ComfyUI canvas, arbitrary workflow JSON, command console or caller-selected filesystem path",
       "Do not overwrite, rename or save the source ArtFlowDemo level",
-      "Do not add a second publisher, review implementation, state machine or approval gate",
-      "Do not redesign the web workspace, state machine or provider layer in this slice",
-      "Do not add a generic recent-session picker or silently choose among ambiguous runs",
-      "Do not build a broad automation test matrix; verify one clean restart recovery and the bounded failure cases only"
+      "Do not add another state machine, provider abstraction, approval gate or test framework",
+      "Do not redesign the web workspace or execute Unreal material binding in this slice",
+      "Do not retrain a LoRA or add an image-to-3D route",
+      "Do not build a broad test matrix; validate the work contract, one current projection and one rejection case only"
     ],
     "acceptance": [
-      "The first product action after editor restart discovers exactly one current run bound to the active project and source scene without caller-supplied run identity or path",
-      "No matching run or more than one eligible run disables or rejects the action with clear Chinese status before any scene mutation",
-      "The public Tools menu contains only start task, execute current candidate or correction, publish current version and review current Published version; legacy export and review-last entries are removed",
-      "A fresh real UE process reviews the exact Published version through recovered context while the source level remains byte-identical"
+      "A current material-domain Scene Session produces exactly one content-addressed PBR work definition bound to session, scene package, policy and capability manifest identities",
+      "The work definition references only the reviewed Production Nodes subgraph and declared prompt, resolution, seed and output slots",
+      "Replay returns the same work identity without a duplicate event or Provider submission",
+      "The Scene Change Spectrum distinguishes unavailable, ready and completed material work without claiming Unreal binding before a real receipt"
     ],
     "stopConditions": [
-      "Stop if recovery would require accepting arbitrary Python, Shell, run id, map or filesystem input",
-      "Stop if project and source-scene binding cannot select exactly one validated Session",
-      "Stop if the recovered target differs from the server projection or the adopted content identity",
-      "Stop if the source level hash changes",
+      "Stop if the route would require model-generated workflow JSON, arbitrary nodes or host code",
+      "Stop if the Production Nodes manifest or reviewed subgraph identity cannot be verified",
+      "Stop if material work cannot reuse the existing append-only work and reconciliation model",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -305,9 +317,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0057.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0058.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M21 and M22-S1 are complete. ArtFlow Scene Bridge 1.2.0 exposes product-facing Unreal publish and exact-version review actions backed by plugin-packaged fixed capabilities. Fresh UE 5.8.1 processes reconciled both actions against one 37-event current Session with zero duplicate side effects, 12 preserved PCG instances, zero source saves and a byte-identical ArtFlowDemo.umap; an invalid delete action failed before script execution. The matching Scene Change Spectrum capture has no broken images, console errors or horizontal overflow. M22 remains in progress because editor-restart context recovery and removal of legacy public menu surfaces are not yet implemented.",
+  "evidenceCeiling": "M0-M22 are complete. ArtFlow Scene Bridge 1.2.1 exposes four product-facing Unreal lifecycle actions and restores the exact current Scene Session after editor restart from a project-owned pointer that is revalidated against its original handshake receipt, active source scene and source hash. A fresh UE 5.8.1 process reviewed the exact Published variant without caller-supplied run or endpoint identity; the source ArtFlowDemo level remained byte-identical. Legacy export and review-last menu entries are no longer public. Current-session PBR material work is M23 scope and must not be claimed from the historical M13 artifact alone.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
@@ -317,6 +329,8 @@
     "Use multiple Agent roles only for context isolation, distinct authority or real parallel work",
     "No framework, protocol, RAG or memory system is added without a measured requirement",
     "Tests focus on contracts, policy, replay, recovery and external boundaries and should stay near 15-25 percent of implementation effort",
+    "Do not turn ordinary local operations, Codex-owned candidate adoption, screenshots or configured repository publishing into new approval gates; gates exist only for deterministic scene constraints, identity, irreversible writes and external side effects",
+    "Preserve the original product intent: prioritize practical AIGC-to-Unreal production capabilities and make the hand-built modern Agent control plane visible through real behavior, not framework accumulation",
     "Every public metric identifies its dataset, denominator and inspectable evidence",
     "Existing user work and historical source provenance must be preserved",
     "All scene mutations are staged in a project-owned Data Layer, Level Instance or candidate level before publish; the source level is not overwritten in place",

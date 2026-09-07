@@ -2810,18 +2810,6 @@ void FArtFlowSceneBridgeModule::RegisterMenus()
         LOCTEXT("ReviewCurrentVariantTooltip", "从当前 Scene Session 获取精确 Published 身份，打开并复核该版本；不接受手动选择关卡。"),
         FSlateIcon(),
         FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ReviewCurrentVariant)));
-    Section.AddMenuEntry(
-        TEXT("ArtFlowExportScenePackage"),
-        LOCTEXT("ExportLabel", "仅导出场景包"),
-        LOCTEXT("ExportTooltip", "将选定相机与标记区域导出为原子化、内容哈希绑定的 Scene Package。"),
-        FSlateIcon(),
-        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ExportSelectedScene)));
-    Section.AddMenuEntry(
-        TEXT("ArtFlowReviewLastExport"),
-        LOCTEXT("ReviewLabel", "查看最近导出"),
-        LOCTEXT("ReviewTooltip", "查看本次编辑器会话最近完成的 Scene Package。"),
-        FSlateIcon(),
-        FUIAction(FExecuteAction::CreateRaw(this, &FArtFlowSceneBridgeModule::ReviewLastExport)));
 }
 
 void FArtFlowSceneBridgeModule::ExportSelectedScene()
@@ -2859,9 +2847,9 @@ void FArtFlowSceneBridgeModule::StartSceneSession()
 void FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork()
 {
     FString Error;
-    if (SessionRunId.IsEmpty() || SessionSha256.IsEmpty())
+    if ((SessionRunId.IsEmpty() || SessionSha256.IsEmpty()) && !RestoreSessionContext(Error))
     {
-        Error = TEXT("请先从当前关卡启动 ArtFlow 场景任务，再在场景变更谱中把候选交给 Unreal。");
+        Error = TEXT("无法恢复当前 ArtFlow 场景任务：") + Error;
     }
     else
     {
@@ -2877,13 +2865,158 @@ void FArtFlowSceneBridgeModule::ExecuteCurrentCandidateWork()
     }
 }
 
+bool FArtFlowSceneBridgeModule::RestoreSessionContext(FString& OutError)
+{
+    if (ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) &&
+        ArtFlowSceneBridge::IsSha256(SessionSha256) &&
+        !SessionEndpointOrigin.IsEmpty())
+    {
+        return true;
+    }
+    const FString ContextPath = FPaths::Combine(
+        ArtFlowSceneBridge::GetBridgeRoot(),
+        TEXT("CurrentSession.json"));
+    FString ContextText;
+    TSharedPtr<FJsonObject> Context;
+    if (!FFileHelper::LoadFileToString(ContextText, *ContextPath) ||
+        !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(ContextText), Context) ||
+        !Context.IsValid())
+    {
+        OutError = TEXT("当前项目没有可恢复的 Scene Session，请先选择源关卡并启动 ArtFlow 场景任务。");
+        return false;
+    }
+    FString Schema;
+    FString Endpoint;
+    FString RunId;
+    FString SessionSha;
+    FString SourceScene;
+    FString SourceLevelSha;
+    FString ReceiptName;
+    if (!Context->TryGetStringField(TEXT("schema"), Schema) ||
+        !Context->TryGetStringField(TEXT("endpoint_origin"), Endpoint) ||
+        !Context->TryGetStringField(TEXT("run_id"), RunId) ||
+        !Context->TryGetStringField(TEXT("session_sha256"), SessionSha) ||
+        !Context->TryGetStringField(TEXT("source_scene"), SourceScene) ||
+        !Context->TryGetStringField(TEXT("source_level_sha256"), SourceLevelSha) ||
+        !Context->TryGetStringField(TEXT("handshake_receipt"), ReceiptName) ||
+        Schema != TEXT("artflow-unreal-current-session/1") ||
+        !ArtFlowSceneBridge::IsSafeRunIdentity(RunId) ||
+        !ArtFlowSceneBridge::IsSha256(SessionSha) ||
+        !ArtFlowSceneBridge::IsSha256(SourceLevelSha) ||
+        FPaths::GetCleanFilename(ReceiptName) != ReceiptName ||
+        !ArtFlowSceneBridge::NormalizeLoopbackOrigin(Endpoint, Endpoint, OutError))
+    {
+        if (OutError.IsEmpty())
+        {
+            OutError = TEXT("项目中的当前 Session 指针无效或不完整。");
+        }
+        return false;
+    }
+    UWorld* World = GEditor == nullptr ? nullptr : GEditor->GetEditorWorldContext().World();
+    if (World == nullptr || World->GetOutermost()->GetName() != SourceScene)
+    {
+        OutError = TEXT("当前关卡与已记录 Scene Session 的源关卡不一致，未自动选择其他任务。");
+        return false;
+    }
+    const FString SourcePath = FPackageName::LongPackageNameToFilename(
+        SourceScene,
+        FPackageName::GetMapPackageExtension());
+    FString CurrentSourceSha;
+    if (!ArtFlowSceneBridge::HashFile(SourcePath, CurrentSourceSha, OutError) ||
+        CurrentSourceSha != SourceLevelSha)
+    {
+        OutError = TEXT("源关卡内容已变化，当前 Scene Session 不再可安全恢复。");
+        return false;
+    }
+    const FString ReceiptPath = FPaths::Combine(
+        ArtFlowSceneBridge::GetBridgeRoot(),
+        TEXT("SceneSessions"),
+        ReceiptName);
+    FString ReceiptText;
+    TSharedPtr<FJsonObject> Receipt;
+    const TSharedPtr<FJsonObject>* ArtFlowReceipt = nullptr;
+    const TSharedPtr<FJsonObject>* Session = nullptr;
+    FString ReceiptSchema;
+    FString ReceiptEndpoint;
+    FString ReceiptSource;
+    FString ReceiptRun;
+    FString ReceiptSessionSha;
+    bool bSuccess = false;
+    bool bSourceUnchanged = false;
+    if (!ArtFlowSceneBridge::IsPathInside(ReceiptPath, FPaths::Combine(ArtFlowSceneBridge::GetBridgeRoot(), TEXT("SceneSessions"))) ||
+        !FFileHelper::LoadFileToString(ReceiptText, *ReceiptPath) ||
+        !FJsonSerializer::Deserialize(TJsonReaderFactory<>::Create(ReceiptText), Receipt) ||
+        !Receipt.IsValid() ||
+        !Receipt->TryGetStringField(TEXT("schema"), ReceiptSchema) ||
+        !Receipt->TryGetBoolField(TEXT("success"), bSuccess) ||
+        !Receipt->TryGetBoolField(TEXT("source_level_unchanged"), bSourceUnchanged) ||
+        !Receipt->TryGetStringField(TEXT("endpoint_origin"), ReceiptEndpoint) ||
+        !Receipt->TryGetStringField(TEXT("source_scene"), ReceiptSource) ||
+        !Receipt->TryGetObjectField(TEXT("artflow_receipt"), ArtFlowReceipt) ||
+        ArtFlowReceipt == nullptr ||
+        !(*ArtFlowReceipt)->TryGetStringField(TEXT("run_id"), ReceiptRun) ||
+        !(*ArtFlowReceipt)->TryGetObjectField(TEXT("session"), Session) ||
+        Session == nullptr ||
+        !(*Session)->TryGetStringField(TEXT("session_sha256"), ReceiptSessionSha) ||
+        ReceiptSchema != TEXT("artflow-unreal-scene-session-handshake-receipt/1") ||
+        !bSuccess || !bSourceUnchanged || ReceiptEndpoint != Endpoint || ReceiptSource != SourceScene ||
+        ReceiptRun != RunId || ReceiptSessionSha != SessionSha)
+    {
+        OutError = TEXT("当前 Session 指针无法回溯到一致的已验证握手回执。");
+        return false;
+    }
+    SessionRunId = RunId;
+    SessionSha256 = SessionSha;
+    SessionEndpointOrigin = Endpoint;
+    SessionSourceScene = SourceScene;
+    SessionSourceLevelPath = SourcePath;
+    SessionSourceLevelSha = SourceLevelSha;
+    UE_LOG(LogArtFlowSceneBridge, Display, TEXT("ARTFLOW_SESSION_CONTEXT_RECOVERED run=%s source=%s"), *RunId, *SourceScene);
+    return true;
+}
+
+bool FArtFlowSceneBridgeModule::PersistCurrentSessionContext(
+    const FString& HandshakeReceiptPath,
+    FString& OutError) const
+{
+    const FString ReceiptName = FPaths::GetCleanFilename(HandshakeReceiptPath);
+    if (ReceiptName.IsEmpty() || !ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) ||
+        !ArtFlowSceneBridge::IsSha256(SessionSha256) ||
+        !ArtFlowSceneBridge::IsSha256(SessionSourceLevelSha))
+    {
+        OutError = TEXT("已验证握手不能形成安全的当前 Session 指针。");
+        return false;
+    }
+    TSharedPtr<FJsonObject> Context = MakeShared<FJsonObject>();
+    Context->SetStringField(TEXT("schema"), TEXT("artflow-unreal-current-session/1"));
+    Context->SetStringField(TEXT("endpoint_origin"), SessionEndpointOrigin);
+    Context->SetStringField(TEXT("run_id"), SessionRunId);
+    Context->SetStringField(TEXT("session_sha256"), SessionSha256);
+    Context->SetStringField(TEXT("source_scene"), SessionSourceScene);
+    Context->SetStringField(TEXT("source_level_sha256"), SessionSourceLevelSha);
+    Context->SetStringField(TEXT("handshake_receipt"), ReceiptName);
+    Context->SetStringField(TEXT("updated_at"), FDateTime::UtcNow().ToIso8601());
+    FString ContextText;
+    FJsonSerializer::Serialize(Context.ToSharedRef(), TJsonWriterFactory<>::Create(&ContextText));
+    const FString ContextPath = FPaths::Combine(ArtFlowSceneBridge::GetBridgeRoot(), TEXT("CurrentSession.json"));
+    const FString PartialPath = ContextPath + TEXT(".partial");
+    if (!FFileHelper::SaveStringToFile(ContextText, *PartialPath, FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM) ||
+        !IFileManager::Get().Move(*ContextPath, *PartialPath, true, true, false, true))
+    {
+        IFileManager::Get().Delete(*PartialPath, false, true);
+        OutError = TEXT("当前 Session 指针无法原子保存到项目 Saved 目录。");
+        return false;
+    }
+    return true;
+}
+
 bool FArtFlowSceneBridgeModule::ExecuteRegisteredCurrentVariantScript(
     const FString& ScriptName,
     FString& OutError)
 {
-    if (!ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) || SessionEndpointOrigin.IsEmpty())
+    if ((!ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) || SessionEndpointOrigin.IsEmpty()) &&
+        !RestoreSessionContext(OutError))
     {
-        OutError = TEXT("请先从当前关卡启动 ArtFlow 场景任务；发布与审阅只接受本次 Session 的注册身份。");
         return false;
     }
     if (ScriptName != TEXT("publish_session_candidate.py") &&
@@ -3249,6 +3382,10 @@ void FArtFlowSceneBridgeModule::HandleSceneSessionHandshake(
             FFileHelper::EEncodingOptions::ForceUTF8WithoutBOM))
         {
             Error = TEXT("The verified ArtFlow handshake receipt could not be saved.");
+            ReceiptPath.Reset();
+        }
+        else if (!PersistCurrentSessionContext(ReceiptPath, Error))
+        {
             ReceiptPath.Reset();
         }
     }
@@ -4405,15 +4542,28 @@ bool FArtFlowSceneBridgeModule::TickAutomation(float DeltaTime)
     {
         FString Endpoint;
         CurrentVariantAction = CurrentVariantAction.TrimStartAndEnd().ToLower();
-        if ((CurrentVariantAction != TEXT("publish") && CurrentVariantAction != TEXT("review")) ||
-            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCurrentVariantRun="), SessionRunId) ||
-            !ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) ||
-            !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowEndpoint="), Endpoint) ||
-            !ArtFlowSceneBridge::NormalizeLoopbackOrigin(Endpoint, SessionEndpointOrigin, Error))
+        if (CurrentVariantAction != TEXT("publish") && CurrentVariantAction != TEXT("review"))
         {
-            if (Error.IsEmpty())
+            Error = TEXT("Current variant automation accepts only the registered publish or review action.");
+        }
+        else if (FParse::Value(FCommandLine::Get(), TEXT("ArtFlowCurrentVariantRun="), SessionRunId))
+        {
+            if (!ArtFlowSceneBridge::IsSafeRunIdentity(SessionRunId) ||
+                !FParse::Value(FCommandLine::Get(), TEXT("ArtFlowEndpoint="), Endpoint) ||
+                !ArtFlowSceneBridge::NormalizeLoopbackOrigin(Endpoint, SessionEndpointOrigin, Error))
             {
-                Error = TEXT("Current variant automation requires publish/review, a registered run identity and a localhost endpoint.");
+                if (Error.IsEmpty())
+                {
+                    Error = TEXT("Explicit automation context requires a registered run identity and localhost endpoint.");
+                }
+            }
+            else
+            {
+                bSuccess = ExecuteRegisteredCurrentVariantScript(
+                    CurrentVariantAction == TEXT("publish")
+                        ? TEXT("publish_session_candidate.py")
+                        : TEXT("review_published_variant.py"),
+                    Error);
             }
         }
         else

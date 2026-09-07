@@ -1,0 +1,10 @@
+{
+	"schema": "artflow-unreal-current-session/1",
+	"endpoint_origin": "http://127.0.0.1:8804",
+	"run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+	"session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+	"source_scene": "/Game/ArtFlowDemo",
+	"source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+	"handshake_receipt": "scene-handshake-f163fdffe36a.json",
+	"updated_at": "2026-08-31T06:58:00.000Z"
+}
