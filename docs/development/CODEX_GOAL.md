@@ -87,9 +87,13 @@ Unreal 当前场景
   完成最小 UV/贴图/材质槽检查后回到新的 Unreal 隔离候选。Blender 5.2 已实际生成 1024²
   Base Color / Roughness、命名 UV、单材质 GLB 与可编辑 `.blend`；Unreal 5.8 导入网格、材质和
   两张纹理，重复回流对账且源关卡字节不变。
-- **M27 · Live surface capability dispatch（进行中）**：把已经实测的 Surface Bake 提升为当前
+- **M27 · Live surface capability dispatch（已完成）**：把已经实测的 Surface Bake 提升为当前
   Scene Session 的第六项 DCC 能力，复用现有 DCC Worker 的 queue / claim / execute / reconcile
   生命周期，并在场景变更谱展示 Lookdev、UV 图集、Blender 结果和 Unreal 候选之间的连续关系。
+  桌面与窄屏产品检查均无横向溢出，四张真实媒体成功加载，控制台错误与警告为 0。
+- **M28 · Physics-assisted set dressing round-trip（进行中）**：继续使用 Blender 的非建模能力，
+  把当前场景边界、登记原型、确定性种子和有限帧预算编译为刚体散落任务。Blender 负责求解并返回
+  可编辑 `.blend`、预览和变换清单；Unreal 只在新的隔离候选中应用经过边界检查的最终变换。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

@@ -54,6 +54,12 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 
 ![1024 平方像素 Base Color UV 图集](artifacts/goal/m26-s1-surface-bake/AF_ShrineCourtyard_Baked_BaseColor.png)
 
+Surface Bake 也已进入当前 Scene Session 的产品工作项。场景变更谱把 Lookdev 输入、UV 图集、
+Blender 结果和 Unreal 候选组织为同一条可恢复路线；六项 DCC 能力共享原有事件账本与本地 Worker，
+没有增加第二套调度器或确认步骤。
+
+![当前 Session 的 Surface Bake 生产路线](artifacts/goal/m27-s1-live-surface/live-surface-route.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

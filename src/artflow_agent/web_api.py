@@ -1452,6 +1452,15 @@ def create_app(
             "m24-lookdev-unreal": goal_root
             / "m24-s2-scene-lookdev"
             / "unreal-lookdev-candidate.png",
+            "m26-surface-atlas": goal_root
+            / "m26-s1-surface-bake"
+            / "AF_ShrineCourtyard_Baked_BaseColor.png",
+            "m26-surface-blender": goal_root
+            / "m26-s1-surface-bake"
+            / "AF_ShrineCourtyard_Baked-preview.png",
+            "m26-surface-unreal": goal_root
+            / "m26-s1-surface-bake"
+            / "unreal-surface-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

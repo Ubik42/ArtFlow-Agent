@@ -4194,6 +4194,9 @@ button:focus-visible {
 .intent-to-world.frames-3 {
   grid-template-columns: minmax(150px, 1fr) 52px minmax(150px, 1fr) 52px minmax(150px, 1fr) 170px;
 }
+.intent-to-world.frames-4 {
+  grid-template-columns: minmax(130px, 1fr) 38px minmax(130px, 1fr) 38px minmax(130px, 1fr) 38px minmax(130px, 1fr) 170px;
+}
 .domain-ledger {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -4653,6 +4656,9 @@ button:focus-visible {
   .intent-to-world.frames-3 {
     grid-template-columns: 1fr 42px 1fr 42px 1fr;
   }
+  .intent-to-world.frames-4 {
+    grid-template-columns: 1fr 34px 1fr 34px 1fr 34px 1fr;
+  }
   .world-verdict {
     grid-column: 1/-1;
     display: grid;
@@ -4665,12 +4671,18 @@ button:focus-visible {
   .frames-3 .world-verdict {
     grid-column: 1/-1;
   }
+  .frames-4 .world-verdict {
+    grid-column: 1/-1;
+  }
   .world-verdict strong,
   .world-verdict p {
     margin-top: 0;
   }
 }
 @media (max-width: 980px) {
+  .intent-to-world.frames-4 {
+    display: block;
+  }
   .spectrum-intent {
     grid-template-columns: 1fr;
   }

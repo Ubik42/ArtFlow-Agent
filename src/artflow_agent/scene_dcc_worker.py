@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from .agent_runtime import AgentEventStore, AgentRuntimeError
+from .blender_surface import BlenderSurfaceRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 
@@ -53,6 +54,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "shot": project_root / "artifacts/goal/m23-s5-camera-light",
         "conditioning": project_root / "artifacts/goal/m24-s1-scene-conditioning",
         "lookdev": project_root / "artifacts/goal/m24-s2-scene-lookdev",
+        "surface": project_root / "artifacts/goal/m26-s1-surface-bake",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -119,7 +121,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["lookdev"] / "unreal-lookdev-return-receipt.json",
             expected_sha256=str(work.unreal_lookdev_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.surface_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal lookdev candidate changed")
         shot_return = json.loads(
             (roots["shot"] / "unreal-shot-return-receipt.json").read_text(encoding="utf-8")
@@ -131,6 +136,34 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["lookdev"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal lookdev screenshot identity changed")
+
+    if work.surface_request_sha256 is not None:
+        surface_request = BlenderSurfaceRequest.model_validate_json(
+            (roots["surface"] / "surface-request.json").read_text(encoding="utf-8")
+        )
+        if surface_request.request_sha256 != work.surface_request_sha256:
+            raise ValueError("registered surface request changed")
+        surface_receipt = _load_receipt(
+            roots["surface"] / "surface-receipt.json",
+            expected_sha256=str(work.surface_receipt_sha256),
+        )
+        _verify_artifacts(roots["surface"], surface_receipt)
+        unreal_receipt = _load_receipt(
+            roots["surface"] / "unreal-surface-return-receipt.json",
+            expected_sha256=str(work.unreal_surface_return_receipt_sha256),
+        )
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal surface candidate changed")
+        lookdev_return = json.loads(
+            (roots["lookdev"] / "unreal-lookdev-return-receipt.json").read_text(encoding="utf-8")
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != lookdev_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("Unreal surface candidate no longer derives from lookdev")
+        screenshot = roots["surface"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal surface screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -177,7 +210,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes、镜头灯光与场景 Lookdev 已回流",
+                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev 与 Surface Bake 已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

@@ -615,6 +615,9 @@ type SceneDccWorkState = {
     lookdev_request_sha256?: string;
     lookdev_receipt_sha256?: string;
     unreal_lookdev_return_receipt_sha256?: string;
+    surface_request_sha256?: string;
+    surface_receipt_sha256?: string;
+    unreal_surface_return_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1628,7 +1631,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.lookdev_request_sha256
+                  {dccWork.definition.surface_request_sha256
+                    ? "Lookdev → Blender UV / Bake → Unreal"
+                    : dccWork.definition.lookdev_request_sha256
                     ? "ComfyUI 场景目标 → Blender Lookdev → Unreal"
                     : "ComfyUI PBR → Blender → Unreal"}
                   {" · "}{shortId(dccWork.definition.work_sha256)}
@@ -1795,8 +1800,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const currentCorrection = agent.scene_correction_intake?.evaluation_input;
   const hasMultiLightReceipt = currentCorrection?.secondary_intensity_after !== undefined;
   const hasSceneLookdev = Boolean(agent.scene_dcc_work?.definition.lookdev_request_sha256);
+  const hasSurfaceBake = Boolean(agent.scene_dcc_work?.definition.surface_request_sha256);
   const cases = [
-    ...(hasSceneLookdev
+    ...(hasSurfaceBake
+      ? [{
+          id: "surface-bake-roundtrip",
+          tab: "当前 Session · Surface Bake",
+          title: "把 Lookdev 收敛为可复用的引擎表面资产",
+          description: "Agent 绑定当前 Lookdev、27 个登记对象与有限 UV/Bake 参数。Blender 生成命名 UV、两张 1024 图集、单材质 GLB 和可编辑源文件；Unreal 通过 Interchange 接收新的隔离候选，重复回流只执行对账。",
+          frames: [
+            { src: "/api/showcase/production/m24-lookdev-blender", alt: "已经接受的 Blender Lookdev 输入", label: "Lookdev 输入", title: "场景与材质方向已绑定" },
+            { src: "/api/showcase/production/m26-surface-atlas", alt: "Blender 生成的 1024 平方像素 Base Color UV 图集", label: "UV 图集", title: "ArtFlow_BakedUV · 1024²" },
+            { src: "/api/showcase/production/m26-surface-blender", alt: "Blender 生成的单材质可编辑 Surface", label: "DCC 结果", title: "2,818 顶点 · 5,364 三角形" },
+            { src: "/api/showcase/production/m26-surface-unreal", alt: "Unreal 导入贴图材质后的隔离候选", label: "UE 候选", title: "1 材质 · 2 纹理 · 已对账" },
+          ],
+          transition: "内容身份",
+          metricA: "11,104",
+          metricALabel: "UV loops",
+          metricB: "0",
+          metricBLabel: "重复回流副作用",
+          note: `Surface Request ${shortId(agent.scene_dcc_work?.definition.surface_request_sha256 ?? "")} 与当前事件流绑定；最终候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}，源关卡字节未变化。`,
+          domains: ["Lookdev·已绑定", "UV·已展开", "贴图·已烘焙", "DCC·已回流", "UE·已对账"],
+        }]
+      : hasSceneLookdev
       ? [{
           id: "scene-conditioned-lookdev",
           tab: "当前 Session · 场景 Lookdev",
@@ -1905,10 +1931,12 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
+    if (hasSurfaceBake && caseId !== "surface-bake-roundtrip") {
+      setCaseId("surface-bake-roundtrip");
+    } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasSceneLookdev]);
+  }, [caseId, hasSceneLookdev, hasSurfaceBake]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

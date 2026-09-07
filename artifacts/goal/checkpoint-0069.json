@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M27-S1",
+  "status": "completed",
+  "outcome": "The verified M26 Surface Bake is now the sixth capability in the existing current-session DCC Work. Its request, Blender artifacts, Unreal receipt and final candidate are content-bound; queue, claim, execution, reconciliation and replay use the original event lifecycle, while Scene Change Spectrum presents the four-stage route at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m27-s1-live-surface/agent-events.sqlite3",
+    "artifacts/goal/m27-s1-live-surface/live-surface-work-receipt.json",
+    "artifacts/goal/m27-s1-live-surface/live-surface-desktop.png",
+    "artifacts/goal/m27-s1-live-surface/live-surface-route.png",
+    "artifacts/goal/m27-s1-live-surface/live-surface-narrow.png",
+    "artifacts/goal/m27-s1-live-surface/verification.json",
+    "docs/evidence/M27_S1_LIVE_SURFACE_DISPATCH_2026-09-07.md"
+  ]
+}

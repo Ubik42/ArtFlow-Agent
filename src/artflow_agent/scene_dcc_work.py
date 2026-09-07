@@ -7,6 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 
 SceneDccWorkStatus = Literal["queued", "claimed", "executing", "reconciling", "succeeded", "failed"]
@@ -29,8 +30,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.geometry_nodes.shrine_courtyard.v1",
             "blender.shot.rain_breakthrough.v1",
             "blender.lookdev.scene_target.v1",
+            "blender.surface.uv_bake.v1",
         ]
-    ] = Field(min_length=2, max_length=5)
+    ] = Field(min_length=2, max_length=6)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -46,9 +48,14 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_lookdev_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    surface_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    surface_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_surface_return_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -89,6 +96,17 @@ class SceneDccWorkDefinition(BaseModel):
             if self.shot_receipt_sha256 is None:
                 raise ValueError("scene-conditioned lookdev requires the camera-light exchange")
             expected_capabilities.append("blender.lookdev.scene_target.v1")
+        surface_identities = (
+            self.surface_request_sha256,
+            self.surface_receipt_sha256,
+            self.unreal_surface_return_receipt_sha256,
+        )
+        if any(item is not None for item in surface_identities):
+            if not all(item is not None for item in surface_identities):
+                raise ValueError("DCC work requires every surface-bake identity")
+            if self.lookdev_receipt_sha256 is None:
+                raise ValueError("surface bake requires the scene-conditioned lookdev")
+            expected_capabilities.append("blender.surface.uv_bake.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -267,6 +285,46 @@ def compile_current_blender_dcc_work(
         payload["unreal_lookdev_return_receipt_sha256"] = lookdev_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = lookdev_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = lookdev_unreal["candidate_scene_path"]
+    surface_root = project_root / "artifacts/goal/m26-s1-surface-bake"
+    surface_request_path = surface_root / "surface-request.json"
+    surface_receipt_path = surface_root / "surface-receipt.json"
+    surface_unreal_path = surface_root / "unreal-surface-return-receipt.json"
+    if (
+        surface_request_path.is_file()
+        and surface_receipt_path.is_file()
+        and surface_unreal_path.is_file()
+    ):
+        surface_request = BlenderSurfaceRequest.model_validate_json(
+            surface_request_path.read_text(encoding="utf-8")
+        )
+        surface_receipt = BlenderSurfaceReceipt.model_validate_json(
+            surface_receipt_path.read_text(encoding="utf-8")
+        )
+        surface_unreal = json.loads(surface_unreal_path.read_text(encoding="utf-8"))
+        if surface_request.session_id != session_id:
+            raise ValueError("surface bake references another Scene Session")
+        if surface_request.lookdev_request_sha256 != payload.get("lookdev_request_sha256"):
+            raise ValueError("surface bake references another lookdev request")
+        if surface_request.lookdev_receipt_sha256 != hashlib.sha256(
+            lookdev_receipt_path.read_bytes()
+        ).hexdigest():
+            raise ValueError("surface bake references another lookdev receipt")
+        if surface_receipt.request_sha256 != surface_request.request_sha256:
+            raise ValueError("surface receipt references another request")
+        if surface_unreal.get("blender_surface_receipt_sha256") != surface_receipt.receipt_sha256:
+            raise ValueError("Unreal surface return references another Blender receipt")
+        if surface_unreal.get("source_candidate_scene_path") != lookdev_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("Unreal surface candidate no longer derives from the lookdev candidate")
+        if surface_unreal.get("capture_status") != "completed":
+            raise ValueError("Unreal surface return capture is not complete")
+        payload["capability_ids"].append("blender.surface.uv_bake.v1")
+        payload["surface_request_sha256"] = surface_request.request_sha256
+        payload["surface_receipt_sha256"] = surface_receipt.receipt_sha256
+        payload["unreal_surface_return_receipt_sha256"] = surface_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = surface_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = surface_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

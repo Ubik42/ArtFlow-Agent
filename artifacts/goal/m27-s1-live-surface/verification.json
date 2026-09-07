@@ -1,0 +1,26 @@
+{
+  "schema_id": "artflow-m27-s1-verification/1",
+  "slice_id": "M27-S1",
+  "status": "passed",
+  "checks": {
+    "focused_contract_tests": "2/2",
+    "registered_capabilities": "6/6",
+    "dcc_lifecycle_events": "5/5",
+    "repeat_dispatch_same_work": true,
+    "event_replay_equivalent": true,
+    "duplicate_external_side_effect_count": 0,
+    "frontend_build": "passed",
+    "desktop_viewport": "1600x1000",
+    "narrow_viewport": "760x1000",
+    "narrow_horizontal_overflow_px": 0,
+    "route_media_loaded": "4/4",
+    "browser_console_errors": 0,
+    "browser_console_warnings": 0
+  },
+  "work_sha256": "5160e7d8d699118e201a5eae2e0b04f428862868165577ecf316ba999e81e0aa",
+  "outcome_sha256": "97706d98cbd3f1bd3c8d0a984e358de8be7430b7a910907fe1ba042eee5f802a",
+  "event_store_sha256": "f5dcdabb09d888288196c7461a89772aa972a221715ce3d419aadbf5c671aba7",
+  "desktop_screenshot_sha256": "feb6833a87e2995d96e7c71ed6b21782ea71b0f9ca789f9c49268d1c1111c198",
+  "route_screenshot_sha256": "714f8b5526879bc6b3832fcd77356a541b1d929958f78dc21c53838f2d342a87",
+  "narrow_screenshot_sha256": "b27026e398389560f5341ec686f70075241daa6909dbcf9dd64ef22001eb142c"
+}

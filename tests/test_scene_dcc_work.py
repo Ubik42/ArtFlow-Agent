@@ -38,11 +38,15 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.geometry_nodes.shrine_courtyard.v1",
         "blender.shot.rain_breakthrough.v1",
         "blender.lookdev.scene_target.v1",
+        "blender.surface.uv_bake.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Lookdev_B_4a01b62f9d58")
+    assert work["definition"]["surface_request_sha256"] == (
+        "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Surface_B_9cbf7f1f20ab")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None
