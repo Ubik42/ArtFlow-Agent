@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-unreal-mechanism-shot-receipt/1",
+  "request_sha256": "59b449e641704045759c9cb0d499ecb5f870279b4c75008af2e12bb57ddba9af",
+  "mechanism_unreal_receipt_sha256": "7c969783b8e92814334e7ee5607d2b16405ab93dedfe6df8f0535058b970fb6c",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Mechanism_B_2762b53baeec",
+  "source_candidate_sha256_before": "07075d0f6f77a74ead6ba317d6915ab2c821eef34b22e59a835131683175b916",
+  "source_candidate_sha256_after": "07075d0f6f77a74ead6ba317d6915ab2c821eef34b22e59a835131683175b916",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/MechanismShot_B_3273ac1a1081",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_MechanismShot_3273ac1a1081.LS_AF_MechanismShot_3273ac1a1081",
+  "sequence_sha256": "14750d4dfacf651404c7587acc57933f4b8f3951c7b0daf53e3831e1887ebc9b",
+  "sequence_binding_count": 4,
+  "mechanism_binding_count": 1,
+  "animation_track_count": 1,
+  "animation_section_count": 1,
+  "camera_binding_count": 1,
+  "light_binding_count": 1,
+  "camera_cut_track_count": 1,
+  "created_actor_count": 0,
+  "created_package_count": 0,
+  "created_binding_count": 0,
+  "created_track_count": 0,
+  "duplicate_track_count": 0,
+  "frame_numbers": [
+    1,
+    24,
+    48
+  ],
+  "preview_capture_mode": "sequencer_render_movie",
+  "preview_paths": {
+    "closed_start": "unreal-mechanism-shot-closed_start.png",
+    "open": "unreal-mechanism-shot-open.png",
+    "closed_end": "unreal-mechanism-shot-closed_end.png"
+  },
+  "preview_sha256s": {
+    "closed_start": "618affbc55c46d623cc9ba0d4aeac028a0111886ba5aea2feea32e2db392f964",
+    "open": "8201d9453e63bc09febfed5acc49b9f999621116e019d39030eaed9a94f929a2",
+    "closed_end": "50815ed979e92e91730371abb28047ce605e741ebb465aafc36023149232e97f"
+  },
+  "completed_at": "2026-09-07T18:07:57.041773Z",
+  "receipt_sha256": "2d003a0e56ca0cd40f66abf6e701c3326e0154daca956c9976d0df8a0468ac71"
+}

@@ -174,9 +174,13 @@ Unreal 当前场景
 - **M52 · Live mechanism-animation dispatch（已完成）**：把 M51 的精确请求、Blender 编辑源、FBX、
   骨骼/动作清单和 Unreal 候选登记为第十八项当前 Session DCC 能力，复用已有 Worker、事件账本和
   场景变更谱。五段生命周期、重复派发和 Reducer 重放已经通过，桌面与窄屏使用三段真实媒体展示。
-- **M53 · Sequenced mechanism shot handoff（进行中）**：以 M51 骨骼机关及动画为输入，在 Unreal
-  派生候选中创建有限 Level Sequence、骨骼动画段、CineCamera 和灯光提示，形成可编辑的机关镜头包。
-  任务只允许登记资产和固定轨道模板，不开放任意 Sequencer 脚本或通用轨道编辑器。
+- **M53 · Sequenced mechanism shot handoff（已完成）**：M51 骨骼机关已经进入 Unreal 5.8
+  Level Sequence。派生候选包含一个骨骼动画段、可生成 CineCamera、常量相机轨道、Camera Cut 与
+  灯光提示；Sequencer 真实渲染第 1、24、48 帧，形成闭合、开启、闭合三态。独立进程重跑没有新增
+  Actor、Package、Binding 或 Track，M51 源候选保持字节不变。
+- **M54 · Live mechanism-shot dispatch（进行中）**：把 M53 的精确请求、Level Sequence、派生候选与
+  三张 Sequencer 帧登记为当前 Session 的第十九项有限能力，继续复用现有 DCC Worker、事件账本和
+  场景变更谱，不重新运行 Blender 或 Unreal。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

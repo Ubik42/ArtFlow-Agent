@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 101,
+  "stateRevision": 102,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M53",
+  "currentMilestone": "M54",
   "milestones": [
     {
       "id": "M0",
@@ -632,7 +632,7 @@
     {
       "id": "M53",
       "title": "Sequenced mechanism shot handoff",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M52"],
       "outcome": "The registered articulated mechanism and animation become an editable Unreal Level Sequence shot with bounded camera and lighting cues in a candidate derived from the exact M51 scene.",
       "acceptance": [
@@ -641,39 +641,51 @@
         "Start, open and end previews prove the authored motion while the source mechanism candidate remains byte-identical",
         "A repeated return reconciles the same sequence, bindings and candidate without duplicate tracks, actors or packages"
       ]
+    },
+    {
+      "id": "M54",
+      "title": "Live mechanism-shot dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M53"],
+      "outcome": "The proven mechanism-shot request, Unreal Level Sequence, derived candidate and three rendered action states become the nineteenth finite current-session capability dispatched through the existing durable DCC lifecycle.",
+      "acceptance": [
+        "The work item binds the exact M53 request, Level Sequence, candidate and three Sequencer-rendered previews",
+        "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate external side effects",
+        "The Chinese Scene Change Spectrum presents DCC rig authoring, Unreal sequencing and closed-open-closed delivery as one production route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M53-S1",
-    "milestone": "M53",
-    "title": "Author a bounded Unreal mechanism shot",
-    "outcome": "Compile the exact M51 skeletal result into a fixed shot specification, create a Level Sequence with the registered mechanism animation and camera, capture three key previews and reconcile the same assets in a second Unreal process.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M54-S1",
+    "milestone": "M54",
+    "title": "Dispatch the verified mechanism shot from the live Scene Session",
+    "outcome": "Register M53 as the nineteenth content-bound current-session capability, replay it through the existing DCC worker and present the exact Level Sequence and three action states in the Scene Change Spectrum without rerunning Unreal.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun Blender or alter the M51 skeletal assets",
-      "Do not build a general Sequencer, Control Rig or gameplay interaction editor",
-      "Do not expose arbitrary track classes, asset paths or Unreal Python",
-      "Do not add another worker, queue, event model or publication path"
+      "Do not rerun Blender, Unreal or the Sequencer capture",
+      "Do not add another worker, queue, reducer or state projection",
+      "Do not expose arbitrary asset paths, track classes or host commands",
+      "Do not redesign unrelated product surfaces"
     ],
     "acceptance": [
-      "A content-addressed request accepts only the exact M51 candidate and imported skeletal, skeleton and animation identities plus a 48-frame fixed shot recipe",
-      "Unreal creates one derived candidate, one Level Sequence, one mechanism binding, one animation section and one CineCamera binding",
-      "Three captured frames show the closed, open and closed action states and remain bound to the request receipt",
-      "A second Unreal execution creates zero actors, bindings, tracks or packages and leaves the M51 source candidate byte-identical"
+      "One typed work definition binds the exact M53 request, receipt, candidate, sequence and preview hashes",
+      "The existing worker records queue, claim, execute, reconcile and success for one stable work identity",
+      "Repeat dispatch and reducer replay create no duplicate work item or external side effect",
+      "Desktop and narrow product views load the three real action states without overflow or failed media"
     ],
     "stopConditions": [
-      "Stop if the M51 candidate, skeletal assets or animation identity no longer verify",
-      "Stop if the requested animation cannot be bound without changing the source candidate",
-      "Stop if implementation requires arbitrary Sequencer tracks or host code from the model"
+      "Stop if any M53 request, receipt, Level Sequence or preview identity no longer verifies",
+      "Stop if registration requires a parallel worker or lifecycle path",
+      "Stop if the UI would need simulated progress or placeholder media"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe", "required": true},
-      {"id": "mechanism_request", "kind": "repo_path", "value": "artifacts/goal/m51-s1-mechanism-rig/mechanism-rig-request.json", "required": true},
-      {"id": "mechanism_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m51-s1-mechanism-rig/unreal-mechanism-rig-receipt.json", "required": true}
+      {"id": "mechanism_shot_request", "kind": "repo_path", "value": "artifacts/goal/m53-s1-mechanism-shot/mechanism-shot-request.json", "required": true},
+      {"id": "mechanism_shot_receipt", "kind": "repo_path", "value": "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-receipt.json", "required": true},
+      {"id": "mechanism_shot_open_preview", "kind": "repo_path", "value": "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-open.png", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -689,9 +701,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0094.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0095.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M52 are complete. The exact articulated-gate request, editable Blender rig, FBX, manifest, Unreal skeletal assets and candidate are registered as the eighteenth current-session capability. Five append-only lifecycle events, repeat dispatch and reducer replay reached one terminal identity with zero duplicate external side effects. The Chinese Scene Change Spectrum presents the route through three real media stages at desktop and narrow widths. Sequenced mechanism shot handoff is M53-S1 scope and has not yet been executed.",
+  "evidenceCeiling": "M0-M53 are complete. The exact M51 articulated-gate candidate and skeletal assets now drive a bounded Unreal 5.8 Level Sequence with one animation section, a spawnable CineCamera, constant camera transform, camera cut and cue light. Sequencer rendered frames 1, 24 and 48 as closed, open and closed states. A fresh process reconciled the same candidate and sequence with zero new actors, packages, bindings or tracks while the M51 source candidate remained byte-identical. Live mechanism-shot dispatch is M54-S1 scope and has not yet been executed.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

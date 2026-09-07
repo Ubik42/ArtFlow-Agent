@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M53-S1",
+  "status": "completed",
+  "outcome": "The exact M51 articulated-gate candidate and skeletal assets now drive a bounded Unreal 5.8 Level Sequence with one animation section, a spawnable CineCamera, a constant camera transform, a camera cut and a cue light. Sequencer rendered the closed/open/closed frames, and a fresh process reconciled the same candidate and sequence with zero new actors, packages, bindings or tracks while the source candidate remained byte-identical.",
+  "evidence": [
+    "artifacts/goal/m53-s1-mechanism-shot/mechanism-shot-request.json",
+    "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-receipt.json",
+    "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-closed_start.png",
+    "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-open.png",
+    "artifacts/goal/m53-s1-mechanism-shot/unreal-mechanism-shot-closed_end.png",
+    "docs/evidence/M53_S1_MECHANISM_SHOT_2026-09-07.md"
+  ]
+}

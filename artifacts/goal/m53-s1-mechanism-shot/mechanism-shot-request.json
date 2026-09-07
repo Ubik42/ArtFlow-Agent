@@ -1,0 +1,52 @@
+{
+  "schema_id": "artflow-mechanism-shot-request/1",
+  "request_id": "mechanism-shot-2badad8424869d51",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "capability_id": "unreal.sequencer.mechanism_shot.v1",
+  "mechanism_request_sha256": "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c",
+  "mechanism_unreal_receipt_sha256": "7c969783b8e92814334e7ee5607d2b16405ab93dedfe6df8f0535058b970fb6c",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Mechanism_B_2762b53baeec",
+  "source_candidate_sha256": "07075d0f6f77a74ead6ba317d6915ab2c821eef34b22e59a835131683175b916",
+  "skeletal_mesh_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate.SK_AF_ArticulatedGate",
+  "skeletal_mesh_sha256": "de1792eeb2e1c1fedcd7737f1eedc2ce30ff940738e3c5eed80bfd35ed05f8cb",
+  "skeleton_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate_Skeleton.SK_AF_ArticulatedGate_Skeleton",
+  "skeleton_sha256": "6410d951881833663628a807ce4498e61afd260065c0dd10537d47295d8d5821",
+  "animation_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate_Anim.SK_AF_ArticulatedGate_Anim",
+  "animation_sha256": "07cf2234a6e7fb00fc52725dcd15f58534e426dcef5019c91522f84b1626dd7b",
+  "display_rate_fps": 24,
+  "playback_start_frame": 1,
+  "playback_end_frame": 49,
+  "frames": [
+    {
+      "label": "closed_start",
+      "frame": 1
+    },
+    {
+      "label": "open",
+      "frame": 24
+    },
+    {
+      "label": "closed_end",
+      "frame": 48
+    }
+  ],
+  "camera_location_cm": [
+    2500.0,
+    -1050.0,
+    320.0
+  ],
+  "camera_target_cm": [
+    2500.0,
+    0.0,
+    190.0
+  ],
+  "camera_focal_length_mm": 42.0,
+  "camera_binding_mode": "spawnable",
+  "camera_cut_binding_space": "sequence_local",
+  "camera_transform_track": "constant",
+  "cue_light_intensity": 1800.0,
+  "cue_light_temperature_kelvin": 4200.0,
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/MechanismShot_B_3273ac1a1081",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_MechanismShot_3273ac1a1081.LS_AF_MechanismShot_3273ac1a1081",
+  "request_sha256": "59b449e641704045759c9cb0d499ecb5f870279b4c75008af2e12bb57ddba9af"
+}
