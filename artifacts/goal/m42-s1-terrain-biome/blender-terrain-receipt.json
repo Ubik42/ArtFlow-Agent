@@ -1,0 +1,44 @@
+{
+  "schema_id": "artflow-blender-terrain-receipt/1",
+  "request_sha256": "dfa6418e8729f070d3680d9e6381ebb46aa8c5cb77a5bb95b908a4eb0e8f1f0c",
+  "field_receipt_sha256": "e8bb7658f169bb217f46d86b99e982d9fa2009b026c34c47fbe42e8949c1214c",
+  "capability_id": "blender.geometry_nodes.bounded_terrain.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "vertex_count": 3072,
+  "face_count": 2961,
+  "geometry_node_count": 3,
+  "uv_layer": "ArtFlow_TerrainUV",
+  "collision_proxy": "UBX_SM_AF_BiomeTerrain_00",
+  "protected_center_flat": true,
+  "biome_point_count": 18,
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_BiomeTerrain.blend",
+      "sha256": "0c81632c3ffcbbab914dfcb1d34279eb921cf7789072fb5529b95090f5ae8655",
+      "size_bytes": 182463
+    },
+    {
+      "kind": "glb",
+      "relative_path": "SM_AF_BiomeTerrain.glb",
+      "sha256": "5a536c463b310cb7e625737b69ddb750397cd68af25b7bbd6a47309402ca4174",
+      "size_bytes": 135040
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_BiomeTerrain-preview.png",
+      "sha256": "5f5b341097ddc5f22d4292a8b39ef576b90a8e09b20285e90cd9c7560735de2c",
+      "size_bytes": 538928
+    },
+    {
+      "kind": "pcg_manifest",
+      "relative_path": "biome-pcg-points.json",
+      "sha256": "08f5a7a17a112d43766a303bf0ef6f0dcc63c5dfc779faf1a327c235da5e52cc",
+      "size_bytes": 2305
+    }
+  ],
+  "elapsed_seconds": 1.759,
+  "completed_at": "2026-09-07T14:58:55.265933Z",
+  "receipt_sha256": "256ab16bf4a516271caa68d9fd1e9b7256e48c36ca854459fcfc9c51778c0cad"
+}

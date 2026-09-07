@@ -141,9 +141,12 @@ Unreal 当前场景
 - **M41 · Live material-variation dispatch（已完成）**：把 M40 的 ComfyUI 输入、Blender 材质源、
   六张烘焙贴图、三个 Material Instances 与 Unreal PCG 候选登记为当前 Session 的第十三项
   生产能力，复用既有 Worker 和场景变更谱提供直接派发与恢复。
-- **M42 · Scene-conditioned terrain and biome blockout（进行中）**：把 Unreal 深度与保护区交给
+- **M42 · Scene-conditioned terrain and biome blockout（已完成）**：把 Unreal 深度与保护区交给
   固定 ComfyUI 节点子图生成高度场和生物群落分区；Blender 通过可编辑 Geometry Nodes 建立
   场景外围地形、UV 和碰撞代理，Unreal 在隔离候选中接收地形并让项目自有 PCG 图消费分区。
+- **M43 · Simulation cache and Sequencer handoff（进行中）**：把 Blender 的确定性模拟与缓存能力
+  接入当前 Scene Session；以有限对象集、帧段和预算生成可编辑动画源，再通过 Unreal Geometry
+  Cache / Level Sequence 的类型化工具进入派生候选，形成区别于静态建模的时序内容路线。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

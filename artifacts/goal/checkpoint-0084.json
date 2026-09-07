@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M42-S1",
+  "status": "completed",
+  "outcome": "A fixed ComfyUI spatial subgraph produced protected height and biome fields; Blender authored editable Geometry Nodes terrain, UV, collision and GLB; Unreal imported the terrain and generated 18 project-owned PCG instances in a derived candidate, then reconciled the same result without upstream mutation.",
+  "evidence": [
+    "artifacts/goal/m42-s1-terrain-biome/comfy-terrain-fields-receipt.json",
+    "artifacts/goal/m42-s1-terrain-biome/blender-terrain-receipt.json",
+    "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json",
+    "artifacts/goal/m42-s1-terrain-biome/AF_BiomeTerrain-preview.png",
+    "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-candidate.png",
+    "docs/evidence/M42_S1_TERRAIN_BIOME_2026-09-07.md"
+  ]
+}

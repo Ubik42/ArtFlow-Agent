@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-unreal-biome-terrain-receipt/1",
+  "request_sha256": "dfa6418e8729f070d3680d9e6381ebb46aa8c5cb77a5bb95b908a4eb0e8f1f0c",
+  "field_receipt_sha256": "e8bb7658f169bb217f46d86b99e982d9fa2009b026c34c47fbe42e8949c1214c",
+  "blender_receipt_sha256": "256ab16bf4a516271caa68d9fd1e9b7256e48c36ca854459fcfc9c51778c0cad",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Terrain_B_dfa6418e8729",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Material_B_1a77d442c379",
+  "terrain_mesh_path": "/Game/ArtFlow/Generated/Terrain/TB_dfa6418e8729/SM_AF_BiomeTerrain/StaticMeshes/SM_AF_BiomeTerrain.SM_AF_BiomeTerrain",
+  "native_pcg_graph_path": "/Game/ArtFlow/PCG/Generated/PCG_AF_Biome_dfa6418e8729.PCG_AF_Biome_dfa6418e8729",
+  "biome_instance_count": 18,
+  "duplicate_side_effect_count": 0,
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_candidate_sha256_before": "7e16ef3408486668cd2f04dd3b549bf1163e72b73bae813066754fa438ed6e1e",
+  "source_candidate_sha256_after": "7e16ef3408486668cd2f04dd3b549bf1163e72b73bae813066754fa438ed6e1e",
+  "screenshot_path": "unreal-biome-terrain-candidate.png",
+  "screenshot_sha256": "f0a0a1f5521dc84d312a952b57fb8d87bb273cfb93f58e34ccb773668ff067f0",
+  "capture_status": "captured",
+  "completed_at": "2026-09-07T15:03:39.287816Z",
+  "receipt_sha256": "a9fcc50ea5f0aea9883c962986ad6531270af848ee797759843e3dae52570926"
+}

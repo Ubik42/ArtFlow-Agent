@@ -1,0 +1,26 @@
+{
+  "schema_id": "artflow-terrain-biome-request/1",
+  "request_id": "terrain-biome-a5b78eefbf3acd9a",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "depth_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png",
+  "depth_sha256": "a3628efb3216030808353343c2e8d74c1278815db7a3b460cc9a85917d793398",
+  "protected_mask_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png",
+  "protected_mask_sha256": "e134d52426d3d6b59ca19ea5a7e8ffab1f798dd7566eb9583cdd5630119a6a06",
+  "material_candidate_receipt_sha256": "fe02c41e2f7c4626f761dc0774d13b6d4f3734c63cd176ebd9b447b2800f1e4e",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Material_B_1a77d442c379",
+  "comfy_capability_id": "comfy.terrain.height_biome_fields.v1",
+  "blender_capability_id": "blender.geometry_nodes.bounded_terrain.v1",
+  "unreal_capability_id": "unreal.pcg.biome_terrain_candidate.v1",
+  "recipe_id": "terrain-height-biome-v1",
+  "bounds": {
+    "width_cm": 1600,
+    "depth_cm": 1200,
+    "height_cm": 180
+  },
+  "grid_x": 64,
+  "grid_y": 48,
+  "biome_threshold": 0.56,
+  "seed": 420907,
+  "workflow_sha256": "9193346212a5944b18bc5becd0e0921dec4f8272e802d4b5caf5955c1e84ecde",
+  "request_sha256": "dfa6418e8729f070d3680d9e6381ebb46aa8c5cb77a5bb95b908a4eb0e8f1f0c"
+}

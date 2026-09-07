@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 90,
+  "stateRevision": 91,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M42",
+  "currentMilestone": "M43",
   "milestones": [
     {
       "id": "M0",
@@ -494,7 +494,7 @@
     {
       "id": "M42",
       "title": "Scene-conditioned terrain and biome blockout",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M41"],
       "outcome": "A current Unreal Scene Session uses a reviewed ComfyUI spatial subgraph to derive height and biome fields, Blender authors an editable Geometry Nodes terrain extension with UV and collision proxy, and Unreal imports it into an isolated candidate where a project-owned PCG graph consumes the biome partition.",
       "acceptance": [
@@ -503,42 +503,52 @@
         "One real Blender run produces editable Geometry Nodes terrain, UV, collision proxy and a bounded exchange asset",
         "One real Unreal run imports the terrain, connects the biome partition to project-owned PCG, captures the candidate and reconciles without changing upstream maps"
       ]
+    },
+    {
+      "id": "M43",
+      "title": "Simulation cache and Sequencer handoff",
+      "status": "in_progress",
+      "dependsOn": ["M42"],
+      "outcome": "Blender simulation and cache operations become a finite current-session capability that returns editable time-based content to an isolated Unreal candidate and Level Sequence.",
+      "acceptance": [
+        "A typed request binds a finite actor set, frame range, solver recipe, terrain candidate and resource budget",
+        "One real Blender run produces editable animation source plus a bounded Alembic cache",
+        "One real Unreal run imports the cache into a derived candidate and registers it in a project-owned Level Sequence",
+        "A repeated return reconciles the same cache, sequence and candidate without changing upstream scenes"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M42-S1",
-    "milestone": "M42",
-    "title": "Generate and return a scene-conditioned terrain blockout",
-    "outcome": "Compile current scene depth and exclusions into reviewed height/biome maps, author an editable bounded terrain in Blender, and return it with biome-driven PCG placement to a new Unreal candidate.",
+    "id": "M43-S1",
+    "milestone": "M43",
+    "title": "Return a bounded Blender simulation cache to Sequencer",
+    "outcome": "Use the current terrain candidate to author one finite Blender simulation, export its animation cache and attach the result to a derived Unreal candidate and Level Sequence.",
     "risk": "R2",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not expose arbitrary ComfyUI or Geometry Nodes graphs",
-      "Do not replace Unreal Landscape tooling or build a general terrain editor",
-      "Do not add erosion simulation, foliage asset downloads or another scheduler in this slice",
-      "Do not modify the M40 material candidate or source ArtFlowDemo in place"
+      "Do not expose arbitrary Blender Python, solver settings or Sequencer tracks",
+      "Do not build a general simulation farm or cache manager",
+      "Do not add fluid or cloth dependencies in this first slice",
+      "Do not modify the M42 terrain candidate or source ArtFlowDemo in place"
     ],
     "acceptance": [
-      "The typed request binds exact depth, protection, bounds, ComfyUI recipe and M40 candidate identities",
-      "ComfyUI produces one height map and one biome mask through a fixed reviewed subgraph",
-      "Blender produces an editable Geometry Nodes terrain, named UV, collision proxy and GLB within finite budgets",
-      "Unreal imports the terrain and biome-driven PCG result into a derived candidate, captures it, and reconciles a repeat without upstream mutation"
+      "The typed request binds the exact M42 terrain candidate, finite object set, frame range, solver recipe and budgets",
+      "Blender produces an editable source file, preview and bounded Alembic cache",
+      "Unreal imports the cache into a derived candidate and a project-owned Level Sequence",
+      "A repeated return reconciles with zero duplicate assets or upstream mutation"
     ],
     "stopConditions": [
-      "Stop if the current depth, protected mask or M40 candidate identity no longer verifies",
-      "Stop if the terrain cannot remain outside protected central geometry or within the registered bounds",
+      "Stop if the M42 candidate identity no longer verifies",
+      "Stop if the simulated geometry or cache exceeds the registered frame, object or size budget",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
       {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
       {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "comfyui", "kind": "url", "value": "http://127.0.0.1:8188/system_stats", "required": true},
-      {"id": "scene_depth", "kind": "repo_path", "value": "artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png", "required": true},
-      {"id": "protected_mask", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png", "required": true},
-      {"id": "material_candidate", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/unreal-material-variation-receipt.json", "required": true}
+      {"id": "terrain_candidate", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -554,9 +564,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0083.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0084.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M41 are complete. The scene-conditioned material set is the thirteenth finite current-session capability. The existing DCC worker verified the exact ComfyUI, Blender texture/source and Unreal Material Instance/candidate identities, projected five durable lifecycle events, replayed equivalently and produced zero duplicate side effects. Desktop and narrow Scene Change Spectrum captures present the real three-host material route. Scene-conditioned terrain and biome blockout is M42-S1 scope.",
+  "evidenceCeiling": "M0-M42 are complete. A fixed ComfyUI subgraph produced content-addressed height and biome fields with 27.6345 percent coverage and zero protected leakage; Blender 5.2 authored an editable 3072-vertex terrain with Geometry Nodes, named UV, collision proxy and GLB; Unreal 5.8.1 imported it into a derived candidate and a project-owned PCG graph produced 18 instances. A second return reconciled with zero duplicate side effects and unchanged upstream level hashes. Bounded simulation cache and Sequencer handoff is M43-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

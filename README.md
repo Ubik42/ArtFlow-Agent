@@ -4,6 +4,15 @@
 
 ![ArtFlow 场景导演台：当前候选完成内容寻址发布与 Unreal 复核](artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png)
 
+最新的场景扩展路线把二维条件真正变成三维环境。固定 ComfyUI 子图从当前 Unreal 深度与保护区
+生成高度场和生物群落分区；Blender 5.2 将其转为可编辑 Geometry Nodes 地形、命名 UV、碰撞代理
+和 GLB；Unreal 5.8 再导入地形，并让项目自有 PCG 图在分区内生成 18 个模块实例。第二次回流
+对账同一资产、PCG 图和候选关卡，重复副作用为 0，源关卡和 M40 上游候选保持字节不变。
+
+| ComfyUI 条件场与 Blender 地形 | Unreal 地形 + 原生 PCG 候选 |
+| --- | --- |
+| ![Blender 根据 ComfyUI 高度场生成外围地形](artifacts/goal/m42-s1-terrain-biome/AF_BiomeTerrain-preview.png) | ![Unreal 接收地形并以原生 PCG 布置模块](artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-candidate.png) |
+
 当前 DCC 路线已接入 Blender 5.2 LTS。Agent 将 Session 的场景尺度与视觉意图编译为类型化建模规格，固定 Blender 能力生成可编辑 `.blend`、嵌入式 GLB 和预览，随后由 Unreal Interchange 导入 Session 派生候选关卡。首个模块化祭坛包含 26 个 Blender 可编辑构件、3 个材质和 4,888 个生成三角面；回流后的 Unreal StaticMesh 为 952 个构建三角面并带 1 个简单碰撞，源关卡哈希未变化。
 
 | Blender 可编辑生成结果 | Unreal 隔离候选回流 |

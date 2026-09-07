@@ -1,0 +1,21 @@
+{
+  "schema_id": "artflow-comfy-terrain-fields-receipt/1",
+  "request_sha256": "dfa6418e8729f070d3680d9e6381ebb46aa8c5cb77a5bb95b908a4eb0e8f1f0c",
+  "capability_id": "comfy.terrain.height_biome_fields.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "observed_node_count": 1309,
+  "provider_request_id": "a9ee3acb-9973-4d4b-8daa-40544e084993",
+  "workflow_sha256": "9193346212a5944b18bc5becd0e0921dec4f8272e802d4b5caf5955c1e84ecde",
+  "height_map_path": "terrain-height.png",
+  "height_map_sha256": "b45628aeb97ee79a601bed10c06aa62da96418165eb4fe49d89aa48b970b3829",
+  "biome_mask_path": "biome-mask.png",
+  "biome_mask_sha256": "e1eb402585fc23648cb2901390d698ba73bdbc58328c61e12b2896326a5b7b3f",
+  "width": 640,
+  "height": 360,
+  "biome_coverage": 0.276345,
+  "protected_leakage": 0.0,
+  "completed_at": "2026-09-07T14:58:53.053658Z",
+  "receipt_sha256": "e8bb7658f169bb217f46d86b99e982d9fa2009b026c34c47fbe42e8949c1214c"
+}
