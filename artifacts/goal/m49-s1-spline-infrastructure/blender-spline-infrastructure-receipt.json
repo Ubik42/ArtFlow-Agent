@@ -1,0 +1,50 @@
+{
+  "schema_id": "artflow-blender-spline-infrastructure-receipt/1",
+  "request_sha256": "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428",
+  "corridor_receipt_sha256": "2e93c2b9485d2463ff167b46b66254c147fb14064db1a588f4d9da36deb28cc6",
+  "capability_id": "blender.geometry_nodes.spline_infrastructure.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "route_count": 2,
+  "control_point_count": 14,
+  "support_count": 8,
+  "geometry_nodes_recipes": [
+    "GN_CRV_AF_route_power_cable_1",
+    "GN_CRV_AF_route_utility_pipe_2"
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_SplineInfrastructure.blend",
+      "sha256": "0a17b9810b0772fd110bfa1be118671d28594da5b3d6b214b730db3be6f8f9cd",
+      "size_bytes": 99961
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_SplineInfrastructure-preview.png",
+      "sha256": "63056a8f8ba33ced6af140c00d78282af9b3f582a44a15e40d41d169e55b1cdf",
+      "size_bytes": 778806
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_SplineInfrastructure-manifest.json",
+      "sha256": "6db599e051d99b063387faf80b07611d37b9e72310f38d990eb2f9eeddc56e0d",
+      "size_bytes": 3341
+    },
+    {
+      "kind": "segment_glb",
+      "relative_path": "SM_AF_SplineSegment.glb",
+      "sha256": "3080122bdc792edace5ac1c0393d71e559f53a9ec5948a36b9f7a10786bed718",
+      "size_bytes": 3804
+    },
+    {
+      "kind": "support_glb",
+      "relative_path": "SM_AF_SplineSupport.glb",
+      "sha256": "fbf0db53a3c62a015d397a3e746049ac9a447c8e73ec73958afcbc35d8097233",
+      "size_bytes": 2136
+    }
+  ],
+  "elapsed_seconds": 0.886,
+  "completed_at": "2026-09-07T16:27:12.198244Z",
+  "receipt_sha256": "819b51571ea8163d54b213b72ec873c2beffc38f40c61cd0d38127fd7373cb33"
+}

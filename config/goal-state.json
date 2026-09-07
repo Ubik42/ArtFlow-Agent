@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 97,
+  "stateRevision": 98,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M49",
+  "currentMilestone": "M50",
   "milestones": [
     {
       "id": "M0",
@@ -582,7 +582,7 @@
     {
       "id": "M49",
       "title": "Scene-conditioned spline infrastructure",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M48"],
       "outcome": "Current scene geometry and protected regions drive an editable spline-based cable or pipe network authored in Blender and reconstructed as bounded Unreal SplineComponents in a derived candidate.",
       "acceptance": [
@@ -591,41 +591,52 @@
         "Blender produces editable curves, Geometry Nodes geometry and deterministic support placements rather than a flattened visual mockup",
         "Unreal reconstructs registered splines and support assets in a derived candidate; replay creates no duplicate components or actors"
       ]
+    },
+    {
+      "id": "M50",
+      "title": "Live spline-infrastructure dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M49"],
+      "outcome": "The proven route-field, Blender curve and Unreal spline chain becomes the seventeenth finite current-session capability dispatched by the existing durable DCC lifecycle and presented in the Scene Change Spectrum.",
+      "acceptance": [
+        "The work item binds exact scene conditioning, corridor, Blender source, manifest, exchange assets and Unreal candidate identities",
+        "The existing worker verifies the curve and SplineComponent topology and replays the same terminal outcome with zero duplicate side effects",
+        "The Chinese product UI presents route planning, editable DCC authoring and Unreal spline reconstruction as one production case"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M49-S1",
-    "milestone": "M49",
-    "title": "Author and return a scene-conditioned spline network",
-    "outcome": "Compile current scene space into a reviewed route field, build an editable Blender curve and Geometry Nodes infrastructure kit, and reconstruct it through registered Unreal spline tools in a derived candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/blender/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M50-S1",
+    "milestone": "M50",
+    "title": "Dispatch and present the live spline infrastructure route",
+    "outcome": "Register the frozen M49 route chain in the current DCC worker and expose it as an inspectable ComfyUI-to-Blender-to-Unreal production case.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "web/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not build a general-purpose route editor or expose arbitrary Blender code",
-      "Do not replace the existing DCC worker, event model or candidate lifecycle",
+      "Do not rerun ComfyUI, Blender or Unreal hosts",
+      "Do not add another worker, state machine or lifecycle vocabulary",
       "Do not expose arbitrary host or graph execution",
-      "Do not overwrite the source level or modify M47 and upstream candidates",
-      "Do not expand into fluid simulation, construction logic or runtime gameplay"
+      "Do not modify M49 or upstream candidates"
     ],
     "acceptance": [
-      "A content-addressed request derives a finite route corridor from current scene depth and protection identities",
-      "The fixed ComfyUI graph returns a bounded corridor with zero protected-region leakage",
-      "Blender 5.2 creates editable Curve and Geometry Nodes content, exchange geometry, support placements and a preview",
-      "Unreal imports or reconstructs only registered spline and support assets inside a derived candidate and reconciles a second execution without duplicates"
+      "The current work schema admits a seventeenth registered spline-infrastructure capability with all frozen M49 identities",
+      "Worker execution verifies two curves, fourteen control points, twelve segments and eight supports",
+      "Repeat dispatch and reducer replay preserve one work identity with zero duplicate external side effects",
+      "Desktop and narrow Chinese captures show the route field, Blender curves and Unreal result"
     ],
     "stopConditions": [
-      "Stop if the current conditioning or M47 candidate identities do not verify",
-      "Stop if a valid corridor cannot avoid protected regions within the finite route budget",
-      "Stop if integration would require arbitrary model-authored host code or source-level mutation"
+      "Stop if any frozen M49 artifact identity fails verification",
+      "Stop if integration would require a parallel lifecycle or arbitrary host execution",
+      "Stop if UI work overlaps unknown user changes and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "comfyui", "kind": "command", "value": "D:/ComfyUI_windows_portable/python_embeded/python.exe", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "D:/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "modular_candidate", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-receipt.json", "required": true}
+      {"id": "spline_request", "kind": "repo_path", "value": "artifacts/goal/m49-s1-spline-infrastructure/spline-infrastructure-request.json", "required": true},
+      {"id": "corridor_receipt", "kind": "repo_path", "value": "artifacts/goal/m49-s1-spline-infrastructure/comfy-route-corridor-receipt.json", "required": true},
+      {"id": "blender_spline_receipt", "kind": "repo_path", "value": "artifacts/goal/m49-s1-spline-infrastructure/blender-spline-infrastructure-receipt.json", "required": true},
+      {"id": "unreal_spline_receipt", "kind": "repo_path", "value": "artifacts/goal/m49-s1-spline-infrastructure/unreal-spline-infrastructure-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -641,9 +652,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0090.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0091.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M48 are complete. The M47 module-zone field, three editable Blender modules and twelve-actor Unreal assembly are registered as the sixteenth current-session capability. Repeat dispatch and reducer replay reached the same terminal result with zero duplicate external side effects. Scene-conditioned spline infrastructure is M49-S1 scope and has not yet been executed.",
+  "evidenceCeiling": "M0-M49 are complete. A fixed ComfyUI graph produced a 13.3179 percent route corridor with zero protected leakage; Blender authored two editable Curve and Geometry Nodes routes with fourteen controls; Unreal reconstructed two SplineComponents, twelve visible segments and eight supports in a derived candidate. Reconciliation created zero actors, duplicated zero side effects and preserved the source candidate hash. Live spline dispatch is M50-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

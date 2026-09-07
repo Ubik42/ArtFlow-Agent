@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-spline-infrastructure-request/1",
+  "request_id": "spline-infrastructure-c019e0e818cd0f9d",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "depth_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png",
+  "depth_sha256": "a3628efb3216030808353343c2e8d74c1278815db7a3b460cc9a85917d793398",
+  "protected_mask_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png",
+  "protected_mask_sha256": "e134d52426d3d6b59ca19ea5a7e8ffab1f798dd7566eb9583cdd5630119a6a06",
+  "module_zone_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m47-s1-modular-environment/module-zones.png",
+  "module_zone_sha256": "42ebf51876728eab3a91bfe85a81a67ec4ee83bbda0b12eb4eb622bd9de53052",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Modular_B_991e0fa20ff4",
+  "source_candidate_sha256": "cb9f6b486ed4b54d74ac517f88cc6ab4d72b6fd1099fe00c33f53fe1e2cd48ff",
+  "route_row_px": 94,
+  "corridor_height_px": 64,
+  "routes": [
+    {
+      "route_id": "route-power-cable-1",
+      "kind": "power_cable",
+      "start_x_px": 307,
+      "end_x_px": 459,
+      "elevation_cm": 180,
+      "diameter_cm": 8,
+      "support_spacing_cm": 280
+    },
+    {
+      "route_id": "route-utility-pipe-2",
+      "kind": "utility_pipe",
+      "start_x_px": 0,
+      "end_x_px": 111,
+      "elevation_cm": 90,
+      "diameter_cm": 18,
+      "support_spacing_cm": 360
+    }
+  ],
+  "max_control_points_per_route": 7,
+  "max_total_segments": 16,
+  "seed": 490907,
+  "comfy_capability_id": "comfy.spatial.route_corridor.v1",
+  "blender_capability_id": "blender.geometry_nodes.spline_infrastructure.v1",
+  "unreal_capability_id": "unreal.spline.infrastructure.v1",
+  "workflow_sha256": "1a642cb1be50d65ddf7e7a02b727eebfd6e66d8f4b2a70a0da13b3801ea3eece",
+  "request_sha256": "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428"
+}

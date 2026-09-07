@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M49-S1",
+  "status": "completed",
+  "outcome": "Current scene space now drives a fixed ComfyUI route corridor, two editable Blender Curve and Geometry Nodes networks, and two real Unreal SplineComponents with twelve visible segments and eight supports in a derived candidate. Reconciliation created no actors or duplicate side effects and preserved the source modular candidate hash.",
+  "evidence": [
+    "artifacts/goal/m49-s1-spline-infrastructure/comfy-route-corridor-receipt.json",
+    "artifacts/goal/m49-s1-spline-infrastructure/blender-spline-infrastructure-receipt.json",
+    "artifacts/goal/m49-s1-spline-infrastructure/AF_SplineInfrastructure-preview.png",
+    "artifacts/goal/m49-s1-spline-infrastructure/unreal-spline-infrastructure-receipt.json",
+    "artifacts/goal/m49-s1-spline-infrastructure/unreal-spline-infrastructure-candidate.png",
+    "docs/evidence/M49_S1_SPLINE_INFRASTRUCTURE_2026-09-07.md"
+  ]
+}
+

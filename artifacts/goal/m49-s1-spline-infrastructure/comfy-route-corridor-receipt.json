@@ -1,0 +1,16 @@
+{
+  "schema_id": "artflow-comfy-route-corridor-receipt/1",
+  "request_sha256": "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428",
+  "capability_id": "comfy.spatial.route_corridor.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "provider_request_id": "fd997ad7-6b8a-4b7f-bbdc-ae6fc3d99bc5",
+  "observed_node_count": 1309,
+  "corridor_path": "route-corridor.png",
+  "corridor_sha256": "60ef6b92a749bd416441c50a962a3ac26bf0e0807ee08750596f20ccfb1e7de8",
+  "corridor_coverage": 0.133179,
+  "protected_leakage": 0.0,
+  "completed_at": "2026-09-07T16:26:10.798930Z",
+  "receipt_sha256": "2e93c2b9485d2463ff167b46b66254c147fb14064db1a588f4d9da36deb28cc6"
+}
