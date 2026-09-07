@@ -1,0 +1,169 @@
+{
+  "schema_id": "artflow-modular-environment-manifest/1",
+  "request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053",
+  "coordinate_system": "unreal-centimeters-z-up",
+  "variants": [
+    {
+      "module_id": "wall",
+      "object_name": "SM_AF_Module_Wall",
+      "glb": "SM_AF_Module_Wall.glb",
+      "sha256": "27343ebdee2dfdc0cdf988bb074863f97d275a73370afe101800cce23a610bac",
+      "triangles": 24,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Wall"
+    },
+    {
+      "module_id": "pillar",
+      "object_name": "SM_AF_Module_Pillar",
+      "glb": "SM_AF_Module_Pillar.glb",
+      "sha256": "f7babbdc19ad5b60462f83d6ce08ce318302db1f7d84d40c4cd5caf26c7d05af",
+      "triangles": 36,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Pillar"
+    },
+    {
+      "module_id": "gateway",
+      "object_name": "SM_AF_Module_Gateway",
+      "glb": "SM_AF_Module_Gateway.glb",
+      "sha256": "acc767dd834d2bf927690df8bf34aa534b7866825325e4f71b53a4412f2528b6",
+      "triangles": 36,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Gateway"
+    }
+  ],
+  "placements": [
+    {
+      "placement_id": "module-placement-01",
+      "module_id": "wall",
+      "location_cm": [
+        -769.95,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 0.0,
+      "seed": 1510352216
+    },
+    {
+      "placement_id": "module-placement-02",
+      "module_id": "pillar",
+      "location_cm": [
+        -592.18,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 90.0,
+      "seed": 1892172122
+    },
+    {
+      "placement_id": "module-placement-03",
+      "module_id": "wall",
+      "location_cm": [
+        118.94,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 180.0,
+      "seed": 502668287
+    },
+    {
+      "placement_id": "module-placement-04",
+      "module_id": "pillar",
+      "location_cm": [
+        296.71,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 270.0,
+      "seed": 2017187272
+    },
+    {
+      "placement_id": "module-placement-05",
+      "module_id": "gateway",
+      "location_cm": [
+        474.49,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 0.0,
+      "seed": 527905971
+    },
+    {
+      "placement_id": "module-placement-06",
+      "module_id": "wall",
+      "location_cm": [
+        652.27,
+        559.89,
+        25.0
+      ],
+      "yaw_deg": 90.0,
+      "seed": 824954760
+    },
+    {
+      "placement_id": "module-placement-07",
+      "module_id": "pillar",
+      "location_cm": [
+        -769.95,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 180.0,
+      "seed": 838678467
+    },
+    {
+      "placement_id": "module-placement-08",
+      "module_id": "wall",
+      "location_cm": [
+        -592.18,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 270.0,
+      "seed": 713902954
+    },
+    {
+      "placement_id": "module-placement-09",
+      "module_id": "pillar",
+      "location_cm": [
+        118.94,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 0.0,
+      "seed": 2020736902
+    },
+    {
+      "placement_id": "module-placement-10",
+      "module_id": "gateway",
+      "location_cm": [
+        296.71,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 90.0,
+      "seed": 1940835117
+    },
+    {
+      "placement_id": "module-placement-11",
+      "module_id": "wall",
+      "location_cm": [
+        474.49,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 180.0,
+      "seed": 1003259461
+    },
+    {
+      "placement_id": "module-placement-12",
+      "module_id": "pillar",
+      "location_cm": [
+        652.27,
+        389.42,
+        25.0
+      ],
+      "yaw_deg": 270.0,
+      "seed": 183779973
+    }
+  ],
+  "manifest_sha256": "02d6c20adf0469f6898afec8144b45202f2c1cfbec18ac34d63151fcd5916435"
+}

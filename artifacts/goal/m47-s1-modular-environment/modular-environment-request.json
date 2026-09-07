@@ -1,0 +1,44 @@
+{
+  "schema_id": "artflow-modular-environment-request/1",
+  "request_id": "modular-environment-e11f4a56e97aba5c",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "depth_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png",
+  "depth_sha256": "a3628efb3216030808353343c2e8d74c1278815db7a3b460cc9a85917d793398",
+  "protected_mask_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png",
+  "protected_mask_sha256": "e134d52426d3d6b59ca19ea5a7e8ffab1f798dd7566eb9583cdd5630119a6a06",
+  "visual_target_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png",
+  "visual_target_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Foliage_B_33eb6be804c2",
+  "source_candidate_sha256": "c59e19de03f1fedd85535b7b0572352b672094d0cfbf65a83e5b24e8b51192c1",
+  "comfy_capability_id": "comfy.spatial.module_zones.v1",
+  "blender_capability_id": "blender.geometry_nodes.modular_environment.v1",
+  "unreal_capability_id": "unreal.actors.modular_environment.v1",
+  "modules": [
+    {
+      "module_id": "wall",
+      "max_count": 5,
+      "width_cm": 320,
+      "depth_cm": 55,
+      "height_cm": 260
+    },
+    {
+      "module_id": "pillar",
+      "max_count": 5,
+      "width_cm": 90,
+      "depth_cm": 90,
+      "height_cm": 360
+    },
+    {
+      "module_id": "gateway",
+      "max_count": 2,
+      "width_cm": 420,
+      "depth_cm": 80,
+      "height_cm": 440
+    }
+  ],
+  "placement_budget": 12,
+  "triangle_budget": 6000,
+  "seed": 470907,
+  "workflow_sha256": "afce8d59d89a8e83146d8b3043512d968d7b99f922e52b8a08f7bb7507608656",
+  "request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053"
+}

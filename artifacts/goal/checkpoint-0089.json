@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M47-S1",
+  "status": "completed",
+  "outcome": "Current depth, protection and visual-target identities now drive a fixed ComfyUI module-zone graph, three editable Blender Geometry Nodes modules and a derived Unreal candidate with twelve stable module actors. Replay reconciled with zero new actors, zero duplicates and an unchanged foliage source candidate.",
+  "evidence": [
+    "artifacts/goal/m47-s1-modular-environment/comfy-module-zone-receipt.json",
+    "artifacts/goal/m47-s1-modular-environment/blender-modular-environment-receipt.json",
+    "artifacts/goal/m47-s1-modular-environment/AF_ModularEnvironment-preview.png",
+    "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-receipt.json",
+    "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-candidate.png",
+    "docs/evidence/M47_S1_MODULAR_ENVIRONMENT_2026-09-07.md"
+  ]
+}

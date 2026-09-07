@@ -155,9 +155,11 @@ Unreal 当前场景
   形成可继续编辑的环境层；三种变体和 18 个实例已在派生候选中完成回流与幂等对账。
 - **M46 · Live foliage dispatch（已完成）**：把 M45 的蒙版、点集、Blender 编辑源、三种 GLB/LOD、
   Unreal 风材质、PCG 图和候选身份登记为当前 Session 的第十五项有限能力，接入现有 DCC Worker。
-- **M47 · Concept-guided modular environment assembly（进行中）**：把当前 Scene Session 的深度、
+- **M47 · Concept-guided modular environment assembly（已完成）**：把当前 Scene Session 的深度、
   保护区和视觉目标编译为有限模块类别与布局预算，由固定 ComfyUI 空间子图、Blender Geometry
   Nodes 场景装配和 Unreal 类型化 Actor/PCG 消费器共同建立可编辑环境候选。
+- **M48 · Live modular-environment dispatch（进行中）**：把 M47 的空间场、Blender 模块编辑源、
+  三类 GLB、布局清单和 Unreal Actor 候选身份登记为第十六项当前 Session 能力，接入现有持久 Worker。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

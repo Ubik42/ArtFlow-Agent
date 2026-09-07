@@ -1,0 +1,99 @@
+{
+  "schema_id": "artflow-unreal-modular-environment-receipt/1",
+  "request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053",
+  "zone_receipt_sha256": "5f04ac11e0623df6fd1e5ac401b80822d56c742f2c31f54a1ef0778ffb93dfa5",
+  "blender_receipt_sha256": "0538f5e2ddcd310dc4b9c51a5b7a95668b60328c302c7b5ae869afd319813d05",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Foliage_B_33eb6be804c2",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Modular_B_991e0fa20ff4",
+  "mesh_paths": {
+    "wall": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall",
+    "pillar": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar",
+    "gateway": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Gateway/StaticMeshes/SM_AF_Module_Gateway.SM_AF_Module_Gateway"
+  },
+  "module_actor_count": 12,
+  "created_actor_count": 0,
+  "duplicate_side_effect_count": 0,
+  "placements": [
+    {
+      "placement_id": "module-placement-01",
+      "actor_label": "ArtFlow_Module_module-placement-01",
+      "module_id": "wall",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall"
+    },
+    {
+      "placement_id": "module-placement-02",
+      "actor_label": "ArtFlow_Module_module-placement-02",
+      "module_id": "pillar",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar"
+    },
+    {
+      "placement_id": "module-placement-03",
+      "actor_label": "ArtFlow_Module_module-placement-03",
+      "module_id": "wall",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall"
+    },
+    {
+      "placement_id": "module-placement-04",
+      "actor_label": "ArtFlow_Module_module-placement-04",
+      "module_id": "pillar",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar"
+    },
+    {
+      "placement_id": "module-placement-05",
+      "actor_label": "ArtFlow_Module_module-placement-05",
+      "module_id": "gateway",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Gateway/StaticMeshes/SM_AF_Module_Gateway.SM_AF_Module_Gateway"
+    },
+    {
+      "placement_id": "module-placement-06",
+      "actor_label": "ArtFlow_Module_module-placement-06",
+      "module_id": "wall",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall"
+    },
+    {
+      "placement_id": "module-placement-07",
+      "actor_label": "ArtFlow_Module_module-placement-07",
+      "module_id": "pillar",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar"
+    },
+    {
+      "placement_id": "module-placement-08",
+      "actor_label": "ArtFlow_Module_module-placement-08",
+      "module_id": "wall",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall"
+    },
+    {
+      "placement_id": "module-placement-09",
+      "actor_label": "ArtFlow_Module_module-placement-09",
+      "module_id": "pillar",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar"
+    },
+    {
+      "placement_id": "module-placement-10",
+      "actor_label": "ArtFlow_Module_module-placement-10",
+      "module_id": "gateway",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Gateway/StaticMeshes/SM_AF_Module_Gateway.SM_AF_Module_Gateway"
+    },
+    {
+      "placement_id": "module-placement-11",
+      "actor_label": "ArtFlow_Module_module-placement-11",
+      "module_id": "wall",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Wall/StaticMeshes/SM_AF_Module_Wall.SM_AF_Module_Wall"
+    },
+    {
+      "placement_id": "module-placement-12",
+      "actor_label": "ArtFlow_Module_module-placement-12",
+      "module_id": "pillar",
+      "mesh_path": "/Game/ArtFlow/Generated/Blender/Modular/M_991e0fa20ff4/SM_AF_Module_Pillar/StaticMeshes/SM_AF_Module_Pillar.SM_AF_Module_Pillar"
+    }
+  ],
+  "source_candidate_sha256_before": "c59e19de03f1fedd85535b7b0572352b672094d0cfbf65a83e5b24e8b51192c1",
+  "source_candidate_sha256_after": "c59e19de03f1fedd85535b7b0572352b672094d0cfbf65a83e5b24e8b51192c1",
+  "screenshot_path": "unreal-modular-environment-candidate.png",
+  "screenshot_sha256": "d246458b08abaaf142fdbf27b1223a3c1815802e73c0aa19816e4b02d916520e",
+  "capture_status": "captured",
+  "completed_at": "2026-09-07T16:06:28.882643Z",
+  "receipt_sha256": "158138e6615f56276087e9a7b2ff455310bd8853cd718039bc858ddcd602786c"
+}

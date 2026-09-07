@@ -1,0 +1,80 @@
+{
+  "schema_id": "artflow-blender-modular-environment-receipt/1",
+  "request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053",
+  "zone_receipt_sha256": "5f04ac11e0623df6fd1e5ac401b80822d56c742f2c31f54a1ef0778ffb93dfa5",
+  "capability_id": "blender.geometry_nodes.modular_environment.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "variants": [
+    {
+      "module_id": "wall",
+      "object_name": "SM_AF_Module_Wall",
+      "glb": "SM_AF_Module_Wall.glb",
+      "sha256": "27343ebdee2dfdc0cdf988bb074863f97d275a73370afe101800cce23a610bac",
+      "triangles": 24,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Wall"
+    },
+    {
+      "module_id": "pillar",
+      "object_name": "SM_AF_Module_Pillar",
+      "glb": "SM_AF_Module_Pillar.glb",
+      "sha256": "f7babbdc19ad5b60462f83d6ce08ce318302db1f7d84d40c4cd5caf26c7d05af",
+      "triangles": 36,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Pillar"
+    },
+    {
+      "module_id": "gateway",
+      "object_name": "SM_AF_Module_Gateway",
+      "glb": "SM_AF_Module_Gateway.glb",
+      "sha256": "acc767dd834d2bf927690df8bf34aa534b7866825325e4f71b53a4412f2528b6",
+      "triangles": 36,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_AF_Module_Gateway"
+    }
+  ],
+  "placement_count": 12,
+  "total_triangles": 96,
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ModularEnvironment.blend",
+      "sha256": "c8a31bb8b59697d4fc4cf34528187c7d1b9a80d47c2505bd3135156eb382901b",
+      "size_bytes": 97495
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ModularEnvironment-preview.png",
+      "sha256": "da41d28b392bc9a579a2fd919f867eb01a1ff7f4da88335900c0cdb35240a89c",
+      "size_bytes": 597072
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_ModularEnvironment-manifest.json",
+      "sha256": "ad36157bf76b8aa3262f609a590cb8d8a07de39bc4695b153ef20d3ae9ce401f",
+      "size_bytes": 3970
+    },
+    {
+      "kind": "glb",
+      "relative_path": "SM_AF_Module_Wall.glb",
+      "sha256": "27343ebdee2dfdc0cdf988bb074863f97d275a73370afe101800cce23a610bac",
+      "size_bytes": 2964
+    },
+    {
+      "kind": "glb",
+      "relative_path": "SM_AF_Module_Pillar.glb",
+      "sha256": "f7babbdc19ad5b60462f83d6ce08ce318302db1f7d84d40c4cd5caf26c7d05af",
+      "size_bytes": 3792
+    },
+    {
+      "kind": "glb",
+      "relative_path": "SM_AF_Module_Gateway.glb",
+      "sha256": "acc767dd834d2bf927690df8bf34aa534b7866825325e4f71b53a4412f2528b6",
+      "size_bytes": 3808
+    }
+  ],
+  "elapsed_seconds": 1.123,
+  "completed_at": "2026-09-07T16:03:56.505179Z",
+  "receipt_sha256": "0538f5e2ddcd310dc4b9c51a5b7a95668b60328c302c7b5ae869afd319813d05"
+}

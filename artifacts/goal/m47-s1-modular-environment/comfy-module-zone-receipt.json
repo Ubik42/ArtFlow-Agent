@@ -1,0 +1,16 @@
+{
+  "schema_id": "artflow-comfy-module-zone-receipt/1",
+  "request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053",
+  "capability_id": "comfy.spatial.module_zones.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "provider_request_id": "c3a399fe-82e4-421a-9980-161e05189447",
+  "observed_node_count": 1309,
+  "zone_map_path": "module-zones.png",
+  "zone_map_sha256": "42ebf51876728eab3a91bfe85a81a67ec4ee83bbda0b12eb4eb622bd9de53052",
+  "zone_coverage": 0.24829,
+  "protected_leakage": 0.0,
+  "completed_at": "2026-09-07T16:03:53.970252Z",
+  "receipt_sha256": "5f04ac11e0623df6fd1e5ac401b80822d56c742f2c31f54a1ef0778ffb93dfa5"
+}
