@@ -12,6 +12,7 @@ from .blender_set_dressing import (
 )
 from .blender_surface import BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .cloth_banner import BannerTextureReceipt, ClothBannerRequest
 from .damage_variant import DamageFieldReceipt, DamageVariantRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import SceneLookdevRequest
@@ -97,6 +98,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "mechanism": project_root / "artifacts/goal/m51-s1-mechanism-rig",
         "mechanism_shot": project_root / "artifacts/goal/m53-s1-mechanism-shot",
         "damage": project_root / "artifacts/goal/m55-s1-damage-variant",
+        "cloth_banner": project_root / "artifacts/goal/m57-s1-cloth-banner",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -728,9 +730,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["mechanism"] / "unreal-mechanism-rig-receipt.json",
             expected_sha256=str(work.unreal_mechanism_rig_receipt_sha256),
         )
-        if unreal_receipt.get("blender_receipt_sha256") != blender_receipt.get(
-            "receipt_sha256"
-        ):
+        if unreal_receipt.get("blender_receipt_sha256") != blender_receipt.get("receipt_sha256"):
             raise ValueError("registered Unreal mechanism receipt changed")
         if (
             work.mechanism_shot_request_sha256 is None
@@ -739,8 +739,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             raise ValueError("mechanism candidate changed")
         if (
             unreal_receipt.get("status") != "reconciled"
-            or unreal_receipt.get("verified_deform_bones")
-            != ["root", "hinge_left", "hinge_right"]
+            or unreal_receipt.get("verified_deform_bones") != ["root", "hinge_left", "hinge_right"]
             or unreal_receipt.get("mechanism_actor_count") != 1
         ):
             raise ValueError("mechanism skeleton or candidate result changed")
@@ -759,9 +758,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
 
     if work.mechanism_shot_request_sha256 is not None:
         request = MechanismShotRequest.model_validate_json(
-            (roots["mechanism_shot"] / "mechanism-shot-request.json").read_text(
-                encoding="utf-8"
-            )
+            (roots["mechanism_shot"] / "mechanism-shot-request.json").read_text(encoding="utf-8")
         )
         if request.request_sha256 != work.mechanism_shot_request_sha256:
             raise ValueError("registered mechanism-shot request changed")
@@ -822,9 +819,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         if request.request_sha256 != work.damage_variant_request_sha256:
             raise ValueError("registered damage-variant request changed")
         comfy_receipt = DamageFieldReceipt.model_validate_json(
-            (roots["damage"] / "comfy-damage-field-receipt.json").read_text(
-                encoding="utf-8"
-            )
+            (roots["damage"] / "comfy-damage-field-receipt.json").read_text(encoding="utf-8")
         )
         if (
             comfy_receipt.receipt_sha256 != work.comfy_damage_field_receipt_sha256
@@ -842,8 +837,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         _verify_artifacts(roots["damage"], blender_receipt)
         if (
             blender_receipt.get("request_sha256") != request.request_sha256
-            or blender_receipt.get("comfy_receipt_sha256")
-            != comfy_receipt.receipt_sha256
+            or blender_receipt.get("comfy_receipt_sha256") != comfy_receipt.receipt_sha256
             or blender_receipt.get("boolean_modifier_count") != request.chip_count
             or int(blender_receipt.get("triangle_count", 0)) > request.triangle_budget
             or blender_receipt.get("uv_layer") != "UVMap"
@@ -871,16 +865,13 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
                 encoding="utf-8"
             )
         )
-        if (
-            request.source_candidate_scene_path
-            != modular_receipt.get("candidate_scene_path")
-            or request.source_blender_receipt_sha256
-            != json.loads(
-                (roots["modular"] / "blender-modular-environment-receipt.json").read_text(
-                    encoding="utf-8"
-                )
-            ).get("receipt_sha256")
-        ):
+        if request.source_candidate_scene_path != modular_receipt.get(
+            "candidate_scene_path"
+        ) or request.source_blender_receipt_sha256 != json.loads(
+            (roots["modular"] / "blender-modular-environment-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        ).get("receipt_sha256"):
             raise ValueError("damage route no longer derives from the registered modular result")
         unreal_receipt = _load_receipt(
             roots["damage"] / "unreal-damage-variant-receipt.json",
@@ -888,11 +879,12 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         )
         if (
             unreal_receipt.get("request_sha256") != request.request_sha256
-            or unreal_receipt.get("comfy_receipt_sha256")
-            != comfy_receipt.receipt_sha256
-            or unreal_receipt.get("blender_receipt_sha256")
-            != blender_receipt.get("receipt_sha256")
-            or unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal_receipt.get("comfy_receipt_sha256") != comfy_receipt.receipt_sha256
+            or unreal_receipt.get("blender_receipt_sha256") != blender_receipt.get("receipt_sha256")
+            or (
+                work.cloth_banner_request_sha256 is None
+                and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+            )
             or unreal_receipt.get("status") != "reconciled"
             or unreal_receipt.get("updated_actor_count") != 0
             or unreal_receipt.get("created_actor_count") != 0
@@ -905,10 +897,85 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         preview = roots["damage"] / str(unreal_receipt["screenshot_path"])
         if (
             _file_sha256(preview) != work.damage_unreal_preview_sha256
-            or unreal_receipt.get("screenshot_sha256")
-            != work.damage_unreal_preview_sha256
+            or unreal_receipt.get("screenshot_sha256") != work.damage_unreal_preview_sha256
         ):
             raise ValueError("Unreal damage preview identity changed")
+
+    if work.cloth_banner_request_sha256 is not None:
+        request = ClothBannerRequest.model_validate_json(
+            (roots["cloth_banner"] / "cloth-banner-request.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.cloth_banner_request_sha256:
+            raise ValueError("registered cloth-banner request changed")
+        comfy_receipt = BannerTextureReceipt.model_validate_json(
+            (roots["cloth_banner"] / "comfy-banner-texture-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        texture = roots["cloth_banner"] / comfy_receipt.texture_path
+        if (
+            comfy_receipt.receipt_sha256 != work.comfy_banner_texture_receipt_sha256
+            or comfy_receipt.texture_sha256 != work.banner_texture_sha256
+            or _file_sha256(texture) != work.banner_texture_sha256
+        ):
+            raise ValueError("registered ComfyUI banner texture changed")
+        blender_receipt = _load_receipt(
+            roots["cloth_banner"] / "blender-cloth-banner-receipt.json",
+            expected_sha256=str(work.blender_cloth_banner_receipt_sha256),
+        )
+        _verify_artifacts(roots["cloth_banner"], blender_receipt)
+        if (
+            blender_receipt.get("request_sha256") != request.request_sha256
+            or blender_receipt.get("comfy_receipt_sha256") != comfy_receipt.receipt_sha256
+            or blender_receipt.get("pin_group") != "AF_PinTop"
+            or blender_receipt.get("simulation_frame") != request.frame_end
+            or int(blender_receipt.get("triangle_count", 0)) > request.triangle_budget
+            or not blender_receipt.get("uv_layer")
+            or not blender_receipt.get("material")
+        ):
+            raise ValueError("registered Blender cloth-banner delivery changed")
+        artifacts = {
+            str(item["kind"]): item
+            for item in blender_receipt.get("artifacts", [])
+            if isinstance(item, dict)
+        }
+        expected_artifacts = {
+            "blend": work.cloth_banner_blend_sha256,
+            "glb": work.cloth_banner_glb_sha256,
+            "manifest": work.cloth_banner_manifest_sha256,
+            "texture": work.banner_texture_sha256,
+            "preview": work.cloth_banner_blender_preview_sha256,
+        }
+        if any(
+            kind not in artifacts or artifacts[kind].get("sha256") != expected
+            for kind, expected in expected_artifacts.items()
+        ):
+            raise ValueError("registered Blender cloth-banner artifact catalog changed")
+        unreal_receipt = _load_receipt(
+            roots["cloth_banner"] / "unreal-cloth-banner-receipt.json",
+            expected_sha256=str(work.unreal_cloth_banner_receipt_sha256),
+        )
+        if (
+            unreal_receipt.get("request_sha256") != request.request_sha256
+            or unreal_receipt.get("comfy_receipt_sha256") != comfy_receipt.receipt_sha256
+            or unreal_receipt.get("blender_receipt_sha256") != blender_receipt.get("receipt_sha256")
+            or unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal_receipt.get("status") != "reconciled"
+            or unreal_receipt.get("created_actor_count") != 0
+            or unreal_receipt.get("updated_actor_count") != 0
+            or unreal_receipt.get("duplicate_asset_count") != 0
+            or unreal_receipt.get("material_slot_count", 0) < 1
+            or unreal_receipt.get("convex_collision_count", 0) < 1
+            or unreal_receipt.get("source_candidate_sha256_before")
+            != unreal_receipt.get("source_candidate_sha256_after")
+        ):
+            raise ValueError("registered Unreal cloth-banner result changed")
+        preview = roots["cloth_banner"] / str(unreal_receipt["screenshot_path"])
+        if (
+            _file_sha256(preview) != work.cloth_banner_unreal_preview_sha256
+            or unreal_receipt.get("screenshot_sha256") != work.cloth_banner_unreal_preview_sha256
+        ):
+            raise ValueError("Unreal cloth-banner preview identity changed")
 
     return work.unreal_return_receipt_sha256
 

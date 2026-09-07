@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M58-S1",
+  "status": "completed",
+  "outcome": "The scene-conditioned cloth banner is now the twenty-first content-bound current-session DCC capability. Work dcc-work-3862e008ae8b binds the exact ComfyUI, Blender and Unreal artifact chain, completes the existing five-event lifecycle, replays equivalently and produces zero duplicate external side effects. Desktop and narrow Chinese product views load all three real host stages without failed media, horizontal overflow or console messages.",
+  "evidence": [
+    "artifacts/goal/m58-s1-live-cloth-banner/live-cloth-banner-work-receipt.json",
+    "artifacts/goal/m58-s1-live-cloth-banner/live-cloth-banner-desktop.png",
+    "artifacts/goal/m58-s1-live-cloth-banner/live-cloth-banner-narrow.png",
+    "docs/evidence/M58_S1_LIVE_CLOTH_BANNER_2026-09-07.md"
+  ]
+}

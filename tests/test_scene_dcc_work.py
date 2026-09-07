@@ -53,6 +53,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.armature.articulated_gate.v1",
         "unreal.sequencer.mechanism_shot.v1",
         "blender.boolean.material_damage.v1",
+        "blender.cloth.banner_authoring.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -127,8 +128,17 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["damage_field_sha256"] == (
         "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168"
     )
+    assert work["definition"]["cloth_banner_request_sha256"] == (
+        "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2"
+    )
+    assert work["definition"]["comfy_banner_texture_receipt_sha256"] == (
+        "8b530b6ed341af7ba5decbc5a0ed2df14d728ba7f798f86b124ce8d80e0fb001"
+    )
+    assert work["definition"]["blender_cloth_banner_receipt_sha256"] == (
+        "bcfd56bd0a9a3a848676e5a9d5b9b488efde1cb1929e9bf57d654aded6c061b0"
+    )
     assert work["definition"]["candidate_scene_path"].endswith(
-        "Damage_B_fdfe74fd21b1"
+        "ClothBanner_B_4db41b8ff0c2"
     )
 
     assert client.post(f"{base}/start").status_code == 202

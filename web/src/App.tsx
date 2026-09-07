@@ -680,6 +680,16 @@ type SceneDccWorkState = {
     unreal_damage_variant_receipt_sha256?: string;
     damage_blender_preview_sha256?: string;
     damage_unreal_preview_sha256?: string;
+    cloth_banner_request_sha256?: string;
+    comfy_banner_texture_receipt_sha256?: string;
+    banner_texture_sha256?: string;
+    blender_cloth_banner_receipt_sha256?: string;
+    cloth_banner_blend_sha256?: string;
+    cloth_banner_glb_sha256?: string;
+    cloth_banner_manifest_sha256?: string;
+    unreal_cloth_banner_receipt_sha256?: string;
+    cloth_banner_blender_preview_sha256?: string;
+    cloth_banner_unreal_preview_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1891,8 +1901,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasMechanismRig = Boolean(agent.scene_dcc_work?.definition.mechanism_rig_request_sha256);
   const hasMechanismShot = Boolean(agent.scene_dcc_work?.definition.mechanism_shot_request_sha256);
   const hasDamageVariant = Boolean(agent.scene_dcc_work?.definition.damage_variant_request_sha256);
+  const hasClothBanner = Boolean(agent.scene_dcc_work?.definition.cloth_banner_request_sha256);
   const cases = [
-    ...(hasDamageVariant
+    ...(hasClothBanner
+      ? [{
+          id: "cloth-banner-roundtrip",
+          tab: "当前 Session · 风场旗帜",
+          title: "让生成材质经过真实布料解算，成为场景里的可编辑资产",
+          description: "Agent 从当前场景挂点、尺度、风向和视觉目标编译有限任务。固定 ComfyUI 子图生成纹章与旧化输入，Blender 保留 Pin Group、UV、材质节点和 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。",
+          frames: [
+            { src: "/api/showcase/production/m57-banner-texture", alt: "ComfyUI 根据场景视觉目标生成的旗帜纹章与旧化纹理", label: "节点生成", title: "固定子图 · 内容身份已绑定" },
+            { src: "/api/showcase/production/m57-banner-blender", alt: "Blender 风场中完成布料解算的可编辑旗帜", label: "DCC 解算", title: "26 个 Pin 顶点 · 第 48 帧" },
+            { src: "/api/showcase/production/m57-banner-unreal", alt: "Unreal 派生候选中的布料旗帜资产", label: "引擎回流", title: "3,948 三角面 · 材质与碰撞就绪" },
+          ],
+          transition: "节点材质与场景风向编译为可交付布料资产",
+          metricA: "48 / 3,948",
+          metricALabel: "定格帧 / 三角面",
+          metricB: "0",
+          metricBLabel: "重放新增或更新 Actor",
+          note: `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；纹理、可编辑 .blend、GLB 与 Unreal 回执共享同一内容身份。`,
+          domains: ["挂点·已绑定", "材质·已生成", "布料·已解算", "资产·已回流", "重放·已对账"],
+        }]
+      : hasDamageVariant
       ? [{
           id: "damage-variant-roundtrip",
           tab: "当前 Session · 破损变体",

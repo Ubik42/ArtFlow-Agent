@@ -1581,6 +1581,15 @@ def create_app(
             "m55-damage-unreal": goal_root
             / "m55-s1-damage-variant"
             / "unreal-damage-variant-candidate.png",
+            "m57-banner-texture": goal_root
+            / "m57-s1-cloth-banner"
+            / "T_AF_BannerPattern.png",
+            "m57-banner-blender": goal_root
+            / "m57-s1-cloth-banner"
+            / "AF_ClothBanner-preview.png",
+            "m57-banner-unreal": goal_root
+            / "m57-s1-cloth-banner"
+            / "unreal-cloth-banner-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

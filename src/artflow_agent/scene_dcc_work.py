@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .cloth_banner import BannerTextureReceipt, ClothBannerRequest
 from .damage_variant import DamageFieldReceipt, DamageVariantRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
@@ -63,8 +64,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.armature.articulated_gate.v1",
             "unreal.sequencer.mechanism_shot.v1",
             "blender.boolean.material_damage.v1",
+            "blender.cloth.banner_authoring.v1",
         ]
-    ] = Field(min_length=2, max_length=20)
+    ] = Field(min_length=2, max_length=21)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -169,9 +171,7 @@ class SceneDccWorkDefinition(BaseModel):
     )
     mechanism_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     mechanism_fbx_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    unreal_mechanism_rig_receipt_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
+    unreal_mechanism_rig_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     mechanism_shot_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_mechanism_shot_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
@@ -180,17 +180,11 @@ class SceneDccWorkDefinition(BaseModel):
         default=None,
         pattern=r"^/Game/ArtFlow/Sequences/Generated/LS_AF_MechanismShot_[a-f0-9]{12}\.LS_AF_MechanismShot_[a-f0-9]{12}$",
     )
-    mechanism_shot_closed_start_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
+    mechanism_shot_closed_start_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     mechanism_shot_open_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    mechanism_shot_closed_end_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
+    mechanism_shot_closed_end_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     damage_variant_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    comfy_damage_field_receipt_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
+    comfy_damage_field_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     damage_field_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     blender_damage_variant_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
@@ -201,15 +195,21 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_damage_variant_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
-    damage_blender_preview_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
-    damage_unreal_preview_sha256: str | None = Field(
-        default=None, pattern=r"^[a-f0-9]{64}$"
-    )
+    damage_blender_preview_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    damage_unreal_preview_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    comfy_banner_texture_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    banner_texture_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_cloth_banner_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_blend_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_glb_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_cloth_banner_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_blender_preview_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    cloth_banner_unreal_preview_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline|Mechanism|MechanismShot|Damage)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline|Mechanism|MechanismShot|Damage|ClothBanner)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -433,6 +433,24 @@ class SceneDccWorkDefinition(BaseModel):
             if self.modular_environment_request_sha256 is None:
                 raise ValueError("damage variant requires the registered modular environment")
             expected_capabilities.append("blender.boolean.material_damage.v1")
+        cloth_banner_identities = (
+            self.cloth_banner_request_sha256,
+            self.comfy_banner_texture_receipt_sha256,
+            self.banner_texture_sha256,
+            self.blender_cloth_banner_receipt_sha256,
+            self.cloth_banner_blend_sha256,
+            self.cloth_banner_glb_sha256,
+            self.cloth_banner_manifest_sha256,
+            self.unreal_cloth_banner_receipt_sha256,
+            self.cloth_banner_blender_preview_sha256,
+            self.cloth_banner_unreal_preview_sha256,
+        )
+        if any(item is not None for item in cloth_banner_identities):
+            if not all(item is not None for item in cloth_banner_identities):
+                raise ValueError("DCC work requires every cloth-banner identity")
+            if self.damage_variant_request_sha256 is None:
+                raise ValueError("cloth banner requires the registered damage candidate")
+            expected_capabilities.append("blender.cloth.banner_authoring.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -1204,9 +1222,7 @@ def compile_current_blender_dcc_work(
         mechanism_shot_request = MechanismShotRequest.model_validate_json(
             mechanism_shot_request_path.read_text(encoding="utf-8")
         )
-        mechanism_shot_unreal = json.loads(
-            mechanism_shot_unreal_path.read_text(encoding="utf-8")
-        )
+        mechanism_shot_unreal = json.loads(mechanism_shot_unreal_path.read_text(encoding="utf-8"))
         shot_unsigned = dict(mechanism_shot_unreal)
         shot_receipt_sha256 = shot_unsigned.pop("receipt_sha256", None)
         if dcc_work_sha256(shot_unsigned) != shot_receipt_sha256:
@@ -1267,9 +1283,7 @@ def compile_current_blender_dcc_work(
                 raise ValueError(f"{label} receipt identity changed")
         if damage_request.session_id != session_id:
             raise ValueError("damage variant references another Scene Session")
-        if damage_request.source_candidate_scene_path != modular_unreal.get(
-            "candidate_scene_path"
-        ):
+        if damage_request.source_candidate_scene_path != modular_unreal.get("candidate_scene_path"):
             raise ValueError("damage variant no longer derives from the modular candidate")
         if (
             damage_comfy.request_sha256 != damage_request.request_sha256
@@ -1279,9 +1293,7 @@ def compile_current_blender_dcc_work(
             raise ValueError("damage host receipts reference another request")
         if damage_blender.get("comfy_receipt_sha256") != damage_comfy.receipt_sha256:
             raise ValueError("Blender damage references another ComfyUI field")
-        if damage_unreal.get("blender_receipt_sha256") != damage_blender.get(
-            "receipt_sha256"
-        ):
+        if damage_unreal.get("blender_receipt_sha256") != damage_blender.get("receipt_sha256"):
             raise ValueError("Unreal damage references another Blender result")
         if (
             damage_unreal.get("status") != "reconciled"
@@ -1290,9 +1302,7 @@ def compile_current_blender_dcc_work(
             != damage_unreal.get("source_candidate_sha256_after")
         ):
             raise ValueError("Unreal damage result is not reconciled with captured evidence")
-        damage_artifacts = {
-            item["kind"]: item for item in damage_blender.get("artifacts", [])
-        }
+        damage_artifacts = {item["kind"]: item for item in damage_blender.get("artifacts", [])}
         if set(damage_artifacts) != {
             "blend",
             "glb",
@@ -1305,21 +1315,88 @@ def compile_current_blender_dcc_work(
         payload["damage_variant_request_sha256"] = damage_request.request_sha256
         payload["comfy_damage_field_receipt_sha256"] = damage_comfy.receipt_sha256
         payload["damage_field_sha256"] = damage_comfy.field_sha256
-        payload["blender_damage_variant_receipt_sha256"] = damage_blender[
-            "receipt_sha256"
-        ]
+        payload["blender_damage_variant_receipt_sha256"] = damage_blender["receipt_sha256"]
         payload["damage_manifest_sha256"] = damage_artifacts["manifest"]["sha256"]
         payload["damage_glb_sha256"] = damage_artifacts["glb"]["sha256"]
-        payload["damage_material_mask_sha256"] = damage_artifacts["material_mask"][
-            "sha256"
-        ]
-        payload["unreal_damage_variant_receipt_sha256"] = damage_unreal[
-            "receipt_sha256"
-        ]
+        payload["damage_material_mask_sha256"] = damage_artifacts["material_mask"]["sha256"]
+        payload["unreal_damage_variant_receipt_sha256"] = damage_unreal["receipt_sha256"]
         payload["damage_blender_preview_sha256"] = damage_artifacts["preview"]["sha256"]
         payload["damage_unreal_preview_sha256"] = damage_unreal["screenshot_sha256"]
         payload["unreal_return_receipt_sha256"] = damage_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = damage_unreal["candidate_scene_path"]
+    cloth_root = project_root / "artifacts/goal/m57-s1-cloth-banner"
+    cloth_request_path = cloth_root / "cloth-banner-request.json"
+    cloth_comfy_path = cloth_root / "comfy-banner-texture-receipt.json"
+    cloth_blender_path = cloth_root / "blender-cloth-banner-receipt.json"
+    cloth_unreal_path = cloth_root / "unreal-cloth-banner-receipt.json"
+    if all(
+        path.is_file()
+        for path in (cloth_request_path, cloth_comfy_path, cloth_blender_path, cloth_unreal_path)
+    ):
+        if "damage_unreal" not in locals():
+            raise ValueError("cloth banner requires the registered damage result")
+        cloth_request = ClothBannerRequest.model_validate_json(
+            cloth_request_path.read_text(encoding="utf-8")
+        )
+        cloth_comfy = BannerTextureReceipt.model_validate_json(
+            cloth_comfy_path.read_text(encoding="utf-8")
+        )
+        cloth_blender = json.loads(cloth_blender_path.read_text(encoding="utf-8"))
+        cloth_unreal = json.loads(cloth_unreal_path.read_text(encoding="utf-8"))
+        for label, receipt in (
+            ("Blender cloth banner", cloth_blender),
+            ("Unreal cloth banner", cloth_unreal),
+        ):
+            unsigned = dict(receipt)
+            receipt_sha256 = unsigned.pop("receipt_sha256", None)
+            if dcc_work_sha256(unsigned) != receipt_sha256:
+                raise ValueError(f"{label} receipt identity changed")
+        if (
+            cloth_request.session_id != session_id
+            or cloth_request.source_candidate_scene_path
+            != damage_unreal.get("candidate_scene_path")
+        ):
+            raise ValueError("cloth banner references another Session or source candidate")
+        if (
+            any(
+                receipt.get("request_sha256") != cloth_request.request_sha256
+                for receipt in (cloth_blender, cloth_unreal)
+            )
+            or cloth_comfy.request_sha256 != cloth_request.request_sha256
+        ):
+            raise ValueError("cloth-banner host receipts reference another request")
+        if cloth_blender.get(
+            "comfy_receipt_sha256"
+        ) != cloth_comfy.receipt_sha256 or cloth_unreal.get(
+            "blender_receipt_sha256"
+        ) != cloth_blender.get("receipt_sha256"):
+            raise ValueError("cloth-banner host receipt chain changed")
+        if (
+            cloth_unreal.get("status") != "reconciled"
+            or cloth_unreal.get("capture_status") != "captured"
+            or cloth_unreal.get("source_candidate_sha256_before")
+            != cloth_unreal.get("source_candidate_sha256_after")
+        ):
+            raise ValueError("Unreal cloth banner is not reconciled with captured evidence")
+        cloth_artifacts = {item["kind"]: item for item in cloth_blender.get("artifacts", [])}
+        if (
+            set(cloth_artifacts) != {"blend", "glb", "manifest", "texture", "preview"}
+            or cloth_artifacts["texture"]["sha256"] != cloth_comfy.texture_sha256
+        ):
+            raise ValueError("Blender cloth-banner artifact catalog changed")
+        payload["capability_ids"].append("blender.cloth.banner_authoring.v1")
+        payload["cloth_banner_request_sha256"] = cloth_request.request_sha256
+        payload["comfy_banner_texture_receipt_sha256"] = cloth_comfy.receipt_sha256
+        payload["banner_texture_sha256"] = cloth_comfy.texture_sha256
+        payload["blender_cloth_banner_receipt_sha256"] = cloth_blender["receipt_sha256"]
+        payload["cloth_banner_blend_sha256"] = cloth_artifacts["blend"]["sha256"]
+        payload["cloth_banner_glb_sha256"] = cloth_artifacts["glb"]["sha256"]
+        payload["cloth_banner_manifest_sha256"] = cloth_artifacts["manifest"]["sha256"]
+        payload["unreal_cloth_banner_receipt_sha256"] = cloth_unreal["receipt_sha256"]
+        payload["cloth_banner_blender_preview_sha256"] = cloth_artifacts["preview"]["sha256"]
+        payload["cloth_banner_unreal_preview_sha256"] = cloth_unreal["screenshot_sha256"]
+        payload["unreal_return_receipt_sha256"] = cloth_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = cloth_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

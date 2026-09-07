@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 106,
+  "stateRevision": 107,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M58",
+  "currentMilestone": "M59",
   "milestones": [
     {
       "id": "M0",
@@ -695,7 +695,7 @@
     {
       "id": "M58",
       "title": "Live cloth-banner dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M57"],
       "outcome": "The proven scene-conditioned banner texture, editable Blender cloth source, baked exchange mesh and Unreal candidate become the twenty-first finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
@@ -703,39 +703,52 @@
         "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate external side effects",
         "The Chinese Scene Change Spectrum presents scene attachment, node-generated material, cloth solve and Unreal result as one legible route"
       ]
+    },
+    {
+      "id": "M59",
+      "title": "Intent-bound DCC route selection",
+      "status": "in_progress",
+      "dependsOn": ["M58"],
+      "outcome": "A current Scene Session selects one finite production route from scene facts, explicit intent and capability readiness, and dispatches only that route's shortest registered dependency chain through the existing durable work lifecycle.",
+      "acceptance": [
+        "A typed route decision identifies one registered route, exact stage capabilities, scene and intent identities, readiness facts and a bounded selection basis",
+        "At least cloth banner, damage variant and mechanism shot are distinct selectable routes rather than one cumulative pseudo-pipeline",
+        "Queue, recovery and replay remain in the existing SceneDccWork lifecycle and reject route or artifact identity drift",
+        "The Scene Change Spectrum shows the selected route and why its capabilities match the current production intent"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M58-S1",
-    "milestone": "M58",
-    "title": "Dispatch the verified cloth-banner route from the live Scene Session",
-    "outcome": "Register M57 as the twenty-first content-bound current-session capability, replay it through the existing DCC worker and present the exact ComfyUI texture, Blender cloth result and Unreal candidate without rerunning any host.",
-    "risk": "R1",
+    "id": "M59-S1",
+    "milestone": "M59",
+    "title": "Select and dispatch one shortest verified DCC route from current intent",
+    "outcome": "Introduce a typed route decision over the existing verified cloth-banner, damage-variant and mechanism-shot capabilities; bind the current Session to one matching route and make the worker and Scene Change Spectrum project that route without rerunning hosts or creating a parallel coordinator.",
+    "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": false,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "web/**"],
     "nonGoals": [
       "Do not rerun ComfyUI, Blender or Unreal",
-      "Do not add another worker, queue, reducer, state projection or approval gate",
-      "Do not expose arbitrary graph, host code or asset paths",
-      "Do not redesign unrelated product surfaces or broaden test coverage"
+      "Do not add another worker, queue, reducer, planner service, state projection or approval gate",
+      "Do not expose free-form route names, arbitrary graph, host code or asset paths",
+      "Do not rewrite older host contracts or broaden test coverage"
     ],
     "acceptance": [
-      "One typed work definition binds all exact M57 request, host receipt, editable source, texture, GLB, manifest, preview and candidate identities",
-      "The existing worker records queue, claim, execute, reconcile and success for one stable work identity",
-      "Repeat dispatch and reducer replay create no duplicate work item or external side effect",
-      "Desktop and narrow product views load the three real route stages without overflow or failed media"
+      "One typed route decision binds current scene, intent, readiness snapshot, selected route and exact ordered stage capabilities",
+      "Cloth banner, damage variant and mechanism shot are registered as mutually distinct finite route options",
+      "The existing queue and worker dispatch the selected cloth-banner route with stable identity and replay equivalence",
+      "The Chinese product view explains the selected route in terms of scene need and DCC stages rather than framework terminology"
     ],
     "stopConditions": [
-      "Stop if any M57 request, receipt or artifact identity no longer verifies",
-      "Stop if registration requires a parallel lifecycle or simulated progress",
-      "Stop if the UI would need placeholder media"
+      "Stop if route selection cannot bind the current persisted Scene Session intent and capability readiness",
+      "Stop if selection would require a parallel lifecycle or model-generated host program",
+      "Stop if a route can cite artifacts outside its registered identity chain"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "cloth_request", "kind": "repo_path", "value": "artifacts/goal/m57-s1-cloth-banner/cloth-banner-request.json", "required": true},
-      {"id": "cloth_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m57-s1-cloth-banner/blender-cloth-banner-receipt.json", "required": true},
-      {"id": "cloth_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-receipt.json", "required": true}
+      {"id": "cloth_work_receipt", "kind": "repo_path", "value": "artifacts/goal/m58-s1-live-cloth-banner/live-cloth-banner-work-receipt.json", "required": true},
+      {"id": "damage_work_receipt", "kind": "repo_path", "value": "artifacts/goal/m56-s1-live-damage-variant/live-damage-variant-work-receipt.json", "required": true},
+      {"id": "mechanism_work_receipt", "kind": "repo_path", "value": "artifacts/goal/m54-s1-live-mechanism-shot/live-mechanism-shot-work-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -751,9 +764,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0099.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0100.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M57 are complete. One scene-bound request drove a reviewed ComfyUI banner-pattern graph, Blender 5.2 cloth/material authoring and a real Unreal 5.8.1 derived candidate. Blender retains 26 pinned vertices, UV, material nodes, cloth and wind controls and exports a frame-48, 3,948-triangle GLB. Unreal imports one material slot and one convex collision hull; repeat execution reconciles with zero created or updated actors, zero duplicate assets and a byte-identical source candidate. Live current-session dispatch is M58-S1 scope and has not yet run.",
+  "evidenceCeiling": "M0-M58 are complete. The cloth-banner route is registered as the twenty-first current-session DCC capability. Work dcc-work-3862e008ae8b binds exact ComfyUI, Blender and Unreal identities, traverses five durable lifecycle events, repeats with the same identity and replays equivalently with zero duplicate external side effects. Desktop and narrow product views load all three real media stages without failed images, horizontal overflow or console messages. Intent-bound finite route selection is M59-S1 scope and has not yet been implemented.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

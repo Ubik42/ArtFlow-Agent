@@ -194,9 +194,14 @@ Unreal 当前场景
   布料网格、Pin Group、UV、材质节点和确定性 Cloth Bake，再把定格网格与材质回流新的 Unreal
   派生候选。当前真实结果为 48 帧、26 个固定顶点、3,948 三角面，重复 Unreal 执行新增/更新
   Actor 与重复资产均为 0；首版不扩张到 Chaos 运行时布料或通用模拟系统。
-- **M58 · Live cloth-banner dispatch（进行中）**：把 M57 的场景挂点、ComfyUI 纹理、Blender
+- **M58 · Live cloth-banner dispatch（已完成）**：把 M57 的场景挂点、ComfyUI 纹理、Blender
   编辑源/定格 GLB 和 Unreal 旗帜候选登记为当前 Session 的第二十一项 DCC 能力，接入既有
-  Worker 和场景变更谱，以真实三宿主媒体呈现材质生成、物理解算和引擎回流的连续过程。
+  Worker 和场景变更谱。五段生命周期、重复派发和 Reducer 重放均通过；桌面与窄屏以真实
+  三宿主媒体呈现材质生成、物理解算和引擎回流，失败媒体、溢出和控制台消息均为 0。
+- **M59 · Intent-bound DCC route selection（进行中）**：把当前累积式能力登记收敛为可执行的
+  有限路线选择。Agent 根据 Scene Session 的场景事实、用户意图和能力就绪度，在布料旗帜、
+  破损变体、机关镜头等已验证路线中选择一条最短依赖链，并把选择依据与具体宿主阶段写入
+  同一工作定义；不新增状态机，也不把能力目录本身当成一次必须全部执行的流水线。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 
