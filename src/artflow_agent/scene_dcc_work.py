@@ -12,6 +12,7 @@ from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .cloth_banner import BannerTextureReceipt, ClothBannerRequest
 from .damage_variant import DamageFieldReceipt, DamageVariantRequest
+from .dcc_route_selection import DccRouteDecision
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
@@ -65,10 +66,15 @@ class SceneDccWorkDefinition(BaseModel):
             "unreal.sequencer.mechanism_shot.v1",
             "blender.boolean.material_damage.v1",
             "blender.cloth.banner_authoring.v1",
+            "comfy.material.banner_pattern.v1",
+            "unreal.asset.static_cloth_banner.v1",
+            "comfy.spatial.damage_field.v1",
+            "unreal.asset.damage_variant.v1",
         ]
     ] = Field(min_length=2, max_length=21)
-    modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
-    pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    route_decision: DccRouteDecision | None = None
+    modeling_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    pbr_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     layout_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     shot_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -217,6 +223,57 @@ class SceneDccWorkDefinition(BaseModel):
         expected = dcc_work_sha256(
             self.model_dump(mode="json", exclude={"work_id", "work_sha256"}, exclude_none=True)
         )
+        if self.route_decision is not None:
+            decision = self.route_decision
+            if (
+                decision.run_id != self.run_id
+                or decision.session_id != self.session_id
+                or decision.session_sha256 != self.session_sha256
+            ):
+                raise ValueError("DCC route decision references another run or Session")
+            if self.capability_ids != decision.selected_stage_capability_ids:
+                raise ValueError("DCC work stages do not match the selected route")
+            route_identities = {
+                "cloth_banner": (
+                    self.cloth_banner_request_sha256,
+                    self.comfy_banner_texture_receipt_sha256,
+                    self.banner_texture_sha256,
+                    self.blender_cloth_banner_receipt_sha256,
+                    self.cloth_banner_blend_sha256,
+                    self.cloth_banner_glb_sha256,
+                    self.cloth_banner_manifest_sha256,
+                    self.unreal_cloth_banner_receipt_sha256,
+                    self.cloth_banner_blender_preview_sha256,
+                    self.cloth_banner_unreal_preview_sha256,
+                ),
+                "damage_variant": (
+                    self.damage_variant_request_sha256,
+                    self.comfy_damage_field_receipt_sha256,
+                    self.damage_field_sha256,
+                    self.blender_damage_variant_receipt_sha256,
+                    self.damage_manifest_sha256,
+                    self.damage_glb_sha256,
+                    self.damage_material_mask_sha256,
+                    self.unreal_damage_variant_receipt_sha256,
+                    self.damage_blender_preview_sha256,
+                    self.damage_unreal_preview_sha256,
+                ),
+                "mechanism_shot": (
+                    self.mechanism_shot_request_sha256,
+                    self.unreal_mechanism_shot_receipt_sha256,
+                    self.mechanism_shot_sequence_path,
+                    self.mechanism_shot_closed_start_sha256,
+                    self.mechanism_shot_open_sha256,
+                    self.mechanism_shot_closed_end_sha256,
+                ),
+            }[decision.selected_route_id]
+            if not all(item is not None for item in route_identities):
+                raise ValueError("selected DCC route has an incomplete artifact identity chain")
+            if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
+                raise ValueError("DCC work content identity is invalid")
+            return self
+        if self.modeling_request_sha256 is None or self.pbr_request_sha256 is None:
+            raise ValueError("legacy cumulative DCC work requires modeling and PBR identities")
         expected_capabilities = [
             "blender.architectural_prop.weathered_shrine.v1",
             "blender.comfy_pbr.assembly.v1",
@@ -503,13 +560,155 @@ def dcc_work_sha256(payload: object) -> str:
     ).hexdigest()
 
 
+def _load_content_addressed_receipt(path: Path, label: str) -> dict[str, object]:
+    receipt = json.loads(path.read_text(encoding="utf-8"))
+    unsigned = dict(receipt)
+    receipt_sha256 = unsigned.pop("receipt_sha256", None)
+    if dcc_work_sha256(unsigned) != receipt_sha256:
+        raise ValueError(f"{label} receipt identity changed")
+    return receipt
+
+
+def _compile_selected_route(
+    project_root: Path, route_decision: DccRouteDecision
+) -> SceneDccWorkDefinition:
+    payload: dict[str, object] = {
+        "schema_id": "artflow-scene-dcc-work/1",
+        "run_id": route_decision.run_id,
+        "session_id": route_decision.session_id,
+        "session_sha256": route_decision.session_sha256,
+        "route_decision": route_decision.model_dump(mode="json"),
+        "capability_ids": route_decision.selected_stage_capability_ids,
+    }
+    if route_decision.selected_route_id == "cloth_banner":
+        root = project_root / "artifacts/goal/m57-s1-cloth-banner"
+        request = ClothBannerRequest.model_validate_json(
+            (root / "cloth-banner-request.json").read_text(encoding="utf-8")
+        )
+        comfy = BannerTextureReceipt.model_validate_json(
+            (root / "comfy-banner-texture-receipt.json").read_text(encoding="utf-8")
+        )
+        blender = _load_content_addressed_receipt(
+            root / "blender-cloth-banner-receipt.json", "Blender cloth banner"
+        )
+        unreal = _load_content_addressed_receipt(
+            root / "unreal-cloth-banner-receipt.json", "Unreal cloth banner"
+        )
+        if (
+            request.session_id != route_decision.session_id
+            or comfy.request_sha256 != request.request_sha256
+            or blender.get("request_sha256") != request.request_sha256
+            or blender.get("comfy_receipt_sha256") != comfy.receipt_sha256
+            or unreal.get("blender_receipt_sha256") != blender.get("receipt_sha256")
+            or unreal.get("status") != "reconciled"
+        ):
+            raise ValueError("selected cloth-banner route identity chain changed")
+        artifacts = {item["kind"]: item for item in blender.get("artifacts", [])}
+        if set(artifacts) != {"blend", "glb", "manifest", "texture", "preview"}:
+            raise ValueError("selected cloth-banner artifact catalog changed")
+        payload.update(
+            {
+                "cloth_banner_request_sha256": request.request_sha256,
+                "comfy_banner_texture_receipt_sha256": comfy.receipt_sha256,
+                "banner_texture_sha256": comfy.texture_sha256,
+                "blender_cloth_banner_receipt_sha256": blender["receipt_sha256"],
+                "cloth_banner_blend_sha256": artifacts["blend"]["sha256"],
+                "cloth_banner_glb_sha256": artifacts["glb"]["sha256"],
+                "cloth_banner_manifest_sha256": artifacts["manifest"]["sha256"],
+                "unreal_cloth_banner_receipt_sha256": unreal["receipt_sha256"],
+                "cloth_banner_blender_preview_sha256": artifacts["preview"]["sha256"],
+                "cloth_banner_unreal_preview_sha256": unreal["screenshot_sha256"],
+                "unreal_return_receipt_sha256": unreal["receipt_sha256"],
+                "candidate_scene_path": unreal["candidate_scene_path"],
+            }
+        )
+    elif route_decision.selected_route_id == "damage_variant":
+        root = project_root / "artifacts/goal/m55-s1-damage-variant"
+        request = DamageVariantRequest.model_validate_json(
+            (root / "damage-variant-request.json").read_text(encoding="utf-8")
+        )
+        comfy = DamageFieldReceipt.model_validate_json(
+            (root / "comfy-damage-field-receipt.json").read_text(encoding="utf-8")
+        )
+        blender = _load_content_addressed_receipt(
+            root / "blender-damage-variant-receipt.json", "Blender damage"
+        )
+        unreal = _load_content_addressed_receipt(
+            root / "unreal-damage-variant-receipt.json", "Unreal damage"
+        )
+        if (
+            request.session_id != route_decision.session_id
+            or comfy.request_sha256 != request.request_sha256
+            or blender.get("comfy_receipt_sha256") != comfy.receipt_sha256
+            or unreal.get("blender_receipt_sha256") != blender.get("receipt_sha256")
+            or unreal.get("status") != "reconciled"
+        ):
+            raise ValueError("selected damage route identity chain changed")
+        artifacts = {item["kind"]: item for item in blender.get("artifacts", [])}
+        payload.update(
+            {
+                "damage_variant_request_sha256": request.request_sha256,
+                "comfy_damage_field_receipt_sha256": comfy.receipt_sha256,
+                "damage_field_sha256": comfy.field_sha256,
+                "blender_damage_variant_receipt_sha256": blender["receipt_sha256"],
+                "damage_manifest_sha256": artifacts["manifest"]["sha256"],
+                "damage_glb_sha256": artifacts["glb"]["sha256"],
+                "damage_material_mask_sha256": artifacts["material_mask"]["sha256"],
+                "unreal_damage_variant_receipt_sha256": unreal["receipt_sha256"],
+                "damage_blender_preview_sha256": artifacts["preview"]["sha256"],
+                "damage_unreal_preview_sha256": unreal["screenshot_sha256"],
+                "unreal_return_receipt_sha256": unreal["receipt_sha256"],
+                "candidate_scene_path": unreal["candidate_scene_path"],
+            }
+        )
+    else:
+        root = project_root / "artifacts/goal/m53-s1-mechanism-shot"
+        request = MechanismShotRequest.model_validate_json(
+            (root / "mechanism-shot-request.json").read_text(encoding="utf-8")
+        )
+        unreal = _load_content_addressed_receipt(
+            root / "unreal-mechanism-shot-receipt.json", "Unreal mechanism shot"
+        )
+        previews = unreal.get("preview_sha256s", {})
+        if (
+            request.session_id != route_decision.session_id
+            or unreal.get("request_sha256") != request.request_sha256
+            or unreal.get("status") != "reconciled"
+            or set(previews) != {"closed_start", "open", "closed_end"}
+        ):
+            raise ValueError("selected mechanism-shot route identity chain changed")
+        payload.update(
+            {
+                "mechanism_shot_request_sha256": request.request_sha256,
+                "unreal_mechanism_shot_receipt_sha256": unreal["receipt_sha256"],
+                "mechanism_shot_sequence_path": unreal["sequence_asset_path"],
+                "mechanism_shot_closed_start_sha256": previews["closed_start"],
+                "mechanism_shot_open_sha256": previews["open"],
+                "mechanism_shot_closed_end_sha256": previews["closed_end"],
+                "unreal_return_receipt_sha256": unreal["receipt_sha256"],
+                "candidate_scene_path": unreal["candidate_scene_path"],
+            }
+        )
+    digest = dcc_work_sha256(payload)
+    return SceneDccWorkDefinition(**payload, work_id=f"dcc-work-{digest[:12]}", work_sha256=digest)
+
+
 def compile_current_blender_dcc_work(
     project_root: Path,
     *,
     run_id: str,
     session_id: str,
     session_sha256: str,
+    route_decision: DccRouteDecision | None = None,
 ) -> SceneDccWorkDefinition:
+    if route_decision is not None:
+        if (
+            route_decision.run_id != run_id
+            or route_decision.session_id != session_id
+            or route_decision.session_sha256 != session_sha256
+        ):
+            raise ValueError("DCC route decision does not belong to the current Session")
+        return _compile_selected_route(project_root, route_decision)
     model_root = project_root / "artifacts/goal/m23-s1-blender-modeling"
     pbr_root = project_root / "artifacts/goal/m23-s2-blender-pbr"
     modeling_request = json.loads(

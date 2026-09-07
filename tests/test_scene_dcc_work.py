@@ -12,7 +12,9 @@ from artflow_agent.web_api import create_app
 RUN_ID = "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e"
 
 
-def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -> None:
+def test_blender_dcc_work_uses_selected_route_and_existing_lifecycle(
+    tmp_path: Path,
+) -> None:
     root = Path(__file__).parents[1]
     source = root / "artifacts/goal/m19-s1-candidate-work/agent-events.sqlite3"
     database = tmp_path / "agent-events.sqlite3"
@@ -33,113 +35,25 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     work = queued.json()["scene_dcc_work"]
     assert work == replayed.json()["scene_dcc_work"]
     assert work["definition"]["capability_ids"] == [
-        "blender.architectural_prop.weathered_shrine.v1",
-        "blender.comfy_pbr.assembly.v1",
-        "blender.geometry_nodes.shrine_courtyard.v1",
-        "blender.shot.rain_breakthrough.v1",
-        "blender.lookdev.scene_target.v1",
-        "blender.surface.uv_bake.v1",
-        "blender.rigidbody.rubble_settle.v1",
-        "blender.surface.inlay_projection_bake.v1",
-        "blender.geometry_nodes.modular_wayfinder_kit.v1",
-        "unreal.pcg.native_density_kit.v1",
-        "unreal.sequencer.procedural_environment_shot.v1",
-        "blender.camera_move.three_key_dolly.v1",
-        "blender.material.scene_conditioned_wayfinder_set.v1",
-        "blender.cache.wind_veil.v1",
-        "blender.geometry_nodes.biome_foliage_kit.v1",
-        "blender.geometry_nodes.modular_environment.v1",
-        "blender.geometry_nodes.spline_infrastructure.v1",
-        "blender.armature.articulated_gate.v1",
-        "unreal.sequencer.mechanism_shot.v1",
-        "blender.boolean.material_damage.v1",
+        "comfy.material.banner_pattern.v1",
         "blender.cloth.banner_authoring.v1",
+        "unreal.asset.static_cloth_banner.v1",
     ]
-    assert work["definition"]["accepted_visual_target_sha256"] == (
-        "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
-    )
-    assert work["definition"]["surface_request_sha256"] == (
-        "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55"
-    )
-    assert work["definition"]["set_dressing_request_sha256"] == (
-        "c496854357decac61a42c1339e9d8fc3e281846a4e4ba5edfd0fdd0be99061b7"
-    )
-    assert work["definition"]["surface_detail_request_sha256"] == (
-        "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d"
-    )
-    assert work["definition"]["procedural_kit_request_sha256"] == (
-        "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a"
-    )
-    assert work["definition"]["pcg_density_request_sha256"] == (
-        "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5"
-    )
-    assert work["definition"]["pcg_density_spatial_manifest_sha256"] == (
-        "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb"
-    )
-    assert work["definition"]["shot_package_request_sha256"] == (
-        "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f"
-    )
-    assert work["definition"]["camera_move_request_sha256"] == (
-        "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90"
-    )
-    assert work["definition"]["camera_move_sequence_path"].endswith("LS_AF_CameraMove_548e7db8416f")
-    assert work["definition"]["material_variation_request_sha256"] == (
-        "1a77d442c3793d8dfe80af7c5bbdd19e399d1684c3fb53d6e7e3d2bc43124419"
-    )
-    assert work["definition"]["blender_material_variation_receipt_sha256"] == (
-        "76d0a496ff0a1f10bc1c29638cd1ab52a28f2dd4ad81fc2c3de89ea2c1d41628"
-    )
-    assert work["definition"]["simulation_cache_request_sha256"] == (
-        "e9e803c97da153d9ba52ad2e871cf3fc415d4b5ee9495e396b84d643a1a67dcb"
-    )
-    assert work["definition"]["foliage_kit_request_sha256"] == (
-        "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424"
-    )
-    assert work["definition"]["modular_environment_request_sha256"] == (
-        "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053"
-    )
-    assert work["definition"]["spline_infrastructure_request_sha256"] == (
-        "63cab976001a87fee006243eb436407256047cebb6b28a2313492d8737ae4428"
-    )
-    assert work["definition"]["mechanism_rig_request_sha256"] == (
-        "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c"
-    )
-    assert work["definition"]["mechanism_fbx_sha256"] == (
-        "fc1c49dc622da2e3dd958aa94f5927d3440cd73444805edc5e326c88ed30e594"
-    )
-    assert work["definition"]["mechanism_shot_request_sha256"] == (
-        "59b449e641704045759c9cb0d499ecb5f870279b4c75008af2e12bb57ddba9af"
-    )
-    assert work["definition"]["mechanism_shot_sequence_path"].endswith(
-        "LS_AF_MechanismShot_3273ac1a1081"
-    )
-    assert work["definition"]["mechanism_shot_open_sha256"] == (
-        "8201d9453e63bc09febfed5acc49b9f999621116e019d39030eaed9a94f929a2"
-    )
-    assert work["definition"]["damage_variant_request_sha256"] == (
-        "fdfe74fd21b19008d7cdeee04c435dd02298910b86ba8e39b5c0db092b8ef4bb"
-    )
-    assert work["definition"]["comfy_damage_field_receipt_sha256"] == (
-        "5792f055f26a76508081ca8e4419860e141b85a560821b1a533c62810caf280f"
-    )
-    assert work["definition"]["blender_damage_variant_receipt_sha256"] == (
-        "d68ab2566adc11056d823862a590dadbeff609d07beade4a7a07e0783e5a04c1"
-    )
-    assert work["definition"]["damage_field_sha256"] == (
-        "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168"
-    )
+    decision = work["definition"]["route_decision"]
+    assert decision["selected_route_id"] == "cloth_banner"
+    assert [candidate["route_id"] for candidate in decision["candidates"]] == [
+        "cloth_banner",
+        "damage_variant",
+        "mechanism_shot",
+    ]
+    assert decision["candidates"][0]["matched_terms"] == ["材质"]
+    assert work["definition"]["modeling_request_sha256"] is None
+    assert work["definition"]["damage_variant_request_sha256"] is None
+    assert work["definition"]["mechanism_shot_request_sha256"] is None
     assert work["definition"]["cloth_banner_request_sha256"] == (
         "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2"
     )
-    assert work["definition"]["comfy_banner_texture_receipt_sha256"] == (
-        "8b530b6ed341af7ba5decbc5a0ed2df14d728ba7f798f86b124ce8d80e0fb001"
-    )
-    assert work["definition"]["blender_cloth_banner_receipt_sha256"] == (
-        "bcfd56bd0a9a3a848676e5a9d5b9b488efde1cb1929e9bf57d654aded6c061b0"
-    )
-    assert work["definition"]["candidate_scene_path"].endswith(
-        "ClothBanner_B_4db41b8ff0c2"
-    )
+    assert work["definition"]["candidate_scene_path"].endswith("ClothBanner_B_4db41b8ff0c2")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None
@@ -154,4 +68,8 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     ]["message"]
     restored = AgentEventStore(database).load(RUN_ID).scene_dcc_work
     assert restored is not None
+    assert (
+        restored.definition.route_decision.model_dump(mode="json")
+        == work["definition"]["route_decision"]
+    )
     assert restored.outcome_sha256 == work["definition"]["unreal_return_receipt_sha256"]

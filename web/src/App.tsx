@@ -606,9 +606,32 @@ type SceneDccWorkState = {
     work_id: string;
     work_sha256: string;
     capability_ids: string[];
-    modeling_request_sha256: string;
-    pbr_request_sha256: string;
+    modeling_request_sha256?: string;
+    pbr_request_sha256?: string;
     candidate_scene_path: string;
+    route_decision?: {
+      schema_id: "artflow-dcc-route-decision/1";
+      decision_id: string;
+      decision_sha256: string;
+      policy_version: string;
+      run_id: string;
+      session_id: string;
+      session_sha256: string;
+      scene_package_sha256: string;
+      intent_sha256: string;
+      selected_route_id: "cloth_banner" | "damage_variant" | "mechanism_shot";
+      selected_stage_capability_ids: string[];
+      selection_basis: string[];
+      candidates: Array<{
+        route_id: "cloth_banner" | "damage_variant" | "mechanism_shot";
+        label: string;
+        ready: boolean;
+        match_score: number;
+        matched_terms: string[];
+        stage_capability_ids: string[];
+        readiness_receipt_sha256: string;
+      }>;
+    };
     conditioning_request_sha256?: string;
     conditioning_receipt_sha256?: string;
     accepted_visual_target_sha256?: string;
@@ -1902,24 +1925,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasMechanismShot = Boolean(agent.scene_dcc_work?.definition.mechanism_shot_request_sha256);
   const hasDamageVariant = Boolean(agent.scene_dcc_work?.definition.damage_variant_request_sha256);
   const hasClothBanner = Boolean(agent.scene_dcc_work?.definition.cloth_banner_request_sha256);
+  const routeDecision = agent.scene_dcc_work?.definition.route_decision;
+  const routeScoreboard = routeDecision?.candidates
+    .map((candidate) => `${candidate.label} ${candidate.match_score} 分`)
+    .join(" · ");
+  const routeBasis = routeDecision?.selection_basis.join("；");
   const cases = [
     ...(hasClothBanner
       ? [{
           id: "cloth-banner-roundtrip",
-          tab: "当前 Session · 风场旗帜",
-          title: "让生成材质经过真实布料解算，成为场景里的可编辑资产",
-          description: "Agent 从当前场景挂点、尺度、风向和视觉目标编译有限任务。固定 ComfyUI 子图生成纹章与旧化输入，Blender 保留 Pin Group、UV、材质节点和 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。",
+          tab: "当前 Session · 自动选路",
+          title: "“材质”意图匹配到风场旗帜路线",
+          description: `Agent 对照 ${routeDecision?.candidates.length ?? 3} 条已验证路线与当前场景事实，选择最短可行链。本轮只派发 ${routeDecision?.selected_stage_capability_ids.length ?? 3} 个阶段：固定 ComfyUI 子图生成纹章与旧化输入，Blender 完成材质与 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。`,
           frames: [
             { src: "/api/showcase/production/m57-banner-texture", alt: "ComfyUI 根据场景视觉目标生成的旗帜纹章与旧化纹理", label: "节点生成", title: "固定子图 · 内容身份已绑定" },
             { src: "/api/showcase/production/m57-banner-blender", alt: "Blender 风场中完成布料解算的可编辑旗帜", label: "DCC 解算", title: "26 个 Pin 顶点 · 第 48 帧" },
             { src: "/api/showcase/production/m57-banner-unreal", alt: "Unreal 派生候选中的布料旗帜资产", label: "引擎回流", title: "3,948 三角面 · 材质与碰撞就绪" },
           ],
           transition: "节点材质与场景风向编译为可交付布料资产",
-          metricA: "48 / 3,948",
-          metricALabel: "定格帧 / 三角面",
-          metricB: "0",
-          metricBLabel: "重放新增或更新 Actor",
-          note: `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；纹理、可编辑 .blend、GLB 与 Unreal 回执共享同一内容身份。`,
+          metricA: `${routeDecision?.selected_stage_capability_ids.length ?? 3} / 21`,
+          metricALabel: "本次阶段 / 已验证能力",
+          metricB: `${routeDecision?.candidates.find((candidate) => candidate.route_id === routeDecision.selected_route_id)?.matched_terms.length ?? 1}`,
+          metricBLabel: "命中意图词",
+          note: `${routeBasis ?? `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}`}。路线评分：${routeScoreboard ?? "风场旗帜 5 分 · 破损变体 0 分 · 机关镜头 0 分"}。`,
           domains: ["挂点·已绑定", "材质·已生成", "布料·已解算", "资产·已回流", "重放·已对账"],
         }]
       : hasDamageVariant
@@ -2321,7 +2349,13 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasSimulationCache && caseId !== "simulation-cache-roundtrip") {
+    if (hasClothBanner && caseId !== "cloth-banner-roundtrip") {
+      setCaseId("cloth-banner-roundtrip");
+    } else if (hasDamageVariant && caseId !== "damage-variant-roundtrip") {
+      setCaseId("damage-variant-roundtrip");
+    } else if (hasMechanismShot && caseId !== "mechanism-shot-roundtrip") {
+      setCaseId("mechanism-shot-roundtrip");
+    } else if (hasSimulationCache && caseId !== "simulation-cache-roundtrip") {
       setCaseId("simulation-cache-roundtrip");
     } else if (hasMaterialVariation && caseId !== "material-variation-roundtrip") {
       setCaseId("material-variation-roundtrip");
@@ -2342,7 +2376,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasCameraMove, hasMaterialVariation, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSimulationCache, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasCameraMove, hasClothBanner, hasDamageVariant, hasMaterialVariation, hasMechanismShot, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSimulationCache, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

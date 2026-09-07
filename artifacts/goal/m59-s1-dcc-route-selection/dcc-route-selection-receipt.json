@@ -1,0 +1,97 @@
+{
+  "schema_id": "artflow-dcc-route-selection-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-4d29fa0d1a91",
+  "work_sha256": "4d29fa0d1a910381d188ad65cd5287c53d6bad04cdef13ce32b13270811af708",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "route_decision": {
+    "schema_id": "artflow-dcc-route-decision/1",
+    "decision_id": "dcc-route-b38cca403ba7",
+    "decision_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+    "policy_version": "dcc-route-policy/1",
+    "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+    "session_id": "scene-session-dc31f6ed0f4e",
+    "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+    "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+    "intent_sha256": "5fbfdfa98b8bbad43c97eac982c6a4ef39d953507ea6da0d2147834dfe113bee",
+    "selected_route_id": "cloth_banner",
+    "selected_stage_capability_ids": [
+      "comfy.material.banner_pattern.v1",
+      "blender.cloth.banner_authoring.v1",
+      "unreal.asset.static_cloth_banner.v1"
+    ],
+    "selection_basis": [
+      "当前意图命中：材质",
+      "所选路线的 ComfyUI、Blender 与 Unreal 回执均已就绪",
+      "采用已验证路线中的最高语义匹配分，不调用未登记宿主能力"
+    ],
+    "candidates": [
+      {
+        "route_id": "cloth_banner",
+        "label": "风场旗帜",
+        "ready": true,
+        "match_score": 5,
+        "matched_terms": [
+          "材质"
+        ],
+        "stage_capability_ids": [
+          "comfy.material.banner_pattern.v1",
+          "blender.cloth.banner_authoring.v1",
+          "unreal.asset.static_cloth_banner.v1"
+        ],
+        "readiness_receipt_sha256": "44ff0d75be73e5ccbd6c2e9dc07519cd4ed9378ae9849b87588248f3f3428887"
+      },
+      {
+        "route_id": "damage_variant",
+        "label": "破损变体",
+        "ready": true,
+        "match_score": 0,
+        "matched_terms": [],
+        "stage_capability_ids": [
+          "comfy.spatial.damage_field.v1",
+          "blender.boolean.material_damage.v1",
+          "unreal.asset.damage_variant.v1"
+        ],
+        "readiness_receipt_sha256": "09ad9e7fed15912fcddbe4c0c6bb311563b5978054bafcd5a8a54a8bc8ddc023"
+      },
+      {
+        "route_id": "mechanism_shot",
+        "label": "机关镜头",
+        "ready": true,
+        "match_score": 0,
+        "matched_terms": [],
+        "stage_capability_ids": [
+          "blender.armature.articulated_gate.v1",
+          "unreal.sequencer.mechanism_shot.v1"
+        ],
+        "readiness_receipt_sha256": "6f3a0320caa5b9d5bd3ddd0b3155714aa8b61927e9faca64edd3de53c84137aa"
+      }
+    ]
+  },
+  "dispatched_capability_ids": [
+    "comfy.material.banner_pattern.v1",
+    "blender.cloth.banner_authoring.v1",
+    "unreal.asset.static_cloth_banner.v1"
+  ],
+  "dispatched_stage_count": 3,
+  "verified_capability_count": 21,
+  "host_receipt_sha256s": {
+    "comfyui": "8b530b6ed341af7ba5decbc5a0ed2df14d728ba7f798f86b124ce8d80e0fb001",
+    "blender": "bcfd56bd0a9a3a848676e5a9d5b9b488efde1cb1929e9bf57d654aded6c061b0",
+    "unreal": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b"
+  },
+  "outcome_sha256": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

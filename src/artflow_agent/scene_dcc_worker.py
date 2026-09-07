@@ -74,7 +74,110 @@ def _verify_artifacts(root: Path, receipt: dict[str, object]) -> None:
             raise ValueError(f"DCC artifact identity changed: {path.name}")
 
 
+def _reconcile_selected_route(project_root: Path, work: SceneDccWorkDefinition) -> str:
+    decision = work.route_decision
+    if decision is None:
+        raise ValueError("selected route reconciliation requires a route decision")
+    if decision.selected_route_id == "cloth_banner":
+        root = project_root / "artifacts/goal/m57-s1-cloth-banner"
+        request = ClothBannerRequest.model_validate_json(
+            (root / "cloth-banner-request.json").read_text(encoding="utf-8")
+        )
+        comfy = BannerTextureReceipt.model_validate_json(
+            (root / "comfy-banner-texture-receipt.json").read_text(encoding="utf-8")
+        )
+        blender = _load_receipt(
+            root / "blender-cloth-banner-receipt.json",
+            expected_sha256=str(work.blender_cloth_banner_receipt_sha256),
+        )
+        unreal = _load_receipt(
+            root / "unreal-cloth-banner-receipt.json",
+            expected_sha256=str(work.unreal_cloth_banner_receipt_sha256),
+        )
+        _verify_artifacts(root, blender)
+        artifacts = {str(item["kind"]): item for item in blender["artifacts"]}
+        if (
+            request.request_sha256 != work.cloth_banner_request_sha256
+            or comfy.receipt_sha256 != work.comfy_banner_texture_receipt_sha256
+            or comfy.texture_sha256 != work.banner_texture_sha256
+            or _file_sha256(root / comfy.texture_path) != work.banner_texture_sha256
+            or blender.get("request_sha256") != request.request_sha256
+            or blender.get("comfy_receipt_sha256") != comfy.receipt_sha256
+            or artifacts["blend"]["sha256"] != work.cloth_banner_blend_sha256
+            or artifacts["glb"]["sha256"] != work.cloth_banner_glb_sha256
+            or artifacts["manifest"]["sha256"] != work.cloth_banner_manifest_sha256
+            or unreal.get("blender_receipt_sha256") != blender.get("receipt_sha256")
+            or unreal.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal.get("status") != "reconciled"
+            or unreal.get("created_actor_count") != 0
+            or unreal.get("updated_actor_count") != 0
+            or unreal.get("duplicate_asset_count") != 0
+            or unreal.get("source_candidate_sha256_before")
+            != unreal.get("source_candidate_sha256_after")
+            or _file_sha256(root / str(unreal["screenshot_path"]))
+            != work.cloth_banner_unreal_preview_sha256
+        ):
+            raise ValueError("selected cloth-banner route changed after dispatch")
+    elif decision.selected_route_id == "damage_variant":
+        root = project_root / "artifacts/goal/m55-s1-damage-variant"
+        request = DamageVariantRequest.model_validate_json(
+            (root / "damage-variant-request.json").read_text(encoding="utf-8")
+        )
+        comfy = DamageFieldReceipt.model_validate_json(
+            (root / "comfy-damage-field-receipt.json").read_text(encoding="utf-8")
+        )
+        blender = _load_receipt(
+            root / "blender-damage-variant-receipt.json",
+            expected_sha256=str(work.blender_damage_variant_receipt_sha256),
+        )
+        unreal = _load_receipt(
+            root / "unreal-damage-variant-receipt.json",
+            expected_sha256=str(work.unreal_damage_variant_receipt_sha256),
+        )
+        _verify_artifacts(root, blender)
+        artifacts = {str(item["kind"]): item for item in blender["artifacts"]}
+        if (
+            request.request_sha256 != work.damage_variant_request_sha256
+            or comfy.receipt_sha256 != work.comfy_damage_field_receipt_sha256
+            or comfy.field_sha256 != work.damage_field_sha256
+            or _file_sha256(root / comfy.field_path) != work.damage_field_sha256
+            or artifacts["glb"]["sha256"] != work.damage_glb_sha256
+            or artifacts["manifest"]["sha256"] != work.damage_manifest_sha256
+            or unreal.get("blender_receipt_sha256") != blender.get("receipt_sha256")
+            or unreal.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal.get("status") != "reconciled"
+        ):
+            raise ValueError("selected damage route changed after dispatch")
+    else:
+        root = project_root / "artifacts/goal/m53-s1-mechanism-shot"
+        request = MechanismShotRequest.model_validate_json(
+            (root / "mechanism-shot-request.json").read_text(encoding="utf-8")
+        )
+        unreal = _load_receipt(
+            root / "unreal-mechanism-shot-receipt.json",
+            expected_sha256=str(work.unreal_mechanism_shot_receipt_sha256),
+        )
+        previews = unreal.get("preview_sha256s", {})
+        if (
+            request.request_sha256 != work.mechanism_shot_request_sha256
+            or unreal.get("request_sha256") != request.request_sha256
+            or unreal.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal.get("sequence_asset_path") != work.mechanism_shot_sequence_path
+            or previews.get("closed_start") != work.mechanism_shot_closed_start_sha256
+            or previews.get("open") != work.mechanism_shot_open_sha256
+            or previews.get("closed_end") != work.mechanism_shot_closed_end_sha256
+            or unreal.get("status") != "reconciled"
+        ):
+            raise ValueError("selected mechanism-shot route changed after dispatch")
+        for label, expected in previews.items():
+            if _file_sha256(root / str(unreal["preview_paths"][label])) != expected:
+                raise ValueError(f"selected mechanism-shot preview changed: {label}")
+    return work.unreal_return_receipt_sha256
+
+
 def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition) -> str:
+    if work.route_decision is not None:
+        return _reconcile_selected_route(project_root, work)
     roots = {
         "model": project_root / "artifacts/goal/m23-s1-blender-modeling",
         "pbr": project_root / "artifacts/goal/m23-s2-blender-pbr",

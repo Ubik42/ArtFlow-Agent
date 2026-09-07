@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M59-S1",
+  "status": "completed",
+  "outcome": "The current Scene Session now compiles a content-bound decision over three verified DCC routes and dispatches only the shortest matching chain. Material intent selects cloth banner at 5 points, queues exactly ComfyUI, Blender and Unreal stages, preserves stable work identity across repeated dispatch, replays equivalently and creates zero duplicate external side effects. Desktop and narrow Chinese product views expose the decision basis and real host media without failed images, horizontal overflow or console messages.",
+  "evidence": [
+    "artifacts/goal/m59-s1-dcc-route-selection/dcc-route-selection-receipt.json",
+    "artifacts/goal/m59-s1-dcc-route-selection/dcc-route-selection-desktop.png",
+    "artifacts/goal/m59-s1-dcc-route-selection/dcc-route-selection-narrow.png",
+    "docs/evidence/M59_S1_DCC_ROUTE_SELECTION_2026-09-07.md"
+  ]
+}

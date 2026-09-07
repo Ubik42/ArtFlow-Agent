@@ -56,6 +56,7 @@ from .current_visual_critic import (
     CurrentCandidateVisualObservation,
     compile_current_domain_verdict,
 )
+from .dcc_route_selection import select_dcc_route
 from .providers import ComfyRecipeProvider
 from .recipes import RecipeCatalog
 from .review import create_contact_sheet
@@ -488,11 +489,20 @@ def create_app(
             session = state.scene_sessions[-1] if state.scene_sessions else None
             if session is None:
                 raise AgentRuntimeError("DCC work requires a persisted Scene Session")
+            route_decision = select_dcc_route(
+                project_root=resolved_project_root,
+                run_id=run_id,
+                session_id=session.session_id,
+                session_sha256=session.session_sha256,
+                scene_package_sha256=session.scene_package_sha256,
+                intent=session.draft.intent,
+            )
             definition = compile_current_blender_dcc_work(
                 resolved_project_root,
                 run_id=run_id,
                 session_id=session.session_id,
                 session_sha256=session.session_sha256,
+                route_decision=route_decision,
             )
             agent_store.queue_scene_dcc_work(run_id, definition)
             return project_agent_run(agent_store, run_id)
@@ -1572,21 +1582,15 @@ def create_app(
             "m53-mechanism-closed-end": goal_root
             / "m53-s1-mechanism-shot"
             / "unreal-mechanism-shot-closed_end.png",
-            "m55-damage-field": goal_root
-            / "m55-s1-damage-variant"
-            / "damage-field.png",
+            "m55-damage-field": goal_root / "m55-s1-damage-variant" / "damage-field.png",
             "m55-damage-blender": goal_root
             / "m55-s1-damage-variant"
             / "AF_GatewayDamage-preview.png",
             "m55-damage-unreal": goal_root
             / "m55-s1-damage-variant"
             / "unreal-damage-variant-candidate.png",
-            "m57-banner-texture": goal_root
-            / "m57-s1-cloth-banner"
-            / "T_AF_BannerPattern.png",
-            "m57-banner-blender": goal_root
-            / "m57-s1-cloth-banner"
-            / "AF_ClothBanner-preview.png",
+            "m57-banner-texture": goal_root / "m57-s1-cloth-banner" / "T_AF_BannerPattern.png",
+            "m57-banner-blender": goal_root / "m57-s1-cloth-banner" / "AF_ClothBanner-preview.png",
             "m57-banner-unreal": goal_root
             / "m57-s1-cloth-banner"
             / "unreal-cloth-banner-candidate.png",
