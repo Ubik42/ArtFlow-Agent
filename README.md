@@ -10,6 +10,12 @@
 | --- | --- |
 | ![Blender 5.2 生成的模块化祭坛](artifacts/goal/m23-s1-blender-modeling/AF_WeatheredShrine-preview.png) | ![Unreal 5.8 中的 Blender 生成资产候选](artifacts/goal/m23-s1-blender-modeling/unreal-blender-candidate.png) |
 
+Blender 在这里不只是建模器，也是材质、几何处理、布局、灯光和交换格式的 DCC 执行面。第二条真实链路复用了已由 `ComfyUI-Production-Nodes` 生成并验证的 Base Color、Normal 与 Roughness，将它们装配到可编辑 Blender 材质，导出带贴图的 GLB，再对账到同一个 Scene Session 的 Unreal 候选空间。生成、材质装配与引擎回流各自保留类型化请求、内容哈希和宿主回执。
+
+| ComfyUI PBR → Blender 可编辑材质 | Blender PBR → Unreal 候选关卡 |
+| --- | --- |
+| ![ComfyUI PBR 装配后的 Blender 资产](artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR-preview.png) | ![带 PBR 材质回流 Unreal 的候选资产](artifacts/goal/m23-s2-blender-pbr/unreal-blender-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

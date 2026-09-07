@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M23-S2",
+  "status": "completed",
+  "outcome": "A content-bound ComfyUI PBR set was assembled into the editable Blender asset, exported as an embedded textured GLB, and reconciled into the current Session's isolated Unreal candidate without changing the source level or duplicating side effects.",
+  "evidence": [
+    "artifacts/goal/m23-s2-blender-pbr/pbr-assembly-request.json",
+    "artifacts/goal/m23-s2-blender-pbr/pbr-assembly-receipt.json",
+    "artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR.blend",
+    "artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR.glb",
+    "artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR-preview.png",
+    "artifacts/goal/m23-s2-blender-pbr/unreal-return-receipt.json",
+    "artifacts/goal/m23-s2-blender-pbr/unreal-blender-candidate.png",
+    "artifacts/goal/m23-s2-blender-pbr/unreal-pbr-return-final.log",
+    "artifacts/goal/m23-s2-blender-pbr/verification.json",
+    "docs/evidence/M23_S2_COMFY_BLENDER_UNREAL_2026-09-07.md"
+  ]
+}

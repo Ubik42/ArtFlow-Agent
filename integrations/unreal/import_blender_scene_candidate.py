@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import time
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 
@@ -24,14 +24,34 @@ def fail(message: str) -> None:
 
 
 repo_root = Path(__file__).resolve().parents[2]
-evidence_root = repo_root / "artifacts/goal/m23-s1-blender-modeling"
-request = json.loads((evidence_root / "modeling-request.json").read_text(encoding="utf-8"))
-receipt = json.loads((evidence_root / "modeling-receipt.json").read_text(encoding="utf-8"))
-if request.get("schema_id") != "artflow-blender-modeling-request/1":
-    fail("建模请求版本不受支持")
+variant = os.environ.get("ARTFLOW_BLENDER_VARIANT", "model")
+if variant not in {"model", "pbr"}:
+    fail("未注册的 Blender 回流变体")
+model_root = repo_root / "artifacts/goal/m23-s1-blender-modeling"
+source_request = json.loads((model_root / "modeling-request.json").read_text(encoding="utf-8"))
+if variant == "pbr":
+    evidence_root = repo_root / "artifacts/goal/m23-s2-blender-pbr"
+    request = json.loads((evidence_root / "pbr-assembly-request.json").read_text(encoding="utf-8"))
+    receipt = json.loads((evidence_root / "pbr-assembly-receipt.json").read_text(encoding="utf-8"))
+    expected_schema = "artflow-blender-pbr-assembly-request/1"
+    glb_kind = "glb"
+    active_request_id = f"blender-pbr-{request['request_sha256'][:16]}"
+    asset_name = "SM_AF_WeatheredShrine_PBR"
+    actor_label = "ArtFlow_Blender_WeatheredShrine_PBR"
+else:
+    evidence_root = model_root
+    request = source_request
+    receipt = json.loads((evidence_root / "modeling-receipt.json").read_text(encoding="utf-8"))
+    expected_schema = "artflow-blender-modeling-request/1"
+    glb_kind = "glb"
+    active_request_id = request["request_id"]
+    asset_name = "SM_AF_WeatheredShrine"
+    actor_label = "ArtFlow_Blender_WeatheredShrine"
+if request.get("schema_id") != expected_schema:
+    fail("Blender 请求版本不受支持")
 if receipt.get("request_sha256") != request.get("request_sha256"):
     fail("Blender 回执与当前建模请求不一致")
-glb_artifact = next((item for item in receipt["artifacts"] if item["kind"] == "glb"), None)
+glb_artifact = next((item for item in receipt["artifacts"] if item["kind"] == glb_kind), None)
 if glb_artifact is None:
     fail("Blender 回执没有 GLB 产物")
 glb_path = (evidence_root / glb_artifact["relative_path"]).resolve()
@@ -41,21 +61,29 @@ if evidence_root.resolve() not in glb_path.parents or file_sha256(glb_path) != g
 project_root = Path(unreal.Paths.project_dir()).resolve()
 source_map = project_root / "Content/ArtFlowDemo.umap"
 source_before = file_sha256(source_map)
-if source_before != request["source_level_sha256"]:
+if source_before != source_request["source_level_sha256"]:
     fail("源关卡已变化，未执行 Blender 资产回流")
 
 identity = request["request_sha256"][:12]
 destination_root = f"/Game/ArtFlow/Generated/Blender/B_{identity}"
-asset_name = "SM_AF_WeatheredShrine"
 existing_assets = unreal.EditorAssetLibrary.list_assets(destination_root, recursive=True)
 mesh = None
 for asset_path in existing_assets:
     candidate = unreal.EditorAssetLibrary.load_asset(asset_path)
-    if isinstance(candidate, unreal.StaticMesh) and unreal.EditorAssetLibrary.get_metadata_tag(
-        candidate, "ArtFlow.BlenderRequestSha256"
-    ) == request["request_sha256"]:
-        mesh = candidate
-        break
+    if isinstance(candidate, unreal.StaticMesh):
+        recorded_request = unreal.EditorAssetLibrary.get_metadata_tag(
+            candidate, "ArtFlow.BlenderRequestSha256"
+        )
+        import_data = candidate.get_editor_property("asset_import_data")
+        imported_source = Path(import_data.get_first_filename()).resolve() if import_data else None
+        if recorded_request == request["request_sha256"] or (
+            not recorded_request
+            and imported_source is not None
+            and imported_source.is_file()
+            and file_sha256(imported_source) == glb_artifact["sha256"]
+        ):
+            mesh = candidate
+            break
 reconciled = mesh is not None
 imported_paths: list[str] = []
 if mesh is None:
@@ -81,7 +109,11 @@ unreal.EditorAssetLibrary.set_metadata_tag(
     mesh, "ArtFlow.BlenderRequestSha256", request["request_sha256"]
 )
 unreal.EditorAssetLibrary.set_metadata_tag(mesh, "ArtFlow.SourceGLBSha256", glb_artifact["sha256"])
-unreal.EditorAssetLibrary.set_metadata_tag(mesh, "ArtFlow.Generator", receipt["capability_id"])
+unreal.EditorAssetLibrary.set_metadata_tag(
+    mesh,
+    "ArtFlow.Generator",
+    receipt.get("capability_id", "blender.comfy_pbr.assembly.v1"),
+)
 mesh_library = unreal.EditorStaticMeshLibrary
 if mesh_library.get_convex_collision_count(mesh) == 0:
     mesh_library.add_simple_collisions(mesh, unreal.ScriptingCollisionShapeType.NDOP10_X)
@@ -102,7 +134,6 @@ if world is None:
     fail("无法打开 Blender 隔离候选关卡")
 actor_subsystem = unreal.get_editor_subsystem(unreal.EditorActorSubsystem)
 actors = actor_subsystem.get_all_level_actors()
-actor_label = "ArtFlow_Blender_WeatheredShrine"
 actor = next((item for item in actors if item.get_actor_label() == actor_label), None)
 actor_reconciled = actor is not None
 bounds = mesh.get_bounds().box_extent
@@ -113,7 +144,7 @@ if actor is None:
         fail("无法把 Blender StaticMesh 放入候选关卡")
 actor.set_actor_label(actor_label)
 actor.set_actor_location(location, False, False)
-actor.tags = ["ArtFlow.BlenderGenerated", request["request_id"]]
+actor.tags = ["ArtFlow.BlenderGenerated", active_request_id]
 
 camera_label = "ArtFlow_Blender_Camera"
 camera = next((item for item in actors if item.get_actor_label() == camera_label), None)
@@ -131,24 +162,18 @@ camera.get_editor_property("camera_component").set_editor_property("field_of_vie
 unreal.EditorLoadingAndSavingUtils.save_map(world, candidate_package)
 
 screenshot_path = evidence_root / "unreal-blender-candidate.png"
+if screenshot_path.is_file():
+    screenshot_path.unlink()
 task = unreal.AutomationLibrary.take_high_res_screenshot(
     1280, 720, str(screenshot_path), camera, False, False
 )
-deadline = time.time() + 25.0
-while not task.is_task_done() and time.time() < deadline:
-    time.sleep(0.1)
-flush_deadline = time.time() + 3.0
-while not screenshot_path.is_file() and time.time() < flush_deadline:
-    time.sleep(0.1)
-if not screenshot_path.is_file():
-    fail("Unreal 未生成 Blender 候选截图")
 source_after = file_sha256(source_map)
 if source_after != source_before:
     fail("Blender 候选回流期间源关卡发生变化")
 
 result = {
     "schema_id": "artflow-unreal-blender-candidate-receipt/1",
-    "request_id": request["request_id"],
+    "request_id": active_request_id,
     "request_sha256": request["request_sha256"],
     "blender_receipt_sha256": receipt["receipt_sha256"],
     "status": "reconciled" if reconciled and actor_reconciled else "imported",
@@ -162,7 +187,11 @@ result = {
     "simple_collision_count": mesh_library.get_convex_collision_count(mesh),
     "source_level_sha256_before": source_before,
     "source_level_sha256_after": source_after,
-    "screenshot_sha256": file_sha256(screenshot_path),
+    # High-res capture is completed by the editor on a later frame. The fixed
+    # launcher finalizes this field after the owned Unreal process exits.
+    "screenshot_path": screenshot_path.name,
+    "screenshot_sha256": None,
+    "capture_status": "requested",
     "duplicate_side_effect_count": 0,
     "completed_at": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
 }
@@ -171,5 +200,5 @@ result["receipt_sha256"] = canonical_sha256(result)
     json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
 )
 unreal.log(
-    f"ARTFLOW_BLENDER_UNREAL_RETURN status={result['status']} mesh={mesh_path} candidate={candidate_package}"
+    f"ARTFLOW_BLENDER_UNREAL_RETURN_SUBMITTED status={result['status']} mesh={mesh_path} candidate={candidate_package}"
 )

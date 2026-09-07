@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-unreal-blender-candidate-receipt/1",
+  "request_id": "blender-pbr-187f272db035e62f",
+  "request_sha256": "187f272db035e62f83c1dbfec957bc040f7120786d5464081a43d7989a1e4049",
+  "blender_receipt_sha256": "8f60a98b3b70e2a608d0b81bd6c93d8e36d099cbc011254b07a5c8e2b6f91187",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "static_mesh_path": "/Game/ArtFlow/Generated/Blender/B_187f272db035/AF_WeatheredShrine_PBR/StaticMeshes/SM_AF_WeatheredShrine_PBR.SM_AF_WeatheredShrine_PBR",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_187f272db035",
+  "actor_label": "ArtFlow_Blender_WeatheredShrine_PBR",
+  "vertex_count": 2032,
+  "triangle_count": 952,
+  "material_slot_count": 3,
+  "simple_collision_count": 1,
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "screenshot_path": "unreal-blender-candidate.png",
+  "screenshot_sha256": "372a5cc200202256b9214dd1483b75761d8781d922fa32dfb1f9efedf65a22dc",
+  "capture_status": "completed",
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-09-07T08:12:43.948286Z",
+  "receipt_sha256": "6213c1e153c38f8fe2fea27b2da6957d2c34288a0ad6adb4895745bee9efcc10"
+}

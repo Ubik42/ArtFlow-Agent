@@ -1,0 +1,40 @@
+{
+  "schema_id": "artflow-blender-pbr-assembly-receipt/1",
+  "request_sha256": "187f272db035e62f83c1dbfec957bc040f7120786d5464081a43d7989a1e4049",
+  "modeling_receipt_sha256": "914c19eb3e6c5e0541f87ef1d5ae0d814a2b01a2eb402e4042168da56bf87fd3",
+  "pbr_receipt_sha256": "34921c512b5fad7c9b9f91890fe7ff5c2e48529c9c61c4cbeeacba918904a3b4",
+  "blender_version": "5.2.0 LTS",
+  "status": "succeeded",
+  "material_targets": [
+    "M_AF_Stone",
+    "M_AF_Weathering"
+  ],
+  "texture_channels": [
+    "base_color",
+    "normal",
+    "roughness"
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_WeatheredShrine_PBR.blend",
+      "sha256": "9b92d3d3d67532a9f773281a96aafea2acc76a3f02eb8d6f79fd8ce5d8776b4e",
+      "size_bytes": 145255
+    },
+    {
+      "kind": "glb",
+      "relative_path": "AF_WeatheredShrine_PBR.glb",
+      "sha256": "db4042a79afc7fdfc8a551e72db60dd1118685c04503326b6087e9685448e008",
+      "size_bytes": 5915996
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_WeatheredShrine_PBR-preview.png",
+      "sha256": "7eaefe153f66a68f803ce06b1110b6b19d012ac203fdee38e30a2d488972436d",
+      "size_bytes": 1320125
+    }
+  ],
+  "elapsed_seconds": 2.314,
+  "completed_at": "2026-09-07T08:04:39.827720Z",
+  "receipt_sha256": "8f60a98b3b70e2a608d0b81bd6c93d8e36d099cbc011254b07a5c8e2b6f91187"
+}

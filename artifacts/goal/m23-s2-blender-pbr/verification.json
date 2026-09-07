@@ -1,0 +1,19 @@
+{
+  "schema_id": "artflow-goal-verification/1",
+  "slice_id": "M23-S2",
+  "status": "passed",
+  "real_hosts": [
+    "Blender 5.2.0 LTS",
+    "Unreal Engine 5.8.1"
+  ],
+  "checks": {
+    "comfy_pbr_receipt_bound": true,
+    "editable_blend_created": true,
+    "embedded_glb_created": true,
+    "unreal_candidate_reconciled": true,
+    "source_level_unchanged": true,
+    "duplicate_side_effect_count": 0,
+    "capture_completed": true
+  },
+  "focused_tests": 1
+}
