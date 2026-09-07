@@ -1,0 +1,29 @@
+{
+  "schema_id": "artflow-unreal-native-pcg-density-receipt/1",
+  "request_id": "pcg-density-120a445fe2a9720e",
+  "request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5",
+  "density_receipt_sha256": "c3a551c664bcfb7081f95587d846525aa5660bedde43e382553cb6cca5e9ad23",
+  "spatial_manifest_sha256": "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "native_pcg_graph_path": "/Game/ArtFlow/PCG/Generated/PCG_AF_Density_1a637a8d89b8.PCG_AF_Density_1a637a8d89b8",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Density_B_1a637a8d89b8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Kit_B_084ec73721a5",
+  "generated_instance_count": 12,
+  "generated_mesh_paths": [
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_A/StaticMeshes/SM_AF_Wayfinder_A.SM_AF_Wayfinder_A",
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_B/StaticMeshes/SM_AF_Wayfinder_B.SM_AF_Wayfinder_B",
+    "/Game/ArtFlow/Generated/Blender/Kits/K_084ec73721a5/SM_AF_Wayfinder_C/StaticMeshes/SM_AF_Wayfinder_C.SM_AF_Wayfinder_C"
+  ],
+  "removed_materialized_actor_count": 0,
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_candidate_sha256_before": "33e66cc54d65e94c3db57ed2fc070ca4adfbe0080031f94d52f48bea75d4958e",
+  "source_candidate_sha256_after": "33e66cc54d65e94c3db57ed2fc070ca4adfbe0080031f94d52f48bea75d4958e",
+  "duplicate_side_effect_count": 0,
+  "screenshot_path": "unreal-native-pcg-density-candidate.png",
+  "screenshot_sha256": "3b21ae5ebfee465105bbbd9cb5c107fb672fdcbdbc4fea4e58d74481bdc2d01d",
+  "capture_status": "captured",
+  "completed_at": "2026-09-07T13:08:21.033144Z",
+  "receipt_sha256": "159ea2469413be9c139408f3440c58996b0d1614aa37eca5310754502202c834"
+}

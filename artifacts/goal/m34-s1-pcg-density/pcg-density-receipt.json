@@ -1,0 +1,29 @@
+{
+  "schema_id": "artflow-pcg-density-receipt/1",
+  "request_id": "pcg-density-120a445fe2a9720e",
+  "request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5",
+  "capability_id": "comfy.pcg_density.depth_exclusion.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "observed_node_count": 826,
+  "production_nodes": [
+    "GenerationReceipt",
+    "ProductionConstraintCheck",
+    "WorkflowContractCheck"
+  ],
+  "workflow_sha256": "3397455a075551de39adf23d07c48d858548fb71fa7104e9252024e2162883e1",
+  "provider_request_id": "792c30b2-44b0-4f7a-8d7e-295b59df6a78",
+  "density_mask_path": "pcg-density-mask.png",
+  "density_mask_sha256": "ef819029b42373ab203fba8b41dc0a9614f294e55a6f45ed09a18050d15b6476",
+  "protected_mask_path": "protected-exclusion-mask.png",
+  "protected_mask_sha256": "e134d52426d3d6b59ca19ea5a7e8ffab1f798dd7566eb9583cdd5630119a6a06",
+  "spatial_manifest_path": "pcg-density-points.json",
+  "spatial_manifest_sha256": "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb",
+  "width": 640,
+  "height": 360,
+  "active_pixel_coverage": 0.29197,
+  "exclusion_leakage": 0.0,
+  "completed_at": "2026-09-07T12:53:33.618540Z",
+  "receipt_sha256": "c3a551c664bcfb7081f95587d846525aa5660bedde43e382553cb6cca5e9ad23"
+}

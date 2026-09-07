@@ -1,0 +1,18 @@
+{
+  "schema_id": "artflow-native-pcg-density-verification/1",
+  "status": "passed",
+  "request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5",
+  "comfyui_version": "0.28.0",
+  "observed_node_count": 826,
+  "active_pixel_coverage": 0.29197,
+  "protected_exclusion_leakage": 0.0,
+  "spatial_point_count": 12,
+  "native_pcg_graph_path": "/Game/ArtFlow/PCG/Generated/PCG_AF_Density_1a637a8d89b8.PCG_AF_Density_1a637a8d89b8",
+  "generated_instance_count": 12,
+  "generated_mesh_variant_count": 3,
+  "repeat_status": "reconciled",
+  "duplicate_external_side_effect_count": 0,
+  "source_level_unchanged": true,
+  "source_candidate_unchanged": true,
+  "same_camera_capture": "unreal-native-pcg-density-candidate.png"
+}

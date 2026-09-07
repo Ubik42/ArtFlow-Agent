@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 82,
+  "stateRevision": 83,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M34",
+  "currentMilestone": "M35",
   "milestones": [
     {
       "id": "M0",
@@ -396,7 +396,7 @@
     {
       "id": "M34",
       "title": "Scene-conditioned native PCG density",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M33"],
       "outcome": "A reviewed ComfyUI spatial-conditioning subgraph converts current Unreal passes and protected regions into validated density data that a project-owned native PCG graph consumes together with the registered Blender kit in a new candidate.",
       "acceptance": [
@@ -405,41 +405,52 @@
         "A project-owned Unreal PCG graph consumes the validated density and kit assets inside an isolated candidate",
         "Same-camera evidence and a repeat execution prove visible placement, exclusion compliance, bounded instance count and zero duplicate side effects"
       ]
+    },
+    {
+      "id": "M35",
+      "title": "Live native PCG route",
+      "status": "in_progress",
+      "dependsOn": ["M34"],
+      "outcome": "The proven scene-conditioned density route becomes a tenth registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
+      "acceptance": [
+        "The work item binds the exact scene-pass request, ComfyUI receipt, spatial manifest, native PCG graph and Unreal candidate identities",
+        "The existing worker reconciles and replays the tenth capability without another scheduler, arbitrary graph surface or approval gate",
+        "The Chinese product UI presents scene evidence, node-derived density, Blender kit and native Unreal PCG candidate as one real route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M34-S1",
-    "milestone": "M34",
-    "title": "Drive a native Unreal PCG graph from scene-conditioned density",
-    "outcome": "Compile current Unreal spatial passes and exclusions into a fixed ComfyUI density-mask task, validate its result, and let a project-owned native PCG graph place the registered M32 kit in a new candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
+    "id": "M35-S1",
+    "milestone": "M35",
+    "title": "Expose native PCG density as the tenth live production route",
+    "outcome": "Register the exact M34 request, receipts, spatial manifest, native graph and candidate in the existing Scene DCC Work lifecycle, then present the four-stage route in the Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
       "Do not build a general asset factory, open-ended graph editor or arbitrary host execution surface",
-      "Do not download a new model or retrain LoRA for this slice",
+      "Do not rerun ComfyUI, Blender or Unreal when frozen M34 identities verify",
       "Do not add a new queue, worker, approval layer or orchestration framework",
       "Do not expose arbitrary ComfyUI graphs, arbitrary Unreal Python or a generic node editor",
-      "Do not overwrite the source level or the M32 candidate"
+      "Do not add another worker, queue or orchestration state machine"
     ],
     "acceptance": [
-      "A typed density request binds exact scene-pass hashes, protected exclusions, fixed ComfyUI capability, seed, threshold and M32 kit identity",
-      "The local reviewed ComfyUI route produces one inspectable spatial mask and a verifier checks dimensions, range, coverage and exclusion leakage",
-      "A project-owned native UE PCG graph consumes the verified mask or its typed spatial projection and places only registered kit meshes in a new candidate",
-      "A second execution reconciles the same graph, asset and instance identities with no source-level mutation"
+      "The tenth finite capability binds and verifies every frozen M34 identity before entering the existing worker",
+      "Queue, claim, execute, reconcile and replay use the existing append-only DCC lifecycle",
+      "The Scene Change Spectrum presents four real production stages and remains usable at desktop and narrow widths"
     ],
     "stopConditions": [
-      "Stop if the current UE project cannot expose a project-owned native PCG graph without model-authored host code",
-      "Stop if scene passes cannot produce a bounded non-empty density signal outside protected exclusions",
+      "Stop if M34 request, receipt, spatial manifest or Unreal return identities no longer verify",
+      "Stop if the route requires a second scheduler or arbitrary workflow input",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "comfyui_capability", "kind": "repo_path", "value": "artifacts/goal/m30-s1-surface-detail/comfy-surface-detail-receipt.json", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "m32_kit", "kind": "repo_path", "value": "artifacts/goal/m32-s1-procedural-kit/procedural-kit-receipt.json", "required": true}
+      {"id": "m34_density_receipt", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/pcg-density-receipt.json", "required": true},
+      {"id": "m34_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-receipt.json", "required": true},
+      {"id": "m34_candidate_capture", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-candidate.png", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -455,9 +466,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0075.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0076.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M33 are complete. The scene-conditioned procedural-kit route is the ninth current-session DCC capability: request, Blender receipt, manifest and Unreal return identities replay through the existing five-event worker lifecycle. The Scene Change Spectrum presents four real stages at 1600x1000 and 980x1000 with no overflow, failed images or console messages. A native UE PCG graph driven by reviewed scene-conditioned density is M34-S1 scope.",
+  "evidenceCeiling": "M0-M34 are complete. A fixed ComfyUI graph converted current Unreal depth and three protected regions into a verified density mask with 29.197% active coverage and zero exclusion leakage. Its twelve typed spatial points and the three registered Blender kit variants were consumed by a project-owned native Unreal PCG graph in an isolated candidate. A second UE 5.8.1 process reconciled the same graph and twelve instances with zero duplicate side effects or source mutation. Live dispatch and Scene Change Spectrum presentation are M35-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

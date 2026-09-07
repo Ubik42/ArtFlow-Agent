@@ -115,10 +115,13 @@ Unreal 当前场景
   清单和 Unreal 候选登记为当前 Session 的第九项 DCC 能力，继续复用现有 Worker、事件账本和
   场景变更谱。界面以艺术目标、DCC 加工、PCG 装配和候选结果四段真实媒体表达路线；桌面与
   窄屏均无横向溢出、失败媒体或控制台消息。
-- **M34 · Scene-conditioned native PCG density（进行中）**：把节点工作流进一步用于场景空间数据。
-  Agent 从当前 Unreal Depth / Object ID 与保护区编译固定 ComfyUI 密度蒙版任务，再由项目自有
-  Unreal PCG 图消费经过验证的密度/排除数据和 M32 模块套件。目标是让 ComfyUI 的图像推理、
-  Blender 的资产加工和 Unreal 原生 PCG 各自承担最适合的生产职责。
+- **M34 · Scene-conditioned native PCG density（已完成）**：节点工作流已经用于场景空间数据。
+  Agent 从当前 Unreal Depth 与保护区编译固定 ComfyUI 密度蒙版任务，将输出投影为 12 个类型化
+  空间点；项目自有 Unreal PCG 图消费这些点和 M32 的三种模块资产，在隔离候选中生成 12 个
+  原生实例。重复执行完成对账，保护区泄漏、重复副作用和源文件变化均为 0。
+- **M35 · Live native PCG route（进行中）**：把 M34 的精确场景输入、ComfyUI 回执、空间清单、
+  原生 PCG 图与 Unreal 候选登记为当前 Session 的第十项生产能力，复用现有 Worker 和事件账本，
+  并在场景变更谱中呈现“场景条件 → 节点密度 → Blender 套件 → 原生 PCG 候选”。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

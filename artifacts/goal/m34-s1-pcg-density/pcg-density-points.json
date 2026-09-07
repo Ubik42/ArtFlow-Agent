@@ -1,0 +1,202 @@
+{
+  "schema_id": "artflow-pcg-density-spatial-manifest/1",
+  "request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5",
+  "coordinate_system": "unreal-centimeters-z-up",
+  "projection": "screen-mask-to-registered-courtyard-bounds-v1",
+  "native_graph_template": "/Game/ArtFlow/PCG/PCG_ArtFlowScatter.PCG_ArtFlowScatter",
+  "points": [
+    {
+      "point_id": "density-point-01",
+      "pixel_uv": [
+        428,
+        340
+      ],
+      "location_cm": [
+        152.817,
+        -402.368,
+        20.0
+      ],
+      "yaw_deg": 0.0,
+      "scale": 0.72,
+      "density": 1.0,
+      "seed": 340907
+    },
+    {
+      "point_id": "density-point-02",
+      "pixel_uv": [
+        32,
+        190
+      ],
+      "location_cm": [
+        -404.93,
+        -26.323,
+        20.0
+      ],
+      "yaw_deg": 137.508,
+      "scale": 0.8,
+      "density": 1.0,
+      "seed": 340908
+    },
+    {
+      "point_id": "density-point-03",
+      "pixel_uv": [
+        464,
+        305
+      ],
+      "location_cm": [
+        203.521,
+        -314.624,
+        20.0
+      ],
+      "yaw_deg": 275.016,
+      "scale": 0.88,
+      "density": 1.0,
+      "seed": 340909
+    },
+    {
+      "point_id": "density-point-04",
+      "pixel_uv": [
+        589,
+        323
+      ],
+      "location_cm": [
+        379.577,
+        -359.749,
+        20.0
+      ],
+      "yaw_deg": 52.524,
+      "scale": 0.96,
+      "density": 1.0,
+      "seed": 340910
+    },
+    {
+      "point_id": "density-point-05",
+      "pixel_uv": [
+        402,
+        94
+      ],
+      "location_cm": [
+        116.197,
+        214.345,
+        20.0
+      ],
+      "yaw_deg": 190.032,
+      "scale": 0.72,
+      "density": 1.0,
+      "seed": 340911
+    },
+    {
+      "point_id": "density-point-06",
+      "pixel_uv": [
+        334,
+        94
+      ],
+      "location_cm": [
+        20.423,
+        214.345,
+        20.0
+      ],
+      "yaw_deg": 327.54,
+      "scale": 0.8,
+      "density": 1.0,
+      "seed": 340912
+    },
+    {
+      "point_id": "density-point-07",
+      "pixel_uv": [
+        538,
+        274
+      ],
+      "location_cm": [
+        307.746,
+        -236.908,
+        20.0
+      ],
+      "yaw_deg": 105.048,
+      "scale": 0.88,
+      "density": 1.0,
+      "seed": 340913
+    },
+    {
+      "point_id": "density-point-08",
+      "pixel_uv": [
+        320,
+        284
+      ],
+      "location_cm": [
+        0.704,
+        -261.978,
+        20.0
+      ],
+      "yaw_deg": 242.556,
+      "scale": 0.96,
+      "density": 1.0,
+      "seed": 340914
+    },
+    {
+      "point_id": "density-point-09",
+      "pixel_uv": [
+        41,
+        326
+      ],
+      "location_cm": [
+        -392.254,
+        -367.27,
+        20.0
+      ],
+      "yaw_deg": 20.064,
+      "scale": 0.72,
+      "density": 1.0,
+      "seed": 340915
+    },
+    {
+      "point_id": "density-point-10",
+      "pixel_uv": [
+        344,
+        343
+      ],
+      "location_cm": [
+        34.507,
+        -409.889,
+        20.0
+      ],
+      "yaw_deg": 157.572,
+      "scale": 0.8,
+      "density": 1.0,
+      "seed": 340916
+    },
+    {
+      "point_id": "density-point-11",
+      "pixel_uv": [
+        516,
+        333
+      ],
+      "location_cm": [
+        276.761,
+        -384.819,
+        20.0
+      ],
+      "yaw_deg": 295.08,
+      "scale": 0.88,
+      "density": 1.0,
+      "seed": 340917
+    },
+    {
+      "point_id": "density-point-12",
+      "pixel_uv": [
+        6,
+        359
+      ],
+      "location_cm": [
+        -441.549,
+        -450.0,
+        20.0
+      ],
+      "yaw_deg": 72.588,
+      "scale": 0.96,
+      "density": 1.0,
+      "seed": 340918
+    }
+  ],
+  "manifest_sha256": "14bc924f28bfdc0bc0780bad9cd48a011981c8ee30ba94cbbbf50d7caa766d61"
+}

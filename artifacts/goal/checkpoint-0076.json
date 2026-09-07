@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M34-S1",
+  "status": "completed",
+  "outcome": "Current Unreal depth and protected regions now drive a reviewed ComfyUI density graph whose typed spatial projection feeds three Blender kit variants into a project-owned native Unreal PCG graph; the isolated candidate contains twelve instances and repeat execution reconciles with zero source mutation or duplicate side effects.",
+  "evidence": [
+    "artifacts/goal/m34-s1-pcg-density/pcg-density-request.json",
+    "artifacts/goal/m34-s1-pcg-density/pcg-density-receipt.json",
+    "artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png",
+    "artifacts/goal/m34-s1-pcg-density/pcg-density-mask.png",
+    "artifacts/goal/m34-s1-pcg-density/pcg-density-points.json",
+    "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-receipt.json",
+    "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-candidate.png",
+    "artifacts/goal/m34-s1-pcg-density/verification.json",
+    "docs/evidence/M34_S1_NATIVE_PCG_DENSITY_2026-09-07.md"
+  ]
+}

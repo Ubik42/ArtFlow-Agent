@@ -1,0 +1,41 @@
+{
+  "schema_id": "artflow-pcg-density-request/1",
+  "request_id": "pcg-density-120a445fe2a9720e",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+  "depth_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png",
+  "depth_sha256": "a3628efb3216030808353343c2e8d74c1278815db7a3b460cc9a85917d793398",
+  "protected_regions": [
+    {
+      "x": 116,
+      "y": 108,
+      "width": 186,
+      "height": 252
+    },
+    {
+      "x": 348,
+      "y": 132,
+      "width": 142,
+      "height": 132
+    },
+    {
+      "x": 478,
+      "y": 0,
+      "width": 162,
+      "height": 252
+    }
+  ],
+  "kit_receipt_sha256": "d5dadabaa47f8220e249956723011fa837f8a5ac8688951aa0694b1b28fa13d3",
+  "kit_manifest_sha256": "18ad450f7cf1da11864ac54224ca38fd046d4dad1439f8712099f73457a4b82c",
+  "comfy_capability_id": "comfy.pcg_density.depth_exclusion.v1",
+  "unreal_consumer_capability_id": "unreal.pcg.native_density_kit.v1",
+  "recipe_id": "pcg-density-depth-exclusion-v1",
+  "recipe_version": "1.0.0",
+  "threshold": 0.42,
+  "exclusion_expand_px": 12,
+  "seed": 340907,
+  "width": 640,
+  "height": 360,
+  "workflow_sha256": "3397455a075551de39adf23d07c48d858548fb71fa7104e9252024e2162883e1",
+  "request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5"
+}

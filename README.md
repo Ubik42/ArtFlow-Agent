@@ -104,6 +104,18 @@ append-only 事件账本，重复派发恢复相同内容身份。
 
 ![当前 Session 的程序化场景装配路线](artifacts/goal/m33-s1-live-procedural-kit/live-procedural-kit-desktop.png)
 
+第十条路线让 ComfyUI 节点图参与三维空间决策，而不仅生成最终画面。Agent 将当前 Unreal Depth
+与方块、球体、立面三个保护区域编译为固定密度任务；ComfyUI 输出可检查的空间蒙版，验证后再
+投影为 12 个带密度、旋转、缩放和确定性种子的空间点。项目自有 Unreal PCG 图消费这些点和
+M32 的三种 Blender Wayfinder 网格，在新的隔离候选中由原生 PCG 节点完成实例化。
+
+| ComfyUI 空间密度与保护排除 | Unreal 原生 PCG 候选 |
+| --- | --- |
+| ![固定节点图输出的场景密度蒙版](artifacts/goal/m34-s1-pcg-density/pcg-density-mask.png) | ![原生 PCG 使用三种 Blender 模块生成 12 个实例](artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-candidate.png) |
+
+本次实测的有效密度覆盖率为 29.197%，保护区泄漏为 0；第二个 Unreal 进程对账同一 PCG 图、
+候选关卡和 12 个实例，重复外部副作用为 0，源关卡与上游程序化套件候选均未改变。
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -289,7 +301,10 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 | ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
 | 场景条件目标 → Blender / Unreal Lookdev | 3 个登记材质目标、3 盏登记灯光；重复回流副作用 0；源关卡字节变化 0 |
-| Scene Session DCC 能力链 | 5 个登记能力、5 个持久生命周期事件；重复派发保持同一工作身份 |
+| Scene Session DCC 能力链 | 9 个登记能力；每项使用 5 个持久生命周期事件，重复派发保持同一工作身份 |
+| Blender 程序化场景套件 | 3 个 Geometry Nodes 变体；每项 2 级 LOD、1 个简单碰撞体 |
+| ComfyUI 场景空间密度 | 29.197% 有效覆盖；3 个保护区泄漏 0；12 个确定性空间点 |
+| Unreal 原生 PCG 装配 | 3 种 Blender 网格、12 个原生实例；重复执行副作用 0；两项源文件变化 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
