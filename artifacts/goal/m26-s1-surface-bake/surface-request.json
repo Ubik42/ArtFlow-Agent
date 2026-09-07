@@ -1,0 +1,133 @@
+{
+  "schema_id": "artflow-blender-surface-request/1",
+  "request_id": "surface-bake-1e51e4a8bd3123b8",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "lookdev_request_sha256": "4a01b62f9d5897e2729e57fbd4c16c789fdacfac12fcf42b372bc8f00269aab7",
+  "lookdev_receipt_sha256": "cc46b2cf69a4b356ade5e08086570225d612cca76bb707daaaf0abc705fdcca0",
+  "source_blend_sha256": "75dd3032bed469eaae834d723924c2cdae9ebc87150ed84648b9ed097e2195f1",
+  "capability_id": "blender.surface.uv_bake.v1",
+  "objects": [
+    {
+      "name": "AF_GN_ShrineCourtyard",
+      "source": "geometry_nodes_output"
+    },
+    {
+      "name": "AF_Base_01",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Base_02",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Base_03",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Pillar_-1_0",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Pillar_-1_1",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Pillar_1_0",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Pillar_1_1",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Lintel",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Crown",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Altar",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Inlay",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_01",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_02",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_03",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_04",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_05",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_06",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_07",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_08",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_09",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_10",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_11",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_12",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_13",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_14",
+      "source": "registered_mesh"
+    },
+    {
+      "name": "AF_Rubble_15",
+      "source": "registered_mesh"
+    }
+  ],
+  "uv_method": "smart_project",
+  "uv_set": "ArtFlow_BakedUV",
+  "atlas_resolution": 1024,
+  "margin_px": 16,
+  "bake_channels": [
+    "base_color",
+    "roughness"
+  ],
+  "max_vertices": 50000,
+  "max_triangles": 100000,
+  "output_stem": "AF_ShrineCourtyard_Baked",
+  "request_sha256": "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55"
+}

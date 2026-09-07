@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 74,
+  "stateRevision": 75,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M26",
+  "currentMilestone": "M27",
   "milestones": [
     {
       "id": "M0",
@@ -297,7 +297,7 @@
     {
       "id": "M26",
       "title": "Surface authoring and bake round-trip",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M25"],
       "outcome": "The current Scene Session can ask Blender for bounded UV and material-bake work derived from an accepted lookdev direction, then return reusable textures and an editable exchange asset to a new isolated Unreal candidate through the same durable capability lifecycle.",
       "acceptance": [
@@ -306,40 +306,49 @@
         "Minimum UV coverage, texture readability, material-slot and geometry budgets are checked before Unreal import",
         "Unreal imports the baked result into a Session-derived candidate, binds its generated material and reconciles a repeated return without changing the source level"
       ]
+    },
+    {
+      "id": "M27",
+      "title": "Live surface capability dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M26"],
+      "outcome": "The proven Blender UV and material-bake route becomes a registered current-session capability in the existing DCC work lifecycle and Scene Change Spectrum, so an artist can dispatch and inspect it without using development scripts.",
+      "acceptance": [
+        "The existing Scene DCC Work definition admits the exact surface request, Blender receipt and Unreal return identities as a sixth finite capability",
+        "Queue, claim, execute, reconcile and replay use the existing append-only worker with no parallel scheduler or approval gate",
+        "The product UI presents Lookdev input, UV atlas, Blender surface result and Unreal candidate as one legible route backed by current-session artifacts"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M26-S1",
-    "milestone": "M26",
-    "title": "Blender UV atlas and material bake",
-    "outcome": "Compile one current-session surface task from the accepted lookdev blend, create a bounded 1024px UV atlas and Base Color/Roughness bake in Blender, export an editable blend plus GLB and return the baked surface to a new Unreal isolated candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": true,
-    "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
+    "id": "M27-S1",
+    "milestone": "M27",
+    "title": "Dispatch surface bake through Scene DCC Worker",
+    "outcome": "Register the frozen M26 Surface Bake as the sixth Scene DCC capability, execute it through the existing durable worker and present its current-session media route in Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A2",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun ComfyUI or generate a new visual target",
-      "Do not add arbitrary shader graphs, arbitrary Blender operations or caller-supplied host paths",
-      "Do not implement animation, simulation, rigging, decals, LOD generation or a general asset processor",
-      "Do not add another queue, approval layer, DCC framework or broad test matrix"
+      "Do not rerun Blender, Unreal, ComfyUI or an image provider",
+      "Do not add a new worker, queue, state machine, approval layer or generic DCC framework",
+      "Do not broaden the surface schema or start another production domain"
     ],
     "acceptance": [
-      "A typed surface request binds the current Session, source lookdev blend and finite object/UV/bake parameter schema",
-      "A real Blender 5.2 run creates a named UV set, 1024px Base Color and Roughness textures, editable blend, GLB and preview",
-      "A focused verifier confirms non-empty UV coverage, readable textures, declared material slots and bounded geometry",
-      "A real Unreal 5.8 process imports and binds the baked result in a new isolated candidate; a repeated return reconciles and the source level remains byte-identical"
+      "SceneDccWorkDefinition validates and binds the M26 request, Blender receipt, Unreal receipt and artifact hashes",
+      "The existing DCC Worker persists one idempotent surface work item through queue, claim, execute, reconcile and replay",
+      "Scene Change Spectrum shows the M26 input, UV atlas, Blender preview and Unreal candidate from real artifact URLs at desktop and narrow widths"
     ],
     "stopConditions": [
-      "Stop if the frozen M24 lookdev blend identity no longer matches its receipt",
-      "Stop if the selected generated mesh has no stable registered scope for UV or bake",
-      "Stop if Unreal return would overwrite an existing non-ArtFlow asset or source map",
+      "Stop if the frozen M26 identities no longer validate",
+      "Stop if integrating the capability would require a second work lifecycle",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": false},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": false}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -355,9 +364,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0067.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0068.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M25 are complete. The existing Scene DCC Work definition now binds five registered capabilities through the exact M24 visual target and Unreal Lookdev outcome. One product run persisted queue, claim, execute, reconcile and success events; repeated dispatch kept work a3f7ad1e4374, replay reconstructed the same state and duplicate external side effects remained zero. Scene Change Spectrum displays the exact ComfyUI target, Blender preview and Unreal candidate at desktop and narrow widths with zero console errors. UV/material baking has not yet been executed; that is M26-S1 scope.",
+  "evidenceCeiling": "M0-M26 are complete. A content-bound current-session Surface Request selected 27 registered Blender objects and fixed smart-project UV, 1024px atlas and Base Color/Roughness bake parameters. Blender 5.2 produced ArtFlow_BakedUV, five verified artifacts, 2,818 vertices and 5,364 triangles. Unreal 5.8 imported one mesh, one material and two textures into Surface_B_9cbf7f1f20ab; the repeated return reconciled with zero duplicate side effects and the source level remained byte-identical. Product dispatch of this sixth capability is M27-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

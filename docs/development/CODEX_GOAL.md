@@ -82,10 +82,14 @@ Unreal 当前场景
   scene-conditioned lookdev 已接入已有 DCC Worker 与产品状态投影，没有新增编排器。当前工作项
   依次记录 queue / claim / execute / reconcile / success，场景变更谱显示目标图、Blender 预演与
   Unreal 候选三段真实媒体。
-- **M26 · Surface authoring and bake round-trip（进行中）**：扩展 Blender 的非建模生产能力，
+- **M26 · Surface authoring and bake round-trip（已完成）**：扩展 Blender 的非建模生产能力，
   从当前 Lookdev `.blend` 编译有界 UV 与材质 Bake 任务，生成可复用贴图和带 UV 的交换资产，
-  完成最小 UV/贴图/材质槽检查后回到新的 Unreal 隔离候选。该阶段复用已有 ComfyUI PBR 输入和
-  DCC Worker，不重新生成视觉图，也不开放任意 Blender 操作。
+  完成最小 UV/贴图/材质槽检查后回到新的 Unreal 隔离候选。Blender 5.2 已实际生成 1024²
+  Base Color / Roughness、命名 UV、单材质 GLB 与可编辑 `.blend`；Unreal 5.8 导入网格、材质和
+  两张纹理，重复回流对账且源关卡字节不变。
+- **M27 · Live surface capability dispatch（进行中）**：把已经实测的 Surface Bake 提升为当前
+  Scene Session 的第六项 DCC 能力，复用现有 DCC Worker 的 queue / claim / execute / reconcile
+  生命周期，并在场景变更谱展示 Lookdev、UV 图集、Blender 结果和 Unreal 候选之间的连续关系。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

@@ -1,0 +1,54 @@
+{
+  "schema_id": "artflow-blender-surface-receipt/1",
+  "request_id": "surface-bake-1e51e4a8bd3123b8",
+  "request_sha256": "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55",
+  "capability_id": "blender.surface.uv_bake.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "object_name": "AF_ShrineCourtyard_Baked",
+  "source_object_count": 27,
+  "vertex_count": 2818,
+  "triangle_count": 5364,
+  "uv_set": "ArtFlow_BakedUV",
+  "uv_loop_count": 11104,
+  "uv_area_ratio": 0.228371,
+  "atlas_resolution": 1024,
+  "material_slots": [
+    "M_AF_BakedSurface"
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ShrineCourtyard_Baked.blend",
+      "sha256": "1640c9ecfe7c35574f43ee0fe0e72271533e427639509796a91139ddadf51db1",
+      "size_bytes": 1590509
+    },
+    {
+      "kind": "glb",
+      "relative_path": "AF_ShrineCourtyard_Baked.glb",
+      "sha256": "ff69805cc9ac4d887953906fa96713d517957d692cf85fe1098e97a8e73ea64f",
+      "size_bytes": 1735368
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ShrineCourtyard_Baked-preview.png",
+      "sha256": "a6660bdd54dec72cb283f0659b5a649830c85253c55c5d1f71f118b490226460",
+      "size_bytes": 733385
+    },
+    {
+      "kind": "base_color",
+      "relative_path": "AF_ShrineCourtyard_Baked_BaseColor.png",
+      "sha256": "79ca0099ea6fb6d8ad81048906f2cd49d2d353298e98af3e8e759e58e539be5f",
+      "size_bytes": 1330234
+    },
+    {
+      "kind": "roughness",
+      "relative_path": "AF_ShrineCourtyard_Baked_Roughness.png",
+      "sha256": "c0d40f9e8d4dee56d8e84cd81e249b0949e18f81df14e0281075bac1f9306b42",
+      "size_bytes": 15961
+    }
+  ],
+  "elapsed_seconds": 2.913,
+  "completed_at": "2026-09-07T10:13:07.837096Z",
+  "receipt_sha256": "15da49c17f068876d28681a69ca8688711cd317de444004b55714e69dfd6aa27"
+}

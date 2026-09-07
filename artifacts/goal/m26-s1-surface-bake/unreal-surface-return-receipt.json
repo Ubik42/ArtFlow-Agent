@@ -1,0 +1,32 @@
+{
+  "schema_id": "artflow-unreal-surface-return-receipt/1",
+  "request_id": "surface-bake-1e51e4a8bd3123b8",
+  "request_sha256": "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55",
+  "blender_surface_receipt_sha256": "15da49c17f068876d28681a69ca8688711cd317de444004b55714e69dfd6aa27",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Lookdev_B_4a01b62f9d58",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Surface_B_9cbf7f1f20ab",
+  "static_mesh_path": "/Game/ArtFlow/Generated/Blender/Surface/S_9cbf7f1f20ab/AF_ShrineCourtyard_Baked/StaticMeshes/SM_AF_ShrineCourtyard_Baked.SM_AF_ShrineCourtyard_Baked",
+  "actor_label": "ArtFlow_Blender_ShrineCourtyard_Baked",
+  "vertex_count": 2082,
+  "triangle_count": 928,
+  "uv_channel_count": 1,
+  "material_slot_count": 1,
+  "imported_material_paths": [
+    "/Game/ArtFlow/Generated/Blender/Surface/S_9cbf7f1f20ab/AF_ShrineCourtyard_Baked/Materials/M_AF_BakedSurface.M_AF_BakedSurface"
+  ],
+  "imported_texture_paths": [
+    "/Game/ArtFlow/Generated/Blender/Surface/S_9cbf7f1f20ab/AF_ShrineCourtyard_Baked/Textures/AF_ShrineCourtyard_Baked_BaseColor.AF_ShrineCourtyard_Baked_BaseColor",
+    "/Game/ArtFlow/Generated/Blender/Surface/S_9cbf7f1f20ab/AF_ShrineCourtyard_Baked/Textures/AF_ShrineCourtyard_Baked_Roughness.AF_ShrineCourtyard_Baked_Roughness"
+  ],
+  "simple_collision_count": 1,
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "screenshot_path": "unreal-surface-candidate.png",
+  "screenshot_sha256": "838bb8832c2ef33f7671e3b82603951d6f2d83d1617c85039b6fbc02fa3024d0",
+  "capture_status": "completed",
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-09-07T10:21:38.309449Z",
+  "receipt_sha256": "97706d98cbd3f1bd3c8d0a984e358de8be7430b7a910907fe1ba042eee5f802a"
+}

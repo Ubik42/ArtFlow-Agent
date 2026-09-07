@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M26-S1",
+  "status": "completed",
+  "outcome": "A current-session Surface Request now binds the accepted Lookdev blend and a finite 27-object scope to one 1024px UV and two-channel material bake. Blender 5.2 produced a named UV set, editable blend, GLB, textures and preview; Unreal 5.8 imported the mesh, material and textures into a new isolated candidate, then reconciled the same content identity without changing the source level.",
+  "evidence": [
+    "artifacts/goal/m26-s1-surface-bake/surface-request.json",
+    "artifacts/goal/m26-s1-surface-bake/surface-receipt.json",
+    "artifacts/goal/m26-s1-surface-bake/AF_ShrineCourtyard_Baked-preview.png",
+    "artifacts/goal/m26-s1-surface-bake/AF_ShrineCourtyard_Baked_BaseColor.png",
+    "artifacts/goal/m26-s1-surface-bake/unreal-surface-candidate.png",
+    "artifacts/goal/m26-s1-surface-bake/unreal-surface-return-receipt.json",
+    "artifacts/goal/m26-s1-surface-bake/verification.json",
+    "docs/evidence/M26_S1_SURFACE_BAKE_ROUNDTRIP_2026-09-07.md"
+  ]
+}

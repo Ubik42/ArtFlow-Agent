@@ -42,6 +42,18 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 
 ![当前 Scene Session 中的 ComfyUI → Blender → Unreal Lookdev 路线](artifacts/goal/m25-s1-live-lookdev/live-lookdev-route.png)
 
+第六条路线把已经确定的 Lookdev 继续处理为可复用的引擎表面资产。Agent 将当前 Session、源
+`.blend`、27 个登记对象、UV 方法、1024² 图集和 Base Color / Roughness 两个 Bake 通道编译为
+固定 Surface Request。Blender 5.2 生成 `ArtFlow_BakedUV`、两张贴图、单材质 GLB 与保留完整
+编辑能力的 `.blend`；Unreal 5.8 通过 Interchange 导入网格、材质和两张纹理，并在新的隔离候选
+中替换原场景 Actor。第二次回流返回 `reconciled`，没有重复资产，源关卡哈希保持不变。
+
+| Blender UV 与材质 Bake | Unreal 表面资产候选 |
+| --- | --- |
+| ![Blender 5.2 生成的单图集可编辑表面](artifacts/goal/m26-s1-surface-bake/AF_ShrineCourtyard_Baked-preview.png) | ![Unreal 5.8 导入带贴图 GLB 的隔离候选](artifacts/goal/m26-s1-surface-bake/unreal-surface-candidate.png) |
+
+![1024 平方像素 Base Color UV 图集](artifacts/goal/m26-s1-surface-bake/AF_ShrineCourtyard_Baked_BaseColor.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
