@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 69,
+  "stateRevision": 70,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
@@ -270,35 +270,35 @@
     }
   ],
   "nextSlice": {
-    "id": "M23-S5",
+    "id": "M23-S6",
     "milestone": "M23",
-    "title": "Unreal and Blender camera-light exchange",
-    "outcome": "Bind the current Unreal camera and registered light facts into a typed Blender shot request, render the generated courtyard from the matched view, and return one bounded lighting rig proposal to a new isolated Unreal candidate through the existing DCC work lifecycle.",
+    "title": "Session-owned Blender worker execution",
+    "outcome": "Turn the registered Blender modeling, PBR, Geometry Nodes and shot capabilities into an executable product route: a Session-owned worker claims the current DCC work, launches only the fixed capability chain, reconciles existing receipts, returns the latest result to Unreal and reports progress through the existing append-only lifecycle.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not expose arbitrary Blender Python, Geometry Nodes graphs, command strings or caller-selected output paths",
+      "Do not expose arbitrary Blender Python, Geometry Nodes graphs, command strings, executables or caller-selected output paths",
       "Do not overwrite, rename or save the source ArtFlowDemo level",
       "Do not add another state machine, provider abstraction, approval gate or test framework",
       "Do not redesign the web workspace or add a new orchestration framework",
       "Do not train a model or add a hosted text-to-3D dependency in this slice",
       "Do not implement simulation, animation, character rigging or general USD scene transfer in this slice",
       "Do not replace the existing architectural, PBR or Geometry Nodes results",
-      "Do not expose arbitrary camera, light, Python or Unreal property writes",
-      "Do not build a broad test matrix; verify one typed shot exchange, one Blender render and one isolated Unreal lighting return"
+      "Do not add a general job queue, distributed worker framework, second event store or background service manager",
+      "Do not build a broad test matrix; verify one product-triggered worker lifecycle and one recovery or reconciliation path"
     ],
     "acceptance": [
-      "A typed shot request binds exact current-scene camera transform, lens, light identities and Geometry Nodes candidate identity",
-      "Blender renders the editable courtyard from a demonstrably matched camera and bounded key-fill-rim rig",
-      "The selected rig is represented as registered light parameters rather than host code or arbitrary properties",
-      "Unreal applies the rig only in a new Session-derived candidate and rerenders while the source level remains byte-identical"
+      "The current Scene Session can dispatch and start its registered Blender work without a developer invoking milestone scripts",
+      "The worker derives the fixed capability chain and artifact locations from the content-addressed work definition rather than caller input",
+      "Progress, terminal receipt identity and recovery are projected through the existing DCC work events and survive process restart",
+      "Existing completed Blender and Unreal results reconcile without duplicate generation, import, light creation or candidate creation"
     ],
     "stopConditions": [
-      "Stop if the route requires executing model-authored Blender Python or arbitrary node graphs",
-      "Stop if camera or light facts cannot be bound to the current Session and fixed capability versions",
-      "Stop if Unreal import would overwrite an existing user asset or source level",
+      "Stop if the route requires accepting caller-authored Python, shell, Blender graphs, executable paths or Unreal maps",
+      "Stop if the worker cannot prove ownership of the current DCC work before a host side effect",
+      "Stop if recovery would blindly repeat a Blender or Unreal side effect whose completion is unknown",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
@@ -321,9 +321,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0062.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0063.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M22 and M23-S1-S4 are complete. The Session-bound Blender route now covers editable architectural modeling, reviewed ComfyUI PBR assembly, durable DCC work dispatch and a real Geometry Nodes courtyard with 14 support clusters from three prototypes inside an 11.43 x 11.04 m bound. Blender 5.2 exported the textured composition and Unreal 5.8.1 reconciled it into /Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_add8b6794d46 with zero duplicate side effects and no source-level byte change. Camera and light exchange is not yet implemented; that is M23-S5 scope.",
+  "evidenceCeiling": "M0-M22 and M23-S1-S5 are complete. The Session-bound Blender route covers editable architectural modeling, reviewed ComfyUI PBR assembly, durable DCC work dispatch, a real Geometry Nodes courtyard and exact Unreal-Blender camera/light exchange. Blender 5.2 rendered the editable courtyard with zero camera/FOV error; Unreal 5.8.1 reconciled the three-light proposal into /Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75 with zero duplicate side effects and no source-level byte change. Product-triggered worker execution is not yet implemented; that is M23-S6 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

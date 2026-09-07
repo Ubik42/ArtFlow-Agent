@@ -1,0 +1,60 @@
+{
+  "schema_id": "artflow-unreal-camera-light-source/1",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_scene": "/Game/ArtFlowDemo",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "camera": {
+    "label": "ArtFlow_Camera",
+    "location_cm": [
+      -900.0,
+      0.0,
+      420.0
+    ],
+    "rotation_deg": [
+      -18.0,
+      0.0,
+      -0.0
+    ],
+    "horizontal_fov_deg": 55.0,
+    "aspect_ratio": 1.7777780294418335
+  },
+  "directional_lights": [
+    {
+      "label": "ArtFlow_KeyLight",
+      "location_cm": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "rotation_deg": [
+        -81.00000000000026,
+        -25.000000000000078,
+        -1.0165773509838775e-14
+      ],
+      "intensity_lux": 8.0,
+      "temperature_kelvin": 6500.0,
+      "use_temperature": false,
+      "cast_shadows": true
+    },
+    {
+      "label": "DirectionalLight",
+      "location_cm": [
+        0.0,
+        0.0,
+        400.0
+      ],
+      "rotation_deg": [
+        -49.51711035415601,
+        -10.308600787602971,
+        112.36067200001975
+      ],
+      "intensity_lux": 6.0,
+      "temperature_kelvin": 6500.0,
+      "use_temperature": true,
+      "cast_shadows": true
+    }
+  ],
+  "captured_at": "2026-09-07T08:47:21.172595Z",
+  "receipt_sha256": "01dd93d73afa60a4e6851661a2a63ff541951e4244f7014f7b6109a48030d8ee"
+}

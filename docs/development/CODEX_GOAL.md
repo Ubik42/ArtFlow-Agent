@@ -63,8 +63,10 @@ Unreal 当前场景
   LTS，把它作为建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光和后续模拟
   缓存的完整 DCC 执行面。模块化建筑道具生成，以及受审 ComfyUI PBR 到 Blender 可编辑材质、
   嵌入式 GLB、预览图和 Unreal Interchange 候选回流均已真实完成，并已提升为 Scene Session
-  中可派发、领取、对账和重放的持久工作项。Geometry Nodes 多资产庭院也已根据 Session 边界
-  真实生成并回流新的 Unreal 候选。下一切片继续完成 Unreal 与 Blender 的相机、灯光交换。
+  中可派发、领取、对账和重放的持久工作项。Geometry Nodes 多资产庭院已根据 Session 边界
+  真实生成并回流新的 Unreal 候选；Unreal 当前相机与灯光也已驱动 Blender 同机位预演，并把
+  有界 key / fill / rim 灯光方案对账回新的候选关卡。下一切片将这些固定能力接到产品内的
+  Session DCC Worker，使用户从当前场景派发后即可完成 Blender 执行与 Unreal 回流，而不是依赖开发脚本。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

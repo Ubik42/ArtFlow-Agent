@@ -27,15 +27,21 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.architectural_prop.weathered_shrine.v1",
             "blender.comfy_pbr.assembly.v1",
             "blender.geometry_nodes.shrine_courtyard.v1",
+            "blender.shot.rain_breakthrough.v1",
         ]
-    ] = Field(min_length=2, max_length=3)
+    ] = Field(min_length=2, max_length=4)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     layout_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    shot_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    shot_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_shot_return_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/Blender_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -51,6 +57,17 @@ class SceneDccWorkDefinition(BaseModel):
             if self.layout_request_sha256 is None or self.layout_receipt_sha256 is None:
                 raise ValueError("DCC work requires both Geometry Nodes identities")
             expected_capabilities.append("blender.geometry_nodes.shrine_courtyard.v1")
+        shot_identities = (
+            self.shot_request_sha256,
+            self.shot_receipt_sha256,
+            self.unreal_shot_return_receipt_sha256,
+        )
+        if any(item is not None for item in shot_identities):
+            if not all(item is not None for item in shot_identities):
+                raise ValueError("DCC work requires every camera-light exchange identity")
+            if self.layout_receipt_sha256 is None:
+                raise ValueError("camera-light exchange requires the Geometry Nodes layout")
+            expected_capabilities.append("blender.shot.rain_breakthrough.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -155,6 +172,28 @@ def compile_current_blender_dcc_work(
         payload["layout_receipt_sha256"] = layout_receipt["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = layout_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = layout_unreal["candidate_scene_path"]
+    shot_root = project_root / "artifacts/goal/m23-s5-camera-light"
+    shot_request_path = shot_root / "shot-request.json"
+    shot_receipt_path = shot_root / "shot-receipt.json"
+    shot_unreal_path = shot_root / "unreal-shot-return-receipt.json"
+    if shot_request_path.is_file() and shot_receipt_path.is_file() and shot_unreal_path.is_file():
+        shot_request = json.loads(shot_request_path.read_text(encoding="utf-8"))
+        shot_receipt = json.loads(shot_receipt_path.read_text(encoding="utf-8"))
+        shot_unreal = json.loads(shot_unreal_path.read_text(encoding="utf-8"))
+        if shot_request["session_id"] != session_id:
+            raise ValueError("camera-light exchange references another Scene Session")
+        if shot_receipt["request_sha256"] != shot_request["request_sha256"]:
+            raise ValueError("Blender shot receipt references another request")
+        if shot_unreal["blender_shot_receipt_sha256"] != shot_receipt["receipt_sha256"]:
+            raise ValueError("Unreal shot return references another Blender receipt")
+        if shot_unreal.get("capture_status") != "completed":
+            raise ValueError("Unreal shot return capture is not complete")
+        payload["capability_ids"].append("blender.shot.rain_breakthrough.v1")
+        payload["shot_request_sha256"] = shot_request["request_sha256"]
+        payload["shot_receipt_sha256"] = shot_receipt["receipt_sha256"]
+        payload["unreal_shot_return_receipt_sha256"] = shot_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = shot_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = shot_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

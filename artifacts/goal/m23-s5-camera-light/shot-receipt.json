@@ -1,0 +1,64 @@
+{
+  "schema_id": "artflow-blender-shot-receipt/1",
+  "request_id": "blender-shot-571c9332733639a6",
+  "request_sha256": "e8e5f2673e75e727c5247c0182c052ddc2b1d2885265c9b0a0a35e41d736199e",
+  "capability_id": "blender.shot.rain_breakthrough.v1",
+  "blender_version": "5.2.0 LTS",
+  "status": "succeeded",
+  "camera_label": "ArtFlow_Shot_Camera",
+  "camera_location_error_cm": 0.0,
+  "camera_fov_error_deg": 0.0,
+  "light_count": 3,
+  "unreal_rig": [
+    {
+      "role": "key",
+      "rotation_deg": [
+        -38.0,
+        -32.0,
+        0.0
+      ],
+      "intensity_lux": 3.2,
+      "temperature_kelvin": 5200.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "fill",
+      "rotation_deg": [
+        -58.0,
+        118.0,
+        0.0
+      ],
+      "intensity_lux": 0.65,
+      "temperature_kelvin": 8800.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "rim",
+      "rotation_deg": [
+        -22.0,
+        168.0,
+        0.0
+      ],
+      "intensity_lux": 1.4,
+      "temperature_kelvin": 7600.0,
+      "cast_shadows": true
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ShrineCourtyard_Shot.blend",
+      "sha256": "fbc39cb3f4e681566a1cbfa0b62ba630a4d7c078ade34a04ed24a1981e746da5",
+      "size_bytes": 150141
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ShrineCourtyard_Shot-preview.png",
+      "sha256": "a39b1f3528922a0c92585cdd30dfb72f1b49fabb8ac665183cdd9f75124485e8",
+      "size_bytes": 691508
+    }
+  ],
+  "elapsed_seconds": 1.029,
+  "completed_at": "2026-09-07T08:51:38.628657Z",
+  "receipt_sha256": "b1f1a9d649899257e472e45c5c2192b8e969b59c8458ae31b563fe1e89c95c98"
+}

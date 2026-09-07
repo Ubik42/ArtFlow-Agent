@@ -24,6 +24,12 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 | --- | --- |
 | ![Blender Geometry Nodes 生成的祭坛庭院](artifacts/goal/m23-s4-geometry-layout/AF_ShrineCourtyard_GN-preview.png) | ![Geometry Nodes 庭院回流 Unreal](artifacts/goal/m23-s4-geometry-layout/unreal-blender-candidate.png) |
 
+第四条路线把 Unreal 当前机位、镜头参数和登记灯光导出为类型化 Shot Request。Blender 在相同相机关系下完成三点布光预演，Agent 再把 key / fill / rim 三组有限参数回填到新的 Unreal 候选。两端相机位置与视场角误差均为 0；第二次回填只对账已有候选，不重复创建灯光或关卡，源 `ArtFlowDemo` 仍保持字节不变。
+
+| Blender 同机位灯光预演 | Unreal 三点灯光候选回填 |
+| --- | --- |
+| ![Blender 读取 Unreal 镜头后的三点灯光预演](artifacts/goal/m23-s5-camera-light/AF_ShrineCourtyard_Shot-preview.png) | ![三点灯光方案回填 Unreal 隔离候选](artifacts/goal/m23-s5-camera-light/unreal-shot-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -133,6 +139,8 @@ SQLite Event Log / Provenance / OpenTelemetry
 
 MCP 作为薄互操作层，只投影已经存在的固定资源与窄工具。它不接收任意本地路径、ComfyUI workflow、Python、Shell 或 Blueprint，也不维护第二套 Agent 状态机。
 
+ComfyUI 的节点画布可以直接参与这套管线，但职责位于 Agent 下面：项目登记和版本化可复用的生成、ControlNet、LoRA 与 PBR 技术图子图，Agent 依据 Scene Session 选择能力、填充类型化参数并读取回执。这样既保留节点生态的组合效率，也避免让模型在生产时临时拼接任意工作流。生成结果可继续进入 Blender 的材质与几何处理，再由 Unreal 工具完成 PCG、布光和候选回填。
+
 ## Agent 工程设计
 
 | 能力 | 实现方式 | 生产约束 |
@@ -195,6 +203,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 新进程审阅对账 | `reconciled`，Published 关卡哈希一致 |
 | Blender 5.2 自主建模 | 26 个可编辑构件、3 个材质、4,888 个生成三角面 |
 | Blender → Unreal 回流 | 1 个 StaticMesh、3 个材质槽、1 个简单碰撞；源关卡字节变化 0 |
+| Geometry Nodes 场景布局 | 14 个支撑组合、3 个原型、934 个 Unreal 构建三角面 |
+| Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

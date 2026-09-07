@@ -1,0 +1,59 @@
+{
+  "schema_id": "artflow-unreal-shot-return-receipt/1",
+  "request_id": "blender-shot-571c9332733639a6",
+  "request_sha256": "e8e5f2673e75e727c5247c0182c052ddc2b1d2885265c9b0a0a35e41d736199e",
+  "blender_shot_receipt_sha256": "b1f1a9d649899257e472e45c5c2192b8e969b59c8458ae31b563fe1e89c95c98",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_add8b6794d46",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75",
+  "camera_label": "ArtFlow_Camera",
+  "camera_horizontal_fov_deg": 55.0,
+  "camera_location_error_cm": 0.0,
+  "applied_lights": [
+    {
+      "label": "ArtFlow_KeyLight",
+      "role": "key",
+      "rotation_deg": [
+        -38.0,
+        -32.0,
+        0.0
+      ],
+      "intensity_lux": 3.2,
+      "temperature_kelvin": 5200.0,
+      "cast_shadows": true
+    },
+    {
+      "label": "DirectionalLight",
+      "role": "fill",
+      "rotation_deg": [
+        -58.0,
+        118.0,
+        0.0
+      ],
+      "intensity_lux": 0.65,
+      "temperature_kelvin": 8800.0,
+      "cast_shadows": true
+    },
+    {
+      "label": "ArtFlow_DCC_RimLight",
+      "role": "rim",
+      "rotation_deg": [
+        -22.0,
+        168.0,
+        0.0
+      ],
+      "intensity_lux": 1.4,
+      "temperature_kelvin": 7600.0,
+      "cast_shadows": true
+    }
+  ],
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "screenshot_path": "unreal-shot-candidate.png",
+  "screenshot_sha256": "f7cec34f01e2572badc636b32f350037884dbddeda93b6553c5a41f508cfb775",
+  "capture_status": "completed",
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-09-07T08:58:26.846824Z",
+  "receipt_sha256": "c3c7ea9b52d058f03f6f9cd61273971a861d5745a9c63454ec9156f1bb3a2067"
+}

@@ -35,6 +35,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.architectural_prop.weathered_shrine.v1",
         "blender.comfy_pbr.assembly.v1",
         "blender.geometry_nodes.shrine_courtyard.v1",
+        "blender.shot.rain_breakthrough.v1",
     ]
 
     claim = {

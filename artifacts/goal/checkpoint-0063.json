@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M23-S5",
+  "status": "completed",
+  "outcome": "Exact current-scene Unreal camera and light facts drove an editable Blender shot preview, and the bounded key-fill-rim proposal reconciled into a new isolated Unreal candidate without changing the source level or duplicating side effects.",
+  "evidence": [
+    "artifacts/goal/m23-s5-camera-light/unreal-camera-light-source.json",
+    "artifacts/goal/m23-s5-camera-light/shot-request.json",
+    "artifacts/goal/m23-s5-camera-light/shot-receipt.json",
+    "artifacts/goal/m23-s5-camera-light/AF_ShrineCourtyard_Shot.blend",
+    "artifacts/goal/m23-s5-camera-light/AF_ShrineCourtyard_Shot-preview.png",
+    "artifacts/goal/m23-s5-camera-light/unreal-shot-return-receipt.json",
+    "artifacts/goal/m23-s5-camera-light/unreal-shot-candidate.png",
+    "artifacts/goal/m23-s5-camera-light/verification.json",
+    "docs/evidence/M23_S5_CAMERA_LIGHT_EXCHANGE_2026-09-07.md"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-goal-verification/1",
+  "slice_id": "M23-S5",
+  "status": "passed",
+  "checks": {
+    "typed_unreal_camera_light_source": true,
+    "typed_blender_shot_request": true,
+    "real_blender_execution": true,
+    "camera_location_error_cm": 0.0,
+    "camera_fov_error_deg": 0.0,
+    "registered_light_count": 3,
+    "unreal_candidate_reconciled": true,
+    "source_level_unchanged": true,
+    "duplicate_side_effect_count": 0
+  },
+  "focused_tests": 1
+}
