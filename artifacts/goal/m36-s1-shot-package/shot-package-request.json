@@ -1,0 +1,71 @@
+{
+  "schema_id": "artflow-shot-package-request/1",
+  "request_id": "shot-package-9eb94f735d241ff5",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "capability_id": "unreal.sequencer.procedural_environment_shot.v1",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Density_B_1a637a8d89b8",
+  "source_candidate_sha256": "52182d50801296fe684a58d2fda4cb20fea9002e25bb74c0563c8a73629bb1b8",
+  "native_pcg_receipt_sha256": "159ea2469413be9c139408f3440c58996b0d1614aa37eca5310754502202c834",
+  "blender_shot_request_sha256": "e8e5f2673e75e727c5247c0182c052ddc2b1d2885265c9b0a0a35e41d736199e",
+  "blender_shot_receipt_sha256": "b1f1a9d649899257e472e45c5c2192b8e969b59c8458ae31b563fe1e89c95c98",
+  "camera": {
+    "label": "ArtFlow_Sequence_Camera",
+    "location_cm": [
+      -900.0,
+      0.0,
+      420.0
+    ],
+    "rotation_deg": [
+      -18.0,
+      0.0,
+      -0.0
+    ],
+    "horizontal_fov_deg": 55.0,
+    "aspect_ratio": 1.7777780294418335
+  },
+  "light_rig": [
+    {
+      "role": "key",
+      "actor_label": "ArtFlow_KeyLight",
+      "rotation_deg": [
+        -38.0,
+        -32.0,
+        0.0
+      ],
+      "intensity_lux": 3.2,
+      "temperature_kelvin": 5200.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "fill",
+      "actor_label": "DirectionalLight",
+      "rotation_deg": [
+        -58.0,
+        118.0,
+        0.0
+      ],
+      "intensity_lux": 0.65,
+      "temperature_kelvin": 8800.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "rim",
+      "actor_label": "ArtFlow_DCC_RimLight",
+      "rotation_deg": [
+        -22.0,
+        168.0,
+        0.0
+      ],
+      "intensity_lux": 1.4,
+      "temperature_kelvin": 7600.0,
+      "cast_shadows": true
+    }
+  ],
+  "display_rate_fps": 24,
+  "playback_start_frame": 0,
+  "playback_end_frame": 120,
+  "preview_frame": 48,
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_76936ac2cf65.LS_AF_76936ac2cf65",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ShotPackage_B_76936ac2cf65",
+  "request_sha256": "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f"
+}

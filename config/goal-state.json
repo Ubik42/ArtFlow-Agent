@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 84,
+  "stateRevision": 85,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M36",
+  "currentMilestone": "M37",
   "milestones": [
     {
       "id": "M0",
@@ -421,7 +421,7 @@
     {
       "id": "M36",
       "title": "Shot-ready procedural environment package",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M35"],
       "outcome": "A current Scene Session compiles its accepted visual direction, Blender camera-light previs and native PCG environment candidate into a bounded Unreal Level Sequence candidate ready for shot review.",
       "acceptance": [
@@ -429,40 +429,51 @@
         "A project-owned Unreal tool creates a Level Sequence with a registered CineCamera and bounded scene bindings without model-authored host code",
         "The sequence candidate produces an inspectable same-camera frame and repeat execution reconciles without changing source levels"
       ]
+    },
+    {
+      "id": "M37",
+      "title": "Live shot-package dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M36"],
+      "outcome": "The proven Blender-to-Unreal shot package becomes an eleventh registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
+      "acceptance": [
+        "The work item binds the exact shot-package request, Blender shot receipt, Level Sequence and Unreal candidate identities",
+        "The existing worker reconciles and replays the eleventh capability without another scheduler or arbitrary Sequencer surface",
+        "The Chinese product UI presents visual target, Blender previs, native PCG environment and shot-ready Unreal candidate as one real route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M36-S1",
-    "milestone": "M36",
-    "title": "Build a shot-ready Unreal sequence from the procedural environment",
-    "outcome": "Compile the current registered camera-light previs and native PCG candidate into a fixed Unreal Level Sequence candidate with an inspectable shot frame and idempotent return receipt.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "integrations/unreal/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M37-S1",
+    "milestone": "M37",
+    "title": "Expose the shot-ready sequence as the eleventh live production route",
+    "outcome": "Register the exact M36 request, Blender shot receipt, Level Sequence and Unreal candidate in the existing Scene DCC Work lifecycle, then present the four-stage route in the Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not build a generic Sequencer editor, render farm or arbitrary binding surface",
-      "Do not regenerate the accepted visual target, Blender kit or PCG density",
+      "Do not rerun Blender or Unreal when frozen M36 identities verify",
       "Do not add a new queue, worker, approval layer or orchestration framework",
-      "Do not overwrite the source level, M32 kit candidate or M34 PCG candidate"
+      "Do not expose arbitrary Sequencer tracks, actor bindings or host paths",
+      "Do not build a second scene-session or shot publishing state machine"
     ],
     "acceptance": [
-      "A typed request binds exact Session, camera-light, native PCG candidate and finite playback identities",
-      "The project-owned Unreal tool creates a Level Sequence and CineCamera binding only inside a new content-addressed candidate namespace",
-      "A same-camera frame demonstrates the sequence candidate and a second execution reconciles with no source mutation or duplicate assets"
+      "The eleventh finite capability verifies every frozen M36 identity before entering the existing worker",
+      "Queue, claim, execute, reconcile and replay use the existing append-only DCC lifecycle",
+      "The Scene Change Spectrum presents four real shot-production stages and remains usable at desktop and narrow widths"
     ],
     "stopConditions": [
-      "Stop if the current camera-light or native PCG candidate identities no longer verify",
-      "Stop if UE 5.8 cannot author a project-owned Level Sequence through a fixed registered tool",
+      "Stop if the M36 request, Sequence or Unreal return identity no longer verifies",
+      "Stop if the route requires a second scheduler or arbitrary binding input",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe", "required": true},
-      {"id": "m23_shot_receipt", "kind": "repo_path", "value": "artifacts/goal/m23-s5-camera-light/shot-receipt.json", "required": true},
-      {"id": "m34_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-receipt.json", "required": true},
-      {"id": "m34_candidate_capture", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-candidate.png", "required": true}
+      {"id": "m36_request", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/shot-package-request.json", "required": true},
+      {"id": "m36_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/unreal-shot-package-receipt.json", "required": true},
+      {"id": "m36_candidate_capture", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/unreal-shot-package-candidate.png", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -478,9 +489,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0077.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0078.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M35 are complete. The scene-conditioned native PCG route is the tenth current-session production capability: exact ComfyUI, spatial, Blender-kit, native-graph and Unreal-candidate identities replay through the existing five-event worker lifecycle. The Scene Change Spectrum presents four real stages at 1600x1000 and 980x1000 with no overflow, failed images or console messages. A shot-ready Unreal Level Sequence package is M36-S1 scope.",
+  "evidenceCeiling": "M0-M36 are complete. A typed Shot Package bound the current Blender camera-light previs and native PCG environment candidate, then Unreal 5.8.1 created a content-addressed Level Sequence with one CineCamera, three registered light bindings, one Camera Cut and a 120-frame range. A second process reconciled the same Sequence and candidate with zero duplicate assets or source mutation. Live dispatch and Scene Change Spectrum presentation are M37-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

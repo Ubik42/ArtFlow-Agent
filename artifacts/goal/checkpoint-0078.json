@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M36-S1",
+  "status": "completed",
+  "outcome": "The current Blender camera-light previs and native PCG environment candidate now compile into a content-addressed Unreal Level Sequence candidate with one CineCamera, three registered light bindings, one Camera Cut and a 120-frame range; repeat execution reconciles without duplicate assets or source mutation.",
+  "evidence": [
+    "artifacts/goal/m36-s1-shot-package/shot-package-request.json",
+    "artifacts/goal/m36-s1-shot-package/unreal-shot-package-receipt.json",
+    "artifacts/goal/m36-s1-shot-package/unreal-shot-package-candidate.png",
+    "artifacts/goal/m36-s1-shot-package/verification.json",
+    "docs/evidence/M36_S1_SHOT_PACKAGE_2026-09-07.md"
+  ]
+}

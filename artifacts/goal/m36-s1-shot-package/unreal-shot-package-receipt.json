@@ -1,0 +1,30 @@
+{
+  "schema_id": "artflow-unreal-shot-package-receipt/1",
+  "request_id": "shot-package-9eb94f735d241ff5",
+  "request_sha256": "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Density_B_1a637a8d89b8",
+  "source_candidate_sha256_before": "52182d50801296fe684a58d2fda4cb20fea9002e25bb74c0563c8a73629bb1b8",
+  "source_candidate_sha256_after": "52182d50801296fe684a58d2fda4cb20fea9002e25bb74c0563c8a73629bb1b8",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ShotPackage_B_76936ac2cf65",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_76936ac2cf65.LS_AF_76936ac2cf65",
+  "sequence_binding_count": 4,
+  "camera_binding_count": 1,
+  "light_binding_count": 3,
+  "camera_cut_track_count": 1,
+  "display_rate_fps": 24,
+  "playback_range": [
+    0,
+    120
+  ],
+  "preview_frame": 48,
+  "camera_label": "ArtFlow_Sequence_Camera",
+  "camera_horizontal_fov_deg": 54.999996185302734,
+  "screenshot_path": "unreal-shot-package-candidate.png",
+  "screenshot_sha256": "b8d1958683011676f21a95920396bc5b18d2c32f203bf389fd36e43def1608a2",
+  "capture_status": "captured",
+  "duplicate_asset_count": 0,
+  "completed_at": "2026-09-07T13:33:03.446511Z",
+  "receipt_sha256": "655fad5a03eb171a6e60c6277035fe0db3b3f78f492294989501a4078578b571"
+}

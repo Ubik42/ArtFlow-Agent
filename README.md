@@ -122,6 +122,17 @@ PCG 图与候选身份后，仍使用同一条五段持久事件链执行和恢�
 
 ![当前 Session 的 ComfyUI → Blender → Unreal 原生 PCG 路线](artifacts/goal/m35-s1-live-native-pcg/live-native-pcg-desktop.png)
 
+程序化环境还可以直接进入镜头制作。Agent 将 Blender 同机位预演中的相机和 key / fill / rim
+灯光，与当前原生 PCG 候选编译为固定 Shot Package；Unreal 在新的隔离候选中创建内容寻址
+Level Sequence，绑定 1 个 CineCamera、3 盏登记灯光和 1 条 Camera Cut，范围为 24 fps、120 帧。
+
+| Blender 镜头与布光预演 | Unreal Level Sequence 镜头候选 |
+| --- | --- |
+| ![Blender 同机位镜头预演](artifacts/goal/m23-s5-camera-light/AF_ShrineCourtyard_Shot-preview.png) | ![Unreal 镜头包同机位帧](artifacts/goal/m36-s1-shot-package/unreal-shot-package-candidate.png) |
+
+第二个 UE 进程对账同一 Sequence、候选关卡和四项绑定，没有创建重复资产；相机水平 FOV 与
+Blender 预演误差约 0.000004°，上游原生 PCG 候选保持字节不变。
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

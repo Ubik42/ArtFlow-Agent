@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-shot-package-verification/1",
+  "status": "passed",
+  "request_sha256": "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_76936ac2cf65.LS_AF_76936ac2cf65",
+  "camera_binding_count": 1,
+  "light_binding_count": 3,
+  "camera_cut_track_count": 1,
+  "display_rate_fps": 24,
+  "playback_frame_count": 120,
+  "camera_fov_error_deg": 0.000004,
+  "repeat_status": "reconciled",
+  "duplicate_asset_count": 0,
+  "source_candidate_unchanged": true,
+  "same_camera_capture": "unreal-shot-package-candidate.png"
+}
