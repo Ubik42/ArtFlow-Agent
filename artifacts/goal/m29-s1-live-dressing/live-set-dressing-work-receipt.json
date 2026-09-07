@@ -1,0 +1,32 @@
+{
+  "schema_id": "artflow-live-set-dressing-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-4e3f5486dc3f",
+  "work_sha256": "4e3f5486dc3fad0632ffeb2a06f751e0099e7783310202bac40c6dce3aaf46b0",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1"
+  ],
+  "set_dressing_request_sha256": "c496854357decac61a42c1339e9d8fc3e281846a4e4ba5edfd0fdd0be99061b7",
+  "set_dressing_manifest_sha256": "4cd3f45413402d3e482ffeb16b5b4db741a845b091c7a9191f2e2e18655044ee",
+  "outcome_sha256": "9ff8f1a83fe6620958bdea76259a00c3c6b46fb6e48bb17aee333120083188c4",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Dressing_B_c496854357de",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

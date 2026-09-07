@@ -1461,6 +1461,12 @@ def create_app(
             "m26-surface-unreal": goal_root
             / "m26-s1-surface-bake"
             / "unreal-surface-candidate.png",
+            "m28-dressing-blender": goal_root
+            / "m28-s1-set-dressing"
+            / "AF_Courtyard_SettledRubble-preview.png",
+            "m28-dressing-unreal": goal_root
+            / "m28-s1-set-dressing"
+            / "unreal-set-dressing-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

@@ -7,6 +7,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 
@@ -31,8 +32,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.shot.rain_breakthrough.v1",
             "blender.lookdev.scene_target.v1",
             "blender.surface.uv_bake.v1",
+            "blender.rigidbody.rubble_settle.v1",
         ]
-    ] = Field(min_length=2, max_length=6)
+    ] = Field(min_length=2, max_length=7)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -53,9 +55,15 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_surface_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    set_dressing_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    set_dressing_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    set_dressing_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_set_dressing_return_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -107,6 +115,18 @@ class SceneDccWorkDefinition(BaseModel):
             if self.lookdev_receipt_sha256 is None:
                 raise ValueError("surface bake requires the scene-conditioned lookdev")
             expected_capabilities.append("blender.surface.uv_bake.v1")
+        dressing_identities = (
+            self.set_dressing_request_sha256,
+            self.set_dressing_receipt_sha256,
+            self.set_dressing_manifest_sha256,
+            self.unreal_set_dressing_return_receipt_sha256,
+        )
+        if any(item is not None for item in dressing_identities):
+            if not all(item is not None for item in dressing_identities):
+                raise ValueError("DCC work requires every set-dressing identity")
+            if self.surface_receipt_sha256 is None:
+                raise ValueError("set dressing requires the baked surface")
+            expected_capabilities.append("blender.rigidbody.rubble_settle.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -325,6 +345,50 @@ def compile_current_blender_dcc_work(
         payload["unreal_surface_return_receipt_sha256"] = surface_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = surface_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = surface_unreal["candidate_scene_path"]
+    dressing_root = project_root / "artifacts/goal/m28-s1-set-dressing"
+    dressing_request_path = dressing_root / "set-dressing-request.json"
+    dressing_receipt_path = dressing_root / "set-dressing-receipt.json"
+    dressing_unreal_path = dressing_root / "unreal-set-dressing-return-receipt.json"
+    if (
+        dressing_request_path.is_file()
+        and dressing_receipt_path.is_file()
+        and dressing_unreal_path.is_file()
+    ):
+        dressing_request = BlenderSetDressingRequest.model_validate_json(
+            dressing_request_path.read_text(encoding="utf-8")
+        )
+        dressing_receipt = BlenderSetDressingReceipt.model_validate_json(
+            dressing_receipt_path.read_text(encoding="utf-8")
+        )
+        dressing_unreal = json.loads(dressing_unreal_path.read_text(encoding="utf-8"))
+        if dressing_request.session_id != session_id:
+            raise ValueError("set dressing references another Scene Session")
+        if dressing_request.surface_request_sha256 != payload.get("surface_request_sha256"):
+            raise ValueError("set dressing references another surface request")
+        if dressing_request.surface_receipt_sha256 != payload.get("surface_receipt_sha256"):
+            raise ValueError("set dressing references another surface receipt")
+        if dressing_receipt.request_sha256 != dressing_request.request_sha256:
+            raise ValueError("set-dressing receipt references another request")
+        manifest_artifact = next(
+            item for item in dressing_receipt.artifacts if item.kind == "transform_manifest"
+        )
+        if dressing_unreal.get(
+            "blender_set_dressing_receipt_sha256"
+        ) != dressing_receipt.receipt_sha256:
+            raise ValueError("Unreal set-dressing return references another Blender receipt")
+        if dressing_unreal.get("source_candidate_scene_path") != surface_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("set-dressing candidate no longer derives from the surface candidate")
+        if dressing_unreal.get("capture_status") != "completed":
+            raise ValueError("Unreal set-dressing return capture is not complete")
+        payload["capability_ids"].append("blender.rigidbody.rubble_settle.v1")
+        payload["set_dressing_request_sha256"] = dressing_request.request_sha256
+        payload["set_dressing_receipt_sha256"] = dressing_receipt.receipt_sha256
+        payload["set_dressing_manifest_sha256"] = manifest_artifact.sha256
+        payload["unreal_set_dressing_return_receipt_sha256"] = dressing_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = dressing_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = dressing_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

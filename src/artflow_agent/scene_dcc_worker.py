@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 
 from .agent_runtime import AgentEventStore, AgentRuntimeError
+from .blender_set_dressing import (
+    BlenderSetDressingReceipt,
+    BlenderSetDressingRequest,
+    verify_set_dressing,
+)
 from .blender_surface import BlenderSurfaceRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
@@ -55,6 +60,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "conditioning": project_root / "artifacts/goal/m24-s1-scene-conditioning",
         "lookdev": project_root / "artifacts/goal/m24-s2-scene-lookdev",
         "surface": project_root / "artifacts/goal/m26-s1-surface-bake",
+        "dressing": project_root / "artifacts/goal/m28-s1-set-dressing",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -152,7 +158,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["surface"] / "unreal-surface-return-receipt.json",
             expected_sha256=str(work.unreal_surface_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.set_dressing_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal surface candidate changed")
         lookdev_return = json.loads(
             (roots["lookdev"] / "unreal-lookdev-return-receipt.json").read_text(encoding="utf-8")
@@ -164,6 +173,40 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["surface"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal surface screenshot identity changed")
+
+    if work.set_dressing_request_sha256 is not None:
+        request = BlenderSetDressingRequest.model_validate_json(
+            (roots["dressing"] / "set-dressing-request.json").read_text(encoding="utf-8")
+        )
+        receipt = BlenderSetDressingReceipt.model_validate_json(
+            (roots["dressing"] / "set-dressing-receipt.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.set_dressing_request_sha256:
+            raise ValueError("registered set-dressing request changed")
+        if receipt.receipt_sha256 != work.set_dressing_receipt_sha256:
+            raise ValueError("registered set-dressing receipt changed")
+        verify_set_dressing(request, receipt, roots["dressing"])
+        manifest_artifact = next(
+            item for item in receipt.artifacts if item.kind == "transform_manifest"
+        )
+        if manifest_artifact.sha256 != work.set_dressing_manifest_sha256:
+            raise ValueError("registered transform manifest changed")
+        unreal_receipt = _load_receipt(
+            roots["dressing"] / "unreal-set-dressing-return-receipt.json",
+            expected_sha256=str(work.unreal_set_dressing_return_receipt_sha256),
+        )
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal set-dressing candidate changed")
+        surface_return = json.loads(
+            (roots["surface"] / "unreal-surface-return-receipt.json").read_text(encoding="utf-8")
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != surface_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("Unreal set-dressing candidate no longer derives from surface")
+        screenshot = roots["dressing"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal set-dressing screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -210,7 +253,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev 与 Surface Bake 已回流",
+                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface 与物理布景已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

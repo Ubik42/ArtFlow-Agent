@@ -95,9 +95,12 @@ Unreal 当前场景
   把当前场景边界、登记原型、确定性种子和有限帧预算编译为刚体散落任务。Blender 负责求解并返回
   可编辑 `.blend`、预览和变换清单；Unreal 只在新的隔离候选中应用经过边界检查的最终变换。
   当前实测 12 个实例在第 96 帧稳定，重复回流对账且源关卡不变。
-- **M29 · Live set-dressing dispatch（进行中）**：把刚体布景登记为 Scene Session 的第七项 DCC
+- **M29 · Live set-dressing dispatch（已完成）**：把刚体布景登记为 Scene Session 的第七项 DCC
   能力，复用已有 Worker 与事件账本，并在场景变更谱展示 Surface 输入、物理解算、变换清单和
   Unreal 布景候选之间的连续关系。
+- **M30 · Scene-conditioned surface detail projection（进行中）**：把 ComfyUI 的节点式生成用于
+  引擎表面细节，而不止用于概念图。Agent 从当前 Unreal 机位、对象身份和有界区域选择登记的
+  ComfyUI 子图生成贴花/表面细节，Blender 负责投射与烘焙，Unreal 接收可编辑材质候选。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

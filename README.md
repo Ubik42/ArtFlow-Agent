@@ -68,6 +68,12 @@ Blender 的确定性物理求解也可以作为场景布景工具。当前 Sessi
 | --- | --- |
 | ![Blender 物理解算后的庭院碎石](artifacts/goal/m28-s1-set-dressing/AF_Courtyard_SettledRubble-preview.png) | ![Unreal 应用验证后变换清单](artifacts/goal/m28-s1-set-dressing/unreal-set-dressing-candidate.png) |
 
+这项能力已经进入当前 Scene Session 的统一执行面。它与建模、PBR、Geometry Nodes、镜头灯光、
+Lookdev 和 Surface Bake 共用同一条可恢复事件链；工作台直接展示 Surface 输入、Blender 求解和
+Unreal 布景候选，重复派发恢复同一个内容寻址工作项，不会再次落物或导入 Actor。
+
+![当前 Session 的物理布景生产路线](artifacts/goal/m29-s1-live-dressing/live-dressing-route.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

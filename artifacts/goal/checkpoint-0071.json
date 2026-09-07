@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M29-S1",
+  "status": "completed",
+  "outcome": "The verified Blender rigid-body dressing route is now the seventh current-session DCC capability. The existing durable worker reconciles and replays its exact request, transform manifest and Unreal candidate identities, while Scene Change Spectrum presents the real three-stage route at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m29-s1-live-dressing/live-set-dressing-work-receipt.json",
+    "artifacts/goal/m29-s1-live-dressing/live-dressing-desktop.png",
+    "artifacts/goal/m29-s1-live-dressing/live-dressing-route.png",
+    "artifacts/goal/m29-s1-live-dressing/live-dressing-narrow.png",
+    "artifacts/goal/m29-s1-live-dressing/verification.json",
+    "docs/evidence/M29_S1_LIVE_SET_DRESSING_2026-09-07.md"
+  ]
+}

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 77,
+  "stateRevision": 78,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M29",
+  "currentMilestone": "M30",
   "milestones": [
     {
       "id": "M0",
@@ -335,7 +335,7 @@
     {
       "id": "M29",
       "title": "Live set-dressing dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M28"],
       "outcome": "The verified physics-assisted set-dressing route becomes a seventh registered current-session DCC capability and is visible through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
@@ -343,37 +343,54 @@
         "The existing worker reconciles and replays the seventh capability without another scheduler or approval gate",
         "The UI presents the physics solve and Unreal dressing candidate with real media and bounded simulation facts"
       ]
+    },
+    {
+      "id": "M30",
+      "title": "Scene-conditioned surface detail projection",
+      "status": "in_progress",
+      "dependsOn": ["M29"],
+      "outcome": "A reviewed ComfyUI subgraph turns current Unreal scene evidence and a bounded object region into surface detail that Blender projects and bakes onto registered geometry before Unreal receives an editable isolated material candidate.",
+      "acceptance": [
+        "A typed request binds the current Session, source render and object identity, bounded target region, registered ComfyUI workflow and exact Blender surface consumer",
+        "The real local ComfyUI produces one inspectable surface-detail candidate through a reviewed fixed graph rather than a model-authored workflow",
+        "Blender projects or stencils the selected detail onto registered geometry, bakes the result and preserves an editable source file",
+        "Unreal imports the validated material result into a new isolated candidate and a repeated return reconciles without changing the source level"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M29-S1",
-    "milestone": "M29",
-    "title": "Dispatch physics set dressing through Scene DCC Worker",
-    "outcome": "Register the frozen M28 rigid-body dressing route as the seventh Scene DCC capability, replay it through the existing durable worker and present the current-session solve in Scene Change Spectrum.",
-    "risk": "R1",
-    "evidenceTarget": "A2",
-    "requiresRealHosts": false,
+    "id": "M30-S1",
+    "milestone": "M30",
+    "title": "Project scene-conditioned surface detail through ComfyUI and Blender",
+    "outcome": "Use one registered local ComfyUI graph to create bounded surface detail from current Unreal evidence, then project and bake it in Blender for an isolated Unreal material candidate.",
+    "risk": "R2",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun Blender, Unreal, ComfyUI or an image provider",
-      "Do not add a new queue, worker, approval layer or simulation framework",
-      "Do not start another DCC production domain"
+      "Do not build an open-ended ComfyUI graph editor or accept model-authored workflows",
+      "Do not add a new queue, worker, approval layer or orchestration framework",
+      "Do not train or download a LoRA or ControlNet model",
+      "Do not overwrite the source Unreal level or shared Blender sources"
     ],
     "acceptance": [
-      "SceneDccWorkDefinition validates and binds the M28 request, Blender receipt, transform manifest, Unreal receipt and artifact hashes",
-      "The existing DCC Worker persists one idempotent seven-capability work item through queue, claim, execute, reconcile and replay",
-      "Scene Change Spectrum shows the M28 input, solve preview, transform facts and Unreal candidate from real artifacts"
+      "The request binds exact scene evidence, target object/region, fixed ComfyUI capability and Blender surface identity",
+      "Real ComfyUI output passes size, alpha or mask containment and content-identity checks",
+      "Real Blender output preserves editable projection setup and produces a validated baked texture",
+      "Real Unreal import creates one isolated material candidate and repeat execution reconciles without source-level mutation"
     ],
     "stopConditions": [
-      "Stop if the frozen M28 identities no longer validate",
-      "Stop if integration would require a second work lifecycle",
+      "Stop if the local ComfyUI capability inventory cannot provide any fixed image-edit or detail-generation graph without installing shared models",
+      "Stop if the selected output cannot be consumed by Blender without arbitrary generated host code",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": false},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": false}
+      {"id": "comfy_workflows", "kind": "sibling_path", "value": "ComfyUI-Workflow-Lab", "required": true},
+      {"id": "production_nodes", "kind": "sibling_path", "value": "ComfyUI-Production-Nodes", "required": true},
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -389,9 +406,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0070.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0071.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M28 are complete. A content-bound rigid-body task used Blender 5.2 to settle twelve registered rubble instances by frame 96 inside the current courtyard, with maximum final-frame motion 0.000002 m and minimum center separation 0.767912 m. Unreal 5.8 imported the single prototype, applied twelve validated transforms to Dressing_B_c496854357de and reconciled a repeated return with zero new actors or duplicate side effects. The source level remained byte-identical. Product dispatch is M29-S1 scope.",
+  "evidenceCeiling": "M0-M29 are complete. The frozen rigid-body result is now the seventh capability in the current Scene Session DCC work item. Queue, claim, execute, reconcile and replay produced one content-addressed outcome with zero duplicate external side effects. The Scene Change Spectrum loads all three 1280x720 production frames at desktop and narrow widths with no overflow or console messages. Scene-conditioned ComfyUI-to-Blender surface detail is M30-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

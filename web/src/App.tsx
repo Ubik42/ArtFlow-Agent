@@ -618,6 +618,10 @@ type SceneDccWorkState = {
     surface_request_sha256?: string;
     surface_receipt_sha256?: string;
     unreal_surface_return_receipt_sha256?: string;
+    set_dressing_request_sha256?: string;
+    set_dressing_receipt_sha256?: string;
+    set_dressing_manifest_sha256?: string;
+    unreal_set_dressing_return_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1631,7 +1635,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.surface_request_sha256
+                  {dccWork.definition.set_dressing_request_sha256
+                    ? "Surface → Blender 物理解算 → Unreal 布景"
+                    : dccWork.definition.surface_request_sha256
                     ? "Lookdev → Blender UV / Bake → Unreal"
                     : dccWork.definition.lookdev_request_sha256
                     ? "ComfyUI 场景目标 → Blender Lookdev → Unreal"
@@ -1801,8 +1807,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasMultiLightReceipt = currentCorrection?.secondary_intensity_after !== undefined;
   const hasSceneLookdev = Boolean(agent.scene_dcc_work?.definition.lookdev_request_sha256);
   const hasSurfaceBake = Boolean(agent.scene_dcc_work?.definition.surface_request_sha256);
+  const hasSetDressing = Boolean(agent.scene_dcc_work?.definition.set_dressing_request_sha256);
   const cases = [
-    ...(hasSurfaceBake
+    ...(hasSetDressing
+      ? [{
+          id: "physics-set-dressing",
+          tab: "当前 Session · 物理布景",
+          title: "让 Blender 求解自然落点，再把确定结果交给 Unreal",
+          description: "Agent 只开放登记原型、庭院边界、种子、数量和帧预算。Blender 负责刚体求解并返回可编辑场景与变换清单；通过稳定性、边界和间距检查后，Unreal 才在新候选关卡生成实例。",
+          frames: [
+            { src: "/api/showcase/production/m26-surface-unreal", alt: "物理布景前的 Unreal Surface 候选", label: "Surface 输入", title: "候选关卡 · 内容已绑定" },
+            { src: "/api/showcase/production/m28-dressing-blender", alt: "Blender 刚体求解后的庭院碎石布景", label: "物理解算", title: "12 个实例 · 第 96 帧稳定" },
+            { src: "/api/showcase/production/m28-dressing-unreal", alt: "Unreal 应用刚体变换清单后的布景候选", label: "UE 布景候选", title: "12 项变换 · 已对账" },
+          ],
+          transition: "验证后变换",
+          metricA: "0.000002 m",
+          metricALabel: "末帧最大位移",
+          metricB: "0.768 m",
+          metricBLabel: "最小中心间距",
+          note: `变换清单 ${shortId(agent.scene_dcc_work?.definition.set_dressing_manifest_sha256 ?? "")} 与当前工作项绑定；重复回流新增 Actor 为 0，源关卡字节未变化。`,
+          domains: ["Surface·已绑定", "物理·已求解", "边界·通过", "变换·已验证", "UE·已对账"],
+        }]
+      : hasSurfaceBake
       ? [{
           id: "surface-bake-roundtrip",
           tab: "当前 Session · Surface Bake",
@@ -1931,12 +1957,14 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasSurfaceBake && caseId !== "surface-bake-roundtrip") {
+    if (hasSetDressing && caseId !== "physics-set-dressing") {
+      setCaseId("physics-set-dressing");
+    } else if (hasSurfaceBake && caseId !== "surface-bake-roundtrip") {
       setCaseId("surface-bake-roundtrip");
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasSceneLookdev, hasSurfaceBake]);
+  }, [caseId, hasSceneLookdev, hasSetDressing, hasSurfaceBake]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

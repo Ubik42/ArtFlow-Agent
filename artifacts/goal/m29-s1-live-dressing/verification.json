@@ -1,0 +1,15 @@
+{
+  "schema_id": "artflow-m29-live-set-dressing-verification/1",
+  "work_id": "dcc-work-4e3f5486dc3f",
+  "work_sha256": "4e3f5486dc3fad0632ffeb2a06f751e0099e7783310202bac40c6dce3aaf46b0",
+  "capability_count": 7,
+  "event_count": 5,
+  "replay_equivalent": true,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "desktop": {"viewport_width": 1600, "scroll_width": 1600},
+  "narrow": {"viewport_width": 760, "scroll_width": 760},
+  "route_media": {"count": 3, "natural_width": 1280, "natural_height": 720},
+  "console_errors": 0,
+  "console_warnings": 0
+}
