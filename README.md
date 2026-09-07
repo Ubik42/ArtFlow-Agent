@@ -133,6 +133,12 @@ Level Sequence，绑定 1 个 CineCamera、3 盏登记灯光和 1 条 Camera Cut
 第二个 UE 进程对账同一 Sequence、候选关卡和四项绑定，没有创建重复资产；相机水平 FOV 与
 Blender 预演误差约 0.000004°，上游原生 PCG 候选保持字节不变。
 
+镜头包现已作为第十一项生产能力进入当前 Scene Session。场景变更谱把 Blender 镜头预演、
+ComfyUI 空间密度、Unreal 原生 PCG 环境和 Level Sequence 组织为一条可派发、可恢复的路线；
+使用者面对的是镜头交付过程，而不是底层节点或一次性脚本。
+
+![当前 Session 的程序化环境镜头交付路线](artifacts/goal/m37-s1-live-shot-package/live-shot-package-desktop.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -318,7 +324,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 | ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
 | 场景条件目标 → Blender / Unreal Lookdev | 3 个登记材质目标、3 盏登记灯光；重复回流副作用 0；源关卡字节变化 0 |
-| Scene Session 生产能力链 | 10 个登记能力；每项使用 5 个持久生命周期事件，重复派发保持同一工作身份 |
+| Scene Session 生产能力链 | 11 个登记能力；每项使用 5 个持久生命周期事件，重复派发保持同一工作身份 |
 | Blender 程序化场景套件 | 3 个 Geometry Nodes 变体；每项 2 级 LOD、1 个简单碰撞体 |
 | ComfyUI 场景空间密度 | 29.197% 有效覆盖；3 个保护区泄漏 0；12 个确定性空间点 |
 | Unreal 原生 PCG 装配 | 3 种 Blender 网格、12 个原生实例；重复执行副作用 0；两项源文件变化 0 |

@@ -635,6 +635,9 @@ type SceneDccWorkState = {
     pcg_density_spatial_manifest_sha256?: string;
     unreal_native_pcg_density_receipt_sha256?: string;
     native_pcg_graph_path?: string;
+    shot_package_request_sha256?: string;
+    unreal_shot_package_receipt_sha256?: string;
+    level_sequence_path?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1648,7 +1651,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.pcg_density_request_sha256
+                  {dccWork.definition.shot_package_request_sha256
+                    ? "视觉目标 → Blender 镜头预演 → 原生 PCG → Level Sequence"
+                    : dccWork.definition.pcg_density_request_sha256
                     ? "Unreal 空间证据 → ComfyUI 密度 → Blender 套件 → 原生 PCG"
                     : dccWork.definition.procedural_kit_request_sha256
                     ? "场景目标 → Blender 程序化套件 → PCG 装配 → Unreal"
@@ -1830,8 +1835,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSurfaceDetail = Boolean(agent.scene_dcc_work?.definition.surface_detail_request_sha256);
   const hasProceduralKit = Boolean(agent.scene_dcc_work?.definition.procedural_kit_request_sha256);
   const hasNativePcgDensity = Boolean(agent.scene_dcc_work?.definition.pcg_density_request_sha256);
+  const hasShotPackage = Boolean(agent.scene_dcc_work?.definition.shot_package_request_sha256);
   const cases = [
-    ...(hasNativePcgDensity
+    ...(hasShotPackage
+      ? [{
+          id: "shot-ready-environment",
+          tab: "当前 Session · 镜头交付",
+          title: "把程序化环境直接组织成可继续制作的引擎镜头",
+          description: "Agent 将视觉方向、Blender 相机与三点灯光、ComfyUI 空间密度和 Unreal 原生 PCG 绑定到同一生产任务，最终在隔离候选关卡中创建可编辑 Level Sequence，而不是停留在二维示意图。",
+          frames: [
+            { src: "/api/showcase/production/m36-shot-blender", alt: "Blender 中按视觉方向预演的相机与灯光", label: "DCC 预演", title: "相机 + 三点灯光 · 可编辑" },
+            { src: "/api/showcase/production/m36-shot-density", alt: "ComfyUI 节点图生成的场景空间密度", label: "空间条件", title: "节点密度 · 保护区泄漏 0" },
+            { src: "/api/showcase/production/m36-shot-pcg", alt: "Unreal 原生 PCG 生成的环境实例", label: "环境生成", title: "12 实例 · 原生 PCG" },
+            { src: "/api/showcase/production/m36-shot-unreal", alt: "Unreal Level Sequence 中的程序化环境镜头", label: "镜头交付", title: "4 条绑定 · 120 帧" },
+          ],
+          transition: "类型化跨应用编排",
+          metricA: "4",
+          metricALabel: "Sequencer 对象绑定",
+          metricB: "120",
+          metricBLabel: "镜头帧范围",
+          note: `Level Sequence ${agent.scene_dcc_work?.definition.level_sequence_path ?? ""} 与候选 ${shortId(agent.scene_dcc_work?.definition.shot_package_request_sha256 ?? "")} 绑定；重复派发只对账，不重复创建资产。`,
+          domains: ["视觉·已绑定", "DCC·可编辑", "密度·已验证", "PCG·原生执行", "镜头·已交付"],
+        }]
+      : hasNativePcgDensity
       ? [{
           id: "native-pcg-density",
           tab: "当前 Session · 空间生成",
@@ -2039,7 +2065,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasNativePcgDensity && caseId !== "native-pcg-density") {
+    if (hasShotPackage && caseId !== "shot-ready-environment") {
+      setCaseId("shot-ready-environment");
+    } else if (hasNativePcgDensity && caseId !== "native-pcg-density") {
       setCaseId("native-pcg-density");
     } else if (hasProceduralKit && caseId !== "procedural-kit-assembly") {
       setCaseId("procedural-kit-assembly");
@@ -2052,7 +2080,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

@@ -44,8 +44,9 @@ Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，�
 - ComfyUI-Production-Nodes 是独立运行时节点包，通过版本化能力清单、真实 /object_info、审阅
   子图与插槽编译器接入，不复制代码、不允许模型任意拼图。图生 3D 始终只是候选 Provider。
 - Blender 是当前最高优先级的完整 DCC 执行面，不只承担建模。Agent 编译类型化任务，由版本化
-  固定能力执行参数化建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光及后续
-  模拟缓存；不得让模型直接生成 Blender Python。产物保留 `.blend` 编辑源，并按内容类型以嵌入式
+  固定能力执行参数化建模、Geometry Nodes、材质与 UV、ComfyUI PBR 装配与 Bake、物理解算、
+  场景布局、相机灯光、动画与模拟缓存；ComfyUI 同时承担视觉目标、控制图、蒙版、纹理和空间场，
+  其结果可以继续驱动 Blender 与 Unreal，而不是停在二维出图。不得让模型直接生成 Blender Python。产物保留 `.blend` 编辑源，并按内容类型以嵌入式
   GLB、USD 或 Alembic 回到 Unreal 的 Session 派生候选目录。
 
 【自主范围和真实边界】

@@ -15,6 +15,7 @@ from .lookdev_handoff import SceneLookdevRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
+from .shot_package import ShotPackageRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -72,6 +73,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "detail": project_root / "artifacts/goal/m30-s1-surface-detail",
         "kit": project_root / "artifacts/goal/m32-s1-procedural-kit",
         "density": project_root / "artifacts/goal/m34-s1-pcg-density",
+        "shot_package": project_root / "artifacts/goal/m36-s1-shot-package",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -227,14 +229,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             (roots["detail"] / "surface-detail-request.json").read_text(encoding="utf-8")
         )
         comfy_receipt = ComfySurfaceDetailReceipt.model_validate_json(
-            (roots["detail"] / "comfy-surface-detail-receipt.json").read_text(
-                encoding="utf-8"
-            )
+            (roots["detail"] / "comfy-surface-detail-receipt.json").read_text(encoding="utf-8")
         )
         blender_receipt = BlenderSurfaceDetailReceipt.model_validate_json(
-            (roots["detail"] / "blender-surface-detail-receipt.json").read_text(
-                encoding="utf-8"
-            )
+            (roots["detail"] / "blender-surface-detail-receipt.json").read_text(encoding="utf-8")
         )
         if request.request_sha256 != work.surface_detail_request_sha256:
             raise ValueError("registered surface-detail request changed")
@@ -322,12 +320,13 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         )
         if unreal_receipt.get("native_pcg_graph_path") != work.native_pcg_graph_path:
             raise ValueError("registered native PCG graph changed")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.shot_package_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal native PCG candidate changed")
         kit_return = json.loads(
-            (roots["kit"] / "unreal-procedural-kit-return-receipt.json").read_text(
-                encoding="utf-8"
-            )
+            (roots["kit"] / "unreal-procedural-kit-return-receipt.json").read_text(encoding="utf-8")
         )
         if unreal_receipt.get("source_candidate_scene_path") != kit_return.get(
             "candidate_scene_path"
@@ -338,6 +337,48 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["density"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal native PCG screenshot identity changed")
+
+    if work.shot_package_request_sha256 is not None:
+        request = ShotPackageRequest.model_validate_json(
+            (roots["shot_package"] / "shot-package-request.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.shot_package_request_sha256:
+            raise ValueError("registered shot-package request changed")
+        unreal_receipt = _load_receipt(
+            roots["shot_package"] / "unreal-shot-package-receipt.json",
+            expected_sha256=str(work.unreal_shot_package_receipt_sha256),
+        )
+        if unreal_receipt.get("request_sha256") != request.request_sha256:
+            raise ValueError("Unreal shot package references another request")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal shot-package candidate changed")
+        if unreal_receipt.get("sequence_asset_path") != work.level_sequence_path:
+            raise ValueError("registered Level Sequence changed")
+        density_return = json.loads(
+            (roots["density"] / "unreal-native-pcg-density-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != density_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("shot package no longer derives from native PCG")
+        if {
+            unreal_receipt.get("source_candidate_sha256_before"),
+            unreal_receipt.get("source_candidate_sha256_after"),
+        } != {request.source_candidate_sha256}:
+            raise ValueError("shot package changed its source PCG candidate")
+        expected_counts = {
+            "sequence_binding_count": 4,
+            "camera_binding_count": 1,
+            "light_binding_count": 3,
+            "camera_cut_track_count": 1,
+        }
+        if any(unreal_receipt.get(key) != value for key, value in expected_counts.items()):
+            raise ValueError("shot package binding topology changed")
+        screenshot = roots["shot_package"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal shot-package screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -384,7 +425,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface、物理布景、表面细节与程序化套件已回流",
+                    "DCC、ComfyUI 空间条件、原生 PCG 与 Level Sequence 已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

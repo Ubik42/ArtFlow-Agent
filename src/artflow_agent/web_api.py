@@ -1503,6 +1503,18 @@ def create_app(
             "m34-density-unreal": goal_root
             / "m34-s1-pcg-density"
             / "unreal-native-pcg-density-candidate.png",
+            "m36-shot-blender": goal_root
+            / "m23-s5-camera-light"
+            / "AF_ShrineCourtyard_Shot-preview.png",
+            "m36-shot-density": goal_root
+            / "m34-s1-pcg-density"
+            / "pcg-density-mask.png",
+            "m36-shot-pcg": goal_root
+            / "m34-s1-pcg-density"
+            / "unreal-native-pcg-density-candidate.png",
+            "m36-shot-unreal": goal_root
+            / "m36-s1-shot-package"
+            / "unreal-shot-package-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

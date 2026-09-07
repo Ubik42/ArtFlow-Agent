@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M37-S1",
+  "status": "completed",
+  "outcome": "The existing Scene DCC Work lifecycle now verifies, dispatches and replays the exact shot-package request, Blender previs, native PCG candidate and Unreal Level Sequence as an eleventh finite capability; the Scene Change Spectrum presents the four real stages at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m37-s1-live-shot-package/live-shot-package-work-receipt.json",
+    "artifacts/goal/m37-s1-live-shot-package/live-shot-package-desktop.png",
+    "artifacts/goal/m37-s1-live-shot-package/live-shot-package-narrow.png",
+    "artifacts/goal/m37-s1-live-shot-package/verification.json",
+    "docs/evidence/M37_S1_LIVE_SHOT_PACKAGE_2026-09-07.md"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schema_id": "artflow-live-shot-package-verification/1",
+  "status": "passed",
+  "registered_capability_count": 11,
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true,
+  "desktop": {
+    "viewport": "1600x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "narrow": {
+    "viewport": "980x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "loaded_image_count": 6,
+  "console_errors": 0,
+  "console_warnings": 0
+}

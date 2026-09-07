@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 85,
+  "stateRevision": 86,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M37",
+  "currentMilestone": "M38",
   "milestones": [
     {
       "id": "M0",
@@ -433,7 +433,7 @@
     {
       "id": "M37",
       "title": "Live shot-package dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M36"],
       "outcome": "The proven Blender-to-Unreal shot package becomes an eleventh registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
@@ -441,39 +441,50 @@
         "The existing worker reconciles and replays the eleventh capability without another scheduler or arbitrary Sequencer surface",
         "The Chinese product UI presents visual target, Blender previs, native PCG environment and shot-ready Unreal candidate as one real route"
       ]
+    },
+    {
+      "id": "M38",
+      "title": "Bounded cinematic camera move",
+      "status": "in_progress",
+      "dependsOn": ["M37"],
+      "outcome": "The current shot-ready environment gains a bounded, editable cinematic camera move authored from Blender previs and returned as a verified Unreal Sequencer transform track with inspectable start, middle and end frames.",
+      "acceptance": [
+        "A typed camera-move request binds the current shot package, finite three-key transform curve and existing sequence identity",
+        "A project-owned Unreal tool writes only the registered camera transform track and preserves the source shot candidate",
+        "Start, middle and end previews demonstrate the move, while repeat execution reconciles without duplicate tracks or assets"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M37-S1",
-    "milestone": "M37",
-    "title": "Expose the shot-ready sequence as the eleventh live production route",
-    "outcome": "Register the exact M36 request, Blender shot receipt, Level Sequence and Unreal candidate in the existing Scene DCC Work lifecycle, then present the four-stage route in the Scene Change Spectrum.",
-    "risk": "R1",
+    "id": "M38-S1",
+    "milestone": "M38",
+    "title": "Author a bounded Blender-to-Sequencer camera move",
+    "outcome": "Compile three finite camera poses from the registered Blender shot, write them into the existing Unreal Level Sequence through a fixed project tool, and capture the start, middle and end frames.",
+    "risk": "R2",
     "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/unreal/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun Blender or Unreal when frozen M36 identities verify",
-      "Do not add a new queue, worker, approval layer or orchestration framework",
-      "Do not expose arbitrary Sequencer tracks, actor bindings or host paths",
-      "Do not build a second scene-session or shot publishing state machine"
+      "Do not build a general Sequencer editor, arbitrary track surface or timeline UI",
+      "Do not add a new scheduler, approval layer or animation framework",
+      "Do not change PCG, materials, lights or protected source actors in this slice",
+      "Do not render a long final movie when three representative frames prove the route"
     ],
     "acceptance": [
-      "The eleventh finite capability verifies every frozen M36 identity before entering the existing worker",
-      "Queue, claim, execute, reconcile and replay use the existing append-only DCC lifecycle",
-      "The Scene Change Spectrum presents four real shot-production stages and remains usable at desktop and narrow widths"
+      "The camera move request binds the exact M36 shot package and three bounded Blender-space poses",
+      "Unreal writes one editable camera transform track with keys inside the existing 0-120 frame range",
+      "Start, middle and end captures differ visibly and repeat execution creates no duplicate tracks or assets"
     ],
     "stopConditions": [
-      "Stop if the M36 request, Sequence or Unreal return identity no longer verifies",
-      "Stop if the route requires a second scheduler or arbitrary binding input",
+      "Stop if the M36 sequence or camera binding identity no longer verifies",
+      "Stop if Unreal cannot address the registered camera binding without arbitrary host code",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
-      {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
+      {"id": "unreal", "kind": "command", "value": "UnrealEditor-Cmd.exe", "required": true},
       {"id": "m36_request", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/shot-package-request.json", "required": true},
-      {"id": "m36_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/unreal-shot-package-receipt.json", "required": true},
-      {"id": "m36_candidate_capture", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/unreal-shot-package-candidate.png", "required": true}
+      {"id": "m36_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m36-s1-shot-package/unreal-shot-package-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -489,9 +500,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0078.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0079.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M36 are complete. A typed Shot Package bound the current Blender camera-light previs and native PCG environment candidate, then Unreal 5.8.1 created a content-addressed Level Sequence with one CineCamera, three registered light bindings, one Camera Cut and a 120-frame range. A second process reconciled the same Sequence and candidate with zero duplicate assets or source mutation. Live dispatch and Scene Change Spectrum presentation are M37-S1 scope.",
+  "evidenceCeiling": "M0-M37 are complete. The exact Shot Package, Blender previs, native PCG candidate and Unreal Level Sequence are now an eleventh current-session capability using the existing five-event DCC lifecycle. Repeat dispatch and restart replay preserve the same work identity with zero duplicate external side effects. The Chinese Scene Change Spectrum presents four real production stages without desktop or narrow overflow. A bounded editable camera move is M38-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

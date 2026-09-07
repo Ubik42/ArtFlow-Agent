@@ -125,9 +125,12 @@ Unreal 当前场景
 - **M36 · Shot-ready procedural environment package（已完成）**：把当前视觉目标、Blender 镜头与
   灯光预演、原生 PCG 候选编译为可直接交付镜头部门的 Unreal Level Sequence 候选，包含登记的
   CineCamera、有限灯光参数、PCG 场景版本和同机位预览，不另建调度器或开放任意 Sequencer 脚本。
-- **M37 · Live shot-package dispatch（进行中）**：把 Shot Package Request、Blender Shot Receipt、
+- **M37 · Live shot-package dispatch（已完成）**：把 Shot Package Request、Blender Shot Receipt、
   Level Sequence 与 Unreal 候选回执登记为当前 Session 的第十一项生产能力，复用既有 Worker、
   事件账本和场景变更谱，形成从视觉方向到可交付镜头资产的连续产品路线。
+- **M38 · Bounded cinematic camera move（进行中）**：在当前镜头包上增加由 Blender 相机预演
+  派生的有限三关键帧镜头运动，并在 Unreal Level Sequence 中生成可编辑 Transform Track 与
+  起、中、末帧预览。继续复用同一候选和回执语义，不开放任意 Sequencer 脚本或轨道编辑接口。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

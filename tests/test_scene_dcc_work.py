@@ -43,6 +43,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.surface.inlay_projection_bake.v1",
         "blender.geometry_nodes.modular_wayfinder_kit.v1",
         "unreal.pcg.native_density_kit.v1",
+        "unreal.sequencer.procedural_environment_shot.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -65,7 +66,10 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["pcg_density_spatial_manifest_sha256"] == (
         "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Density_B_1a637a8d89b8")
+    assert work["definition"]["shot_package_request_sha256"] == (
+        "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("ShotPackage_B_76936ac2cf65")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None
