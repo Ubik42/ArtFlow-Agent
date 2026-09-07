@@ -1,0 +1,36 @@
+{
+  "schema_id": "artflow-cloth-banner-request/1",
+  "request_id": "cloth-banner-173a80508ed727c0",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Damage_B_fdfe74fd21b1",
+  "source_candidate_sha256": "ffdb7bc4e50848e76a7080d009fd69af1f66ad43a9bcc66ab1707f0bdccab4c0",
+  "visual_target_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png",
+  "visual_target_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "protected_mask_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png",
+  "protected_mask_sha256": "e134d52426d3d6b59ca19ea5a7e8ffab1f798dd7566eb9583cdd5630119a6a06",
+  "attachment_actor": "ArtFlow_Module_module-placement-05",
+  "attachment_location_cm": [
+    420.0,
+    -155.0,
+    460.0
+  ],
+  "width_m": 2.4,
+  "height_m": 3.6,
+  "wind_direction": [
+    0.894427,
+    0.447214,
+    0.0
+  ],
+  "wind_strength": 420.0,
+  "frame_end": 48,
+  "mesh_columns": 25,
+  "mesh_rows": 37,
+  "triangle_budget": 5000,
+  "texture_resolution": 512,
+  "seed": 570907,
+  "comfy_capability_id": "comfy.material.banner_pattern.v1",
+  "blender_capability_id": "blender.cloth.banner_authoring.v1",
+  "unreal_capability_id": "unreal.asset.static_cloth_banner.v1",
+  "workflow_sha256": "42fb03ec3e2efb8be4317e50f0c4c3cd0170776ad92ff2b26047c9f37b9b2dc5",
+  "request_sha256": "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2"
+}

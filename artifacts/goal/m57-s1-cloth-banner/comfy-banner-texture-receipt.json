@@ -1,0 +1,14 @@
+{
+  "schema_id": "artflow-comfy-banner-texture-receipt/1",
+  "request_sha256": "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2",
+  "capability_id": "comfy.material.banner_pattern.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "provider_request_id": "402ca6cd-9c54-4f97-ba36-cd6e305a2083",
+  "observed_node_count": 1309,
+  "texture_path": "T_AF_BannerPattern.png",
+  "texture_sha256": "778a8ffab20d8498299dccd0d0a63967c247a9e2d30f5deaac9c45d9129af4f6",
+  "completed_at": "2026-09-07T19:19:04.486580Z",
+  "receipt_sha256": "8b530b6ed341af7ba5decbc5a0ed2df14d728ba7f798f86b124ce8d80e0fb001"
+}

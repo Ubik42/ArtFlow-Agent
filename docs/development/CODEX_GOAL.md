@@ -189,10 +189,14 @@ Unreal 当前场景
   编辑源/GLB/材质和 Unreal 候选登记为当前 Session 的第二十项有限 DCC 能力，接入既有 Worker
   与场景变更谱。重复派发与 Reducer 重放复用同一工作身份，重复外部副作用为 0；桌面和窄屏
   产品视图均使用三段真实媒体呈现二维条件进入三维资产的路线。
-- **M57 · Scene-conditioned cloth banner authoring（进行中）**：用当前 Unreal 场景的挂点、尺度、
+- **M57 · Scene-conditioned cloth banner authoring（已完成）**：用当前 Unreal 场景的挂点、尺度、
   风向和视觉意图约束一条完整 DCC 路线。固定 ComfyUI 子图生成纹章/旧化材质输入，Blender 保留
   布料网格、Pin Group、UV、材质节点和确定性 Cloth Bake，再把定格网格与材质回流新的 Unreal
-  派生候选。首版只交付一面可录制的静态旗帜资产，不扩张到 Chaos 运行时布料或通用模拟系统。
+  派生候选。当前真实结果为 48 帧、26 个固定顶点、3,948 三角面，重复 Unreal 执行新增/更新
+  Actor 与重复资产均为 0；首版不扩张到 Chaos 运行时布料或通用模拟系统。
+- **M58 · Live cloth-banner dispatch（进行中）**：把 M57 的场景挂点、ComfyUI 纹理、Blender
+  编辑源/定格 GLB 和 Unreal 旗帜候选登记为当前 Session 的第二十一项 DCC 能力，接入既有
+  Worker 和场景变更谱，以真实三宿主媒体呈现材质生成、物理解算和引擎回流的连续过程。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

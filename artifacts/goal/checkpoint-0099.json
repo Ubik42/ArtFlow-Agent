@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M57-S1",
+  "status": "completed",
+  "outcome": "A scene-bound request now drives one reviewed ComfyUI banner-pattern graph, editable Blender cloth authoring and a real Unreal 5.8.1 derived candidate. Blender retains the pin group, UV, node material, cloth modifier and wind field while exporting a 3,948-triangle frame-48 static result. Unreal imports one material slot and one convex collision hull; a second run reconciles with zero created or updated actors, zero duplicate assets and a byte-identical source candidate.",
+  "evidence": [
+    "artifacts/goal/m57-s1-cloth-banner/cloth-banner-request.json",
+    "artifacts/goal/m57-s1-cloth-banner/comfy-banner-texture-receipt.json",
+    "artifacts/goal/m57-s1-cloth-banner/blender-cloth-banner-receipt.json",
+    "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-receipt.json",
+    "artifacts/goal/m57-s1-cloth-banner/AF_ClothBanner-preview.png",
+    "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-candidate.png",
+    "docs/evidence/M57_S1_CLOTH_BANNER_2026-09-07.md"
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schema_id": "artflow-blender-cloth-banner-receipt/1",
+  "request_sha256": "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2",
+  "comfy_receipt_sha256": "8b530b6ed341af7ba5decbc5a0ed2df14d728ba7f798f86b124ce8d80e0fb001",
+  "capability_id": "blender.cloth.banner_authoring.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "editable_object": "SM_AF_ClothBanner_Editable",
+  "export_object": "SM_AF_ClothBanner_Baked",
+  "pin_group": "AF_PinTop",
+  "pin_vertex_count": 26,
+  "simulation_frame": 48,
+  "triangle_count": 3948,
+  "uv_layer": "ArtFlow_BannerUV",
+  "material": "M_AF_SceneBanner",
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ClothBanner.blend",
+      "sha256": "bb5ef14d3b15edac67397ddf095de10541b2116bcdf3b890b869ae6f454718ad",
+      "size_bytes": 1332238
+    },
+    {
+      "kind": "glb",
+      "relative_path": "SM_AF_ClothBanner.glb",
+      "sha256": "a39d6cd086f14c11bb73d05f319092410b3f2c25dd9a765faff212cab0db4fab",
+      "size_bytes": 423588
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_ClothBanner-manifest.json",
+      "sha256": "ce198f6ecfa3dc5d2b0ba48f8bbe23d175899b7ece5f6ed58eff904c7716d353",
+      "size_bytes": 894
+    },
+    {
+      "kind": "texture",
+      "relative_path": "T_AF_BannerPattern.png",
+      "sha256": "778a8ffab20d8498299dccd0d0a63967c247a9e2d30f5deaac9c45d9129af4f6",
+      "size_bytes": 145667
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ClothBanner-preview.png",
+      "sha256": "3700dbcbf03b1c59b83c28d7b1ad82a841c4a1bcd858aec28a5610763c8386ec",
+      "size_bytes": 1302643
+    }
+  ],
+  "elapsed_seconds": 2.103,
+  "completed_at": "2026-09-07T19:20:00.658419Z",
+  "receipt_sha256": "bcfd56bd0a9a3a848676e5a9d5b9b488efde1cb1929e9bf57d654aded6c061b0"
+}

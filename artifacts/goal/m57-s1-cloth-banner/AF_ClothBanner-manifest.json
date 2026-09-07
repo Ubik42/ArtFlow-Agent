@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-cloth-banner-manifest/1",
+  "request_sha256": "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2",
+  "editable_object": "SM_AF_ClothBanner_Editable",
+  "export_object": "SM_AF_ClothBanner_Baked",
+  "attachment_actor": "ArtFlow_Module_module-placement-05",
+  "attachment_location_cm": [
+    420.0,
+    -155.0,
+    460.0
+  ],
+  "pin_group": "AF_PinTop",
+  "pin_vertex_count": 26,
+  "cloth_modifier": "ArtFlow Cloth",
+  "simulation_frame": 48,
+  "wind_object": "AF_SceneWind",
+  "uv_layer": "ArtFlow_BannerUV",
+  "material": "M_AF_SceneBanner",
+  "texture_sha256": "778a8ffab20d8498299dccd0d0a63967c247a9e2d30f5deaac9c45d9129af4f6",
+  "triangle_count": 3948,
+  "glb_sha256": "a39d6cd086f14c11bb73d05f319092410b3f2c25dd9a765faff212cab0db4fab",
+  "manifest_sha256": "f0d21ec4b38c93ccfa55d3e7c4ae38fc18d34083464b93fc3782a91c8c07b4af"
+}
