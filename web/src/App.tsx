@@ -670,6 +670,16 @@ type SceneDccWorkState = {
     mechanism_shot_closed_start_sha256?: string;
     mechanism_shot_open_sha256?: string;
     mechanism_shot_closed_end_sha256?: string;
+    damage_variant_request_sha256?: string;
+    comfy_damage_field_receipt_sha256?: string;
+    damage_field_sha256?: string;
+    blender_damage_variant_receipt_sha256?: string;
+    damage_manifest_sha256?: string;
+    damage_glb_sha256?: string;
+    damage_material_mask_sha256?: string;
+    unreal_damage_variant_receipt_sha256?: string;
+    damage_blender_preview_sha256?: string;
+    damage_unreal_preview_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1880,8 +1890,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSplineInfrastructure = Boolean(agent.scene_dcc_work?.definition.spline_infrastructure_request_sha256);
   const hasMechanismRig = Boolean(agent.scene_dcc_work?.definition.mechanism_rig_request_sha256);
   const hasMechanismShot = Boolean(agent.scene_dcc_work?.definition.mechanism_shot_request_sha256);
+  const hasDamageVariant = Boolean(agent.scene_dcc_work?.definition.damage_variant_request_sha256);
   const cases = [
-    ...(hasMechanismShot
+    ...(hasDamageVariant
+      ? [{
+          id: "damage-variant-roundtrip",
+          tab: "当前 Session · 破损变体",
+          title: "让二维损伤场真正改变引擎里的三维资产",
+          description: "Agent 将当前场景深度、目标模块与保护区编译为固定 ComfyUI 子图。输出的空间损伤场继续驱动 Blender Boolean、UV 与材质节点，再以 GLB 回流 Unreal 派生候选；二维结果不是终点，而是可编辑三维生产步骤的输入。",
+          frames: [
+            { src: "/api/showcase/production/m55-damage-field", alt: "ComfyUI 根据场景条件生成的空间损伤场", label: "空间条件", title: "3.8307% 覆盖 · 0 保护区泄漏" },
+            { src: "/api/showcase/production/m55-damage-blender", alt: "Blender 中保留 Boolean 和材质节点的破损门架", label: "DCC 加工", title: "7 个 Boolean · 2,594 三角面" },
+            { src: "/api/showcase/production/m55-damage-unreal", alt: "Unreal 隔离候选中的破损门架资产", label: "引擎回流", title: "1 材质槽 · 1 凸碰撞体" },
+          ],
+          transition: "空间损伤场编译为可编辑几何与材质",
+          metricA: "7 / 2,594",
+          metricALabel: "Boolean / 三角面",
+          metricB: "0",
+          metricBLabel: "重放新增或更新 Actor",
+          note: `破损请求 ${shortId(agent.scene_dcc_work?.definition.damage_variant_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；ComfyUI、Blender、GLB 与 Unreal 回执共享同一内容身份。`,
+          domains: ["场景·已绑定", "损伤场·已生成", "Boolean·可编辑", "资产·已回流", "重放·已对账"],
+        }]
+      : hasMechanismShot
       ? [{
           id: "mechanism-shot-roundtrip",
           tab: "当前 Session · 机关镜头",

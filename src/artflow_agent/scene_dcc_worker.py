@@ -12,6 +12,7 @@ from .blender_set_dressing import (
 )
 from .blender_surface import BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .damage_variant import DamageFieldReceipt, DamageVariantRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .material_variation import (
@@ -95,6 +96,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "spline": project_root / "artifacts/goal/m49-s1-spline-infrastructure",
         "mechanism": project_root / "artifacts/goal/m51-s1-mechanism-rig",
         "mechanism_shot": project_root / "artifacts/goal/m53-s1-mechanism-shot",
+        "damage": project_root / "artifacts/goal/m55-s1-damage-variant",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -769,7 +771,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         )
         if receipt.get("request_sha256") != request.request_sha256:
             raise ValueError("registered Unreal mechanism-shot receipt changed")
-        if receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.damage_variant_request_sha256 is None
+            and receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("mechanism-shot candidate changed")
         if receipt.get("sequence_asset_path") != work.mechanism_shot_sequence_path:
             raise ValueError("mechanism-shot Level Sequence changed")
@@ -809,6 +814,101 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             path = roots["mechanism_shot"] / relative_path
             if _file_sha256(path) != expected or receipt["preview_sha256s"][label] != expected:
                 raise ValueError(f"mechanism-shot {label} preview identity changed")
+
+    if work.damage_variant_request_sha256 is not None:
+        request = DamageVariantRequest.model_validate_json(
+            (roots["damage"] / "damage-variant-request.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.damage_variant_request_sha256:
+            raise ValueError("registered damage-variant request changed")
+        comfy_receipt = DamageFieldReceipt.model_validate_json(
+            (roots["damage"] / "comfy-damage-field-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if (
+            comfy_receipt.receipt_sha256 != work.comfy_damage_field_receipt_sha256
+            or comfy_receipt.request_sha256 != request.request_sha256
+            or comfy_receipt.field_sha256 != work.damage_field_sha256
+        ):
+            raise ValueError("registered ComfyUI damage field changed")
+        field = roots["damage"] / comfy_receipt.field_path
+        if _file_sha256(field) != work.damage_field_sha256:
+            raise ValueError("damage field artifact identity changed")
+        blender_receipt = _load_receipt(
+            roots["damage"] / "blender-damage-variant-receipt.json",
+            expected_sha256=str(work.blender_damage_variant_receipt_sha256),
+        )
+        _verify_artifacts(roots["damage"], blender_receipt)
+        if (
+            blender_receipt.get("request_sha256") != request.request_sha256
+            or blender_receipt.get("comfy_receipt_sha256")
+            != comfy_receipt.receipt_sha256
+            or blender_receipt.get("boolean_modifier_count") != request.chip_count
+            or int(blender_receipt.get("triangle_count", 0)) > request.triangle_budget
+            or blender_receipt.get("uv_layer") != "UVMap"
+            or not blender_receipt.get("material_slots")
+        ):
+            raise ValueError("registered Blender damage delivery changed")
+        artifacts = {
+            str(item["kind"]): item
+            for item in blender_receipt.get("artifacts", [])
+            if isinstance(item, dict)
+        }
+        expected_artifacts = {
+            "manifest": work.damage_manifest_sha256,
+            "glb": work.damage_glb_sha256,
+            "material_mask": work.damage_material_mask_sha256,
+            "preview": work.damage_blender_preview_sha256,
+        }
+        if any(
+            kind not in artifacts or artifacts[kind].get("sha256") != expected
+            for kind, expected in expected_artifacts.items()
+        ):
+            raise ValueError("registered Blender damage artifact catalog changed")
+        modular_receipt = json.loads(
+            (roots["modular"] / "unreal-modular-environment-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if (
+            request.source_candidate_scene_path
+            != modular_receipt.get("candidate_scene_path")
+            or request.source_blender_receipt_sha256
+            != json.loads(
+                (roots["modular"] / "blender-modular-environment-receipt.json").read_text(
+                    encoding="utf-8"
+                )
+            ).get("receipt_sha256")
+        ):
+            raise ValueError("damage route no longer derives from the registered modular result")
+        unreal_receipt = _load_receipt(
+            roots["damage"] / "unreal-damage-variant-receipt.json",
+            expected_sha256=str(work.unreal_damage_variant_receipt_sha256),
+        )
+        if (
+            unreal_receipt.get("request_sha256") != request.request_sha256
+            or unreal_receipt.get("comfy_receipt_sha256")
+            != comfy_receipt.receipt_sha256
+            or unreal_receipt.get("blender_receipt_sha256")
+            != blender_receipt.get("receipt_sha256")
+            or unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+            or unreal_receipt.get("status") != "reconciled"
+            or unreal_receipt.get("updated_actor_count") != 0
+            or unreal_receipt.get("created_actor_count") != 0
+            or unreal_receipt.get("duplicate_asset_count") != 0
+            or unreal_receipt.get("convex_collision_count", 0) < 1
+            or unreal_receipt.get("source_candidate_sha256_before")
+            != unreal_receipt.get("source_candidate_sha256_after")
+        ):
+            raise ValueError("registered Unreal damage result changed")
+        preview = roots["damage"] / str(unreal_receipt["screenshot_path"])
+        if (
+            _file_sha256(preview) != work.damage_unreal_preview_sha256
+            or unreal_receipt.get("screenshot_sha256")
+            != work.damage_unreal_preview_sha256
+        ):
+            raise ValueError("Unreal damage preview identity changed")
 
     return work.unreal_return_receipt_sha256
 

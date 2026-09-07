@@ -1,0 +1,57 @@
+{
+  "schema_id": "artflow-live-damage-variant-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-5f9ea7700abf",
+  "work_sha256": "5f9ea7700abf54d1a7e50c71595732823584367b9fc9e9f2a0be9a9b6ddee14b",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1",
+    "blender.material.scene_conditioned_wayfinder_set.v1",
+    "blender.cache.wind_veil.v1",
+    "blender.geometry_nodes.biome_foliage_kit.v1",
+    "blender.geometry_nodes.modular_environment.v1",
+    "blender.geometry_nodes.spline_infrastructure.v1",
+    "blender.armature.articulated_gate.v1",
+    "unreal.sequencer.mechanism_shot.v1",
+    "blender.boolean.material_damage.v1"
+  ],
+  "damage_variant_request_sha256": "fdfe74fd21b19008d7cdeee04c435dd02298910b86ba8e39b5c0db092b8ef4bb",
+  "host_receipt_sha256s": {
+    "comfyui": "5792f055f26a76508081ca8e4419860e141b85a560821b1a533c62810caf280f",
+    "blender": "d68ab2566adc11056d823862a590dadbeff609d07beade4a7a07e0783e5a04c1",
+    "unreal": "5982ec793df6a06c93438c993a2081b6da9e0a02ff3bdb00bd4fd762fa63a6bd"
+  },
+  "artifact_sha256s": {
+    "field": "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168",
+    "glb": "068cb8cf5bd9bf8f75cac90ed1e8a05e815dc0500af39a4d9a8105446346ec7d",
+    "material_mask": "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168",
+    "manifest": "96f0f147353449e32eb46d3f1bb5be5a8fecfbbc1be37adbaef72d9f8f501fe1",
+    "blender_preview": "31e26321555c7b14b88ad794317b19be019ea75b349289c8072acfdc6cc13f1c",
+    "unreal_preview": "b661bf95ffd2b16a33bf381d40626f7726a54dc7330768f95c2f56ecf9603816"
+  },
+  "outcome_sha256": "5982ec793df6a06c93438c993a2081b6da9e0a02ff3bdb00bd4fd762fa63a6bd",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Damage_B_fdfe74fd21b1",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

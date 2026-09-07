@@ -1572,6 +1572,15 @@ def create_app(
             "m53-mechanism-closed-end": goal_root
             / "m53-s1-mechanism-shot"
             / "unreal-mechanism-shot-closed_end.png",
+            "m55-damage-field": goal_root
+            / "m55-s1-damage-variant"
+            / "damage-field.png",
+            "m55-damage-blender": goal_root
+            / "m55-s1-damage-variant"
+            / "AF_GatewayDamage-preview.png",
+            "m55-damage-unreal": goal_root
+            / "m55-s1-damage-variant"
+            / "unreal-damage-variant-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

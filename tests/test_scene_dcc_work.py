@@ -52,6 +52,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.geometry_nodes.spline_infrastructure.v1",
         "blender.armature.articulated_gate.v1",
         "unreal.sequencer.mechanism_shot.v1",
+        "blender.boolean.material_damage.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -114,8 +115,20 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["mechanism_shot_open_sha256"] == (
         "8201d9453e63bc09febfed5acc49b9f999621116e019d39030eaed9a94f929a2"
     )
+    assert work["definition"]["damage_variant_request_sha256"] == (
+        "fdfe74fd21b19008d7cdeee04c435dd02298910b86ba8e39b5c0db092b8ef4bb"
+    )
+    assert work["definition"]["comfy_damage_field_receipt_sha256"] == (
+        "5792f055f26a76508081ca8e4419860e141b85a560821b1a533c62810caf280f"
+    )
+    assert work["definition"]["blender_damage_variant_receipt_sha256"] == (
+        "d68ab2566adc11056d823862a590dadbeff609d07beade4a7a07e0783e5a04c1"
+    )
+    assert work["definition"]["damage_field_sha256"] == (
+        "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168"
+    )
     assert work["definition"]["candidate_scene_path"].endswith(
-        "MechanismShot_B_3273ac1a1081"
+        "Damage_B_fdfe74fd21b1"
     )
 
     assert client.post(f"{base}/start").status_code == 202

@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 104,
+  "stateRevision": 105,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M56",
+  "currentMilestone": "M57",
   "milestones": [
     {
       "id": "M0",
@@ -670,7 +670,7 @@
     {
       "id": "M56",
       "title": "Live damage-variant dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M55"],
       "outcome": "The proven scene-conditioned damage field, editable Blender source, exchange asset and Unreal candidate become the twentieth finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
@@ -678,39 +678,53 @@
         "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate external side effects",
         "The Chinese Scene Change Spectrum presents the conditioning field, editable damage authoring and Unreal result as one route"
       ]
+    },
+    {
+      "id": "M57",
+      "title": "Scene-conditioned cloth banner authoring",
+      "status": "in_progress",
+      "dependsOn": ["M56"],
+      "outcome": "Current Unreal attachment, scale, wind and visual intent drive a reviewed ComfyUI material graph and a deterministic Blender cloth authoring capability; the baked editable banner returns as a material-bound static asset in a derived Unreal candidate.",
+      "acceptance": [
+        "A typed request binds current-scene attachment, dimensions, protected bounds, finite cloth parameters, registered ComfyUI graph and exact texture outputs",
+        "A real Blender process preserves the cloth mesh, pin group, UV, material nodes and deterministic simulation cache while exporting one budget-valid static exchange mesh",
+        "Unreal imports the banner mesh and material into a source-derived candidate without overwriting the source level, and rerun reconciles without duplicate packages or actors",
+        "Real ComfyUI, Blender and Unreal media make the material-to-simulation-to-engine route directly legible"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M56-S1",
-    "milestone": "M56",
-    "title": "Dispatch the verified damage route from the live Scene Session",
-    "outcome": "Register M55 as the twentieth content-bound current-session capability, replay it through the existing DCC worker and present the exact ComfyUI field, Blender edit result and Unreal candidate in the Scene Change Spectrum without rerunning any host.",
-    "risk": "R1",
+    "id": "M57-S1",
+    "milestone": "M57",
+    "title": "Author one scene-conditioned cloth banner across ComfyUI, Blender and Unreal",
+    "outcome": "Compile the current scene's registered attachment, scale, wind and visual direction into one reviewed texture task and one bounded cloth recipe; execute each real host once and return a material-bound static banner to a new isolated Unreal candidate.",
+    "risk": "R2",
     "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "web/**"],
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "integrations/blender/**", "integrations/unreal/**", "README.md", "web/**"],
     "nonGoals": [
-      "Do not rerun ComfyUI, Blender or Unreal",
-      "Do not add another worker, queue, reducer, state projection or approval gate",
-      "Do not expose arbitrary graph, host code or asset paths",
-      "Do not redesign unrelated product surfaces or broaden test coverage"
+      "Do not build a general cloth simulator, arbitrary Blender scripting tool or arbitrary ComfyUI graph editor",
+      "Do not add another worker, queue, reducer, state projection, policy framework or approval gate",
+      "Do not implement Unreal Chaos runtime cloth in the first slice",
+      "Do not broaden into character garments, skeletal clothing or unrelated UI work"
     ],
     "acceptance": [
-      "One typed work definition binds the exact M55 request, three host receipts, editable source, GLB, manifest, material mask and candidate identities",
-      "The existing worker records queue, claim, execute, reconcile and success for one stable work identity",
-      "Repeat dispatch and reducer replay create no duplicate work item or external side effect",
-      "Desktop and narrow product views load the three real route stages without overflow or failed media"
+      "One content-addressed typed request derives only from registered current-scene facts and finite cloth/material parameters",
+      "A fixed reviewed ComfyUI graph produces exact texture identities without model-authored graph topology",
+      "Blender preserves an editable pin group, UV, material node tree and baked cloth result and exports a valid budgeted mesh",
+      "Unreal creates a source-derived candidate with the banner mesh and material; a second run reconciles with zero duplicate side effects",
+      "A compact evidence set includes the three host receipts and one representative image per host"
     ],
     "stopConditions": [
-      "Stop if any M55 request, receipt or artifact identity no longer verifies",
-      "Stop if registration requires a parallel lifecycle or simulated progress",
-      "Stop if the UI would need placeholder media"
+      "Stop if the real ComfyUI, Blender or Unreal host cannot be discovered from recorded local configuration",
+      "Stop if implementation would require arbitrary model-generated host code or an unreviewed ComfyUI graph",
+      "Stop if the banner cannot be written to an isolated source-derived candidate"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "damage_request", "kind": "repo_path", "value": "artifacts/goal/m55-s1-damage-variant/damage-variant-request.json", "required": true},
-      {"id": "damage_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m55-s1-damage-variant/blender-damage-variant-receipt.json", "required": true},
-      {"id": "damage_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m55-s1-damage-variant/unreal-damage-variant-receipt.json", "required": true}
+      {"id": "scene_package", "kind": "repo_path", "value": "artifacts/goal/m3-s10-cross-language/scene-package.json", "required": true},
+      {"id": "blender_runtime", "kind": "command", "value": "C:\\Program Files\\Blender Foundation\\Blender 5.2\\blender.exe", "required": true},
+      {"id": "unreal_host", "kind": "repo_path", "value": "integrations/unreal/ArtFlowBridgeHost/ArtFlowBridgeHost.uproject", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -726,9 +740,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0097.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0098.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M55 are complete. A content-addressed current-scene request drove one reviewed ComfyUI damage-field graph, an editable Blender 5.2 Boolean/material asset and a real Unreal 5.8.1 derived candidate. The field covers 3.8307 percent of the conditioning image with zero protected leakage; Blender retains seven editable cuts and exports a valid 2,594-triangle GLB; Unreal imports one material slot and one convex collision hull. Replay reconciles with zero created or updated actors, zero duplicate assets and a byte-identical M47 source candidate. Live current-session dispatch is M56-S1 scope and has not yet been executed.",
+  "evidenceCeiling": "M0-M56 are complete. The content-addressed M55 damage route is registered as the twentieth current-session DCC capability. Work dcc-work-5f9ea7700abf binds exact ComfyUI, Blender and Unreal identities, traverses five durable lifecycle events, returns the same identity on repeat dispatch and replays equivalently with zero duplicate external side effects. Desktop and narrow product views load all three real media stages without failed images or horizontal overflow. Scene-conditioned cloth banner authoring is M57-S1 scope and has not yet executed any host.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

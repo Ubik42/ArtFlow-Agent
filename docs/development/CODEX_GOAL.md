@@ -185,9 +185,14 @@ Unreal 当前场景
   深度、目标区域和保护区生成 3.83% 覆盖率、0 保护区泄漏的空间损伤场；Blender 5.2 在登记门架上
   保留 7 个可编辑 Boolean 切口、UV 和材质节点，并输出 2,594 三角面的 GLB；Unreal 5.8.1 将其
   导入带碰撞的隔离候选。重复回流新增/更新 Actor 与重复资产均为 0，源候选字节不变。
-- **M56 · Live damage-variant dispatch（进行中）**：把 M55 的场景条件、ComfyUI 损伤场、Blender
+- **M56 · Live damage-variant dispatch（已完成）**：把 M55 的场景条件、ComfyUI 损伤场、Blender
   编辑源/GLB/材质和 Unreal 候选登记为当前 Session 的第二十项有限 DCC 能力，接入既有 Worker
-  与场景变更谱，使用户从当前场景直接派发这条二维条件到三维资产的生产路线。
+  与场景变更谱。重复派发与 Reducer 重放复用同一工作身份，重复外部副作用为 0；桌面和窄屏
+  产品视图均使用三段真实媒体呈现二维条件进入三维资产的路线。
+- **M57 · Scene-conditioned cloth banner authoring（进行中）**：用当前 Unreal 场景的挂点、尺度、
+  风向和视觉意图约束一条完整 DCC 路线。固定 ComfyUI 子图生成纹章/旧化材质输入，Blender 保留
+  布料网格、Pin Group、UV、材质节点和确定性 Cloth Bake，再把定格网格与材质回流新的 Unreal
+  派生候选。首版只交付一面可录制的静态旗帜资产，不扩张到 Chaos 运行时布料或通用模拟系统。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

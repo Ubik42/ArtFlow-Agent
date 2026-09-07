@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .damage_variant import DamageFieldReceipt, DamageVariantRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
@@ -61,8 +62,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.geometry_nodes.spline_infrastructure.v1",
             "blender.armature.articulated_gate.v1",
             "unreal.sequencer.mechanism_shot.v1",
+            "blender.boolean.material_damage.v1",
         ]
-    ] = Field(min_length=2, max_length=19)
+    ] = Field(min_length=2, max_length=20)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -185,9 +187,29 @@ class SceneDccWorkDefinition(BaseModel):
     mechanism_shot_closed_end_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    damage_variant_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    comfy_damage_field_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    damage_field_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_damage_variant_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    damage_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    damage_glb_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    damage_material_mask_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_damage_variant_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    damage_blender_preview_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    damage_unreal_preview_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline|Mechanism|MechanismShot)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular|Spline|Mechanism|MechanismShot|Damage)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -393,6 +415,24 @@ class SceneDccWorkDefinition(BaseModel):
             if self.mechanism_rig_request_sha256 is None:
                 raise ValueError("mechanism shot requires the registered mechanism animation")
             expected_capabilities.append("unreal.sequencer.mechanism_shot.v1")
+        damage_identities = (
+            self.damage_variant_request_sha256,
+            self.comfy_damage_field_receipt_sha256,
+            self.damage_field_sha256,
+            self.blender_damage_variant_receipt_sha256,
+            self.damage_manifest_sha256,
+            self.damage_glb_sha256,
+            self.damage_material_mask_sha256,
+            self.unreal_damage_variant_receipt_sha256,
+            self.damage_blender_preview_sha256,
+            self.damage_unreal_preview_sha256,
+        )
+        if any(item is not None for item in damage_identities):
+            if not all(item is not None for item in damage_identities):
+                raise ValueError("DCC work requires every damage-variant identity")
+            if self.modular_environment_request_sha256 is None:
+                raise ValueError("damage variant requires the registered modular environment")
+            expected_capabilities.append("blender.boolean.material_damage.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -1017,6 +1057,7 @@ def compile_current_blender_dcc_work(
     modular_zone_path = modular_root / "comfy-module-zone-receipt.json"
     modular_blender_path = modular_root / "blender-modular-environment-receipt.json"
     modular_unreal_path = modular_root / "unreal-modular-environment-receipt.json"
+    modular_unreal: dict[str, object] | None = None
     if all(
         path.is_file()
         for path in (
@@ -1192,6 +1233,93 @@ def compile_current_blender_dcc_work(
         payload["mechanism_shot_closed_end_sha256"] = preview_sha256s["closed_end"]
         payload["unreal_return_receipt_sha256"] = shot_receipt_sha256
         payload["candidate_scene_path"] = mechanism_shot_unreal["candidate_scene_path"]
+    damage_root = project_root / "artifacts/goal/m55-s1-damage-variant"
+    damage_request_path = damage_root / "damage-variant-request.json"
+    damage_comfy_path = damage_root / "comfy-damage-field-receipt.json"
+    damage_blender_path = damage_root / "blender-damage-variant-receipt.json"
+    damage_unreal_path = damage_root / "unreal-damage-variant-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            damage_request_path,
+            damage_comfy_path,
+            damage_blender_path,
+            damage_unreal_path,
+        )
+    ):
+        if modular_unreal is None:
+            raise ValueError("damage variant requires the registered modular result")
+        damage_request = DamageVariantRequest.model_validate_json(
+            damage_request_path.read_text(encoding="utf-8")
+        )
+        damage_comfy = DamageFieldReceipt.model_validate_json(
+            damage_comfy_path.read_text(encoding="utf-8")
+        )
+        damage_blender = json.loads(damage_blender_path.read_text(encoding="utf-8"))
+        damage_unreal = json.loads(damage_unreal_path.read_text(encoding="utf-8"))
+        for label, receipt in (
+            ("Blender damage", damage_blender),
+            ("Unreal damage", damage_unreal),
+        ):
+            unsigned = dict(receipt)
+            receipt_sha256 = unsigned.pop("receipt_sha256", None)
+            if dcc_work_sha256(unsigned) != receipt_sha256:
+                raise ValueError(f"{label} receipt identity changed")
+        if damage_request.session_id != session_id:
+            raise ValueError("damage variant references another Scene Session")
+        if damage_request.source_candidate_scene_path != modular_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("damage variant no longer derives from the modular candidate")
+        if (
+            damage_comfy.request_sha256 != damage_request.request_sha256
+            or damage_blender.get("request_sha256") != damage_request.request_sha256
+            or damage_unreal.get("request_sha256") != damage_request.request_sha256
+        ):
+            raise ValueError("damage host receipts reference another request")
+        if damage_blender.get("comfy_receipt_sha256") != damage_comfy.receipt_sha256:
+            raise ValueError("Blender damage references another ComfyUI field")
+        if damage_unreal.get("blender_receipt_sha256") != damage_blender.get(
+            "receipt_sha256"
+        ):
+            raise ValueError("Unreal damage references another Blender result")
+        if (
+            damage_unreal.get("status") != "reconciled"
+            or damage_unreal.get("capture_status") != "captured"
+            or damage_unreal.get("source_candidate_sha256_before")
+            != damage_unreal.get("source_candidate_sha256_after")
+        ):
+            raise ValueError("Unreal damage result is not reconciled with captured evidence")
+        damage_artifacts = {
+            item["kind"]: item for item in damage_blender.get("artifacts", [])
+        }
+        if set(damage_artifacts) != {
+            "blend",
+            "glb",
+            "material_mask",
+            "preview",
+            "manifest",
+        }:
+            raise ValueError("Blender damage artifact catalog changed")
+        payload["capability_ids"].append("blender.boolean.material_damage.v1")
+        payload["damage_variant_request_sha256"] = damage_request.request_sha256
+        payload["comfy_damage_field_receipt_sha256"] = damage_comfy.receipt_sha256
+        payload["damage_field_sha256"] = damage_comfy.field_sha256
+        payload["blender_damage_variant_receipt_sha256"] = damage_blender[
+            "receipt_sha256"
+        ]
+        payload["damage_manifest_sha256"] = damage_artifacts["manifest"]["sha256"]
+        payload["damage_glb_sha256"] = damage_artifacts["glb"]["sha256"]
+        payload["damage_material_mask_sha256"] = damage_artifacts["material_mask"][
+            "sha256"
+        ]
+        payload["unreal_damage_variant_receipt_sha256"] = damage_unreal[
+            "receipt_sha256"
+        ]
+        payload["damage_blender_preview_sha256"] = damage_artifacts["preview"]["sha256"]
+        payload["damage_unreal_preview_sha256"] = damage_unreal["screenshot_sha256"]
+        payload["unreal_return_receipt_sha256"] = damage_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = damage_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,
