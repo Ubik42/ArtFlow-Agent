@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 88,
+  "stateRevision": 89,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M40",
+  "currentMilestone": "M41",
   "milestones": [
     {
       "id": "M0",
@@ -469,7 +469,7 @@
     {
       "id": "M40",
       "title": "Scene-conditioned material variation set",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M39"],
       "outcome": "A current Scene Session turns its registered ComfyUI visual target into a bounded material-variation set: Blender authors editable shader-node variants and baked textures, while Unreal applies deterministic Material Instances across the existing native PCG kit inside an isolated candidate.",
       "acceptance": [
@@ -478,41 +478,51 @@
         "One real Unreal run creates registered Material Instances and assigns them deterministically to the existing PCG module variants in a derived candidate",
         "A same-camera capture shows the material variation and repeat execution reconciles without duplicate assets or source-candidate mutation"
       ]
+    },
+    {
+      "id": "M41",
+      "title": "Live material-variation dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M40"],
+      "outcome": "The proven ComfyUI-to-Blender-to-Unreal material set becomes a thirteenth registered current-session capability, reusing the durable DCC worker and Scene Change Spectrum for direct dispatch, recovery and inspection.",
+      "acceptance": [
+        "The work item binds the exact conditioning, material request, editable Blender source, six texture and Unreal candidate identities",
+        "Queue, claim, execute, reconcile and replay use the existing append-only worker without another scheduler or approval gate",
+        "The Chinese product UI presents visual conditioning, Blender material authoring and Unreal PCG application as one continuous route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M40-S1",
-    "milestone": "M40",
-    "title": "Author and return a scene-conditioned material variation set",
-    "outcome": "Compile the current ComfyUI visual target and Wayfinder kit into three bounded Blender material variants, bake their reusable textures, and apply deterministic Material Instances to the existing native PCG modules in a new Unreal candidate.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M41-S1",
+    "milestone": "M41",
+    "title": "Expose the material set as the thirteenth live production route",
+    "outcome": "Register the exact M40 ComfyUI, Blender and Unreal artifacts in the existing Scene DCC Work lifecycle, then present the material route in the Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not add a free-form shader editor, arbitrary ComfyUI graph execution or model-authored host code",
-      "Do not rebuild the Wayfinder geometry, PCG graph, scheduler or Scene Session lifecycle",
-      "Do not download new models when the registered scene-conditioned output can drive the first slice",
-      "Do not expand into cloth, fluid, character or animation systems in this slice"
+      "Do not rerun ComfyUI, Blender or Unreal when frozen M40 identities verify",
+      "Do not add a new queue, worker, approval layer or material editor",
+      "Do not expose arbitrary shaders, texture paths, ComfyUI graphs or host scripts",
+      "Do not build a second Scene Session or publishing state machine"
     ],
     "acceptance": [
-      "The typed request binds exact ComfyUI target, kit, palette, bake budget and destination candidate identities",
-      "Blender produces three editable material-node variants and readable baked outputs with bounded UV and texture checks",
-      "Unreal creates and assigns deterministic Material Instances in a derived candidate and records a same-camera result",
-      "A repeated Unreal application reconciles without duplicate assets or mutations to the upstream PCG candidate"
+      "The thirteenth capability verifies every frozen M40 request, texture, Blender and Unreal identity before entering the worker",
+      "Queue, claim, execute, reconcile and replay use the existing append-only DCC lifecycle",
+      "The Scene Change Spectrum presents the real ComfyUI-to-Blender-to-Unreal material route at desktop and narrow widths"
     ],
     "stopConditions": [
-      "Stop if the registered ComfyUI target, M32 kit or M34 native PCG candidate identity no longer verifies",
-      "Stop if material assignment would require modifying the upstream PCG candidate in place",
+      "Stop if an M40 request, texture, Blender source, Material Instance or candidate identity no longer verifies",
+      "Stop if the route requires another scheduler or arbitrary material input",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
+      {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "scene_target", "kind": "repo_path", "value": "artifacts/goal/m24-s1-scene-conditioning/conditioning-receipt.json", "required": true},
-      {"id": "wayfinder_kit", "kind": "repo_path", "value": "artifacts/goal/m32-s1-procedural-kit/procedural-kit-receipt.json", "required": true},
-      {"id": "native_pcg_candidate", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/unreal-native-pcg-density-receipt.json", "required": true}
+      {"id": "m40_request", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/material-variation-request.json", "required": true},
+      {"id": "m40_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/blender-material-variation-receipt.json", "required": true},
+      {"id": "m40_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/unreal-material-variation-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -528,9 +538,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0081.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0082.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M39 are complete. The verified Blender-to-Sequencer camera move is the twelfth finite current-session capability. The existing worker validated the exact M38 request, editable Blender animation source, derived Unreal Level Sequence and three-frame receipt, projected five durable lifecycle events, replayed equivalently and produced zero duplicate external side effects. Desktop and narrow Scene Change Spectrum captures present paired Blender and Unreal start, middle and end frames. Scene-conditioned material variation across ComfyUI, Blender shader authoring and Unreal PCG assignment is M40-S1 scope.",
+  "evidenceCeiling": "M0-M40 are complete. A content-bound ComfyUI visual target drove three editable Blender 5.2 shader variants with 92.36-94.84 percent UV coverage and six 512-square baked textures. Unreal 5.8.1 imported one master material and three Material Instances, assigned them to three native PCG components containing twelve instances, reconciled an unknown completion with zero duplicate side effects, and preserved the source level and upstream PCG candidate. Live dispatch and Scene Change Spectrum presentation are M41-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

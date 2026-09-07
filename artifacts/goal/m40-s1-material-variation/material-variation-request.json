@@ -1,0 +1,63 @@
+{
+  "schema_id": "artflow-material-variation-request/1",
+  "request_id": "material-variation-70e40a75ceec8743",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "conditioning_receipt_sha256": "0812e7e60f3dc98850c1403fc968fec66e3b4eadc0b44238d2aaffff25dda16d",
+  "visual_target_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png",
+  "visual_target_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "kit_receipt_sha256": "44627ca7f113d5886846aa21b66764eab1d6fb3d5eff8e77c5bbd72c12870eaf",
+  "kit_blend_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m32-s1-procedural-kit/AF_Wayfinder_Kit.blend",
+  "kit_blend_sha256": "87d98b72d0b057d99c67c049a26ad498d5bc155ce2fbb175c460e2d8808f5634",
+  "native_pcg_receipt_sha256": "5c519df909c030bdabc26e7975f99fc8a8c39bde0467ddd127a8bd3f32430226",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Density_B_1a637a8d89b8",
+  "capability_id": "blender.material.scene_conditioned_wayfinder_set.v1",
+  "consumer_capability_id": "unreal.material.pcg_variant_instances.v1",
+  "texture_size": 512,
+  "bake_channels": [
+    "base_color",
+    "roughness"
+  ],
+  "palettes": [
+    {
+      "variant_id": "wayfinder-a",
+      "object_name": "SM_AF_Wayfinder_A",
+      "material_name": "M_AF_Wayfinder_A_SceneVariant",
+      "base_tint": [
+        0.42,
+        0.78,
+        0.72
+      ],
+      "roughness": 0.38,
+      "metallic": 0.48,
+      "emission_strength": 0.12
+    },
+    {
+      "variant_id": "wayfinder-b",
+      "object_name": "SM_AF_Wayfinder_B",
+      "material_name": "M_AF_Wayfinder_B_SceneVariant",
+      "base_tint": [
+        0.88,
+        0.48,
+        0.24
+      ],
+      "roughness": 0.56,
+      "metallic": 0.34,
+      "emission_strength": 0.08
+    },
+    {
+      "variant_id": "wayfinder-c",
+      "object_name": "SM_AF_Wayfinder_C",
+      "material_name": "M_AF_Wayfinder_C_SceneVariant",
+      "base_tint": [
+        0.34,
+        0.46,
+        0.82
+      ],
+      "roughness": 0.7,
+      "metallic": 0.22,
+      "emission_strength": 0.05
+    }
+  ],
+  "request_sha256": "1a77d442c3793d8dfe80af7c5bbdd19e399d1684c3fb53d6e7e3d2bc43124419"
+}

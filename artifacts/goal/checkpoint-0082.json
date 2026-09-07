@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M40-S1",
+  "status": "completed",
+  "outcome": "A content-bound ComfyUI visual target drove three editable Blender 5.2 shader variants and six baked textures. Unreal 5.8.1 imported them as one master and three Material Instances, assigned them across twelve native PCG instances in a derived candidate, and reconciled an unknown completion with zero duplicate side effects while preserving both source level and upstream candidate.",
+  "evidence": [
+    "artifacts/goal/m40-s1-material-variation/material-variation-request.json",
+    "artifacts/goal/m40-s1-material-variation/blender-material-variation-receipt.json",
+    "artifacts/goal/m40-s1-material-variation/AF_Wayfinder_MaterialVariations-preview.png",
+    "artifacts/goal/m40-s1-material-variation/unreal-material-variation-receipt.json",
+    "artifacts/goal/m40-s1-material-variation/unreal-material-variation-candidate.png",
+    "artifacts/goal/m40-s1-material-variation/verification.json",
+    "docs/evidence/M40_S1_MATERIAL_VARIATION_2026-09-07.md"
+  ]
+}

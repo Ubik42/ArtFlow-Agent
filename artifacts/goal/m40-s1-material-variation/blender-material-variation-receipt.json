@@ -1,0 +1,63 @@
+{
+  "schema_id": "artflow-blender-material-variation-receipt/1",
+  "request_id": "material-variation-70e40a75ceec8743",
+  "request_sha256": "1a77d442c3793d8dfe80af7c5bbdd19e399d1684c3fb53d6e7e3d2bc43124419",
+  "capability_id": "blender.material.scene_conditioned_wayfinder_set.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "variants": [
+    {
+      "variant_id": "wayfinder-a",
+      "object_name": "SM_AF_Wayfinder_A",
+      "material_name": "M_AF_Wayfinder_A_SceneVariant",
+      "uv_layer": "UVMap",
+      "uv_coverage": 0.923624,
+      "shader_node_count": 5,
+      "base_color_texture": "T_AF_Wayfinder_A_BaseColor.png",
+      "base_color_sha256": "bb02675675bf2a8910e192f4f9fd0a71b44251f48344782394dfdca8012ccd76",
+      "roughness_texture": "T_AF_Wayfinder_A_Roughness.png",
+      "roughness_sha256": "1c9f9326fb0abc5cc5c25eb2643513b4b646cf7b9ae3fc6761c0ed7cf6b03a99"
+    },
+    {
+      "variant_id": "wayfinder-b",
+      "object_name": "SM_AF_Wayfinder_B",
+      "material_name": "M_AF_Wayfinder_B_SceneVariant",
+      "uv_layer": "UVMap",
+      "uv_coverage": 0.946742,
+      "shader_node_count": 5,
+      "base_color_texture": "T_AF_Wayfinder_B_BaseColor.png",
+      "base_color_sha256": "9838201cbe21b4a6b64d7ebced549922983974cd44b14fb49e43aff20e89acd5",
+      "roughness_texture": "T_AF_Wayfinder_B_Roughness.png",
+      "roughness_sha256": "22887dd03fb7b2d712061c31f8998e7c56eb2ca2ceb54fc34401700414c1d4c7"
+    },
+    {
+      "variant_id": "wayfinder-c",
+      "object_name": "SM_AF_Wayfinder_C",
+      "material_name": "M_AF_Wayfinder_C_SceneVariant",
+      "uv_layer": "UVMap",
+      "uv_coverage": 0.948445,
+      "shader_node_count": 5,
+      "base_color_texture": "T_AF_Wayfinder_C_BaseColor.png",
+      "base_color_sha256": "22120d0e9dcb2aad1102257cac4df1cbe864bb16f390a1ca3c93174e04f61b44",
+      "roughness_texture": "T_AF_Wayfinder_C_Roughness.png",
+      "roughness_sha256": "c1b194569d332961d162450fd0edde5bb8c6a2b335c731ea481fb694472da874"
+    }
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_Wayfinder_MaterialVariations.blend",
+      "sha256": "094ae19c6d548d605be9c9fa9178e48a3e39619f5f2555b89bb781a62e235b0d",
+      "size_bytes": 114974
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_Wayfinder_MaterialVariations-preview.png",
+      "sha256": "d762789862501eac2f1d5cd3027079bcda049e7b7712f0f65bd08f7917f7a140",
+      "size_bytes": 925165
+    }
+  ],
+  "elapsed_seconds": 4.718,
+  "completed_at": "2026-09-07T14:27:20.210363Z",
+  "receipt_sha256": "76d0a496ff0a1f10bc1c29638cd1ab52a28f2dd4ad81fc2c3de89ea2c1d41628"
+}

@@ -157,6 +157,18 @@ Blender 与 Unreal 的起、中、末帧并列为一条可读的镜头制作路�
 
 ![当前 Session 的 Blender 到 Unreal 镜头运动路线](artifacts/goal/m39-s1-live-camera-move/live-camera-move-desktop.png)
 
+材质路线把同一场景条件继续推进到三维资产。Agent 将 ComfyUI 视觉目标、Wayfinder 编辑源和
+原生 PCG 候选绑定为有限任务；Blender 为 A、B、C 三种模块建立独立材质节点并烘焙 Base Color
+与 Roughness，Unreal 随后创建一个母材质和三个 Material Instances，按模块身份应用到 12 个
+PCG 实例。首次回执中断后由新进程对账既有资产，重复创建与重复组件修改均为 0。
+
+| Blender 可编辑材质与烘焙 | Unreal PCG 材质候选 |
+| --- | --- |
+| ![Blender 三套 Wayfinder 材质](artifacts/goal/m40-s1-material-variation/AF_Wayfinder_MaterialVariations-preview.png) | ![Unreal 中应用到原生 PCG 实例](artifacts/goal/m40-s1-material-variation/unreal-material-variation-candidate.png) |
+
+[材质变体实测记录](docs/evidence/M40_S1_MATERIAL_VARIATION_2026-09-07.md)
+列出了 UV、材质节点、贴图、Material Instance 与恢复结果。
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
