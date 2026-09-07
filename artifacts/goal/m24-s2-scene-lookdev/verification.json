@@ -1,0 +1,18 @@
+{
+  "schema_id": "artflow-m24-s2-verification/1",
+  "slice_id": "M24-S2",
+  "checks": {
+    "typed_contract_tests": "3/3",
+    "accepted_artifact_identity_bound": true,
+    "registered_material_targets": "3/3",
+    "registered_light_roles": "3/3",
+    "blender_5_2_preview_completed": true,
+    "unreal_5_8_candidate_completed": true,
+    "repeat_return_status": "reconciled",
+    "duplicate_side_effect_count": 0,
+    "source_level_byte_identical": true
+  },
+  "request_sha256": "4a01b62f9d5897e2729e57fbd4c16c789fdacfac12fcf42b372bc8f00269aab7",
+  "blender_receipt_sha256": "c91bb6bd92b1bf9f391eeb40f8c380fe2a967a7012c2d97590d18b90fa15fb8b",
+  "unreal_receipt_sha256": "7d69227269f4eb043807546abddd301a8933bff778f2535b18fc3de77dde2e8f"
+}

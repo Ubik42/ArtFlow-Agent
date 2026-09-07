@@ -32,6 +32,12 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 | --- | --- |
 | ![Blender 读取 Unreal 镜头后的三点灯光预演](artifacts/goal/m23-s5-camera-light/AF_ShrineCourtyard_Shot-preview.png) | ![三点灯光方案回填 Unreal 隔离候选](artifacts/goal/m23-s5-camera-light/unreal-shot-candidate.png) |
 
+第五条路线把 ComfyUI 场景条件图继续落实为可编辑场景，而不是停在图片文件。Agent 将已接受图像的内容身份与当前 Session、源镜头和 Blender 场景绑定，只提取有限的三组材质色板，并编译固定 key / fill / rim 灯光参数。Blender 5.2 在原可编辑庭院上完成 lookdev 预演；Unreal 5.8 再创建候选专属材质、覆盖生成场景的三个材质槽并应用同组灯光。重复回流返回 `reconciled`，未创建重复资产，源关卡哈希保持不变。
+
+| ComfyUI 目标驱动的 Blender Lookdev | Unreal 隔离 Lookdev 候选 |
+| --- | --- |
+| ![Blender 将场景条件目标落实为材质与灯光预演](artifacts/goal/m24-s2-scene-lookdev/AF_ShrineCourtyard_Lookdev-preview.png) | ![Unreal 中应用候选专属材质与三灯参数](artifacts/goal/m24-s2-scene-lookdev/unreal-lookdev-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -149,6 +155,8 @@ ComfyUI 的节点画布可以直接参与这套管线，但职责位于 Agent �
 | --- | --- |
 | ![Beauty 与 Depth 合成的固定条件图](artifacts/goal/m24-s1-scene-conditioning/scene-conditioning.png) | ![FLUX.2 Klein 生成的暖色场景候选](artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png) |
 
+这里的 Blender 能力边界并不限于建模。ArtFlow 将它视为完整 DCC 执行面：模型与修改器、UV、材质节点、贴图装配与 Bake、Geometry Nodes 场景布局、镜头灯光交换，以及后续动画和模拟缓存都可注册为独立能力。ComfyUI 则提供可组合的节点式图像、控制图和 PBR 子图；Agent 负责依据真实能力选择子图并填入类型化插槽，再把结果交给 Blender 和 Unreal。三者通过内容身份和宿主回执连接，不共享一套脆弱的临时脚本状态。
+
 ## Agent 工程设计
 
 | 能力 | 实现方式 | 生产约束 |
@@ -214,6 +222,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Geometry Nodes 场景布局 | 14 个支撑组合、3 个原型、934 个 Unreal 构建三角面 |
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 | ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
+| 场景条件目标 → Blender / Unreal Lookdev | 3 个登记材质目标、3 盏登记灯光；重复回流副作用 0；源关卡字节变化 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 

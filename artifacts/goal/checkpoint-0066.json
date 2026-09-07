@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M24-S2",
+  "status": "completed",
+  "outcome": "The accepted Beauty-plus-Depth ComfyUI target was content-bound to the current Scene Session, compiled only into three registered material tints and key/fill/rim parameters, rendered in Blender 5.2 and returned to a new Unreal 5.8 lookdev candidate; a second return reconciled with zero duplicate side effects and the source level remained byte-identical.",
+  "evidence": [
+    "artifacts/goal/m24-s2-scene-lookdev/lookdev-request.json",
+    "artifacts/goal/m24-s2-scene-lookdev/lookdev-receipt.json",
+    "artifacts/goal/m24-s2-scene-lookdev/AF_ShrineCourtyard_Lookdev.blend",
+    "artifacts/goal/m24-s2-scene-lookdev/AF_ShrineCourtyard_Lookdev-preview.png",
+    "artifacts/goal/m24-s2-scene-lookdev/unreal-lookdev-return-receipt.json",
+    "artifacts/goal/m24-s2-scene-lookdev/unreal-lookdev-candidate.png",
+    "artifacts/goal/m24-s2-scene-lookdev/verification.json",
+    "docs/evidence/M24_S2_SCENE_LOOKDEV_HANDOFF_2026-09-07.md"
+  ]
+}

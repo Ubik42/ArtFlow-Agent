@@ -67,13 +67,19 @@ Unreal 当前场景
   真实生成并回流新的 Unreal 候选；Unreal 当前相机与灯光也已驱动 Blender 同机位预演，并把
   有界 key / fill / rim 灯光方案对账回新的候选关卡。四段固定能力现已接到产品内的 Session
   DCC Worker，用户从场景变更谱派发并启动后，领取、执行、对账与结果都进入原有事件流。
-- **M24 · Scene-conditioned ComfyUI production route（进行中）**：把 ComfyUI 节点生态用于真实
+- **M24 · Scene-conditioned ComfyUI production route（已完成）**：把 ComfyUI 节点生态用于真实
   场景条件生成。优先接入 Unreal Depth / World Normal / Object ID 与 Production Nodes 的版本化
   ControlNet/LoRA/PBR 子图，让 Agent 编译类型化参数并把输出继续交给 Blender/Unreal，而不是
   在产品中开放任意 workflow 编辑或把 ComfyUI 变成第二套控制平面。当前实机没有 ControlNet/LoRA
   权重，首条路线已根据运行时事实选择 FLUX.2 `ReferenceLatent`：固定预处理器融合 Unreal Beauty
-  与有效范围 Depth，真实生成结构保持的暖色光照目标。下一切片把该目标继续落实为 Blender/Unreal
-  lookdev 候选，而不是停留在图像文件。
+  与有效范围 Depth，真实生成结构保持的暖色光照目标。该目标现已继续编译为三组登记材质色板与
+  key / fill / rim 参数，在 Blender 5.2 生成可编辑 lookdev 预演并回流 Unreal 5.8 隔离候选；
+  重复执行完成对账且源关卡字节不变。
+- **M25 · DCC capability graph and live dispatch（进行中）**：把已经实测的建模、ComfyUI PBR、
+  Geometry Nodes、镜头灯光和场景条件 lookdev 统一成当前 Scene Session 的生产能力图。Blender
+  继续作为覆盖 UV、材质节点、Bake、布局、灯光及后续缓存的完整 DCC 执行面；ComfyUI 以受审
+  节点子图参与图像、控制图和材质生成；Unreal 始终通过候选关卡接收结果。当前最短切片先把
+  scene-conditioned lookdev 接入已有 DCC Worker 与产品状态投影，不另建编排器。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

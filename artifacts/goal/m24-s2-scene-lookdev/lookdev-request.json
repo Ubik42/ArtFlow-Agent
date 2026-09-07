@@ -1,0 +1,94 @@
+{
+  "schema_id": "artflow-scene-lookdev-request/1",
+  "request_id": "scene-lookdev-0feceaa75f8a582d",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "conditioning_request_sha256": "df81f3510d36e4d29cb7e95be10b63da33e4fccffcbd43987f0e7249b5bf4bef",
+  "conditioning_receipt_sha256": "0812e7e60f3dc98850c1403fc968fec66e3b4eadc0b44238d2aaffff25dda16d",
+  "accepted_artifact_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "source_shot_request_sha256": "e8e5f2673e75e727c5247c0182c052ddc2b1d2885265c9b0a0a35e41d736199e",
+  "source_blend_sha256": "fbc39cb3f4e681566a1cbfa0b62ba630a4d7c078ade34a04ed24a1981e746da5",
+  "capability_id": "blender.lookdev.scene_target.v1",
+  "camera": {
+    "label": "ArtFlow_Camera",
+    "location_cm": [
+      -900.0,
+      0.0,
+      420.0
+    ],
+    "rotation_deg": [
+      -18.0,
+      0.0,
+      -0.0
+    ],
+    "horizontal_fov_deg": 55.0,
+    "aspect_ratio": 1.7777780294418335
+  },
+  "material_tints": [
+    {
+      "target": "M_AF_Stone",
+      "color_srgb": [
+        0.8784,
+        0.8275,
+        0.7608
+      ],
+      "blend": 0.42
+    },
+    {
+      "target": "M_AF_Weathering",
+      "color_srgb": [
+        0.3059,
+        0.2941,
+        0.2941
+      ],
+      "blend": 0.5
+    },
+    {
+      "target": "M_AF_Inlay",
+      "color_srgb": [
+        0.7098,
+        0.651,
+        0.5725
+      ],
+      "blend": 0.58
+    }
+  ],
+  "light_rig": [
+    {
+      "role": "key",
+      "rotation_deg": [
+        -38.0,
+        -32.0,
+        0.0
+      ],
+      "intensity_lux": 4.4,
+      "temperature_kelvin": 4300.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "fill",
+      "rotation_deg": [
+        -58.0,
+        118.0,
+        0.0
+      ],
+      "intensity_lux": 0.48,
+      "temperature_kelvin": 9200.0,
+      "cast_shadows": true
+    },
+    {
+      "role": "rim",
+      "rotation_deg": [
+        -22.0,
+        168.0,
+        0.0
+      ],
+      "intensity_lux": 1.65,
+      "temperature_kelvin": 6800.0,
+      "cast_shadows": true
+    }
+  ],
+  "output_stem": "AF_ShrineCourtyard_Lookdev",
+  "request_sha256": "4a01b62f9d5897e2729e57fbd4c16c789fdacfac12fcf42b372bc8f00269aab7"
+}

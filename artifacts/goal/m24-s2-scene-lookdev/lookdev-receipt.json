@@ -1,0 +1,36 @@
+{
+  "schema_id": "artflow-blender-lookdev-receipt/1",
+  "request_id": "scene-lookdev-0feceaa75f8a582d",
+  "request_sha256": "4a01b62f9d5897e2729e57fbd4c16c789fdacfac12fcf42b372bc8f00269aab7",
+  "capability_id": "blender.lookdev.scene_target.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "camera_label": "ArtFlow_Shot_Camera",
+  "material_targets": [
+    "M_AF_Stone",
+    "M_AF_Weathering",
+    "M_AF_Inlay"
+  ],
+  "light_roles": [
+    "key",
+    "fill",
+    "rim"
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ShrineCourtyard_Lookdev.blend",
+      "sha256": "75dd3032bed469eaae834d723924c2cdae9ebc87150ed84648b9ed097e2195f1",
+      "size_bytes": 150913
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ShrineCourtyard_Lookdev-preview.png",
+      "sha256": "189018e5c0dca3d3d9b6084db3cbc6c4787e8c484b547e929d307e6e96afa26b",
+      "size_bytes": 696176
+    }
+  ],
+  "elapsed_seconds": 1.361,
+  "completed_at": "2026-09-07T09:39:48.647329Z",
+  "receipt_sha256": "c91bb6bd92b1bf9f391eeb40f8c380fe2a967a7012c2d97590d18b90fa15fb8b"
+}
