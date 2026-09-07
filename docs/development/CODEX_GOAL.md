@@ -150,9 +150,11 @@ Unreal 当前场景
 - **M44 · Live simulation-cache dispatch（已完成）**：把 M43 的地形来源、Blender 动画源、Alembic、
   Geometry Cache、Level Sequence 和候选身份登记为当前 Session 的第十四项有限能力，复用既有
   DCC Worker、append-only 事件链和场景变更谱完成直接派发、恢复与展示。
-- **M45 · Biome-driven foliage kit and wind material（进行中）**：复用 M42 生物群落分区，让 Blender
+- **M45 · Biome-driven foliage kit and wind material（已完成）**：复用 M42 生物群落分区，让 Blender
   以曲线与 Geometry Nodes 生成有限植被模块套件，并在 Unreal 中通过项目 PCG 与可调 WPO 风材质
-  形成可继续编辑的环境层；仍只写入派生候选。
+  形成可继续编辑的环境层；三种变体和 18 个实例已在派生候选中完成回流与幂等对账。
+- **M46 · Live foliage dispatch（进行中）**：把 M45 的蒙版、点集、Blender 编辑源、三种 GLB/LOD、
+  Unreal 风材质、PCG 图和候选身份登记为当前 Session 的第十五项有限能力，接入现有 DCC Worker。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

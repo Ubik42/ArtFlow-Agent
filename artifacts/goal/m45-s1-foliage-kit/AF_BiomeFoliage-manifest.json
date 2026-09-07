@@ -1,0 +1,271 @@
+{
+  "schema_id": "artflow-foliage-kit-manifest/1",
+  "request_sha256": "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424",
+  "coordinate_system": "unreal-centimeters-z-up",
+  "variants": [
+    {
+      "species_id": "reed",
+      "object_name": "SM_AF_Foliage_Reed",
+      "base_glb": "SM_AF_Foliage_Reed.glb",
+      "base_sha256": "5122dcdb8016310610901784e5bc7728199833d6f1ca01aa3ca289c747586af0",
+      "lod1_glb": "SM_AF_Foliage_Reed_LOD1.glb",
+      "lod1_sha256": "dca0cc1784945c6d51537c5d3bf79d2d37b811183c52b421dbf95851df0ac090",
+      "base_triangles": 144,
+      "lod1_triangles": 56,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Reed_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Reed_00",
+      "wind_strength": 0.24,
+      "wind_speed": 0.75
+    },
+    {
+      "species_id": "fern",
+      "object_name": "SM_AF_Foliage_Fern",
+      "base_glb": "SM_AF_Foliage_Fern.glb",
+      "base_sha256": "2b1b4eb05892a6d47accf36ed4a7d2f0e7ef718e48a49b50553c57de28d9f722",
+      "lod1_glb": "SM_AF_Foliage_Fern_LOD1.glb",
+      "lod1_sha256": "d54e6271405bdab43c7492dea3bd25b2dc880412494bdb362de70dd8d77e1e3e",
+      "base_triangles": 120,
+      "lod1_triangles": 44,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Fern_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Fern_00",
+      "wind_strength": 0.18,
+      "wind_speed": 0.55
+    },
+    {
+      "species_id": "broadleaf",
+      "object_name": "SM_AF_Foliage_Broadleaf",
+      "base_glb": "SM_AF_Foliage_Broadleaf.glb",
+      "base_sha256": "a754a3e286f3154d970743945dc28ad91bef5bb5f7b35b2f765ce397e7d9af42",
+      "lod1_glb": "SM_AF_Foliage_Broadleaf_LOD1.glb",
+      "lod1_sha256": "89f1b0cad9255ab0d1c13483829e616ab2e375e9ff0cb561749552857ed92782",
+      "base_triangles": 96,
+      "lod1_triangles": 44,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Broadleaf_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Broadleaf_00",
+      "wind_strength": 0.31,
+      "wind_speed": 0.42
+    }
+  ],
+  "placements": [
+    {
+      "point_id": "foliage-point-01",
+      "species_id": "reed",
+      "location_cm": [
+        -784.98,
+        579.94,
+        24.0
+      ],
+      "seed": 420907,
+      "yaw_deg": 282.297,
+      "scale": 1.0021
+    },
+    {
+      "point_id": "foliage-point-02",
+      "species_id": "fern",
+      "location_cm": [
+        -624.73,
+        579.94,
+        24.0
+      ],
+      "seed": 420908,
+      "yaw_deg": 179.221,
+      "scale": 0.9861
+    },
+    {
+      "point_id": "foliage-point-03",
+      "species_id": "broadleaf",
+      "location_cm": [
+        16.28,
+        579.94,
+        24.0
+      ],
+      "seed": 420909,
+      "yaw_deg": 185.477,
+      "scale": 1.1818
+    },
+    {
+      "point_id": "foliage-point-04",
+      "species_id": "reed",
+      "location_cm": [
+        176.53,
+        579.94,
+        24.0
+      ],
+      "seed": 420910,
+      "yaw_deg": 57.138,
+      "scale": 1.037
+    },
+    {
+      "point_id": "foliage-point-05",
+      "species_id": "fern",
+      "location_cm": [
+        336.78,
+        579.94,
+        24.0
+      ],
+      "seed": 420911,
+      "yaw_deg": 216.945,
+      "scale": 0.9219
+    },
+    {
+      "point_id": "foliage-point-06",
+      "species_id": "broadleaf",
+      "location_cm": [
+        497.03,
+        579.94,
+        24.0
+      ],
+      "seed": 420912,
+      "yaw_deg": 290.547,
+      "scale": 0.7801
+    },
+    {
+      "point_id": "foliage-point-07",
+      "species_id": "reed",
+      "location_cm": [
+        657.28,
+        579.94,
+        24.0
+      ],
+      "seed": 420913,
+      "yaw_deg": 354.23,
+      "scale": 1.1087
+    },
+    {
+      "point_id": "foliage-point-08",
+      "species_id": "fern",
+      "location_cm": [
+        -784.98,
+        429.53,
+        24.0
+      ],
+      "seed": 420914,
+      "yaw_deg": 24.276,
+      "scale": 0.8954
+    },
+    {
+      "point_id": "foliage-point-09",
+      "species_id": "broadleaf",
+      "location_cm": [
+        -624.73,
+        429.53,
+        24.0
+      ],
+      "seed": 420915,
+      "yaw_deg": 349.447,
+      "scale": 0.986
+    },
+    {
+      "point_id": "foliage-point-10",
+      "species_id": "reed",
+      "location_cm": [
+        16.28,
+        429.53,
+        24.0
+      ],
+      "seed": 420916,
+      "yaw_deg": 118.477,
+      "scale": 0.9881
+    },
+    {
+      "point_id": "foliage-point-11",
+      "species_id": "fern",
+      "location_cm": [
+        176.53,
+        429.53,
+        24.0
+      ],
+      "seed": 420917,
+      "yaw_deg": 293.766,
+      "scale": 0.9657
+    },
+    {
+      "point_id": "foliage-point-12",
+      "species_id": "broadleaf",
+      "location_cm": [
+        336.78,
+        429.53,
+        24.0
+      ],
+      "seed": 420918,
+      "yaw_deg": 331.967,
+      "scale": 1.1853
+    },
+    {
+      "point_id": "foliage-point-13",
+      "species_id": "reed",
+      "location_cm": [
+        497.03,
+        429.53,
+        24.0
+      ],
+      "seed": 420919,
+      "yaw_deg": 114.151,
+      "scale": 1.0785
+    },
+    {
+      "point_id": "foliage-point-14",
+      "species_id": "fern",
+      "location_cm": [
+        657.28,
+        429.53,
+        24.0
+      ],
+      "seed": 420920,
+      "yaw_deg": 161.276,
+      "scale": 1.202
+    },
+    {
+      "point_id": "foliage-point-15",
+      "species_id": "broadleaf",
+      "location_cm": [
+        -784.98,
+        279.11,
+        24.0
+      ],
+      "seed": 420921,
+      "yaw_deg": 63.438,
+      "scale": 1.0157
+    },
+    {
+      "point_id": "foliage-point-16",
+      "species_id": "reed",
+      "location_cm": [
+        -624.73,
+        279.11,
+        24.0
+      ],
+      "seed": 420922,
+      "yaw_deg": 298.221,
+      "scale": 1.0324
+    },
+    {
+      "point_id": "foliage-point-17",
+      "species_id": "fern",
+      "location_cm": [
+        16.28,
+        279.11,
+        24.0
+      ],
+      "seed": 420923,
+      "yaw_deg": 65.042,
+      "scale": 0.9556
+    },
+    {
+      "point_id": "foliage-point-18",
+      "species_id": "broadleaf",
+      "location_cm": [
+        497.03,
+        279.11,
+        24.0
+      ],
+      "seed": 420924,
+      "yaw_deg": 259.408,
+      "scale": 1.1526
+    }
+  ],
+  "manifest_sha256": "174f204237e7ca1c744aa1e387f3e8901733be11a1d879a8392b7b780c1ba2c1"
+}

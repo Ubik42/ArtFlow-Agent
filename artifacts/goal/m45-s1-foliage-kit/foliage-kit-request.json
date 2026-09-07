@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-foliage-kit-request/1",
+  "request_id": "foliage-kit-414754b7f2f6ce85",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "biome_mask_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m42-s1-terrain-biome/biome-mask.png",
+  "biome_mask_sha256": "e1eb402585fc23648cb2901390d698ba73bdbc58328c61e12b2896326a5b7b3f",
+  "biome_points_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m42-s1-terrain-biome/biome-pcg-points.json",
+  "biome_points_sha256": "08f5a7a17a112d43766a303bf0ef6f0dcc63c5dfc779faf1a327c235da5e52cc",
+  "terrain_receipt_sha256": "393a92fd803a1eeb65a42544ee844d53b373ae84694898a0685c0e717a3aae9e",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Terrain_B_dfa6418e8729",
+  "source_candidate_sha256": "3f116545694e2af69376c3048e4a9d9db42790f8d13ac4a630c51f090dbf8710",
+  "blender_capability_id": "blender.geometry_nodes.biome_foliage_kit.v1",
+  "unreal_capability_id": "unreal.pcg.biome_foliage_wind.v1",
+  "species": [
+    {
+      "species_id": "reed",
+      "max_height_cm": 180,
+      "blade_count": 9,
+      "wind_strength": 0.24,
+      "wind_speed": 0.75
+    },
+    {
+      "species_id": "fern",
+      "max_height_cm": 105,
+      "blade_count": 7,
+      "wind_strength": 0.18,
+      "wind_speed": 0.55
+    },
+    {
+      "species_id": "broadleaf",
+      "max_height_cm": 135,
+      "blade_count": 5,
+      "wind_strength": 0.31,
+      "wind_speed": 0.42
+    }
+  ],
+  "instance_budget": 18,
+  "triangle_budget_per_variant": 2400,
+  "lod_policy": "lod1-at-most-60-percent-triangles",
+  "collision_policy": "explicit-box-proxy-per-variant",
+  "seed": 450907,
+  "request_sha256": "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424"
+}

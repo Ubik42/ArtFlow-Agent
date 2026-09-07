@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M45-S1",
+  "status": "completed",
+  "outcome": "The M42 biome field now drives three editable Blender foliage variants and a derived Unreal candidate with project-owned PCG and bounded WPO wind materials. A second host return reconciled 18 instances with zero duplicate side effects and an unchanged terrain source candidate.",
+  "evidence": [
+    "artifacts/goal/m45-s1-foliage-kit/blender-foliage-kit-receipt.json",
+    "artifacts/goal/m45-s1-foliage-kit/AF_BiomeFoliage-preview.png",
+    "artifacts/goal/m45-s1-foliage-kit/unreal-biome-foliage-receipt.json",
+    "artifacts/goal/m45-s1-foliage-kit/unreal-biome-foliage-candidate.png",
+    "docs/evidence/M45_S1_BIOME_FOLIAGE_2026-09-07.md"
+  ]
+}

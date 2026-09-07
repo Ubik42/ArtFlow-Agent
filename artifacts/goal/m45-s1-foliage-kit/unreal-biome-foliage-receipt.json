@@ -1,0 +1,40 @@
+{
+  "schema_id": "artflow-unreal-biome-foliage-receipt/1",
+  "request_sha256": "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424",
+  "blender_receipt_sha256": "09914097e814ef4a0d5fb27f918e366eeb92efbe30d500f1470b104ca91554cd",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Terrain_B_dfa6418e8729",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Foliage_B_33eb6be804c2",
+  "mesh_paths": {
+    "reed": "/Game/ArtFlow/Generated/Blender/Foliage/F_33eb6be804c2/SM_AF_Foliage_Reed/StaticMeshes/SM_AF_Foliage_Reed.SM_AF_Foliage_Reed",
+    "fern": "/Game/ArtFlow/Generated/Blender/Foliage/F_33eb6be804c2/SM_AF_Foliage_Fern/StaticMeshes/SM_AF_Foliage_Fern.SM_AF_Foliage_Fern",
+    "broadleaf": "/Game/ArtFlow/Generated/Blender/Foliage/F_33eb6be804c2/SM_AF_Foliage_Broadleaf/StaticMeshes/SM_AF_Foliage_Broadleaf.SM_AF_Foliage_Broadleaf"
+  },
+  "lod_counts": {
+    "reed": 2,
+    "fern": 2,
+    "broadleaf": 2
+  },
+  "collision_counts": {
+    "reed": 1,
+    "fern": 1,
+    "broadleaf": 1
+  },
+  "wind_master_material_path": "/Game/ArtFlow/Generated/Materials/Foliage/M_AF_FoliageWind_33eb6be804c2.M_AF_FoliageWind_33eb6be804c2",
+  "wind_material_instance_paths": {
+    "reed": "/Game/ArtFlow/Generated/Materials/Foliage/MI_AF_Reed_33eb6be804c2.MI_AF_Reed_33eb6be804c2",
+    "fern": "/Game/ArtFlow/Generated/Materials/Foliage/MI_AF_Fern_33eb6be804c2.MI_AF_Fern_33eb6be804c2",
+    "broadleaf": "/Game/ArtFlow/Generated/Materials/Foliage/MI_AF_Broadleaf_33eb6be804c2.MI_AF_Broadleaf_33eb6be804c2"
+  },
+  "native_pcg_graph_path": "/Game/ArtFlow/PCG/Generated/PCG_AF_Foliage_33eb6be804c2.PCG_AF_Foliage_33eb6be804c2",
+  "foliage_instance_count": 18,
+  "duplicate_side_effect_count": 0,
+  "source_candidate_sha256_before": "3f116545694e2af69376c3048e4a9d9db42790f8d13ac4a630c51f090dbf8710",
+  "source_candidate_sha256_after": "3f116545694e2af69376c3048e4a9d9db42790f8d13ac4a630c51f090dbf8710",
+  "screenshot_path": "unreal-biome-foliage-candidate.png",
+  "screenshot_sha256": "9645b102d9dcd954f60ddd0d5d37e39e736b42f1b48f9f07dd01e2a4f492fe92",
+  "capture_status": "captured",
+  "completed_at": "2026-09-07T15:46:53.658395Z",
+  "receipt_sha256": "64dada72bca8e480d581d99128ff19989998ddd1da7695d5890155faa7b62058"
+}

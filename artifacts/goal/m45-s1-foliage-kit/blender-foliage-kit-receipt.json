@@ -1,0 +1,115 @@
+{
+  "schema_id": "artflow-blender-foliage-kit-receipt/1",
+  "request_id": "foliage-kit-414754b7f2f6ce85",
+  "request_sha256": "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424",
+  "capability_id": "blender.geometry_nodes.biome_foliage_kit.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "variants": [
+    {
+      "species_id": "reed",
+      "object_name": "SM_AF_Foliage_Reed",
+      "base_glb": "SM_AF_Foliage_Reed.glb",
+      "base_sha256": "5122dcdb8016310610901784e5bc7728199833d6f1ca01aa3ca289c747586af0",
+      "lod1_glb": "SM_AF_Foliage_Reed_LOD1.glb",
+      "lod1_sha256": "dca0cc1784945c6d51537c5d3bf79d2d37b811183c52b421dbf95851df0ac090",
+      "base_triangles": 144,
+      "lod1_triangles": 56,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Reed_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Reed_00",
+      "wind_strength": 0.24,
+      "wind_speed": 0.75
+    },
+    {
+      "species_id": "fern",
+      "object_name": "SM_AF_Foliage_Fern",
+      "base_glb": "SM_AF_Foliage_Fern.glb",
+      "base_sha256": "2b1b4eb05892a6d47accf36ed4a7d2f0e7ef718e48a49b50553c57de28d9f722",
+      "lod1_glb": "SM_AF_Foliage_Fern_LOD1.glb",
+      "lod1_sha256": "d54e6271405bdab43c7492dea3bd25b2dc880412494bdb362de70dd8d77e1e3e",
+      "base_triangles": 120,
+      "lod1_triangles": 44,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Fern_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Fern_00",
+      "wind_strength": 0.18,
+      "wind_speed": 0.55
+    },
+    {
+      "species_id": "broadleaf",
+      "object_name": "SM_AF_Foliage_Broadleaf",
+      "base_glb": "SM_AF_Foliage_Broadleaf.glb",
+      "base_sha256": "a754a3e286f3154d970743945dc28ad91bef5bb5f7b35b2f765ce397e7d9af42",
+      "lod1_glb": "SM_AF_Foliage_Broadleaf_LOD1.glb",
+      "lod1_sha256": "89f1b0cad9255ab0d1c13483829e616ab2e375e9ff0cb561749552857ed92782",
+      "base_triangles": 96,
+      "lod1_triangles": 44,
+      "uv_layer": "UVMap",
+      "geometry_nodes_recipe": "GN_SM_AF_Foliage_Broadleaf_WindReady",
+      "collision_proxy": "UBX_SM_AF_Foliage_Broadleaf_00",
+      "wind_strength": 0.31,
+      "wind_speed": 0.42
+    }
+  ],
+  "placement_count": 18,
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_BiomeFoliage.blend",
+      "sha256": "69a27c33781266fdf26c68d7ddb1adac17039fb8f00a659c43e9f77e96ca5ad3",
+      "size_bytes": 110849
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_BiomeFoliage-preview.png",
+      "sha256": "f03fde20eabb255d95c1dd40c13f994fd46b16403791bc6e61cc1a7354e49342",
+      "size_bytes": 643875
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_BiomeFoliage-manifest.json",
+      "sha256": "764720c62b711070d9e159c10bd7589d979f2d98736eaa7aff916347f4fa3e10",
+      "size_bytes": 6553
+    },
+    {
+      "kind": "base_glb",
+      "relative_path": "SM_AF_Foliage_Reed.glb",
+      "sha256": "5122dcdb8016310610901784e5bc7728199833d6f1ca01aa3ca289c747586af0",
+      "size_bytes": 7552
+    },
+    {
+      "kind": "lod1_glb",
+      "relative_path": "SM_AF_Foliage_Reed_LOD1.glb",
+      "sha256": "dca0cc1784945c6d51537c5d3bf79d2d37b811183c52b421dbf95851df0ac090",
+      "size_bytes": 3828
+    },
+    {
+      "kind": "base_glb",
+      "relative_path": "SM_AF_Foliage_Fern.glb",
+      "sha256": "2b1b4eb05892a6d47accf36ed4a7d2f0e7ef718e48a49b50553c57de28d9f722",
+      "size_bytes": 6488
+    },
+    {
+      "kind": "lod1_glb",
+      "relative_path": "SM_AF_Foliage_Fern_LOD1.glb",
+      "sha256": "d54e6271405bdab43c7492dea3bd25b2dc880412494bdb362de70dd8d77e1e3e",
+      "size_bytes": 3280
+    },
+    {
+      "kind": "base_glb",
+      "relative_path": "SM_AF_Foliage_Broadleaf.glb",
+      "sha256": "a754a3e286f3154d970743945dc28ad91bef5bb5f7b35b2f765ce397e7d9af42",
+      "size_bytes": 5484
+    },
+    {
+      "kind": "lod1_glb",
+      "relative_path": "SM_AF_Foliage_Broadleaf_LOD1.glb",
+      "sha256": "89f1b0cad9255ab0d1c13483829e616ab2e375e9ff0cb561749552857ed92782",
+      "size_bytes": 3316
+    }
+  ],
+  "elapsed_seconds": 0.943,
+  "completed_at": "2026-09-07T15:45:36.456283Z",
+  "receipt_sha256": "09914097e814ef4a0d5fb27f918e366eeb92efbe30d500f1470b104ca91554cd"
+}

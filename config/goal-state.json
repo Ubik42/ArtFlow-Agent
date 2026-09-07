@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 93,
+  "stateRevision": 94,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M45",
+  "currentMilestone": "M46",
   "milestones": [
     {
       "id": "M0",
@@ -532,7 +532,7 @@
     {
       "id": "M45",
       "title": "Biome-driven foliage kit and wind material",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M44"],
       "outcome": "The current biome partition drives a small editable Blender foliage kit and a project-owned Unreal PCG environment layer with bounded wind-material parameters in a derived candidate.",
       "acceptance": [
@@ -541,40 +541,50 @@
         "One Unreal run imports the kit, creates bounded WPO material instances and consumes the biome points through project PCG",
         "A repeated return reconciles without duplicate assets, instances or upstream mutation"
       ]
+    },
+    {
+      "id": "M46",
+      "title": "Live biome-foliage dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M45"],
+      "outcome": "The proven biome-to-Blender-to-Unreal foliage route becomes the fifteenth finite current-session capability dispatched and recovered by the existing durable DCC lifecycle.",
+      "acceptance": [
+        "The work item binds exact mask, points, Blender source, GLB/LOD, wind material, PCG graph and candidate identities",
+        "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate side effects",
+        "The Chinese Scene Change Spectrum presents the biome field, editable kit and Unreal environment result as one route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M45-S1",
-    "milestone": "M45",
-    "title": "Generate and return a biome-driven foliage layer",
-    "outcome": "Compile the current biome field into a finite foliage kit, author it in Blender and return it through project PCG with bounded Unreal wind materials.",
-    "risk": "R2",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M46-S1",
+    "milestone": "M46",
+    "title": "Dispatch and present the live biome-foliage route",
+    "outcome": "Register the proven M45 artifact chain in the current durable DCC worker and present it as one inspectable route in Scene Change Spectrum.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "web/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not download foliage packs or train a model",
-      "Do not expose arbitrary Geometry Nodes graphs or material expressions",
-      "Do not build a general vegetation editor or replace Unreal foliage tooling",
-      "Do not modify M42-M44 candidates or ArtFlowDemo in place"
+      "Do not rerun Blender or Unreal hosts",
+      "Do not add a second worker or event vocabulary",
+      "Do not expose arbitrary DCC or material execution",
+      "Do not modify M45 or upstream candidates"
     ],
     "acceptance": [
-      "The request binds exact biome, terrain and source-candidate identities plus finite species and budgets",
-      "Blender produces at least three editable foliage variants with LOD and UV evidence",
-      "Unreal imports the variants, assigns bounded wind materials and places them through a project PCG graph",
-      "The second return reports zero duplicates and unchanged upstream hashes"
+      "The current work schema admits a fifteenth registered foliage capability with all frozen M45 identities",
+      "Worker execution and replay produce the same terminal result with zero duplicate side effects",
+      "Desktop and narrow Chinese captures show the real three-host foliage route and its evidence"
     ],
     "stopConditions": [
-      "Stop if the biome mask or M42 terrain candidate identity no longer verifies",
-      "Stop if generated variants exceed finite geometry or instance budgets",
-      "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
+      "Stop if any frozen M45 artifact identity fails verification",
+      "Stop if integration would require a parallel lifecycle or arbitrary host execution",
+      "Stop if current UI changes overlap unknown user work and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
-      {"id": "biome_mask", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/biome-mask.png", "required": true},
-      {"id": "terrain_candidate", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json", "required": true}
+      {"id": "foliage_request", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/foliage-kit-request.json", "required": true},
+      {"id": "blender_foliage_receipt", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/blender-foliage-kit-receipt.json", "required": true},
+      {"id": "unreal_foliage_receipt", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/unreal-biome-foliage-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -590,9 +600,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0086.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0087.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M44 are complete. The Blender-to-Alembic-to-Unreal time-based route is the fourteenth finite current-session capability. The existing DCC worker verified all frozen identities, projected five lifecycle events, replayed equivalently and produced zero duplicate external side effects. Desktop and narrow Scene Change Spectrum captures present the real terrain-to-cache-to-Sequencer route. Biome-driven foliage kit and wind material is M45-S1 scope.",
+  "evidenceCeiling": "M0-M45 are complete. M42 biome facts drive three editable Blender foliage variants with UV, LOD and collision evidence, then a project-owned Unreal PCG graph places 18 instances using three bounded WPO wind material instances. The second return reconciled with zero duplicates and an unchanged terrain source candidate. Live foliage dispatch is M46-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
