@@ -19,6 +19,7 @@ from .material_variation import (
     MaterialVariationRequest,
     verify_material_variation,
 )
+from .modular_environment import ModularEnvironmentRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
@@ -87,6 +88,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "terrain": project_root / "artifacts/goal/m42-s1-terrain-biome",
         "simulation_cache": project_root / "artifacts/goal/m43-s1-simulation-cache",
         "foliage": project_root / "artifacts/goal/m45-s1-foliage-kit",
+        "modular": project_root / "artifacts/goal/m47-s1-modular-environment",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -497,6 +499,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         if (
             work.simulation_cache_request_sha256 is None
             and work.foliage_kit_request_sha256 is None
+            and work.modular_environment_request_sha256 is None
             and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
         ):
             raise ValueError("Unreal material candidate changed")
@@ -520,10 +523,14 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
 
     if work.simulation_cache_request_sha256 is not None:
         request = SimulationCacheRequest.model_validate_json(
-            (roots["simulation_cache"] / "simulation-cache-request.json").read_text(encoding="utf-8")
+            (roots["simulation_cache"] / "simulation-cache-request.json").read_text(
+                encoding="utf-8"
+            )
         )
         blender_receipt = BlenderSimulationCacheReceipt.model_validate_json(
-            (roots["simulation_cache"] / "blender-simulation-cache-receipt.json").read_text(encoding="utf-8")
+            (roots["simulation_cache"] / "blender-simulation-cache-receipt.json").read_text(
+                encoding="utf-8"
+            )
         )
         if request.request_sha256 != work.simulation_cache_request_sha256:
             raise ValueError("registered simulation-cache request changed")
@@ -534,15 +541,25 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["simulation_cache"] / "unreal-simulation-cache-receipt.json",
             expected_sha256=str(work.unreal_simulation_cache_receipt_sha256),
         )
-        terrain_receipt = json.loads((roots["terrain"] / "unreal-biome-terrain-receipt.json").read_text(encoding="utf-8"))
-        if unreal_receipt.get("source_candidate_scene_path") != terrain_receipt.get("candidate_scene_path"):
+        terrain_receipt = json.loads(
+            (roots["terrain"] / "unreal-biome-terrain-receipt.json").read_text(encoding="utf-8")
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != terrain_receipt.get(
+            "candidate_scene_path"
+        ):
             raise ValueError("simulation-cache source terrain candidate changed")
-        if (work.foliage_kit_request_sha256 is None
-                and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path):
+        if (
+            work.foliage_kit_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("simulation-cache candidate changed")
         if unreal_receipt.get("status") != "reconciled":
             raise ValueError("Unreal simulation cache is not reconciled")
-        if (unreal_receipt.get("cache_binding_count"), unreal_receipt.get("geometry_cache_track_count"), unreal_receipt.get("geometry_cache_section_count")) != (1, 1, 1):
+        if (
+            unreal_receipt.get("cache_binding_count"),
+            unreal_receipt.get("geometry_cache_track_count"),
+            unreal_receipt.get("geometry_cache_section_count"),
+        ) != (1, 1, 1):
             raise ValueError("simulation-cache Sequencer topology changed")
         if unreal_receipt.get("duplicate_asset_count") != 0:
             raise ValueError("simulation-cache replay created duplicate assets")
@@ -567,9 +584,15 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         )
         if unreal_receipt.get("request_sha256") != request.request_sha256:
             raise ValueError("Unreal foliage references another request")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.modular_environment_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("biome-foliage candidate changed")
-        if unreal_receipt.get("status") != "reconciled" or unreal_receipt.get("foliage_instance_count") != 18:
+        if (
+            unreal_receipt.get("status") != "reconciled"
+            or unreal_receipt.get("foliage_instance_count") != 18
+        ):
             raise ValueError("biome-foliage instance result changed")
         if set(unreal_receipt.get("mesh_paths", {})) != {"reed", "fern", "broadleaf"}:
             raise ValueError("biome-foliage species identities changed")
@@ -580,6 +603,47 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["foliage"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal biome-foliage screenshot identity changed")
+
+    if work.modular_environment_request_sha256 is not None:
+        request = ModularEnvironmentRequest.model_validate_json(
+            (roots["modular"] / "modular-environment-request.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.modular_environment_request_sha256:
+            raise ValueError("registered modular-environment request changed")
+        zone = _load_receipt(
+            roots["modular"] / "comfy-module-zone-receipt.json",
+            expected_sha256=str(work.comfy_module_zone_receipt_sha256),
+        )
+        blender_receipt = _load_receipt(
+            roots["modular"] / "blender-modular-environment-receipt.json",
+            expected_sha256=str(work.blender_modular_environment_receipt_sha256),
+        )
+        _verify_artifacts(roots["modular"], blender_receipt)
+        unreal_receipt = _load_receipt(
+            roots["modular"] / "unreal-modular-environment-receipt.json",
+            expected_sha256=str(work.unreal_modular_environment_receipt_sha256),
+        )
+        if zone.get("request_sha256") != request.request_sha256:
+            raise ValueError("registered module-zone receipt changed")
+        if blender_receipt.get("zone_receipt_sha256") != zone.get("receipt_sha256"):
+            raise ValueError("registered Blender modular receipt changed")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("modular-environment candidate changed")
+        if (
+            unreal_receipt.get("status") != "reconciled"
+            or unreal_receipt.get("module_actor_count") != 12
+        ):
+            raise ValueError("modular-environment actor result changed")
+        if set(unreal_receipt.get("mesh_paths", {})) != {"wall", "pillar", "gateway"}:
+            raise ValueError("modular-environment module identities changed")
+        if (
+            unreal_receipt.get("created_actor_count") != 0
+            or unreal_receipt.get("duplicate_side_effect_count") != 0
+        ):
+            raise ValueError("modular-environment replay created duplicate actors")
+        screenshot = roots["modular"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal modular-environment screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 

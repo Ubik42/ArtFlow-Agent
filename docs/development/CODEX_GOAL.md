@@ -158,8 +158,12 @@ Unreal 当前场景
 - **M47 · Concept-guided modular environment assembly（已完成）**：把当前 Scene Session 的深度、
   保护区和视觉目标编译为有限模块类别与布局预算，由固定 ComfyUI 空间子图、Blender Geometry
   Nodes 场景装配和 Unreal 类型化 Actor/PCG 消费器共同建立可编辑环境候选。
-- **M48 · Live modular-environment dispatch（进行中）**：把 M47 的空间场、Blender 模块编辑源、
+- **M48 · Live modular-environment dispatch（已完成）**：把 M47 的空间场、Blender 模块编辑源、
   三类 GLB、布局清单和 Unreal Actor 候选身份登记为第十六项当前 Session 能力，接入现有持久 Worker。
+- **M49 · Scene-conditioned spline infrastructure（进行中）**：把当前深度、保护区和模块化候选编译为
+  有限路线场；固定 ComfyUI 子图负责空间走廊，Blender 曲线与 Geometry Nodes 生成可编辑管线/电缆
+  和支架，Unreal 通过登记的 SplineComponent 与资产工具在派生候选中重建。该路线用于验证 Blender
+  不只是建模器，也是程序化路径、装配和引擎数据交换的 DCC 执行面。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

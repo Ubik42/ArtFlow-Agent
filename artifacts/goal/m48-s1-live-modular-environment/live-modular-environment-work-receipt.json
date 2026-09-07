@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-live-modular-environment-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-f9607b7ab489",
+  "work_sha256": "f9607b7ab489aa6f5177ec7ca4dc726fc96a5dfd11ba38cbd2211646d99d4dc8",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1",
+    "blender.material.scene_conditioned_wayfinder_set.v1",
+    "blender.cache.wind_veil.v1",
+    "blender.geometry_nodes.biome_foliage_kit.v1",
+    "blender.geometry_nodes.modular_environment.v1"
+  ],
+  "modular_environment_request_sha256": "991e0fa20ff4233c09451bb2a30d67f34e452d0879375835541029835cb57053",
+  "comfy_module_zone_receipt_sha256": "5f04ac11e0623df6fd1e5ac401b80822d56c742f2c31f54a1ef0778ffb93dfa5",
+  "blender_modular_environment_receipt_sha256": "0538f5e2ddcd310dc4b9c51a5b7a95668b60328c302c7b5ae869afd319813d05",
+  "unreal_modular_environment_receipt_sha256": "158138e6615f56276087e9a7b2ff455310bd8853cd718039bc858ddcd602786c",
+  "outcome_sha256": "158138e6615f56276087e9a7b2ff455310bd8853cd718039bc858ddcd602786c",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Modular_B_991e0fa20ff4",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

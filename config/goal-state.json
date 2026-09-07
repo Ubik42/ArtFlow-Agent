@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 96,
+  "stateRevision": 97,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M48",
+  "currentMilestone": "M49",
   "milestones": [
     {
       "id": "M0",
@@ -570,7 +570,7 @@
     {
       "id": "M48",
       "title": "Live modular-environment dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M47"],
       "outcome": "The proven scene-conditioned modular assembly becomes the sixteenth finite current-session capability dispatched and recovered through the existing durable DCC lifecycle.",
       "acceptance": [
@@ -578,39 +578,54 @@
         "The existing worker verifies and replays the route with zero duplicate side effects",
         "The Chinese Scene Change Spectrum presents spatial conditioning, editable assembly and Unreal result as one route"
       ]
+    },
+    {
+      "id": "M49",
+      "title": "Scene-conditioned spline infrastructure",
+      "status": "in_progress",
+      "dependsOn": ["M48"],
+      "outcome": "Current scene geometry and protected regions drive an editable spline-based cable or pipe network authored in Blender and reconstructed as bounded Unreal SplineComponents in a derived candidate.",
+      "acceptance": [
+        "A typed request binds the exact current depth, protection field, modular candidate and finite route, support and geometry budgets",
+        "A fixed ComfyUI spatial graph derives a route corridor without arbitrary workflow authoring or protected-region leakage",
+        "Blender produces editable curves, Geometry Nodes geometry and deterministic support placements rather than a flattened visual mockup",
+        "Unreal reconstructs registered splines and support assets in a derived candidate; replay creates no duplicate components or actors"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M48-S1",
-    "milestone": "M48",
-    "title": "Dispatch and present the live modular environment route",
-    "outcome": "Register the proven M47 artifact chain in the current durable DCC worker and present it as one inspectable three-host route.",
-    "risk": "R1",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "web/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M49-S1",
+    "milestone": "M49",
+    "title": "Author and return a scene-conditioned spline network",
+    "outcome": "Compile current scene space into a reviewed route field, build an editable Blender curve and Geometry Nodes infrastructure kit, and reconstruct it through registered Unreal spline tools in a derived candidate.",
+    "risk": "R2",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/blender/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun ComfyUI, Blender or Unreal hosts",
-      "Do not add a second worker or lifecycle vocabulary",
+      "Do not build a general-purpose route editor or expose arbitrary Blender code",
+      "Do not replace the existing DCC worker, event model or candidate lifecycle",
       "Do not expose arbitrary host or graph execution",
-      "Do not modify M47 or upstream candidates"
+      "Do not overwrite the source level or modify M47 and upstream candidates",
+      "Do not expand into fluid simulation, construction logic or runtime gameplay"
     ],
     "acceptance": [
-      "The current work schema admits a sixteenth registered modular-environment capability with all frozen M47 identities",
-      "Worker execution and replay produce the same terminal result with zero duplicate side effects",
-      "Desktop and narrow Chinese captures show the real ComfyUI-to-Blender-to-Unreal modular route"
+      "A content-addressed request derives a finite route corridor from current scene depth and protection identities",
+      "The fixed ComfyUI graph returns a bounded corridor with zero protected-region leakage",
+      "Blender 5.2 creates editable Curve and Geometry Nodes content, exchange geometry, support placements and a preview",
+      "Unreal imports or reconstructs only registered spline and support assets inside a derived candidate and reconciles a second execution without duplicates"
     ],
     "stopConditions": [
-      "Stop if any frozen M47 artifact identity fails verification",
-      "Stop if integration would require a parallel lifecycle or arbitrary host execution",
-      "Stop if current UI changes overlap unknown user work and cannot be preserved"
+      "Stop if the current conditioning or M47 candidate identities do not verify",
+      "Stop if a valid corridor cannot avoid protected regions within the finite route budget",
+      "Stop if integration would require arbitrary model-authored host code or source-level mutation"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "modular_request", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/modular-environment-request.json", "required": true},
-      {"id": "module_zone_receipt", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/comfy-module-zone-receipt.json", "required": true},
-      {"id": "blender_modular_receipt", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/blender-modular-environment-receipt.json", "required": true},
-      {"id": "unreal_modular_receipt", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-receipt.json", "required": true}
+      {"id": "comfyui", "kind": "command", "value": "D:/ComfyUI_windows_portable/python_embeded/python.exe", "required": true},
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "D:/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
+      {"id": "modular_candidate", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -626,9 +641,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0089.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0090.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M47 are complete. A fixed ComfyUI spatial graph produced a 24.829 percent module-zone field with zero protected leakage; Blender authored three editable modules and twelve placements; Unreal reconstructed twelve stable actors in a derived candidate. Replay reconciled with zero new actors, zero duplicates and an unchanged foliage source candidate. Live modular dispatch is M48-S1 scope.",
+  "evidenceCeiling": "M0-M48 are complete. The M47 module-zone field, three editable Blender modules and twelve-actor Unreal assembly are registered as the sixteenth current-session capability. Repeat dispatch and reducer replay reached the same terminal result with zero duplicate external side effects. Scene-conditioned spline infrastructure is M49-S1 scope and has not yet been executed.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

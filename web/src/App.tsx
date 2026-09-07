@@ -651,6 +651,10 @@ type SceneDccWorkState = {
     foliage_kit_request_sha256?: string;
     blender_foliage_kit_receipt_sha256?: string;
     unreal_foliage_kit_receipt_sha256?: string;
+    modular_environment_request_sha256?: string;
+    comfy_module_zone_receipt_sha256?: string;
+    blender_modular_environment_receipt_sha256?: string;
+    unreal_modular_environment_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1857,8 +1861,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasMaterialVariation = Boolean(agent.scene_dcc_work?.definition.material_variation_request_sha256);
   const hasSimulationCache = Boolean(agent.scene_dcc_work?.definition.simulation_cache_request_sha256);
   const hasFoliageKit = Boolean(agent.scene_dcc_work?.definition.foliage_kit_request_sha256);
+  const hasModularEnvironment = Boolean(agent.scene_dcc_work?.definition.modular_environment_request_sha256);
   const cases = [
-    ...(hasFoliageKit
+    ...(hasModularEnvironment
+      ? [{
+          id: "modular-environment-roundtrip",
+          tab: "当前 Session · 模块装配",
+          title: "从场景空间条件生成可编辑的模块化环境骨架",
+          description: "Agent 将当前深度、保护区和视觉目标编译为固定空间子图与有限模块目录。ComfyUI 产生区域场，Blender 保留三类 Geometry Nodes 模块和布局，Unreal 以稳定 Actor 身份重建，同时保留已有 PCG 植被层。",
+          frames: [
+            { src: "/api/showcase/production/m47-module-zones", alt: "ComfyUI 模块区域空间场", label: "空间区域", title: "24.829% 覆盖 · 0 泄漏" },
+            { src: "/api/showcase/production/m47-modular-blender", alt: "Blender 三类模块与可编辑布局", label: "DCC 装配", title: "3 类模块 · 12 个位置" },
+            { src: "/api/showcase/production/m47-modular-unreal", alt: "Unreal 重建的模块化环境候选", label: "引擎骨架", title: "12 个 Actor · PCG 层保留" },
+          ],
+          transition: "空间场编译为稳定模块身份",
+          metricA: "3 / 12",
+          metricALabel: "模块类 / Actor",
+          metricB: "0",
+          metricBLabel: "保护区泄漏",
+          note: `装配请求 ${shortId(agent.scene_dcc_work?.definition.modular_environment_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；重放未新增 Actor。`,
+          domains: ["条件·已绑定", "区域·已生成", "模块·可编辑", "Actor·已重建", "重放·已对账"],
+        }]
+      : hasFoliageKit
       ? [{
           id: "biome-foliage-roundtrip",
           tab: "当前 Session · 生物群落",

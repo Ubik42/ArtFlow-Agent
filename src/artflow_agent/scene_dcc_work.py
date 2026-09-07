@@ -13,6 +13,7 @@ from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
+from .modular_environment import ModularEnvironmentRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .shot_package import ShotPackageRequest
@@ -53,8 +54,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.material.scene_conditioned_wayfinder_set.v1",
             "blender.cache.wind_veil.v1",
             "blender.geometry_nodes.biome_foliage_kit.v1",
+            "blender.geometry_nodes.modular_environment.v1",
         ]
-    ] = Field(min_length=2, max_length=15)
+    ] = Field(min_length=2, max_length=16)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -126,14 +128,26 @@ class SceneDccWorkDefinition(BaseModel):
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
     simulation_cache_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    blender_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
-    unreal_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_simulation_cache_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_simulation_cache_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     foliage_kit_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     blender_foliage_kit_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_foliage_kit_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    modular_environment_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    comfy_module_zone_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_modular_environment_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_modular_environment_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage|Modular)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -288,6 +302,18 @@ class SceneDccWorkDefinition(BaseModel):
             if not all(item is not None for item in foliage_identities):
                 raise ValueError("DCC work requires every biome-foliage identity")
             expected_capabilities.append("blender.geometry_nodes.biome_foliage_kit.v1")
+        modular_identities = (
+            self.modular_environment_request_sha256,
+            self.comfy_module_zone_receipt_sha256,
+            self.blender_modular_environment_receipt_sha256,
+            self.unreal_modular_environment_receipt_sha256,
+        )
+        if any(item is not None for item in modular_identities):
+            if not all(item is not None for item in modular_identities):
+                raise ValueError("DCC work requires every modular-environment identity")
+            if self.foliage_kit_request_sha256 is None:
+                raise ValueError("modular environment requires the registered foliage route")
+            expected_capabilities.append("blender.geometry_nodes.modular_environment.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -824,9 +850,16 @@ def compile_current_blender_dcc_work(
     simulation_request_path = simulation_root / "simulation-cache-request.json"
     simulation_blender_path = simulation_root / "blender-simulation-cache-receipt.json"
     simulation_unreal_path = simulation_root / "unreal-simulation-cache-receipt.json"
-    if all(path.is_file() for path in (simulation_request_path, simulation_blender_path, simulation_unreal_path)):
-        simulation_request = SimulationCacheRequest.model_validate_json(simulation_request_path.read_text(encoding="utf-8"))
-        simulation_blender = BlenderSimulationCacheReceipt.model_validate_json(simulation_blender_path.read_text(encoding="utf-8"))
+    if all(
+        path.is_file()
+        for path in (simulation_request_path, simulation_blender_path, simulation_unreal_path)
+    ):
+        simulation_request = SimulationCacheRequest.model_validate_json(
+            simulation_request_path.read_text(encoding="utf-8")
+        )
+        simulation_blender = BlenderSimulationCacheReceipt.model_validate_json(
+            simulation_blender_path.read_text(encoding="utf-8")
+        )
         simulation_unreal = json.loads(simulation_unreal_path.read_text(encoding="utf-8"))
         if simulation_request.session_id != session_id:
             raise ValueError("simulation cache references another Scene Session")
@@ -840,11 +873,18 @@ def compile_current_blender_dcc_work(
             raise ValueError("Unreal simulation cache references another request")
         if simulation_unreal.get("blender_receipt_sha256") != simulation_blender.receipt_sha256:
             raise ValueError("Unreal simulation cache references another Blender receipt")
-        terrain_unreal_path = project_root / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json"
+        terrain_unreal_path = (
+            project_root / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json"
+        )
         terrain_unreal = json.loads(terrain_unreal_path.read_text(encoding="utf-8"))
-        if simulation_unreal.get("source_candidate_scene_path") != terrain_unreal.get("candidate_scene_path"):
+        if simulation_unreal.get("source_candidate_scene_path") != terrain_unreal.get(
+            "candidate_scene_path"
+        ):
             raise ValueError("simulation cache no longer derives from the terrain candidate")
-        if simulation_unreal.get("status") != "reconciled" or simulation_unreal.get("capture_status") != "captured":
+        if (
+            simulation_unreal.get("status") != "reconciled"
+            or simulation_unreal.get("capture_status") != "captured"
+        ):
             raise ValueError("Unreal simulation cache is not reconciled with captured evidence")
         payload["capability_ids"].append("blender.cache.wind_veil.v1")
         payload["simulation_cache_request_sha256"] = simulation_request.request_sha256
@@ -856,8 +896,12 @@ def compile_current_blender_dcc_work(
     foliage_request_path = foliage_root / "foliage-kit-request.json"
     foliage_blender_path = foliage_root / "blender-foliage-kit-receipt.json"
     foliage_unreal_path = foliage_root / "unreal-biome-foliage-receipt.json"
-    if all(path.is_file() for path in (foliage_request_path, foliage_blender_path, foliage_unreal_path)):
-        foliage_request = FoliageKitRequest.model_validate_json(foliage_request_path.read_text(encoding="utf-8"))
+    if all(
+        path.is_file() for path in (foliage_request_path, foliage_blender_path, foliage_unreal_path)
+    ):
+        foliage_request = FoliageKitRequest.model_validate_json(
+            foliage_request_path.read_text(encoding="utf-8")
+        )
         foliage_blender = json.loads(foliage_blender_path.read_text(encoding="utf-8"))
         foliage_unreal = json.loads(foliage_unreal_path.read_text(encoding="utf-8"))
         if foliage_request.session_id != session_id:
@@ -868,10 +912,20 @@ def compile_current_blender_dcc_work(
             raise ValueError("Unreal foliage references another request")
         if foliage_unreal.get("blender_receipt_sha256") != foliage_blender.get("receipt_sha256"):
             raise ValueError("Unreal foliage references another Blender receipt")
-        terrain_unreal = json.loads((project_root / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json").read_text(encoding="utf-8"))
-        if foliage_unreal.get("source_candidate_scene_path") != terrain_unreal.get("candidate_scene_path"):
+        terrain_unreal = json.loads(
+            (
+                project_root
+                / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json"
+            ).read_text(encoding="utf-8")
+        )
+        if foliage_unreal.get("source_candidate_scene_path") != terrain_unreal.get(
+            "candidate_scene_path"
+        ):
             raise ValueError("biome foliage no longer derives from the terrain candidate")
-        if foliage_unreal.get("status") != "reconciled" or foliage_unreal.get("capture_status") != "captured":
+        if (
+            foliage_unreal.get("status") != "reconciled"
+            or foliage_unreal.get("capture_status") != "captured"
+        ):
             raise ValueError("Unreal foliage is not reconciled with captured evidence")
         payload["capability_ids"].append("blender.geometry_nodes.biome_foliage_kit.v1")
         payload["foliage_kit_request_sha256"] = foliage_request.request_sha256
@@ -879,6 +933,50 @@ def compile_current_blender_dcc_work(
         payload["unreal_foliage_kit_receipt_sha256"] = foliage_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = foliage_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = foliage_unreal["candidate_scene_path"]
+    modular_root = project_root / "artifacts/goal/m47-s1-modular-environment"
+    modular_request_path = modular_root / "modular-environment-request.json"
+    modular_zone_path = modular_root / "comfy-module-zone-receipt.json"
+    modular_blender_path = modular_root / "blender-modular-environment-receipt.json"
+    modular_unreal_path = modular_root / "unreal-modular-environment-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            modular_request_path,
+            modular_zone_path,
+            modular_blender_path,
+            modular_unreal_path,
+        )
+    ):
+        modular_request = ModularEnvironmentRequest.model_validate_json(
+            modular_request_path.read_text(encoding="utf-8")
+        )
+        module_zone = json.loads(modular_zone_path.read_text(encoding="utf-8"))
+        modular_blender = json.loads(modular_blender_path.read_text(encoding="utf-8"))
+        modular_unreal = json.loads(modular_unreal_path.read_text(encoding="utf-8"))
+        if modular_request.session_id != session_id:
+            raise ValueError("modular environment references another Scene Session")
+        if module_zone.get("request_sha256") != modular_request.request_sha256:
+            raise ValueError("module-zone receipt references another request")
+        if modular_blender.get("zone_receipt_sha256") != module_zone.get("receipt_sha256"):
+            raise ValueError("Blender modular assembly references another zone receipt")
+        if modular_unreal.get("blender_receipt_sha256") != modular_blender.get("receipt_sha256"):
+            raise ValueError("Unreal modular assembly references another Blender receipt")
+        if modular_unreal.get("source_candidate_scene_path") != foliage_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("modular environment no longer derives from the foliage candidate")
+        if (
+            modular_unreal.get("status") != "reconciled"
+            or modular_unreal.get("capture_status") != "captured"
+        ):
+            raise ValueError("Unreal modular environment is not reconciled with captured evidence")
+        payload["capability_ids"].append("blender.geometry_nodes.modular_environment.v1")
+        payload["modular_environment_request_sha256"] = modular_request.request_sha256
+        payload["comfy_module_zone_receipt_sha256"] = module_zone["receipt_sha256"]
+        payload["blender_modular_environment_receipt_sha256"] = modular_blender["receipt_sha256"]
+        payload["unreal_modular_environment_receipt_sha256"] = modular_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = modular_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = modular_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,
