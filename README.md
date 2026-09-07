@@ -4,6 +4,12 @@
 
 ![ArtFlow 场景导演台：当前候选完成内容寻址发布与 Unreal 复核](artifacts/goal/m21-s1-current-publish/live-published-review-desktop.png)
 
+当前 DCC 路线已接入 Blender 5.2 LTS。Agent 将 Session 的场景尺度与视觉意图编译为类型化建模规格，固定 Blender 能力生成可编辑 `.blend`、嵌入式 GLB 和预览，随后由 Unreal Interchange 导入 Session 派生候选关卡。首个模块化祭坛包含 26 个 Blender 可编辑构件、3 个材质和 4,888 个生成三角面；回流后的 Unreal StaticMesh 为 952 个构建三角面并带 1 个简单碰撞，源关卡哈希未变化。
+
+| Blender 可编辑生成结果 | Unreal 隔离候选回流 |
+| --- | --- |
+| ![Blender 5.2 生成的模块化祭坛](artifacts/goal/m23-s1-blender-modeling/AF_WeatheredShrine-preview.png) | ![Unreal 5.8 中的 Blender 生成资产候选](artifacts/goal/m23-s1-blender-modeling/unreal-blender-candidate.png) |
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -97,6 +103,7 @@ Planner / Capability Router / Policy Engine
         │
         ├── ComfyUI PBR
         ├── GPT Image 2
+        ├── Blender DCC Bridge
         ├── Image-to-3D Provider
         └── Typed Unreal Tools
         │
@@ -172,6 +179,8 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | 新进程发布对账 | `reconciled`，重复关卡包 0 |
 | Published 版本 Unreal 审阅 | UE 5.8.1，12 个 PCG 实例，源关卡保存 0 |
 | 新进程审阅对账 | `reconciled`，Published 关卡哈希一致 |
+| Blender 5.2 自主建模 | 26 个可编辑构件、3 个材质、4,888 个生成三角面 |
+| Blender → Unreal 回流 | 1 个 StaticMesh、3 个材质槽、1 个简单碰撞；源关卡字节变化 0 |
 
 这些数据描述仓库内固定场景和命名测试集，不代表开放域生成质量或商业 Provider 的服务等级。详细运行记录见 [验证证据目录](docs/evidence/)。
 
@@ -179,6 +188,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 
 - Windows
 - Unreal Engine `5.8.1`
+- Blender `5.2.0 LTS`
 - Python `3.11+`
 - Node.js 与 npm
 - 本地生成验证设备：NVIDIA GeForce RTX 4080 16 GB
@@ -242,6 +252,7 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 | `src/artflow_agent/scene_variant_review.py` | 版本谱系投影、精确 Published 身份与 Unreal 审阅合同 |
 | `src/artflow_agent/pbr.py` | PBR 合同、通道验证与受审图编译 |
 | `src/artflow_agent/image_to_3d.py` | 图生 3D 合同、GLB 预检与 UE 接纳 |
+| `src/artflow_agent/blender_modeling.py` | Blender 类型化 DCC 规格、固定执行器与产物回执 |
 | `src/artflow_agent/mcp_facade.py` | 内容寻址 MCP 薄适配层 |
 | `src/artflow_agent/provenance.py` | Unreal 回执、来源清单与验证 |
 | `integrations/unreal/` | Unreal Scene Bridge 与 UE 测试宿主 |

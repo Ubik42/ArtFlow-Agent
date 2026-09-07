@@ -59,9 +59,11 @@ Unreal 当前场景
 - **M22 · Unreal-native operator lifecycle controls（已完成）**：发布与审阅合同已接入 Unreal
   中文 Tools 菜单；编辑器重启后可从项目持久指针恢复受验证的 Scene Session，公开菜单只保留
   四个产品生命周期入口。恢复不接受调用方 Run、路径或脚本，源关卡身份不一致时关闭失败。
-- **M23 · Live PBR material operator route（进行中）**：把现有 ComfyUI Production Nodes 受审
-  PBR 能力接入当前 Scene Session 的注册工作项，使 Unreal 操作者可从视觉意图生成、校验并绑定
-  一组真实 PBR 材质候选，而不是只在历史案例中展示固定制品。
+- **M23 · Blender DCC production bridge and Unreal return（进行中）**：优先接入本机 Blender 5.2
+  LTS，把它作为建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光和后续模拟
+  缓存的完整 DCC 执行面。首个切片先实现模块化建筑道具的可编辑 `.blend`、嵌入式 GLB、预览图
+  与 Unreal Interchange 回流，现已完成。当前切片把 Blender DCC 工作纳入 Scene Session 队列，
+  并把受审 ComfyUI PBR 贴图装配进可编辑源后再次回流；后续能力继续复用同一任务与回执生命周期。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M23-S1",
+  "status": "completed",
+  "outcome": "A Session-bound typed specification drove Blender 5.2 LTS to generate an editable modular architectural prop, embedded GLB and preview, and Unreal 5.8.1 imported and staged the exact GLB in an isolated candidate while preserving the source level.",
+  "evidence": [
+    "artifacts/goal/m23-s1-blender-modeling/modeling-request.json",
+    "artifacts/goal/m23-s1-blender-modeling/modeling-receipt.json",
+    "artifacts/goal/m23-s1-blender-modeling/AF_WeatheredShrine.blend",
+    "artifacts/goal/m23-s1-blender-modeling/AF_WeatheredShrine.glb",
+    "artifacts/goal/m23-s1-blender-modeling/AF_WeatheredShrine-preview.png",
+    "artifacts/goal/m23-s1-blender-modeling/unreal-return-receipt.json",
+    "artifacts/goal/m23-s1-blender-modeling/unreal-blender-candidate.png",
+    "artifacts/goal/m23-s1-blender-modeling/unreal-gui-return.log",
+    "artifacts/goal/m23-s1-blender-modeling/verification.json",
+    "docs/evidence/M23_S1_BLENDER_UNREAL_RETURN_2026-09-07.md"
+  ]
+}

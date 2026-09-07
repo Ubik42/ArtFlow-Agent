@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-m23-blender-unreal-verification/1",
+  "status": "verified",
+  "blender_version": "5.2.0 LTS",
+  "unreal_version": "5.8.1-56057345",
+  "blender_object_count": 26,
+  "blender_triangle_count": 4888,
+  "unreal_triangle_count": 952,
+  "material_slot_count": 3,
+  "simple_collision_count": 1,
+  "unreal_gui_process_id": 38876,
+  "unreal_gui_process_exited": true,
+  "preexisting_unreal_process_ids": [],
+  "duplicate_side_effect_count": 0,
+  "source_level_unchanged": true,
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_b717f8d475db"
+}

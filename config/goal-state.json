@@ -1,9 +1,9 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 63,
-  "strategyVersion": "4.0.0",
+  "stateRevision": 66,
+  "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
-  "objective": "Build an Unreal-native 2D visual-intent to verified 3D scene-change Agent whose durable coordinator plans typed scene deltas, orchestrates bounded image, material, asset, PCG and lighting capabilities, executes only in isolated staging, independently evaluates rerenders and 3D constraints, corrects failed domains and publishes replayable provenance-bound changes.",
+  "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
   "currentMilestone": "M23",
   "milestones": [
@@ -257,50 +257,52 @@
     },
     {
       "id": "M23",
-      "title": "Live PBR material operator route",
+      "title": "Blender DCC production bridge and Unreal return",
       "status": "in_progress",
       "dependsOn": ["M22"],
-      "outcome": "A current Scene Session can route a registered, reviewed ComfyUI Production Nodes PBR capability, validate its maps and bind a material candidate in Unreal through the same durable work and evaluation lifecycle instead of relying on historical fixed artifacts.",
+      "outcome": "Blender becomes a complete DCC execution surface for current Scene Sessions: bounded modeling and Geometry Nodes, ComfyUI-driven PBR assembly and baking, scene layout, lighting and later simulation caches return editable project-owned results to isolated Unreal candidates through one durable work lifecycle.",
       "acceptance": [
-        "The Agent derives PBR work from current scene facts and intent and selects only a versioned reviewed subgraph with bounded slots",
-        "Generated maps pass the existing semantic and content checks before Unreal material binding",
-        "The Unreal operator sees one current material work item and its real candidate rerender in the existing Scene Change Spectrum",
-        "Failure reruns only the PBR material branch and does not repeat PCG, asset or lighting work"
+        "The Agent derives a typed modeling specification from current scene scale, placement bounds and visual intent rather than emitting Blender code",
+        "A real Blender 5.2 process creates an editable blend source, embedded GLB and preview from a fixed versioned modeling capability",
+        "Unreal Interchange imports the generated model into a Session-derived candidate namespace and records the resulting StaticMesh identity",
+        "The first production route supports modular architectural props, followed by ComfyUI PBR assembly, Geometry Nodes layout, camera and lighting exchange behind the same contract"
       ]
     }
   ],
   "nextSlice": {
-    "id": "M23-S1",
+    "id": "M23-S2",
     "milestone": "M23",
-    "title": "Register current-session PBR material work",
-    "outcome": "Compile one current Scene Session material intent into a durable registered PBR work item that selects the existing versioned ComfyUI Production Nodes subgraph and bounded inputs, then projects its honest ready, running and verified states without executing a second workflow engine.",
+    "title": "Queue Blender DCC work from the current Session and assemble ComfyUI PBR",
+    "outcome": "Promote the proven Blender task into the current Scene Session work queue, route one reviewed ComfyUI Production Nodes PBR set into the generated asset's declared material slots, and return the textured candidate through the same Blender and Unreal identities.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
-    "allowedPaths": ["integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
+    "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not add a generic ComfyUI canvas, arbitrary workflow JSON, command console or caller-selected filesystem path",
+      "Do not expose arbitrary Blender Python, Geometry Nodes graphs, command strings or caller-selected output paths",
       "Do not overwrite, rename or save the source ArtFlowDemo level",
       "Do not add another state machine, provider abstraction, approval gate or test framework",
-      "Do not redesign the web workspace or execute Unreal material binding in this slice",
-      "Do not retrain a LoRA or add an image-to-3D route",
-      "Do not build a broad test matrix; validate the work contract, one current projection and one rejection case only"
+      "Do not redesign the web workspace or add a new orchestration framework",
+      "Do not train a model or add a hosted text-to-3D dependency in this slice",
+      "Do not implement simulation, animation or general scene transfer before the PBR return works",
+      "Do not build a broad test matrix; verify one queued job, one real ComfyUI-to-Blender material assembly and one Unreal reconcile"
     ],
     "acceptance": [
-      "A current material-domain Scene Session produces exactly one content-addressed PBR work definition bound to session, scene package, policy and capability manifest identities",
-      "The work definition references only the reviewed Production Nodes subgraph and declared prompt, resolution, seed and output slots",
-      "Replay returns the same work identity without a duplicate event or Provider submission",
-      "The Scene Change Spectrum distinguishes unavailable, ready and completed material work without claiming Unreal binding before a real receipt"
+      "The current Scene Session exposes exactly one durable Blender DCC work item whose definition matches the proven typed request",
+      "The worker claims and reconciles the work through existing event semantics rather than a second Blender job database",
+      "A reviewed ComfyUI PBR set is assigned to declared stone, weathering and inlay material targets in the editable blend source",
+      "A real UE 5.8 process reconciles the textured GLB and candidate rerender while PCG and lighting work are not repeated"
     ],
     "stopConditions": [
-      "Stop if the route would require model-generated workflow JSON, arbitrary nodes or host code",
-      "Stop if the Production Nodes manifest or reviewed subgraph identity cannot be verified",
-      "Stop if material work cannot reuse the existing append-only work and reconciliation model",
+      "Stop if the route requires executing model-authored Blender Python or arbitrary node graphs",
+      "Stop if Blender or PBR output cannot be bound to the current Session and fixed capability versions",
+      "Stop if Unreal import would overwrite an existing user asset or source level",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
       {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true}
     ],
     "validationCommands": [
@@ -317,9 +319,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0058.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0059.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M22 are complete. ArtFlow Scene Bridge 1.2.1 exposes four product-facing Unreal lifecycle actions and restores the exact current Scene Session after editor restart from a project-owned pointer that is revalidated against its original handshake receipt, active source scene and source hash. A fresh UE 5.8.1 process reviewed the exact Published variant without caller-supplied run or endpoint identity; the source ArtFlowDemo level remained byte-identical. Legacy export and review-last menu entries are no longer public. Current-session PBR material work is M23 scope and must not be claimed from the historical M13 artifact alone.",
+  "evidenceCeiling": "M0-M22 and M23-S1 are complete. A Session-bound typed specification drove real Blender 5.2 LTS generation of an editable 26-part architectural prop, embedded single-mesh GLB and preview. Unreal 5.8.1 Interchange imported the exact GLB into /Game/ArtFlow/Generated/Blender/B_b717f8d475db and staged it in a Session-derived candidate with three material slots, one simple collision, zero duplicate side effects and no source-level byte change. The route is not yet queued from the live Agent event stream and does not yet assemble ComfyUI PBR textures in Blender; those are M23-S2 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

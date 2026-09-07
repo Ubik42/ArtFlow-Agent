@@ -4,7 +4,7 @@
 
 ```text
 持续开发 D:\3D\_tools\ArtFlow-Agent，将 ArtFlow 交付为可实际操作、可在作品集中完整演示的
-Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，把图像、PBR、资产、PCG、灯光
+Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，把图像、PBR、Blender 自主建模、资产、PCG、灯光
 等能力编排成类型化 Scene Delta，在隔离候选关卡中执行、回渲、独立评价、只纠正失败域，最后
 发布可恢复、可追踪的场景变更。
 
@@ -43,6 +43,10 @@ Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，�
   未执行，未知完成先 reconcile；失败只重做受影响分支。
 - ComfyUI-Production-Nodes 是独立运行时节点包，通过版本化能力清单、真实 /object_info、审阅
   子图与插槽编译器接入，不复制代码、不允许模型任意拼图。图生 3D 始终只是候选 Provider。
+- Blender 是当前最高优先级的完整 DCC 执行面，不只承担建模。Agent 编译类型化任务，由版本化
+  固定能力执行参数化建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光及后续
+  模拟缓存；不得让模型直接生成 Blender Python。产物保留 `.blend` 编辑源，并按内容类型以嵌入式
+  GLB、USD 或 Alembic 回到 Unreal 的 Session 派生候选目录。
 
 【自主范围和真实边界】
 - 当前仓库、项目自有 UE 宿主、项目内候选采用、局部修订、GPU/ComfyUI 任务、Codex 内置
@@ -59,7 +63,7 @@ Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，�
 - 每个切片以一个真实可演示闭环为目标，75–85% 时间用于实现与宿主集成，15–25% 用于验证。
 - 门禁只保护不可逆写入、确定性场景约束、身份与外部副作用边界；不得把普通本地操作、候选采用、
   展示、截图或已授权发布扩散成新的确认流程。不得为每个新功能增加一层策略、审批或测试框架。
-- 开发中只跑受影响的 schema/lint/unit/contract 和一次目标尺寸视觉检查；里程碑边界才跑完整后端、
+- 开发中只跑受影响的 schema/lint/unit/contract，并各运行一次目标 Blender 与 Unreal 真实闭环；里程碑边界才跑完整后端、
   前端 build、真实 UE/ComfyUI 回执与截图。不追覆盖率，不为简单适配器堆 mock matrix。
 - 不因历史架构而继续扩展失效入口；发现过期文档、死样式、重复 fixture 或已经完成却仍标 active
   的状态时，在当前切片允许范围内直接清理并留下迁移说明。

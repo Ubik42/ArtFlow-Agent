@@ -1,0 +1,20 @@
+{
+  "schema_id": "artflow-blender-modeling-request/1",
+  "request_id": "blender-model-1d6b8fb7b7f6d19b",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_scene": "/Game/ArtFlowDemo",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "capability_id": "blender.architectural_prop.weathered_shrine.v1",
+  "recipe": "weathered_shrine",
+  "width_cm": 360.0,
+  "depth_cm": 240.0,
+  "height_cm": 320.0,
+  "tier_count": 3,
+  "pillar_count": 4,
+  "detail_level": 3,
+  "seed": 240907,
+  "palette": "basalt_moss",
+  "output_stem": "AF_WeatheredShrine",
+  "request_sha256": "b717f8d475dbd968673debdb0ea89ecd8b4176bc2394b1e89bdbc7bc44b4cee7"
+}

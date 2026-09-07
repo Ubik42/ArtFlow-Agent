@@ -1,0 +1,41 @@
+{
+  "schema_id": "artflow-blender-modeling-receipt/1",
+  "request_id": "blender-model-1d6b8fb7b7f6d19b",
+  "request_sha256": "b717f8d475dbd968673debdb0ea89ecd8b4176bc2394b1e89bdbc7bc44b4cee7",
+  "capability_id": "blender.architectural_prop.weathered_shrine.v1",
+  "blender_version": "5.2.0 LTS",
+  "status": "succeeded",
+  "object_count": 26,
+  "mesh_count": 26,
+  "vertex_count": 2496,
+  "triangle_count": 4888,
+  "material_count": 3,
+  "bounds_cm": [
+    365.279,
+    240.0,
+    285.815
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_WeatheredShrine.blend",
+      "sha256": "992a898117511a57884c8af3c592b92c51d40bbbfe928c9b891cf862d66661cb",
+      "size_bytes": 143673
+    },
+    {
+      "kind": "glb",
+      "relative_path": "AF_WeatheredShrine.glb",
+      "sha256": "79c1187ea6f6959f43393dfa617a001ed09a46017fa994b8962735265818f48d",
+      "size_bytes": 352040
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_WeatheredShrine-preview.png",
+      "sha256": "64d726a61961806f5b13b48fdfa6741045373b74a4b970eef33268eb97f5de9d",
+      "size_bytes": 902205
+    }
+  ],
+  "elapsed_seconds": 0.917,
+  "completed_at": "2026-09-07T07:51:20.900072Z",
+  "receipt_sha256": "914c19eb3e6c5e0541f87ef1d5ae0d814a2b01a2eb402e4042168da56bf87fd3"
+}
