@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 99,
+  "stateRevision": 100,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M51",
+  "currentMilestone": "M52",
   "milestones": [
     {
       "id": "M0",
@@ -607,7 +607,7 @@
     {
       "id": "M51",
       "title": "Procedural mechanism rig and animation handoff",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M50"],
       "outcome": "Current modular scene intent drives a bounded articulated mechanism authored with an editable Blender armature and action, then imported as Unreal skeletal and animation assets in a derived candidate.",
       "acceptance": [
@@ -616,39 +616,50 @@
         "The exchange package passes mesh, skeleton, animation, unit and naming checks before Unreal import",
         "Unreal imports registered skeletal and animation assets into a derived candidate and replay reconciles without duplicate assets or source mutation"
       ]
+    },
+    {
+      "id": "M52",
+      "title": "Live mechanism-animation dispatch",
+      "status": "in_progress",
+      "dependsOn": ["M51"],
+      "outcome": "The proven articulated-gate request, editable Blender rig, FBX exchange, Unreal skeletal assets and derived candidate become the eighteenth finite current-session capability dispatched through the existing durable DCC lifecycle.",
+      "acceptance": [
+        "The work item binds the exact request, Blender source, FBX, manifest, Unreal skeletal mesh, skeleton, animation and candidate identities",
+        "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate external side effects",
+        "The Chinese Scene Change Spectrum presents visual intent, editable rig, animation exchange and Unreal result as one production route"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M51-S1",
-    "milestone": "M51",
-    "title": "Author and return a bounded articulated gate mechanism",
-    "outcome": "Compile current scene intent into a fixed articulated-gate specification, author its editable rig and action in Blender, and import the skeletal result and animation into an isolated Unreal candidate.",
-    "risk": "R2",
+    "id": "M52-S1",
+    "milestone": "M52",
+    "title": "Dispatch the verified mechanism-animation route",
+    "outcome": "Register M51 as the eighteenth current-session DCC capability, dispatch its immutable artifact chain through the existing worker and project the resulting lifecycle and media without rerunning either DCC host.",
+    "risk": "R1",
     "evidenceTarget": "A4",
-    "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/blender/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "requiresRealHosts": false,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "apps/scene-lab/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not build a general rig editor, character pipeline or retargeting system",
-      "Do not expose arbitrary Blender or Unreal Python to the model",
-      "Do not add another worker, event model or candidate lifecycle",
-      "Do not overwrite the source level or modify M49 and upstream candidates"
+      "Do not rerun Blender or Unreal; M51 host evidence is frozen input",
+      "Do not add another worker, event model, queue or recovery subsystem",
+      "Do not expose arbitrary rig, animation, Python, workflow or host paths",
+      "Do not redesign unrelated product surfaces"
     ],
     "acceptance": [
-      "A content-addressed request admits only the registered gate mechanism, finite dimensions, two joints, bounded angles and one short action",
-      "Blender 5.2 creates an editable armature, skinned or rigidly parented mechanism pieces, a baked action, FBX exchange and preview",
-      "The exported skeleton and action match the request names, hierarchy, frame range, unit scale and geometry budget",
-      "Unreal imports the skeletal mesh and animation assets into a content-addressed namespace, places them in a derived candidate and reconciles a second execution without duplicates"
+      "The registered work item accepts only the exact M51 request, Blender receipt, manifest, FBX and Unreal receipt identities",
+      "The existing worker records one queue, claim, execute, reconcile and terminal lifecycle; repeat dispatch and reducer replay preserve one terminal identity with zero duplicate side effects",
+      "The Scene Change Spectrum exposes the rig, action, Unreal skeletal result and current route state from real M51 media and receipts"
     ],
     "stopConditions": [
-      "Stop if the current source candidate or visual-intent identity does not verify",
-      "Stop if Blender cannot produce the fixed skeleton and action within the declared budget",
-      "Stop if Unreal import requires source-level mutation or arbitrary host execution"
+      "Stop if any M51 artifact identity differs from its frozen receipt",
+      "Stop if dispatch requires a new state machine or arbitrary host execution",
+      "Stop if projected media or lifecycle facts cannot be traced to M51 evidence"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
-      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor.exe", "required": true},
-      {"id": "spline_candidate", "kind": "repo_path", "value": "artifacts/goal/m49-s1-spline-infrastructure/unreal-spline-infrastructure-receipt.json", "required": true}
+      {"id": "mechanism_request", "kind": "repo_path", "value": "artifacts/goal/m51-s1-mechanism-rig/mechanism-rig-request.json", "required": true},
+      {"id": "mechanism_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m51-s1-mechanism-rig/blender-mechanism-rig-receipt.json", "required": true},
+      {"id": "mechanism_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m51-s1-mechanism-rig/unreal-mechanism-rig-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -664,9 +675,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0092.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0093.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M50 are complete. The route corridor, two editable Blender Curve/GN routes and Unreal topology of two SplineComponents, fourteen controls, twelve segments and eight supports are registered as the seventeenth current-session capability. Repeat dispatch and reducer replay reached one terminal identity with zero duplicate external side effects. Procedural mechanism rig and animation handoff is M51-S1 scope and has not yet been executed.",
+  "evidenceCeiling": "M0-M51 are complete. A content-bound articulated-gate request produced a real Blender 5.2 editable armature, three deform bones, two joints, a 48-frame action and FBX, then imported as Skeletal Mesh, Skeleton and AnimSequence assets in an isolated Unreal 5.8 candidate. Repeat return created zero actors and duplicate side effects while the upstream candidate remained byte-identical. Live mechanism-animation dispatch is M52-S1 scope and has not yet been executed.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

@@ -1,0 +1,43 @@
+{
+  "schema_id": "artflow-unreal-mechanism-rig-receipt/1",
+  "request_sha256": "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c",
+  "blender_receipt_sha256": "272677a15867e36708b92118b38caeb9faa11c7e63f8c94c5e408c00c8afc093",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Spline_B_63cab976001a",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Mechanism_B_2762b53baeec",
+  "skeletal_mesh_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate.SK_AF_ArticulatedGate",
+  "skeleton_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate_Skeleton.SK_AF_ArticulatedGate_Skeleton",
+  "animation_path": "/Game/ArtFlow/Generated/Blender/Mechanism/RigV2_2762b53baeec/SK_AF_ArticulatedGate_Anim.SK_AF_ArticulatedGate_Anim",
+  "bone_names": [
+    "RIG_AF_ArticulatedGate",
+    "root",
+    "hinge_left",
+    "hinge_right"
+  ],
+  "verified_deform_bones": [
+    "root",
+    "hinge_left",
+    "hinge_right"
+  ],
+  "fbx_transport_root": "RIG_AF_ArticulatedGate",
+  "animation_play_length_seconds": 1.9583,
+  "asset_bounds_extent": [
+    3.16,
+    0.35,
+    2.27
+  ],
+  "unit_adapter_scale": 99.999994,
+  "actor_label": "ArtFlow_Mechanism_ArticulatedGate",
+  "mechanism_actor_count": 1,
+  "created_actor_count": 0,
+  "updated_actor_count": 0,
+  "duplicate_side_effect_count": 0,
+  "source_candidate_sha256_before": "c0c8880595618cb14fa99bb17ce39b882201aab523e6dfc8ad89c04cb2e9e984",
+  "source_candidate_sha256_after": "c0c8880595618cb14fa99bb17ce39b882201aab523e6dfc8ad89c04cb2e9e984",
+  "screenshot_path": "unreal-mechanism-rig-candidate.png",
+  "screenshot_sha256": "d5e2a9b15145ac1223c687a419fde2f517a59f9fc997ce9c57a8b1ce0a8793bd",
+  "capture_status": "captured",
+  "completed_at": "2026-09-07T17:12:19.245863Z",
+  "receipt_sha256": "7c969783b8e92814334e7ee5607d2b16405ab93dedfe6df8f0535058b970fb6c"
+}

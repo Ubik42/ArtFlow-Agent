@@ -1,0 +1,50 @@
+{
+  "schema_id": "artflow-blender-mechanism-rig-receipt/1",
+  "request_sha256": "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c",
+  "capability_id": "blender.armature.articulated_gate.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "mesh_name": "SK_AF_ArticulatedGate",
+  "skeleton_name": "SKEL_AF_ArticulatedGate",
+  "bone_count": 3,
+  "joint_count": 2,
+  "action_name": "ACT_AF_Gate_OpenClose",
+  "action_frame_range": [
+    1,
+    48
+  ],
+  "keyed_pose_count": 6,
+  "vertex_count": 1120,
+  "triangle_count": 2160,
+  "material_slot_count": 3,
+  "uv_layer": "UVMap",
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ArticulatedGate.blend",
+      "sha256": "0c607268119e3d0cf8102931cd443538f10ab0e97f29f2e4719b0bd4add6d9d1",
+      "size_bytes": 126107
+    },
+    {
+      "kind": "fbx",
+      "relative_path": "SK_AF_ArticulatedGate.fbx",
+      "sha256": "fc1c49dc622da2e3dd958aa94f5927d3440cd73444805edc5e326c88ed30e594",
+      "size_bytes": 91340
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_ArticulatedGate-open-preview.png",
+      "sha256": "db6b1cfef535887d88a918f534f37295c60ac50aec7ca10e25caafadc49fe108",
+      "size_bytes": 947865
+    },
+    {
+      "kind": "manifest",
+      "relative_path": "AF_ArticulatedGate-manifest.json",
+      "sha256": "6d6f4b75abfeaff5507d0e5c7b30df1fdc007b707ed16059f9f1469cc76128b2",
+      "size_bytes": 1043
+    }
+  ],
+  "elapsed_seconds": 1.472,
+  "completed_at": "2026-09-07T16:57:39.247047Z",
+  "receipt_sha256": "272677a15867e36708b92118b38caeb9faa11c7e63f8c94c5e408c00c8afc093"
+}

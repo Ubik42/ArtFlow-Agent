@@ -1,0 +1,37 @@
+{
+  "schema_id": "artflow-mechanism-rig-request/1",
+  "request_id": "mechanism-rig-5122fe6e5daf6ab1",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "visual_target_path": "D:/3D/_tools/ArtFlow-Agent/artifacts/goal/m24-s1-scene-conditioning/depth-guided-candidate.png",
+  "visual_target_sha256": "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Spline_B_63cab976001a",
+  "source_candidate_sha256": "c0c8880595618cb14fa99bb17ce39b882201aab523e6dfc8ad89c04cb2e9e984",
+  "mechanism_type": "articulated_gate_v1",
+  "width_cm": 520,
+  "height_cm": 360,
+  "depth_cm": 28,
+  "frame_start": 1,
+  "frame_open": 24,
+  "frame_end": 48,
+  "fps": 24,
+  "joints": [
+    {
+      "joint_id": "hinge_left",
+      "parent_bone": "root",
+      "axis": "Z",
+      "closed_angle_deg": 0.0,
+      "open_angle_deg": 70.0
+    },
+    {
+      "joint_id": "hinge_right",
+      "parent_bone": "root",
+      "axis": "Z",
+      "closed_angle_deg": 0.0,
+      "open_angle_deg": -70.0
+    }
+  ],
+  "triangle_budget": 5000,
+  "blender_capability_id": "blender.armature.articulated_gate.v1",
+  "unreal_capability_id": "unreal.skeletal.mechanism_import.v1",
+  "request_sha256": "2762b53baeecceb5c5067842741dde60900eda311a5723c4752fab2213481b2c"
+}

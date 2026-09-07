@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M51-S1",
+  "status": "completed",
+  "outcome": "A content-bound articulated-gate specification now drives a real Blender 5.2 editable armature and action, then returns as verified Skeletal Mesh, Skeleton and AnimSequence assets in an isolated Unreal 5.8 candidate. Replay reconciled with zero created actors, duplicate side effects or upstream candidate mutation.",
+  "evidence": [
+    "artifacts/goal/m51-s1-mechanism-rig/mechanism-rig-request.json",
+    "artifacts/goal/m51-s1-mechanism-rig/blender-mechanism-rig-receipt.json",
+    "artifacts/goal/m51-s1-mechanism-rig/unreal-mechanism-rig-receipt.json",
+    "artifacts/goal/m51-s1-mechanism-rig/AF_ArticulatedGate-open-preview.png",
+    "artifacts/goal/m51-s1-mechanism-rig/unreal-mechanism-rig-candidate.png",
+    "docs/evidence/M51_S1_MECHANISM_RIG_2026-09-07.md"
+  ]
+}
