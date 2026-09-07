@@ -111,9 +111,14 @@ Unreal 当前场景
   Wayfinder 套件；Blender 5.2 保留 Geometry Nodes recipe、UV、双材质槽、LOD1 与碰撞元数据，
   Unreal 5.8 将九个确定性点位写入新的隔离候选。三项资产均有 2 级 LOD 和 1 个简单碰撞体；
   重复回流创建与更新对象均为 0，源关卡不变。
-- **M33 · Live procedural assembly dispatch（进行中）**：把 M32 的精确请求、Blender 套件回执、
+- **M33 · Live procedural assembly dispatch（已完成）**：把 M32 的精确请求、Blender 套件回执、
   清单和 Unreal 候选登记为当前 Session 的第九项 DCC 能力，继续复用现有 Worker、事件账本和
-  场景变更谱。界面只展示艺术目标、DCC 加工、PCG 装配和候选结果，不暴露开发脚本或任意节点图。
+  场景变更谱。界面以艺术目标、DCC 加工、PCG 装配和候选结果四段真实媒体表达路线；桌面与
+  窄屏均无横向溢出、失败媒体或控制台消息。
+- **M34 · Scene-conditioned native PCG density（进行中）**：把节点工作流进一步用于场景空间数据。
+  Agent 从当前 Unreal Depth / Object ID 与保护区编译固定 ComfyUI 密度蒙版任务，再由项目自有
+  Unreal PCG 图消费经过验证的密度/排除数据和 M32 模块套件。目标是让 ComfyUI 的图像推理、
+  Blender 的资产加工和 Unreal 原生 PCG 各自承担最适合的生产职责。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

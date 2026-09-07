@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
+from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -39,8 +40,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.surface.uv_bake.v1",
             "blender.rigidbody.rubble_settle.v1",
             "blender.surface.inlay_projection_bake.v1",
+            "blender.geometry_nodes.modular_wayfinder_kit.v1",
         ]
-    ] = Field(min_length=2, max_length=8)
+    ] = Field(min_length=2, max_length=9)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -77,9 +79,15 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_surface_detail_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    procedural_kit_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    procedural_kit_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    procedural_kit_manifest_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_procedural_kit_return_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -155,6 +163,18 @@ class SceneDccWorkDefinition(BaseModel):
             if self.set_dressing_receipt_sha256 is None:
                 raise ValueError("surface detail requires the registered set dressing")
             expected_capabilities.append("blender.surface.inlay_projection_bake.v1")
+        kit_identities = (
+            self.procedural_kit_request_sha256,
+            self.procedural_kit_receipt_sha256,
+            self.procedural_kit_manifest_sha256,
+            self.unreal_procedural_kit_return_receipt_sha256,
+        )
+        if any(item is not None for item in kit_identities):
+            if not all(item is not None for item in kit_identities):
+                raise ValueError("DCC work requires every procedural-kit identity")
+            if self.blender_surface_detail_receipt_sha256 is None:
+                raise ValueError("procedural kit requires the scene-conditioned surface detail")
+            expected_capabilities.append("blender.geometry_nodes.modular_wayfinder_kit.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -464,6 +484,38 @@ def compile_current_blender_dcc_work(
         payload["unreal_surface_detail_return_receipt_sha256"] = unreal_detail["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = unreal_detail["receipt_sha256"]
         payload["candidate_scene_path"] = unreal_detail["candidate_scene_path"]
+    kit_root = project_root / "artifacts/goal/m32-s1-procedural-kit"
+    kit_request_path = kit_root / "procedural-kit-request.json"
+    kit_receipt_path = kit_root / "procedural-kit-receipt.json"
+    kit_unreal_path = kit_root / "unreal-procedural-kit-return-receipt.json"
+    if all(path.is_file() for path in (kit_request_path, kit_receipt_path, kit_unreal_path)):
+        kit_request = ProceduralKitRequest.model_validate_json(
+            kit_request_path.read_text(encoding="utf-8")
+        )
+        kit_receipt = ProceduralKitReceipt.model_validate_json(
+            kit_receipt_path.read_text(encoding="utf-8")
+        )
+        kit_unreal = json.loads(kit_unreal_path.read_text(encoding="utf-8"))
+        if kit_request.session_id != session_id:
+            raise ValueError("procedural kit references another Scene Session")
+        if kit_receipt.request_sha256 != kit_request.request_sha256:
+            raise ValueError("Blender procedural-kit receipt references another request")
+        manifest = next(item for item in kit_receipt.artifacts if item.kind == "manifest")
+        if kit_unreal.get("blender_receipt_sha256") != kit_receipt.receipt_sha256:
+            raise ValueError("Unreal procedural-kit return references another Blender receipt")
+        if kit_unreal.get("source_candidate_scene_path") != unreal_detail.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("procedural-kit candidate no longer derives from surface detail")
+        if kit_unreal.get("capture_status") != "completed":
+            raise ValueError("Unreal procedural-kit return capture is not complete")
+        payload["capability_ids"].append("blender.geometry_nodes.modular_wayfinder_kit.v1")
+        payload["procedural_kit_request_sha256"] = kit_request.request_sha256
+        payload["procedural_kit_receipt_sha256"] = kit_receipt.receipt_sha256
+        payload["procedural_kit_manifest_sha256"] = manifest.sha256
+        payload["unreal_procedural_kit_return_receipt_sha256"] = kit_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = kit_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = kit_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

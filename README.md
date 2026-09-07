@@ -98,6 +98,12 @@ consumer 将九个确定性点位写入新的隔离候选。三项资产在 UE �
 | --- | --- |
 | ![Blender 生成三变体可编辑 Wayfinder 套件](artifacts/goal/m32-s1-procedural-kit/AF_Wayfinder_Kit-preview.png) | ![Unreal 将验证后的模块布置进隔离候选](artifacts/goal/m32-s1-procedural-kit/unreal-procedural-kit-candidate.png) |
 
+该路线现已作为当前 Scene Session 的第九项 DCC 能力进入统一执行面。场景变更谱以视觉方向、
+场景边界、DCC 套件和 PCG 装配四个真实画面呈现完整变化；九项能力继续共用同一 Worker 与
+append-only 事件账本，重复派发恢复相同内容身份。
+
+![当前 Session 的程序化场景装配路线](artifacts/goal/m33-s1-live-procedural-kit/live-procedural-kit-desktop.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

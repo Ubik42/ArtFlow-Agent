@@ -12,6 +12,7 @@ from .blender_set_dressing import (
 )
 from .blender_surface import BlenderSurfaceRequest
 from .lookdev_handoff import SceneLookdevRequest
+from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
@@ -68,6 +69,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "surface": project_root / "artifacts/goal/m26-s1-surface-bake",
         "dressing": project_root / "artifacts/goal/m28-s1-set-dressing",
         "detail": project_root / "artifacts/goal/m30-s1-surface-detail",
+        "kit": project_root / "artifacts/goal/m32-s1-procedural-kit",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -243,7 +245,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["detail"] / "unreal-surface-detail-return-receipt.json",
             expected_sha256=str(work.unreal_surface_detail_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.procedural_kit_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal surface-detail candidate changed")
         dressing_return = json.loads(
             (roots["dressing"] / "unreal-set-dressing-return-receipt.json").read_text(
@@ -257,6 +262,40 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["detail"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal surface-detail screenshot identity changed")
+
+    if work.procedural_kit_request_sha256 is not None:
+        request = ProceduralKitRequest.model_validate_json(
+            (roots["kit"] / "procedural-kit-request.json").read_text(encoding="utf-8")
+        )
+        receipt = ProceduralKitReceipt.model_validate_json(
+            (roots["kit"] / "procedural-kit-receipt.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.procedural_kit_request_sha256:
+            raise ValueError("registered procedural-kit request changed")
+        if receipt.receipt_sha256 != work.procedural_kit_receipt_sha256:
+            raise ValueError("registered procedural-kit receipt changed")
+        verify_procedural_kit(request, receipt, roots["kit"])
+        manifest = next(item for item in receipt.artifacts if item.kind == "manifest")
+        if manifest.sha256 != work.procedural_kit_manifest_sha256:
+            raise ValueError("registered procedural-kit manifest changed")
+        unreal_receipt = _load_receipt(
+            roots["kit"] / "unreal-procedural-kit-return-receipt.json",
+            expected_sha256=str(work.unreal_procedural_kit_return_receipt_sha256),
+        )
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal procedural-kit candidate changed")
+        detail_return = json.loads(
+            (roots["detail"] / "unreal-surface-detail-return-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != detail_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("procedural-kit candidate no longer derives from surface detail")
+        screenshot = roots["kit"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal procedural-kit screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -303,7 +342,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface、物理布景与表面细节已回流",
+                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface、物理布景、表面细节与程序化套件已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

@@ -1479,6 +1479,18 @@ def create_app(
             "m30-detail-unreal": goal_root
             / "m30-s1-surface-detail"
             / "unreal-surface-detail-candidate.png",
+            "m32-kit-target": goal_root
+            / "m30-s1-surface-detail"
+            / "AF_Inlay_GeneratedDetail.png",
+            "m32-kit-bounds": goal_root
+            / "m28-s1-set-dressing"
+            / "unreal-set-dressing-candidate.png",
+            "m32-kit-blender": goal_root
+            / "m32-s1-procedural-kit"
+            / "AF_Wayfinder_Kit-preview.png",
+            "m32-kit-unreal": goal_root
+            / "m32-s1-procedural-kit"
+            / "unreal-procedural-kit-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

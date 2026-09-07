@@ -626,6 +626,10 @@ type SceneDccWorkState = {
     comfy_surface_detail_receipt_sha256?: string;
     blender_surface_detail_receipt_sha256?: string;
     unreal_surface_detail_return_receipt_sha256?: string;
+    procedural_kit_request_sha256?: string;
+    procedural_kit_receipt_sha256?: string;
+    procedural_kit_manifest_sha256?: string;
+    unreal_procedural_kit_return_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1639,7 +1643,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.surface_detail_request_sha256
+                  {dccWork.definition.procedural_kit_request_sha256
+                    ? "场景目标 → Blender 程序化套件 → PCG 装配 → Unreal"
+                    : dccWork.definition.surface_detail_request_sha256
                     ? "Unreal 取样 → ComfyUI → Blender 投射 / Bake → Unreal"
                     : dccWork.definition.set_dressing_request_sha256
                     ? "Surface → Blender 物理解算 → Unreal 布景"
@@ -1815,8 +1821,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSurfaceBake = Boolean(agent.scene_dcc_work?.definition.surface_request_sha256);
   const hasSetDressing = Boolean(agent.scene_dcc_work?.definition.set_dressing_request_sha256);
   const hasSurfaceDetail = Boolean(agent.scene_dcc_work?.definition.surface_detail_request_sha256);
+  const hasProceduralKit = Boolean(agent.scene_dcc_work?.definition.procedural_kit_request_sha256);
   const cases = [
-    ...(hasSurfaceDetail
+    ...(hasProceduralKit
+      ? [{
+          id: "procedural-kit-assembly",
+          tab: "当前 Session · 程序化装配",
+          title: "让二维视觉方向长成一套可布置的引擎模块",
+          description: "Agent 绑定当前庭院边界和已登记的 ComfyUI 视觉目标，编译三变体 Wayfinder 套件。Blender 负责 Geometry Nodes、UV、材质、LOD 与碰撞准备；类型化 PCG consumer 再把九个确定性点位写入新的 Unreal 候选。",
+          frames: [
+            { src: "/api/showcase/production/m32-kit-target", alt: "ComfyUI 生成并登记的青铜绿视觉目标", label: "视觉方向", title: "ComfyUI · 内容已绑定" },
+            { src: "/api/showcase/production/m32-kit-bounds", alt: "用于模块布置的 Unreal 当前庭院边界", label: "场景边界", title: "当前候选 · 有限空间" },
+            { src: "/api/showcase/production/m32-kit-blender", alt: "Blender 生成的三变体程序化 Wayfinder 套件", label: "DCC 套件", title: "3 变体 · UV · LOD1 · 碰撞" },
+            { src: "/api/showcase/production/m32-kit-unreal", alt: "Unreal 中完成九点装配的隔离候选", label: "PCG 装配", title: "9 点位 · 3 资产 · 已对账" },
+          ],
+          transition: "类型化场景装配",
+          metricA: "3 × 2",
+          metricALabel: "资产变体与 LOD",
+          metricB: "0",
+          metricBLabel: "重复回流对象变更",
+          note: `套件清单 ${shortId(agent.scene_dcc_work?.definition.procedural_kit_manifest_sha256 ?? "")} 与当前工作项绑定；Unreal 只接收哈希匹配资产，源关卡字节未变化。`,
+          domains: ["目标·已绑定", "几何·可编辑", "材质·已装配", "LOD/碰撞·通过", "PCG·已对账"],
+        }]
+      : hasSurfaceDetail
       ? [{
           id: "scene-surface-detail",
           tab: "当前 Session · 表面细节",
@@ -1984,7 +2011,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasSurfaceDetail && caseId !== "scene-surface-detail") {
+    if (hasProceduralKit && caseId !== "procedural-kit-assembly") {
+      setCaseId("procedural-kit-assembly");
+    } else if (hasSurfaceDetail && caseId !== "scene-surface-detail") {
       setCaseId("scene-surface-detail");
     } else if (hasSetDressing && caseId !== "physics-set-dressing") {
       setCaseId("physics-set-dressing");
@@ -1993,7 +2022,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },
