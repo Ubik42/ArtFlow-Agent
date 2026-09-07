@@ -1,0 +1,16 @@
+{
+  "schema_id": "artflow-comfy-damage-field-receipt/1",
+  "request_sha256": "fdfe74fd21b19008d7cdeee04c435dd02298910b86ba8e39b5c0db092b8ef4bb",
+  "capability_id": "comfy.spatial.damage_field.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "provider_request_id": "5b507aca-8162-45fc-a48a-f7a0689b6949",
+  "observed_node_count": 1309,
+  "field_path": "damage-field.png",
+  "field_sha256": "284b199301726d79bd590a8a6a1bc5f00801369258039c4f309cc973f282c168",
+  "active_coverage": 0.038307,
+  "protected_leakage": 0.0,
+  "completed_at": "2026-09-07T18:36:24.907239Z",
+  "receipt_sha256": "5792f055f26a76508081ca8e4419860e141b85a560821b1a533c62810caf280f"
+}

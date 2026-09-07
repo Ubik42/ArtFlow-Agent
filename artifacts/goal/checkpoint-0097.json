@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M55-S1",
+  "status": "completed",
+  "outcome": "A content-addressed current-scene request now drives one reviewed ComfyUI damage-field graph, an editable Blender 5.2 Boolean/material asset and a real Unreal 5.8.1 derived candidate. The field covers 3.8307 percent of the conditioning image with zero protected leakage; Blender retains seven editable cuts and exports a valid 2,594-triangle GLB; Unreal imports one material slot and one convex collision hull. Replay reconciles with zero created or updated actors, zero duplicate assets and a byte-identical M47 source candidate.",
+  "evidence": [
+    "artifacts/goal/m55-s1-damage-variant/damage-variant-request.json",
+    "artifacts/goal/m55-s1-damage-variant/comfy-damage-field-receipt.json",
+    "artifacts/goal/m55-s1-damage-variant/blender-damage-variant-receipt.json",
+    "artifacts/goal/m55-s1-damage-variant/unreal-damage-variant-receipt.json",
+    "artifacts/goal/m55-s1-damage-variant/AF_GatewayDamage-preview.png",
+    "artifacts/goal/m55-s1-damage-variant/unreal-damage-variant-candidate.png",
+    "docs/evidence/M55_S1_DAMAGE_VARIANT_2026-09-07.md"
+  ]
+}
