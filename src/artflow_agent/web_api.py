@@ -1537,6 +1537,15 @@ def create_app(
             "m43-simulation-unreal": goal_root
             / "m43-s1-simulation-cache"
             / "unreal-simulation-cache-candidate.png",
+            "m45-biome-field": goal_root
+            / "m42-s1-terrain-biome"
+            / "biome-mask.png",
+            "m45-foliage-blender": goal_root
+            / "m45-s1-foliage-kit"
+            / "AF_BiomeFoliage-preview.png",
+            "m45-foliage-unreal": goal_root
+            / "m45-s1-foliage-kit"
+            / "unreal-biome-foliage-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

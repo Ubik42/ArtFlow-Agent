@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 94,
+  "stateRevision": 95,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M46",
+  "currentMilestone": "M47",
   "milestones": [
     {
       "id": "M0",
@@ -545,7 +545,7 @@
     {
       "id": "M46",
       "title": "Live biome-foliage dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M45"],
       "outcome": "The proven biome-to-Blender-to-Unreal foliage route becomes the fifteenth finite current-session capability dispatched and recovered by the existing durable DCC lifecycle.",
       "acceptance": [
@@ -553,38 +553,54 @@
         "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate side effects",
         "The Chinese Scene Change Spectrum presents the biome field, editable kit and Unreal environment result as one route"
       ]
+    },
+    {
+      "id": "M47",
+      "title": "Concept-guided modular environment assembly",
+      "status": "in_progress",
+      "dependsOn": ["M46"],
+      "outcome": "Current scene conditioning drives a bounded modular environment layout authored as editable Blender Geometry Nodes content and reconstructed as project-owned Unreal actors and PCG in a derived candidate.",
+      "acceptance": [
+        "A typed request binds current depth, protection, visual target, source candidate and finite module/layout budgets",
+        "A reviewed ComfyUI spatial graph returns module-zone fields without arbitrary graph authoring",
+        "Blender produces an editable modular assembly and exchange manifest with stable module identities",
+        "Unreal reconstructs the assembly in a derived candidate and replay reconciles without upstream mutation"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M46-S1",
-    "milestone": "M46",
-    "title": "Dispatch and present the live biome-foliage route",
-    "outcome": "Register the proven M45 artifact chain in the current durable DCC worker and present it as one inspectable route in Scene Change Spectrum.",
-    "risk": "R1",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "web/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M47-S1",
+    "milestone": "M47",
+    "title": "Generate a scene-conditioned modular environment candidate",
+    "outcome": "Compile current scene conditioning into finite module-zone fields, author an editable Blender assembly and reconstruct it in an isolated Unreal candidate.",
+    "risk": "R2",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun Blender or Unreal hosts",
-      "Do not add a second worker or event vocabulary",
-      "Do not expose arbitrary DCC or material execution",
-      "Do not modify M45 or upstream candidates"
+      "Do not build a general level generator or expose arbitrary node graphs",
+      "Do not download asset packs or use unrestricted host code",
+      "Do not replace existing Unreal PCG or Blender workflows",
+      "Do not modify source or M45-M46 candidates in place"
     ],
     "acceptance": [
-      "The current work schema admits a fifteenth registered foliage capability with all frozen M45 identities",
-      "Worker execution and replay produce the same terminal result with zero duplicate side effects",
-      "Desktop and narrow Chinese captures show the real three-host foliage route and its evidence"
+      "The request binds exact current conditioning, source candidate, module catalog and budgets",
+      "ComfyUI produces inspectable module-zone fields from a fixed reviewed graph",
+      "Blender produces an editable Geometry Nodes assembly and content-addressed exchange manifest",
+      "Unreal creates the derived modular candidate and a second return reports zero duplicates"
     ],
     "stopConditions": [
-      "Stop if any frozen M45 artifact identity fails verification",
-      "Stop if integration would require a parallel lifecycle or arbitrary host execution",
-      "Stop if current UI changes overlap unknown user work and cannot be preserved"
+      "Stop if current conditioning or source candidate identities no longer verify",
+      "Stop if generated module or instance counts exceed the registered budgets",
+      "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "foliage_request", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/foliage-kit-request.json", "required": true},
-      {"id": "blender_foliage_receipt", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/blender-foliage-kit-receipt.json", "required": true},
-      {"id": "unreal_foliage_receipt", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/unreal-biome-foliage-receipt.json", "required": true}
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
+      {"id": "scene_depth", "kind": "repo_path", "value": "artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png", "required": true},
+      {"id": "protected_mask", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png", "required": true},
+      {"id": "source_candidate", "kind": "repo_path", "value": "artifacts/goal/m45-s1-foliage-kit/unreal-biome-foliage-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -600,9 +616,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0087.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0088.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M45 are complete. M42 biome facts drive three editable Blender foliage variants with UV, LOD and collision evidence, then a project-owned Unreal PCG graph places 18 instances using three bounded WPO wind material instances. The second return reconciled with zero duplicates and an unchanged terrain source candidate. Live foliage dispatch is M46-S1 scope.",
+  "evidenceCeiling": "M0-M46 are complete. The biome-foliage route is the fifteenth finite current-session capability: repeated dispatch has one work identity, five append-only lifecycle events, replay-equivalent state and zero duplicate side effects. Desktop and narrow Chinese captures show the real ComfyUI-to-Blender-to-Unreal route. Concept-guided modular environment assembly is M47-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

@@ -1,0 +1,41 @@
+{
+  "schema_id": "artflow-live-biome-foliage-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-3ce568e90543",
+  "work_sha256": "3ce568e905431bbc25d7ddc0b69e8756737608b8370189da42728a10022db61c",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1",
+    "blender.material.scene_conditioned_wayfinder_set.v1",
+    "blender.cache.wind_veil.v1",
+    "blender.geometry_nodes.biome_foliage_kit.v1"
+  ],
+  "foliage_kit_request_sha256": "33eb6be804c25630c970b4cfbf51b89f7c1e99543585950f345b420b81bc0424",
+  "blender_foliage_kit_receipt_sha256": "09914097e814ef4a0d5fb27f918e366eeb92efbe30d500f1470b104ca91554cd",
+  "unreal_foliage_kit_receipt_sha256": "64dada72bca8e480d581d99128ff19989998ddd1da7695d5890155faa7b62058",
+  "outcome_sha256": "64dada72bca8e480d581d99128ff19989998ddd1da7695d5890155faa7b62058",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Foliage_B_33eb6be804c2",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

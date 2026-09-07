@@ -648,6 +648,9 @@ type SceneDccWorkState = {
     simulation_cache_request_sha256?: string;
     blender_simulation_cache_receipt_sha256?: string;
     unreal_simulation_cache_receipt_sha256?: string;
+    foliage_kit_request_sha256?: string;
+    blender_foliage_kit_receipt_sha256?: string;
+    unreal_foliage_kit_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1853,8 +1856,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasCameraMove = Boolean(agent.scene_dcc_work?.definition.camera_move_request_sha256);
   const hasMaterialVariation = Boolean(agent.scene_dcc_work?.definition.material_variation_request_sha256);
   const hasSimulationCache = Boolean(agent.scene_dcc_work?.definition.simulation_cache_request_sha256);
+  const hasFoliageKit = Boolean(agent.scene_dcc_work?.definition.foliage_kit_request_sha256);
   const cases = [
-    ...(hasSimulationCache
+    ...(hasFoliageKit
+      ? [{
+          id: "biome-foliage-roundtrip",
+          tab: "当前 Session · 生物群落",
+          title: "把二维群落分区变成可继续制作的三维植被层",
+          description: "Agent 绑定 ComfyUI 生物群落蒙版与地形候选，将有限物种和预算编译给 Blender；三种可编辑植被携带 UV、LOD 与碰撞回到 Unreal，由项目 PCG 布置并使用受限风材质。",
+          frames: [
+            { src: "/api/showcase/production/m45-biome-field", alt: "ComfyUI 生成的生物群落空间分区", label: "空间条件", title: "Biome Mask · 27.63% 覆盖" },
+            { src: "/api/showcase/production/m45-foliage-blender", alt: "Blender 生成的三种可编辑植被", label: "DCC 植被", title: "3 物种 · UV / LOD1 / 碰撞" },
+            { src: "/api/showcase/production/m45-foliage-unreal", alt: "Unreal PCG 布置的植被候选", label: "引擎环境层", title: "18 实例 · WPO 风材质" },
+          ],
+          transition: "群落空间场驱动的类型化资产",
+          metricA: "3 / 18",
+          metricALabel: "物种 / PCG 实例",
+          metricB: "0",
+          metricBLabel: "重复副作用",
+          note: `植被请求 ${shortId(agent.scene_dcc_work?.definition.foliage_kit_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；上游地形候选保持字节不变。`,
+          domains: ["群落·已绑定", "几何·可编辑", "LOD·已导入", "风材质·已写入", "重放·已对账"],
+        }]
+      : hasSimulationCache
       ? [{
           id: "simulation-cache-roundtrip",
           tab: "当前 Session · 动画缓存",

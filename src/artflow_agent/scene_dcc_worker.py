@@ -12,6 +12,7 @@ from .blender_set_dressing import (
 )
 from .blender_surface import BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .material_variation import (
     BlenderMaterialVariationReceipt,
@@ -85,6 +86,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "material_variation": project_root / "artifacts/goal/m40-s1-material-variation",
         "terrain": project_root / "artifacts/goal/m42-s1-terrain-biome",
         "simulation_cache": project_root / "artifacts/goal/m43-s1-simulation-cache",
+        "foliage": project_root / "artifacts/goal/m45-s1-foliage-kit",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -494,6 +496,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             raise ValueError("material candidate no longer derives from native PCG")
         if (
             work.simulation_cache_request_sha256 is None
+            and work.foliage_kit_request_sha256 is None
             and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
         ):
             raise ValueError("Unreal material candidate changed")
@@ -534,7 +537,8 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         terrain_receipt = json.loads((roots["terrain"] / "unreal-biome-terrain-receipt.json").read_text(encoding="utf-8"))
         if unreal_receipt.get("source_candidate_scene_path") != terrain_receipt.get("candidate_scene_path"):
             raise ValueError("simulation-cache source terrain candidate changed")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (work.foliage_kit_request_sha256 is None
+                and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path):
             raise ValueError("simulation-cache candidate changed")
         if unreal_receipt.get("status") != "reconciled":
             raise ValueError("Unreal simulation cache is not reconciled")
@@ -545,6 +549,37 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["simulation_cache"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal simulation-cache screenshot identity changed")
+
+    if work.foliage_kit_request_sha256 is not None:
+        request = FoliageKitRequest.model_validate_json(
+            (roots["foliage"] / "foliage-kit-request.json").read_text(encoding="utf-8")
+        )
+        blender_receipt = _load_receipt(
+            roots["foliage"] / "blender-foliage-kit-receipt.json",
+            expected_sha256=str(work.blender_foliage_kit_receipt_sha256),
+        )
+        if request.request_sha256 != work.foliage_kit_request_sha256:
+            raise ValueError("registered biome-foliage request changed")
+        _verify_artifacts(roots["foliage"], blender_receipt)
+        unreal_receipt = _load_receipt(
+            roots["foliage"] / "unreal-biome-foliage-receipt.json",
+            expected_sha256=str(work.unreal_foliage_kit_receipt_sha256),
+        )
+        if unreal_receipt.get("request_sha256") != request.request_sha256:
+            raise ValueError("Unreal foliage references another request")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("biome-foliage candidate changed")
+        if unreal_receipt.get("status") != "reconciled" or unreal_receipt.get("foliage_instance_count") != 18:
+            raise ValueError("biome-foliage instance result changed")
+        if set(unreal_receipt.get("mesh_paths", {})) != {"reed", "fern", "broadleaf"}:
+            raise ValueError("biome-foliage species identities changed")
+        if any(value != 2 for value in unreal_receipt.get("lod_counts", {}).values()):
+            raise ValueError("biome-foliage LOD result changed")
+        if unreal_receipt.get("duplicate_side_effect_count") != 0:
+            raise ValueError("biome-foliage replay created duplicate assets")
+        screenshot = roots["foliage"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal biome-foliage screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 

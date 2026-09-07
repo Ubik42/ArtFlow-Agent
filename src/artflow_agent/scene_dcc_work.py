@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
+from .foliage_kit import FoliageKitRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
@@ -51,8 +52,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.camera_move.three_key_dolly.v1",
             "blender.material.scene_conditioned_wayfinder_set.v1",
             "blender.cache.wind_veil.v1",
+            "blender.geometry_nodes.biome_foliage_kit.v1",
         ]
-    ] = Field(min_length=2, max_length=14)
+    ] = Field(min_length=2, max_length=15)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -126,9 +128,12 @@ class SceneDccWorkDefinition(BaseModel):
     simulation_cache_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     blender_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    foliage_kit_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_foliage_kit_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_foliage_kit_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation|Foliage)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -274,6 +279,15 @@ class SceneDccWorkDefinition(BaseModel):
             if self.unreal_material_variation_receipt_sha256 is None:
                 raise ValueError("simulation cache requires the registered material route")
             expected_capabilities.append("blender.cache.wind_veil.v1")
+        foliage_identities = (
+            self.foliage_kit_request_sha256,
+            self.blender_foliage_kit_receipt_sha256,
+            self.unreal_foliage_kit_receipt_sha256,
+        )
+        if any(item is not None for item in foliage_identities):
+            if not all(item is not None for item in foliage_identities):
+                raise ValueError("DCC work requires every biome-foliage identity")
+            expected_capabilities.append("blender.geometry_nodes.biome_foliage_kit.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -838,6 +852,33 @@ def compile_current_blender_dcc_work(
         payload["unreal_simulation_cache_receipt_sha256"] = simulation_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = simulation_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = simulation_unreal["candidate_scene_path"]
+    foliage_root = project_root / "artifacts/goal/m45-s1-foliage-kit"
+    foliage_request_path = foliage_root / "foliage-kit-request.json"
+    foliage_blender_path = foliage_root / "blender-foliage-kit-receipt.json"
+    foliage_unreal_path = foliage_root / "unreal-biome-foliage-receipt.json"
+    if all(path.is_file() for path in (foliage_request_path, foliage_blender_path, foliage_unreal_path)):
+        foliage_request = FoliageKitRequest.model_validate_json(foliage_request_path.read_text(encoding="utf-8"))
+        foliage_blender = json.loads(foliage_blender_path.read_text(encoding="utf-8"))
+        foliage_unreal = json.loads(foliage_unreal_path.read_text(encoding="utf-8"))
+        if foliage_request.session_id != session_id:
+            raise ValueError("biome foliage references another Scene Session")
+        if foliage_blender.get("request_sha256") != foliage_request.request_sha256:
+            raise ValueError("Blender foliage references another request")
+        if foliage_unreal.get("request_sha256") != foliage_request.request_sha256:
+            raise ValueError("Unreal foliage references another request")
+        if foliage_unreal.get("blender_receipt_sha256") != foliage_blender.get("receipt_sha256"):
+            raise ValueError("Unreal foliage references another Blender receipt")
+        terrain_unreal = json.loads((project_root / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json").read_text(encoding="utf-8"))
+        if foliage_unreal.get("source_candidate_scene_path") != terrain_unreal.get("candidate_scene_path"):
+            raise ValueError("biome foliage no longer derives from the terrain candidate")
+        if foliage_unreal.get("status") != "reconciled" or foliage_unreal.get("capture_status") != "captured":
+            raise ValueError("Unreal foliage is not reconciled with captured evidence")
+        payload["capability_ids"].append("blender.geometry_nodes.biome_foliage_kit.v1")
+        payload["foliage_kit_request_sha256"] = foliage_request.request_sha256
+        payload["blender_foliage_kit_receipt_sha256"] = foliage_blender["receipt_sha256"]
+        payload["unreal_foliage_kit_receipt_sha256"] = foliage_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = foliage_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = foliage_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

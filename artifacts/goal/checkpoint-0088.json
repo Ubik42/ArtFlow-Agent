@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M46-S1",
+  "status": "completed",
+  "outcome": "The biome-foliage route is the fifteenth finite current-session capability. Existing durable dispatch verified every frozen M45 identity, produced five lifecycle events, replayed equivalently and exposed the three-host result through desktop and narrow Chinese Scene Change Spectrum captures.",
+  "evidence": [
+    "artifacts/goal/m46-s1-live-foliage/live-biome-foliage-work-receipt.json",
+    "artifacts/goal/m46-s1-live-foliage/live-biome-foliage-desktop.png",
+    "artifacts/goal/m46-s1-live-foliage/live-biome-foliage-narrow.png",
+    "docs/evidence/M46_S1_LIVE_BIOME_FOLIAGE_2026-09-07.md"
+  ]
+}
