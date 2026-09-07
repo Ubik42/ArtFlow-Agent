@@ -698,8 +698,8 @@
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "comfyui", "kind": "http", "value": "http://127.0.0.1:8188/system_stats", "required": true},
-      {"id": "blender", "kind": "command", "value": "D:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "comfyui_client", "kind": "command", "value": "curl.exe", "required": true},
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
       {"id": "unreal_project", "kind": "repo_path", "value": "integrations/unreal/ArtFlowBridgeHost/ArtFlowBridgeHost.uproject", "required": true},
       {"id": "source_candidate", "kind": "repo_path", "value": "artifacts/goal/m47-s1-modular-environment/unreal-modular-environment-receipt.json", "required": true}
     ],
