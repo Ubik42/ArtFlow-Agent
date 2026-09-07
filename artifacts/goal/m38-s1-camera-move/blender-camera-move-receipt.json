@@ -1,0 +1,45 @@
+{
+  "schema_id": "artflow-blender-camera-move-receipt/1",
+  "request_id": "camera-move-4e92009fe20f536b",
+  "request_sha256": "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90",
+  "capability_id": "blender.camera_move.three_key_dolly.v1",
+  "blender_version": "5.2.0 LTS",
+  "status": "succeeded",
+  "camera_label": "ArtFlow_Shot_Camera",
+  "keyframe_count": 3,
+  "frame_numbers": [
+    0,
+    60,
+    119
+  ],
+  "translation_distance_cm": 412.4318,
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_ShrineCourtyard_CameraMove.blend",
+      "sha256": "af0425c3b5ef98d77e2543eaef4b0fd083d28a87e0d885173a53e6b40babbfdd",
+      "size_bytes": 150711
+    },
+    {
+      "kind": "preview_start",
+      "relative_path": "AF_ShrineCourtyard_CameraMove-start.png",
+      "sha256": "7e1e35094b85904bbc71d37e54a805780a012589749d7a2fda50db6e90e8be0b",
+      "size_bytes": 697314
+    },
+    {
+      "kind": "preview_middle",
+      "relative_path": "AF_ShrineCourtyard_CameraMove-middle.png",
+      "sha256": "7c856f25603776d690a7006208b73bd7470f21a640350edf15640cfca06db1fd",
+      "size_bytes": 723429
+    },
+    {
+      "kind": "preview_end",
+      "relative_path": "AF_ShrineCourtyard_CameraMove-end.png",
+      "sha256": "709fa06a8225c3cf61f55ba86a4a27a452087f0c40e430e6ad4b46ee4521172b",
+      "size_bytes": 776385
+    }
+  ],
+  "elapsed_seconds": 3.587,
+  "completed_at": "2026-09-07T13:53:59.113291Z",
+  "receipt_sha256": "05d36760472a1ed8e15a739f9091a7185cf63dc35551b6ca7ba188107eb13eee"
+}

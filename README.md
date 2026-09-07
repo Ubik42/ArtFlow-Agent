@@ -139,6 +139,18 @@ ComfyUI 空间密度、Unreal 原生 PCG 环境和 Level Sequence 组织为一�
 
 ![当前 Session 的程序化环境镜头交付路线](artifacts/goal/m37-s1-live-shot-package/live-shot-package-desktop.png)
 
+镜头路线继续使用 Blender 的动画能力。Agent 从已登记的镜头预演编译 0、60、119 三个有限
+相机姿态；Blender 写入可编辑关键帧并输出三帧预演，Unreal 再从原 Shot Package 派生新的
+Level Sequence，写入一条 Transform Track 的 9 个通道与 27 个键值。
+
+| Blender 起始 / 中间 / 结束 | Unreal 起始 / 中间 / 结束 |
+| --- | --- |
+| ![Blender 三关键帧镜头预演](artifacts/goal/m38-s1-camera-move/AF_ShrineCourtyard_CameraMove-middle.png) | ![Unreal 三关键帧镜头结果](artifacts/goal/m38-s1-camera-move/unreal-camera-move-middle.png) |
+
+镜头总位移 412.4318 cm。第二个 UE 进程对账相同的派生 Sequence，重复轨道为 0；原 Sequence
+和原 Shot Package 候选关卡的文件哈希保持不变。完整起、中、末六张画面见
+[镜头运动实测记录](docs/evidence/M38_S1_CAMERA_MOVE_2026-09-07.md)。
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M38-S1",
+  "status": "completed",
+  "outcome": "A content-bound three-pose camera move was authored in Blender 5.2 and returned to Unreal 5.8.1 as a derived editable Level Sequence with one transform track, nine channels and 27 keys; start, middle and end frames were captured, and a second process reconciled with no duplicate track or source mutation.",
+  "evidence": [
+    "artifacts/goal/m38-s1-camera-move/camera-move-request.json",
+    "artifacts/goal/m38-s1-camera-move/blender-camera-move-receipt.json",
+    "artifacts/goal/m38-s1-camera-move/unreal-camera-move-receipt.json",
+    "artifacts/goal/m38-s1-camera-move/verification.json",
+    "docs/evidence/M38_S1_CAMERA_MOVE_2026-09-07.md"
+  ]
+}

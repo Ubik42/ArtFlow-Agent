@@ -1,0 +1,64 @@
+{
+  "schema_id": "artflow-camera-move-request/1",
+  "request_id": "camera-move-4e92009fe20f536b",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "capability_id": "blender.camera_move.three_key_dolly.v1",
+  "shot_package_request_sha256": "a7855cd3295a90be42ac799088c3a9c2cbbe1ad711956138f86b5a1a236e6f6f",
+  "unreal_shot_package_receipt_sha256": "655fad5a03eb171a6e60c6277035fe0db3b3f78f492294989501a4078578b571",
+  "blender_shot_receipt_sha256": "b1f1a9d649899257e472e45c5c2192b8e969b59c8458ae31b563fe1e89c95c98",
+  "source_blend_sha256": "fbc39cb3f4e681566a1cbfa0b62ba630a4d7c078ade34a04ed24a1981e746da5",
+  "source_sequence_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_76936ac2cf65.LS_AF_76936ac2cf65",
+  "source_sequence_sha256": "eb58290d84bad002bd1cef081bca549bb83d03c1986a9b9a71831f8b8f6b7aec",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ShotPackage_B_76936ac2cf65",
+  "source_candidate_sha256": "c74523179a40b00a00fb8c78351a8d773fb0f421dde3312f765739683a180c49",
+  "display_rate_fps": 24,
+  "playback_start_frame": 0,
+  "playback_end_frame": 120,
+  "poses": [
+    {
+      "label": "start",
+      "frame": 0,
+      "location_cm": [
+        -900.0,
+        -180.0,
+        450.0
+      ],
+      "rotation_deg": [
+        -14.913,
+        8.8959,
+        0.0
+      ]
+    },
+    {
+      "label": "middle",
+      "frame": 60,
+      "location_cm": [
+        -820.0,
+        0.0,
+        400.0
+      ],
+      "rotation_deg": [
+        -13.6576,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "label": "end",
+      "frame": 119,
+      "location_cm": [
+        -720.0,
+        180.0,
+        360.0
+      ],
+      "rotation_deg": [
+        -12.5711,
+        -10.5126,
+        0.0
+      ]
+    }
+  ],
+  "output_stem": "AF_ShrineCourtyard_CameraMove",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_548e7db8416f.LS_AF_CameraMove_548e7db8416f",
+  "request_sha256": "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90"
+}

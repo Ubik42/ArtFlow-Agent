@@ -1,0 +1,49 @@
+{
+  "schema_id": "artflow-unreal-camera-move-receipt/1",
+  "request_id": "camera-move-4e92009fe20f536b",
+  "request_sha256": "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90",
+  "blender_receipt_sha256": "05d36760472a1ed8e15a739f9091a7185cf63dc35551b6ca7ba188107eb13eee",
+  "status": "reconciled",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "source_sequence_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_76936ac2cf65.LS_AF_76936ac2cf65",
+  "source_sequence_sha256_before": "eb58290d84bad002bd1cef081bca549bb83d03c1986a9b9a71831f8b8f6b7aec",
+  "source_sequence_sha256_after": "eb58290d84bad002bd1cef081bca549bb83d03c1986a9b9a71831f8b8f6b7aec",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ShotPackage_B_76936ac2cf65",
+  "source_candidate_sha256_before": "c74523179a40b00a00fb8c78351a8d773fb0f421dde3312f765739683a180c49",
+  "source_candidate_sha256_after": "c74523179a40b00a00fb8c78351a8d773fb0f421dde3312f765739683a180c49",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_548e7db8416f.LS_AF_CameraMove_548e7db8416f",
+  "sequence_sha256": "982da770b363d69923a7406f77a9bb6e8cff96fdab71bc6424668436912c4491",
+  "camera_binding_count": 1,
+  "transform_track_count": 1,
+  "transform_section_count": 1,
+  "transform_channel_count": 9,
+  "keys_per_channel": {
+    "Location.X": 3,
+    "Location.Y": 3,
+    "Location.Z": 3,
+    "Rotation.X": 3,
+    "Rotation.Y": 3,
+    "Rotation.Z": 3,
+    "Scale.X": 3,
+    "Scale.Y": 3,
+    "Scale.Z": 3
+  },
+  "frame_numbers": [
+    0,
+    60,
+    119
+  ],
+  "preview_paths": {
+    "start": "unreal-camera-move-start.png",
+    "middle": "unreal-camera-move-middle.png",
+    "end": "unreal-camera-move-end.png"
+  },
+  "preview_sha256s": {
+    "start": "4c47b468b62fbf90aaae90a1dceeac0993245bc619db38a9460ce96652bc7d48",
+    "middle": "e451114671bd826daa1def8ec7c3b27e215d5820271783d9301ea123f9508213",
+    "end": "7b118ba627f5680aa52a98337b4d713af6b7b6d379365af8a7d37021bc7c42b3"
+  },
+  "duplicate_track_count": 0,
+  "completed_at": "2026-09-07T13:58:52.226964Z",
+  "receipt_sha256": "f55e39b1eacec900cafdc370d1b207329e9bcf8150bfe321ed032c0c47fc0d50"
+}

@@ -1,0 +1,21 @@
+{
+  "schema_id": "artflow-camera-move-verification/1",
+  "status": "passed",
+  "blender_version": "5.2.0 LTS",
+  "engine_version": "5.8.1-56057345+++UE5+Release-5.8",
+  "request_sha256": "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90",
+  "sequence_asset_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_548e7db8416f.LS_AF_CameraMove_548e7db8416f",
+  "frame_numbers": [0, 60, 119],
+  "blender_translation_distance_cm": 412.4318,
+  "transform_track_count": 1,
+  "transform_section_count": 1,
+  "transform_channel_count": 9,
+  "key_count": 27,
+  "unique_blender_preview_count": 3,
+  "unique_unreal_preview_count": 3,
+  "repeat_status": "reconciled",
+  "repeat_sequence_hash_matches": true,
+  "duplicate_track_count": 0,
+  "source_sequence_unchanged": true,
+  "source_candidate_unchanged": true
+}
