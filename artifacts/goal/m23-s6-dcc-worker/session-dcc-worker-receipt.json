@@ -1,0 +1,22 @@
+{
+  "schema_id": "artflow-session-dcc-worker-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "product_actions": [
+    "scene-dcc-work/queue",
+    "scene-dcc-work/start"
+  ],
+  "worker_id": "artflow-local-blender-worker-v1",
+  "status": "succeeded",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1"
+  ],
+  "work_sha256": "79ae6d255f2699eebc36241645f35add5bccf4aa5e71a01d583a6cd49fc074f8",
+  "outcome_sha256": "c3c7ea9b52d058f03f6f9cd61273971a861d5745a9c63454ec9156f1bb3a2067",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75",
+  "event_count": 42,
+  "replayed": true,
+  "duplicate_external_side_effect_count": 0
+}

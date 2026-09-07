@@ -1466,6 +1466,22 @@ function SceneChangeSpectrum({
     }
   }, [agent.run_id, onAgentChange]);
 
+  const startDccWork = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-dcc-work/start`,
+        { method: "POST" },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, onAgentChange]);
+
   const work = agent.scene_candidate_work;
   const dccWork = agent.scene_dcc_work;
   const intake = agent.scene_candidate_intake;
@@ -1614,6 +1630,11 @@ function SceneChangeSpectrum({
               {shortId(work?.definition.work_sha256 ?? stageRequest?.request_sha256 ?? draft.draft_sha256)}
             </code>
             <div className="spectrum-actions">
+              {dccWork?.status === "queued" ? (
+                <button type="button" disabled={busy} onClick={() => void startDccWork()}>
+                  <Play size={13} /> 启动本地 DCC Worker
+                </button>
+              ) : null}
               {work?.status === "succeeded" && !dccWork ? (
                 <button type="button" disabled={busy} onClick={() => void queueDccWork()}>
                   <Layers3 size={13} /> 派发 Blender DCC

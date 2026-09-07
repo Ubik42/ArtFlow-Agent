@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 70,
+  "stateRevision": 71,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M23",
+  "currentMilestone": "M24",
   "milestones": [
     {
       "id": "M0",
@@ -258,7 +258,7 @@
     {
       "id": "M23",
       "title": "Blender DCC production bridge and Unreal return",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M22"],
       "outcome": "Blender becomes a complete DCC execution surface for current Scene Sessions: bounded modeling and Geometry Nodes, ComfyUI-driven PBR assembly and baking, scene layout, lighting and later simulation caches return editable project-owned results to isolated Unreal candidates through one durable work lifecycle.",
       "acceptance": [
@@ -267,39 +267,49 @@
         "Unreal Interchange imports the generated model into a Session-derived candidate namespace and records the resulting StaticMesh identity",
         "The first production route supports modular architectural props, followed by ComfyUI PBR assembly, Geometry Nodes layout, camera and lighting exchange behind the same contract"
       ]
+    },
+    {
+      "id": "M24",
+      "title": "Scene-conditioned ComfyUI production route",
+      "status": "in_progress",
+      "dependsOn": ["M23"],
+      "outcome": "ComfyUI becomes a scene-conditioned generation surface beneath the ArtFlow control plane: Unreal passes drive reviewed ControlNet, LoRA and Production Nodes capabilities whose typed outputs continue into Blender and isolated Unreal candidates.",
+      "acceptance": [
+        "The Agent discovers the real local ComfyUI and Production Nodes capabilities from runtime facts rather than documentation claims",
+        "A typed request binds exact Unreal render-pass identities, registered conditioning modes, model identities and bounded generation parameters",
+        "A reviewed fixed workflow produces one real scene-conditioned image or material candidate without model-authored graphs",
+        "The output joins the current Scene Session lifecycle and has a declared Blender or Unreal consumer"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M23-S6",
-    "milestone": "M23",
-    "title": "Session-owned Blender worker execution",
-    "outcome": "Turn the registered Blender modeling, PBR, Geometry Nodes and shot capabilities into an executable product route: a Session-owned worker claims the current DCC work, launches only the fixed capability chain, reconciles existing receipts, returns the latest result to Unreal and reports progress through the existing append-only lifecycle.",
+    "id": "M24-S1",
+    "milestone": "M24",
+    "title": "Real ComfyUI scene-conditioning baseline",
+    "outcome": "Discover the live local ComfyUI and ComfyUI-Production-Nodes runtime, bind one current Unreal scene pass into a typed depth or normal conditioning request, execute one reviewed fixed workflow on the RTX 4080 and persist a content-addressed candidate with a declared downstream Blender/Unreal use.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
     "allowedPaths": ["integrations/blender/**", "integrations/unreal/**", "src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "pyproject.toml", "uv.lock"],
     "nonGoals": [
-      "Do not expose arbitrary Blender Python, Geometry Nodes graphs, command strings, executables or caller-selected output paths",
-      "Do not overwrite, rename or save the source ArtFlowDemo level",
-      "Do not add another state machine, provider abstraction, approval gate or test framework",
-      "Do not redesign the web workspace or add a new orchestration framework",
-      "Do not train a model or add a hosted text-to-3D dependency in this slice",
-      "Do not implement simulation, animation, character rigging or general USD scene transfer in this slice",
-      "Do not replace the existing architectural, PBR or Geometry Nodes results",
-      "Do not add a general job queue, distributed worker framework, second event store or background service manager",
-      "Do not build a broad test matrix; verify one product-triggered worker lifecycle and one recovery or reconciliation path"
+      "Do not expose arbitrary ComfyUI JSON graphs, checkpoint paths, filesystem paths or custom-node property writes",
+      "Do not install or modify the shared ComfyUI runtime or download large models before inspecting what is already configured",
+      "Do not add another state machine, provider abstraction, approval gate, canvas editor or test framework",
+      "Do not train a LoRA, add a hosted provider or implement image-to-3D in this slice",
+      "Do not rerun Blender or Unreal stages unrelated to the selected conditioning output",
+      "Do not build a broad workflow or model matrix; prove one useful scene-conditioned route on the real host"
     ],
     "acceptance": [
-      "The current Scene Session can dispatch and start its registered Blender work without a developer invoking milestone scripts",
-      "The worker derives the fixed capability chain and artifact locations from the content-addressed work definition rather than caller input",
-      "Progress, terminal receipt identity and recovery are projected through the existing DCC work events and survive process restart",
-      "Existing completed Blender and Unreal results reconcile without duplicate generation, import, light creation or candidate creation"
+      "Live /object_info and runtime inventory prove the available ComfyUI and Production Nodes conditioning capabilities",
+      "One typed request binds a current Unreal pass SHA, a registered fixed workflow version and bounded parameters",
+      "The RTX 4080 executes the reviewed workflow and produces a non-empty content-addressed output with a real receipt",
+      "The receipt declares and validates its next Blender or Unreal consumer rather than ending as an isolated image"
     ],
     "stopConditions": [
-      "Stop if the route requires accepting caller-authored Python, shell, Blender graphs, executable paths or Unreal maps",
-      "Stop if the worker cannot prove ownership of the current DCC work before a host side effect",
-      "Stop if recovery would blindly repeat a Blender or Unreal side effect whose completion is unknown",
-      "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
+      "Stop if ComfyUI is already running under an unowned process that would need destructive restart",
+      "Stop if no installed model supports the selected fixed conditioning route and the alternative would require a large download",
+      "Stop if the workflow can only run by accepting model-authored graph JSON or arbitrary host paths",
+      "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "node", "kind": "command", "value": "node", "required": true},
@@ -321,9 +331,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0063.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0064.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M22 and M23-S1-S5 are complete. The Session-bound Blender route covers editable architectural modeling, reviewed ComfyUI PBR assembly, durable DCC work dispatch, a real Geometry Nodes courtyard and exact Unreal-Blender camera/light exchange. Blender 5.2 rendered the editable courtyard with zero camera/FOV error; Unreal 5.8.1 reconciled the three-light proposal into /Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75 with zero duplicate side effects and no source-level byte change. Product-triggered worker execution is not yet implemented; that is M23-S6 scope.",
+  "evidenceCeiling": "M0-M23 are complete. The Session-bound Blender route covers editable modeling, reviewed ComfyUI PBR assembly, Geometry Nodes layout, exact Unreal-Blender camera/light exchange and a product-triggered local DCC Worker. The 4-capability work reached succeeded through 42 replayable events, reconciled /Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Shot_B_e8e5f2673e75 and repeated zero external side effects. Live scene-conditioned ComfyUI generation has not yet been reconfirmed against the current runtime; that is M24-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

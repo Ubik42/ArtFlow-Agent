@@ -76,6 +76,7 @@ from .scene_dcc_work import (
     SceneDccWorkProgressRequest,
     compile_current_blender_dcc_work,
 )
+from .scene_dcc_worker import SceneDccWorker
 from .scene_disposition import SceneVariantPublishReceipt, SceneVariantPublishRequest
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
@@ -151,7 +152,14 @@ class JobRegistry:
             def guarded_target() -> None:
                 try:
                     target()
-                except (ComfyError, RunStateError, OSError, ValueError, TimeoutError) as exc:
+                except (
+                    AgentRuntimeError,
+                    ComfyError,
+                    RunStateError,
+                    OSError,
+                    ValueError,
+                    TimeoutError,
+                ) as exc:
                     with self._lock:
                         self._errors[run_id] = str(exc)
 
@@ -526,6 +534,26 @@ def create_app(
             agent_store.progress_scene_dcc_work(run_id, payload)
             return project_agent_run(agent_store, run_id)
         except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/start",
+        response_model=AgentRunProjection,
+        status_code=202,
+    )
+    def start_scene_dcc_work(run_id: str, request: Request):
+        _require_loopback(request, "Blender DCC 执行仅允许本机启动")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_dcc_work is None:
+                raise AgentRuntimeError("DCC work must be dispatched before it can start")
+            jobs.start(
+                f"dcc-{run_id}",
+                lambda: SceneDccWorker(agent_store, resolved_project_root).run_once(run_id),
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, RuntimeError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

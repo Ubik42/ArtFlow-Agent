@@ -1,0 +1,17 @@
+{
+  "schema_id": "artflow-goal-verification/1",
+  "slice_id": "M23-S6",
+  "status": "passed",
+  "checks": {
+    "product_queue_action": true,
+    "product_start_action": true,
+    "registered_capability_count": 4,
+    "single_worker_owner": true,
+    "event_replay_stable": true,
+    "unreal_candidate_reconciled": true,
+    "duplicate_external_side_effect_count": 0,
+    "browser_console_errors": 0,
+    "browser_console_warnings": 0
+  },
+  "focused_tests": 1
+}

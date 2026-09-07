@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M23-S6",
+  "status": "completed",
+  "outcome": "The current Scene Session can dispatch and start a local DCC Worker from the product surface; the worker owns, reconciles and completes the four registered Blender capabilities through the existing durable lifecycle without developer scripts or duplicate side effects.",
+  "evidence": [
+    "artifacts/goal/m23-s6-dcc-worker/session-dcc-worker-receipt.json",
+    "artifacts/goal/m23-s6-dcc-worker/agent-events.sqlite3",
+    "artifacts/goal/m23-s6-dcc-worker/session-dcc-worker-ui.png",
+    "artifacts/goal/m23-s6-dcc-worker/verification.json",
+    "docs/evidence/M23_S6_SESSION_DCC_WORKER_2026-09-07.md",
+    "tests/test_scene_dcc_work.py"
+  ]
+}

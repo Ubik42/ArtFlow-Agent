@@ -59,14 +59,18 @@ Unreal 当前场景
 - **M22 · Unreal-native operator lifecycle controls（已完成）**：发布与审阅合同已接入 Unreal
   中文 Tools 菜单；编辑器重启后可从项目持久指针恢复受验证的 Scene Session，公开菜单只保留
   四个产品生命周期入口。恢复不接受调用方 Run、路径或脚本，源关卡身份不一致时关闭失败。
-- **M23 · Blender DCC production bridge and Unreal return（进行中）**：优先接入本机 Blender 5.2
+- **M23 · Blender DCC production bridge and Unreal return（已完成）**：优先接入本机 Blender 5.2
   LTS，把它作为建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光和后续模拟
   缓存的完整 DCC 执行面。模块化建筑道具生成，以及受审 ComfyUI PBR 到 Blender 可编辑材质、
   嵌入式 GLB、预览图和 Unreal Interchange 候选回流均已真实完成，并已提升为 Scene Session
   中可派发、领取、对账和重放的持久工作项。Geometry Nodes 多资产庭院已根据 Session 边界
   真实生成并回流新的 Unreal 候选；Unreal 当前相机与灯光也已驱动 Blender 同机位预演，并把
-  有界 key / fill / rim 灯光方案对账回新的候选关卡。下一切片将这些固定能力接到产品内的
-  Session DCC Worker，使用户从当前场景派发后即可完成 Blender 执行与 Unreal 回流，而不是依赖开发脚本。
+  有界 key / fill / rim 灯光方案对账回新的候选关卡。四段固定能力现已接到产品内的 Session
+  DCC Worker，用户从场景变更谱派发并启动后，领取、执行、对账与结果都进入原有事件流。
+- **M24 · Scene-conditioned ComfyUI production route（进行中）**：把 ComfyUI 节点生态用于真实
+  场景条件生成。优先接入 Unreal Depth / World Normal / Object ID 与 Production Nodes 的版本化
+  ControlNet/LoRA/PBR 子图，让 Agent 编译类型化参数并把输出继续交给 Blender/Unreal，而不是
+  在产品中开放任意 workflow 编辑或把 ComfyUI 变成第二套控制平面。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

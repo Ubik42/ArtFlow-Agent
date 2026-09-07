@@ -14,6 +14,8 @@ Blender 在这里不只是建模器，也是材质、几何处理、布局、灯
 
 这条链路现已成为当前 Scene Session 的持久 DCC 工作项。场景变更谱可直接派发 Blender DCC，执行器按单一写入者语义领取，并在同一 append-only 事件流中报告执行、对账与完成；刷新或进程重启后仍恢复相同的能力版本、输入哈希和 Unreal 候选身份，已存在的生成结果不会被重复运行。
 
+![当前 Session 的本地 DCC Worker 已完成四段能力链回流](artifacts/goal/m23-s6-dcc-worker/session-dcc-worker-ui.png)
+
 | ComfyUI PBR → Blender 可编辑材质 | Blender PBR → Unreal 候选关卡 |
 | --- | --- |
 | ![ComfyUI PBR 装配后的 Blender 资产](artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR-preview.png) | ![带 PBR 材质回流 Unreal 的候选资产](artifacts/goal/m23-s2-blender-pbr/unreal-blender-candidate.png) |

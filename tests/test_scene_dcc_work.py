@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import time
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -38,30 +39,15 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.shot.rain_breakthrough.v1",
     ]
 
-    claim = {
-        "schema_id": "artflow-scene-dcc-claim/1",
-        "work_sha256": work["definition"]["work_sha256"],
-        "session_sha256": work["definition"]["session_sha256"],
-        "worker_id": "blender-worker-m23",
-    }
-    assert client.post(f"{base}/claim", json=claim).status_code == 200
-
-    def progress(status: str, action: str, outcome: str | None = None):
-        payload = {
-            "schema_id": "artflow-scene-dcc-progress/1",
-            "work_sha256": work["definition"]["work_sha256"],
-            "worker_id": "blender-worker-m23",
-            "status": status,
-            "action_id": action,
-        }
-        if outcome:
-            payload["outcome_sha256"] = outcome
-        return client.post(f"{base}/progress", json=payload)
-
-    assert progress("executing", "m23-dcc-executing").status_code == 200
-    assert progress("reconciling", "m23-dcc-reconciling").status_code == 200
-    finished = progress("succeeded", "m23-dcc-succeeded", "6" * 64)
-    assert finished.status_code == 200
+    assert client.post(f"{base}/start").status_code == 202
+    finished = None
+    for _ in range(100):
+        finished = client.get(f"/api/agent/runs/{RUN_ID}")
+        if finished.json()["scene_dcc_work"]["status"] == "succeeded":
+            break
+        time.sleep(0.01)
+    assert finished is not None
     assert finished.json()["scene_dcc_work"]["status"] == "succeeded"
     restored = AgentEventStore(database).load(RUN_ID).scene_dcc_work
-    assert restored is not None and restored.outcome_sha256 == "6" * 64
+    assert restored is not None
+    assert restored.outcome_sha256 == work["definition"]["unreal_return_receipt_sha256"]
