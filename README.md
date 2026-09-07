@@ -12,6 +12,8 @@
 
 Blender 在这里不只是建模器，也是材质、几何处理、布局、灯光和交换格式的 DCC 执行面。第二条真实链路复用了已由 `ComfyUI-Production-Nodes` 生成并验证的 Base Color、Normal 与 Roughness，将它们装配到可编辑 Blender 材质，导出带贴图的 GLB，再对账到同一个 Scene Session 的 Unreal 候选空间。生成、材质装配与引擎回流各自保留类型化请求、内容哈希和宿主回执。
 
+这条链路现已成为当前 Scene Session 的持久 DCC 工作项。场景变更谱可直接派发 Blender DCC，执行器按单一写入者语义领取，并在同一 append-only 事件流中报告执行、对账与完成；刷新或进程重启后仍恢复相同的能力版本、输入哈希和 Unreal 候选身份，已存在的生成结果不会被重复运行。
+
 | ComfyUI PBR → Blender 可编辑材质 | Blender PBR → Unreal 候选关卡 |
 | --- | --- |
 | ![ComfyUI PBR 装配后的 Blender 资产](artifacts/goal/m23-s2-blender-pbr/AF_WeatheredShrine_PBR-preview.png) | ![带 PBR 材质回流 Unreal 的候选资产](artifacts/goal/m23-s2-blender-pbr/unreal-blender-candidate.png) |

@@ -62,8 +62,9 @@ Unreal 当前场景
 - **M23 · Blender DCC production bridge and Unreal return（进行中）**：优先接入本机 Blender 5.2
   LTS，把它作为建模、Geometry Nodes、ComfyUI PBR 装配与 Bake、场景布局、相机灯光和后续模拟
   缓存的完整 DCC 执行面。模块化建筑道具生成，以及受审 ComfyUI PBR 到 Blender 可编辑材质、
-  嵌入式 GLB、预览图和 Unreal Interchange 候选回流均已真实完成。当前切片把这些已验证的
-  Blender DCC 工作提升为 Scene Session 中的持久工作项；后续能力继续复用同一任务与回执生命周期。
+  嵌入式 GLB、预览图和 Unreal Interchange 候选回流均已真实完成，并已提升为 Scene Session
+  中可派发、领取、对账和重放的持久工作项。下一切片以同一合同接入 Geometry Nodes 多资产布局，
+  让 Blender 继续承担场景级生成而不退回单模型演示。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

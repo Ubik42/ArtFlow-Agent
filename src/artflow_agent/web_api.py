@@ -71,6 +71,11 @@ from .scene_correction_work import (
     compile_current_correction_work,
     resolve_current_correction_beauty,
 )
+from .scene_dcc_work import (
+    SceneDccWorkClaimRequest,
+    SceneDccWorkProgressRequest,
+    compile_current_blender_dcc_work,
+)
 from .scene_disposition import SceneVariantPublishReceipt, SceneVariantPublishRequest
 from .scene_packages import ScenePackageArchive, ScenePackageImportError
 from .scene_session import (
@@ -457,6 +462,68 @@ def create_app(
         _require_loopback(request, "Unreal 候选进度仅允许本机回传")
         try:
             agent_store.progress_scene_candidate_work(run_id, payload)
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/queue",
+        response_model=AgentRunProjection,
+    )
+    def queue_scene_dcc_work(run_id: str):
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_dcc_work is not None:
+                return project_agent_run(agent_store, run_id)
+            session = state.scene_sessions[-1] if state.scene_sessions else None
+            if session is None:
+                raise AgentRuntimeError("DCC work requires a persisted Scene Session")
+            definition = compile_current_blender_dcc_work(
+                resolved_project_root,
+                run_id=run_id,
+                session_id=session.session_id,
+                session_sha256=session.session_sha256,
+            )
+            agent_store.queue_scene_dcc_work(run_id, definition)
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/claim",
+        response_model=AgentRunProjection,
+    )
+    def claim_scene_dcc_work(
+        run_id: str, payload: SceneDccWorkClaimRequest, request: Request
+    ):
+        _require_loopback(request, "Blender DCC 工作项仅允许本机领取")
+        try:
+            state = agent_store.load(run_id)
+            work = state.scene_dcc_work
+            if work is None or work.definition.session_sha256 != payload.session_sha256:
+                raise AgentRuntimeError("DCC work claim references another Scene Session")
+            agent_store.claim_scene_dcc_work(
+                run_id,
+                work_sha256=payload.work_sha256,
+                worker_id=payload.worker_id,
+            )
+            return project_agent_run(agent_store, run_id)
+        except AgentRuntimeError as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/progress",
+        response_model=AgentRunProjection,
+    )
+    def progress_scene_dcc_work(
+        run_id: str, payload: SceneDccWorkProgressRequest, request: Request
+    ):
+        _require_loopback(request, "Blender DCC 进度仅允许本机回传")
+        try:
+            agent_store.progress_scene_dcc_work(run_id, payload)
             return project_agent_run(agent_store, run_id)
         except AgentRuntimeError as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409

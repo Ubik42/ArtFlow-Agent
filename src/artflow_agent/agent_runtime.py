@@ -49,6 +49,11 @@ from .scene_correction_work import (
     SceneCorrectionWorkProgressRequest,
     SceneCorrectionWorkState,
 )
+from .scene_dcc_work import (
+    SceneDccWorkDefinition,
+    SceneDccWorkProgressRequest,
+    SceneDccWorkState,
+)
 from .scene_packages import ScenePackagePreview, VerifiedSceneArtifact
 from .scene_session import (
     SceneSession,
@@ -105,6 +110,9 @@ AgentEventType = Literal[
     "scene_candidate_work_queued",
     "scene_candidate_work_claimed",
     "scene_candidate_work_progressed",
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
     "scene_candidate_intake_evaluated",
     "scene_candidate_visual_evaluated",
     "scene_correction_work_queued",
@@ -245,6 +253,7 @@ class AgentRunState(BaseModel):
     comparison_manifest: dict[str, Any] | None = None
     scene_sessions: list[SceneSession] = Field(default_factory=list)
     scene_candidate_work: SceneCandidateWorkState | None = None
+    scene_dcc_work: SceneDccWorkState | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
@@ -438,6 +447,19 @@ class _SceneCandidateWorkClaimed(BaseModel):
 
 class _SceneCandidateWorkProgressed(BaseModel):
     progress: SceneCandidateWorkProgressRequest
+
+
+class _SceneDccWorkQueued(BaseModel):
+    definition: SceneDccWorkDefinition
+
+
+class _SceneDccWorkClaimed(BaseModel):
+    work_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
+    worker_id: str = Field(pattern=r"^[A-Za-z0-9][A-Za-z0-9._-]{2,119}$")
+
+
+class _SceneDccWorkProgressed(BaseModel):
+    progress: SceneDccWorkProgressRequest
 
 
 class _SceneCandidateEvaluated(BaseModel):
@@ -746,6 +768,41 @@ class AgentEventStore:
             "scene_candidate_work_progressed",
             _SceneCandidateWorkProgressed(progress=progress).model_dump(mode="json"),
             idempotency_key=f"scene_candidate_work_progressed:{progress.action_id}",
+        )
+        return self.load(run_id)
+
+    def queue_scene_dcc_work(
+        self, run_id: str, definition: SceneDccWorkDefinition
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_dcc_work_queued",
+            _SceneDccWorkQueued(definition=definition).model_dump(mode="json"),
+            idempotency_key=f"scene_dcc_work_queued:{definition.work_id}",
+        )
+        return self.load(run_id)
+
+    def claim_scene_dcc_work(
+        self, run_id: str, *, work_sha256: str, worker_id: str
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_dcc_work_claimed",
+            _SceneDccWorkClaimed(
+                work_sha256=work_sha256, worker_id=worker_id
+            ).model_dump(mode="json"),
+            idempotency_key=f"scene_dcc_work_claimed:{work_sha256}",
+        )
+        return self.load(run_id)
+
+    def progress_scene_dcc_work(
+        self, run_id: str, progress: SceneDccWorkProgressRequest
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_dcc_work_progressed",
+            _SceneDccWorkProgressed(progress=progress).model_dump(mode="json"),
+            idempotency_key=f"scene_dcc_work_progressed:{progress.action_id}",
         )
         return self.load(run_id)
 
@@ -1728,6 +1785,7 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
                 raise AgentRuntimeError("scene_session_started duplicates a persisted session")
             state.scene_sessions.append(session)
             state.scene_candidate_work = None
+            state.scene_dcc_work = None
             state.scene_candidate_intake = None
             state.scene_candidate_visual_verdict = None
             state.scene_correction_work = None
@@ -1765,6 +1823,47 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             work.status = "claimed"
             work.worker_id = claim.worker_id
             work.message = "Unreal 已领取候选工作项"
+        elif event.event_type == "scene_dcc_work_queued":
+            if not state.scene_sessions:
+                raise AgentRuntimeError("DCC work requires a current Scene Session")
+            if state.scene_dcc_work is not None:
+                raise AgentRuntimeError("current Scene Session already has DCC work")
+            definition = _SceneDccWorkQueued.model_validate(event.data).definition
+            session = state.scene_sessions[-1]
+            if (
+                definition.run_id != state.run_id
+                or definition.session_id != session.session_id
+                or definition.session_sha256 != session.session_sha256
+            ):
+                raise AgentRuntimeError("DCC work is stale or references another Session")
+            state.scene_dcc_work = SceneDccWorkState(definition=definition)
+        elif event.event_type == "scene_dcc_work_claimed":
+            work = state.scene_dcc_work
+            if work is None or work.status != "queued":
+                raise AgentRuntimeError("DCC work is no longer available")
+            claim = _SceneDccWorkClaimed.model_validate(event.data)
+            if claim.work_sha256 != work.definition.work_sha256:
+                raise AgentRuntimeError("DCC work claim references another work item")
+            work.status = "claimed"
+            work.worker_id = claim.worker_id
+            work.message = "Blender DCC 执行器已领取工作项"
+        elif event.event_type == "scene_dcc_work_progressed":
+            work = state.scene_dcc_work
+            if work is None or work.worker_id is None:
+                raise AgentRuntimeError("DCC work progress requires a claimed work item")
+            progress = _SceneDccWorkProgressed.model_validate(event.data).progress
+            if progress.work_sha256 != work.definition.work_sha256 or progress.worker_id != work.worker_id:
+                raise AgentRuntimeError("DCC work progress references another work item or worker")
+            allowed = {
+                "claimed": {"executing", "failed"},
+                "executing": {"reconciling", "succeeded", "failed"},
+                "reconciling": {"succeeded", "failed"},
+            }
+            if progress.status not in allowed.get(work.status, set()):
+                raise AgentRuntimeError(f"DCC work cannot move from {work.status} to {progress.status}")
+            work.status = progress.status
+            work.outcome_sha256 = progress.outcome_sha256
+            work.message = progress.message
         elif event.event_type == "scene_candidate_work_progressed":
             work = state.scene_candidate_work
             if work is None or work.worker_id is None:

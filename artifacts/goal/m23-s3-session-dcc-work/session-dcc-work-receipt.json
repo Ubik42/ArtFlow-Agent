@@ -1,0 +1,46 @@
+{
+  "schema_id": "artflow-session-dcc-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "definition": {
+    "schema_id": "artflow-scene-dcc-work/1",
+    "work_id": "dcc-work-47533c33f0a3",
+    "work_sha256": "47533c33f0a3ff683b536461e541563c9f1747982b67ca4d57f3201f9e0b7f52",
+    "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+    "session_id": "scene-session-dc31f6ed0f4e",
+    "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+    "capability_ids": [
+      "blender.architectural_prop.weathered_shrine.v1",
+      "blender.comfy_pbr.assembly.v1"
+    ],
+    "modeling_request_sha256": "b717f8d475dbd968673debdb0ea89ecd8b4176bc2394b1e89bdbc7bc44b4cee7",
+    "pbr_request_sha256": "187f272db035e62f83c1dbfec957bc040f7120786d5464081a43d7989a1e4049",
+    "unreal_return_receipt_sha256": "6213c1e153c38f8fe2fea27b2da6957d2c34288a0ad6adb4895745bee9efcc10",
+    "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_187f272db035"
+  },
+  "final_state": {
+    "definition": {
+      "schema_id": "artflow-scene-dcc-work/1",
+      "work_id": "dcc-work-47533c33f0a3",
+      "work_sha256": "47533c33f0a3ff683b536461e541563c9f1747982b67ca4d57f3201f9e0b7f52",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_id": "scene-session-dc31f6ed0f4e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "capability_ids": [
+        "blender.architectural_prop.weathered_shrine.v1",
+        "blender.comfy_pbr.assembly.v1"
+      ],
+      "modeling_request_sha256": "b717f8d475dbd968673debdb0ea89ecd8b4176bc2394b1e89bdbc7bc44b4cee7",
+      "pbr_request_sha256": "187f272db035e62f83c1dbfec957bc040f7120786d5464081a43d7989a1e4049",
+      "unreal_return_receipt_sha256": "6213c1e153c38f8fe2fea27b2da6957d2c34288a0ad6adb4895745bee9efcc10",
+      "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Blender_B_187f272db035"
+    },
+    "status": "succeeded",
+    "worker_id": "blender-worker-m23",
+    "outcome_sha256": "6213c1e153c38f8fe2fea27b2da6957d2c34288a0ad6adb4895745bee9efcc10",
+    "message": "ComfyUI PBR、Blender 编辑源与 Unreal 候选已完成对账"
+  },
+  "event_count": 42,
+  "replayed": true,
+  "external_generation_repeated": false
+}

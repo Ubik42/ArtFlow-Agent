@@ -1,6 +1,6 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 67,
+  "stateRevision": 68,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
@@ -270,10 +270,10 @@
     }
   ],
   "nextSlice": {
-    "id": "M23-S3",
+    "id": "M23-S4",
     "milestone": "M23",
-    "title": "Promote Blender DCC execution into the current Scene Session",
-    "outcome": "Expose the proven Blender modeling and ComfyUI PBR assembly route as one durable work item in the current Scene Session, claimed and reconciled through the existing append-only Agent lifecycle rather than a parallel DCC job system.",
+    "title": "Geometry Nodes multi-asset layout and Unreal return",
+    "outcome": "Use the same Scene Session DCC contract to generate one bounded Geometry Nodes composition from current scene bounds, preserve an editable node graph, realize an engine exchange artifact and return the multi-asset layout to an isolated Unreal candidate.",
     "risk": "R2",
     "evidenceTarget": "A3",
     "requiresRealHosts": true,
@@ -284,19 +284,20 @@
       "Do not add another state machine, provider abstraction, approval gate or test framework",
       "Do not redesign the web workspace or add a new orchestration framework",
       "Do not train a model or add a hosted text-to-3D dependency in this slice",
-      "Do not implement Geometry Nodes, simulation, animation or general scene transfer before Session dispatch works",
-      "Do not rerun Blender, ComfyUI or Unreal generation whose content-bound receipts already pass",
-      "Do not build a broad test matrix; verify one queued work item and one recovery/reconcile path"
+      "Do not implement simulation, animation, rigging or general USD scene transfer in this slice",
+      "Do not replace the existing architectural asset or PBR route; compose it with bounded procedural support elements",
+      "Do not add a general-purpose Geometry Nodes graph editor or expose arbitrary node construction",
+      "Do not build a broad test matrix; verify one typed layout, one real Blender execution and one Unreal return"
     ],
     "acceptance": [
-      "The current Scene Session exposes exactly one durable Blender DCC work item whose definition binds the proven modeling and PBR request identities",
-      "The worker claims, reports progress and reconciles the work through existing event semantics rather than a second Blender job database",
-      "Scene Spectrum projects the Blender work state and returned Unreal candidate identity without exposing scripts, paths or raw ComfyUI graphs",
-      "A replay after the recorded receipt does not rerun Blender, ComfyUI, PCG, lighting or Unreal import"
+      "A typed layout request derives placement bounds, density, seed and asset identities from the current Scene Session",
+      "A fixed versioned Blender capability creates an editable Geometry Nodes graph and a realized embedded exchange artifact",
+      "The composition contains multiple generated elements with bounded count and scene extents rather than one duplicated hero mesh",
+      "Unreal imports or reconciles the composition into a new Session-derived candidate while the source level remains byte-identical"
     ],
     "stopConditions": [
       "Stop if the route requires executing model-authored Blender Python or arbitrary node graphs",
-      "Stop if the proven Blender or PBR output cannot be bound to the current Session and fixed capability versions",
+      "Stop if the Geometry Nodes result cannot be bound to the current Session and fixed capability versions",
       "Stop if Unreal import would overwrite an existing user asset or source level",
       "Stop if project-owned runtime changes overlap unknown user edits and cannot be preserved"
     ],
@@ -320,9 +321,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0060.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0061.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M22 and M23-S1/S2 are complete. Real Blender 5.2 LTS generated an editable 26-part architectural prop, then assembled a content-bound reviewed ComfyUI PBR set into two declared materials and exported a 5,915,996-byte embedded textured GLB. Unreal 5.8.1 reconciled the exact artifact into /Game/ArtFlow/Generated/Blender/B_187f272db035 and a Session-derived candidate with three material slots, one simple collision, zero duplicate side effects and no source-level byte change. The proven DCC route is not yet dispatched from the live Agent event stream; that is M23-S3 scope.",
+  "evidenceCeiling": "M0-M22 and M23-S1/S2/S3 are complete. Real Blender 5.2 LTS generated an editable architectural prop and assembled reviewed ComfyUI PBR into a textured GLB; Unreal 5.8.1 reconciled it into a Session-derived candidate without source-level changes. The exact modeling, PBR and Unreal identities now form DCC work dcc-work-47533c33f0a3 in the current append-only Scene Session: one worker advanced queued through succeeded, 42 events replayed the same outcome and external generation repeated zero times. Geometry Nodes scene-level composition is not yet implemented; that is M23-S4 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

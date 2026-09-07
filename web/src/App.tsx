@@ -508,6 +508,7 @@ type AgentProjection = {
   comparison_manifest: ComparisonManifest | null;
   scene_session: SceneSession | null;
   scene_candidate_work: SceneCandidateWorkState | null;
+  scene_dcc_work: SceneDccWorkState | null;
   scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
   scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
   scene_correction_work: SceneCorrectionWorkState | null;
@@ -593,6 +594,21 @@ type SceneCandidateWorkState = {
       plan_sha256: string;
       operations: Array<{ kind: string; operation_id: string }>;
     };
+  };
+  status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
+  worker_id: string | null;
+  outcome_sha256: string | null;
+  message: string | null;
+};
+type SceneDccWorkState = {
+  definition: {
+    schema_id: "artflow-scene-dcc-work/1";
+    work_id: string;
+    work_sha256: string;
+    capability_ids: [string, string];
+    modeling_request_sha256: string;
+    pbr_request_sha256: string;
+    candidate_scene_path: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1434,7 +1450,24 @@ function SceneChangeSpectrum({
     }
   }, [agent.run_id, onAgentChange]);
 
+  const queueDccWork = useCallback(async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      const next = await request<AgentProjection>(
+        `/api/agent/runs/${agent.run_id}/scene-dcc-work/queue`,
+        { method: "POST" },
+      );
+      onAgentChange(next);
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : String(reason));
+    } finally {
+      setBusy(false);
+    }
+  }, [agent.run_id, onAgentChange]);
+
   const work = agent.scene_candidate_work;
+  const dccWork = agent.scene_dcc_work;
   const intake = agent.scene_candidate_intake;
   const visualVerdict = agent.scene_candidate_visual_verdict;
   const correctionWork = agent.scene_correction_work;
@@ -1566,10 +1599,26 @@ function SceneChangeSpectrum({
               <span>{draft.guarded_domain_count} 项待补齐</span>
               <span>{draft.experimental_domain_count} 项实验能力</span>
             </div>
+            {dccWork ? (
+              <div className={`candidate-work-pulse state-${dccWork.status}`}>
+                <span />
+                <b>
+                  Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
+                </b>
+                <small>
+                  ComfyUI PBR → Blender → Unreal · {shortId(dccWork.definition.work_sha256)}
+                </small>
+              </div>
+            ) : null}
             <code title={work?.definition.work_id ?? stageRequest?.candidate_destination}>
               {shortId(work?.definition.work_sha256 ?? stageRequest?.request_sha256 ?? draft.draft_sha256)}
             </code>
             <div className="spectrum-actions">
+              {work?.status === "succeeded" && !dccWork ? (
+                <button type="button" disabled={busy} onClick={() => void queueDccWork()}>
+                  <Layers3 size={13} /> 派发 Blender DCC
+                </button>
+              ) : null}
               {work ? (
                 correctionWork ? (
                   correctionVerdict?.domain_evaluation.status === "correction_required" ? (

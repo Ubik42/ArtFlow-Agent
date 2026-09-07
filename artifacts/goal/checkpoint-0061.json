@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M23-S3",
+  "status": "completed",
+  "outcome": "The proven Blender modeling, ComfyUI PBR and Unreal return identities now form one current-Session DCC work item that is dispatched, claimed, reconciled, replayed and projected through ArtFlow's existing append-only control plane.",
+  "evidence": [
+    "artifacts/goal/m23-s3-session-dcc-work/session-dcc-work-receipt.json",
+    "artifacts/goal/m23-s3-session-dcc-work/agent-events.sqlite3",
+    "docs/evidence/M23_S3_SESSION_DCC_WORK_2026-09-07.md",
+    "tests/test_scene_dcc_work.py"
+  ]
+}
