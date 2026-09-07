@@ -138,9 +138,12 @@ Unreal 当前场景
   Blender 的材质节点、UV 与 Bake 能力，以及 Unreal Material Instance / PCG 变体应用组织为
   一条真实表面制作路线。先为现有 Wayfinder 模块生成三组受限色板与粗糙度变体，在可编辑
   `.blend` 中保留节点结构和贴图，再回流隔离候选并按 PCG 变体稳定分配。
-- **M41 · Live material-variation dispatch（进行中）**：把 M40 的 ComfyUI 输入、Blender 材质源、
+- **M41 · Live material-variation dispatch（已完成）**：把 M40 的 ComfyUI 输入、Blender 材质源、
   六张烘焙贴图、三个 Material Instances 与 Unreal PCG 候选登记为当前 Session 的第十三项
   生产能力，复用既有 Worker 和场景变更谱提供直接派发与恢复。
+- **M42 · Scene-conditioned terrain and biome blockout（进行中）**：把 Unreal 深度与保护区交给
+  固定 ComfyUI 节点子图生成高度场和生物群落分区；Blender 通过可编辑 Geometry Nodes 建立
+  场景外围地形、UV 和碰撞代理，Unreal 在隔离候选中接收地形并让项目自有 PCG 图消费分区。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

@@ -1,0 +1,39 @@
+{
+  "schema_id": "artflow-live-material-variation-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-e152ee0714b0",
+  "work_sha256": "e152ee0714b091277baac6e207dc7b7cc92b377c44cd7a52a8d7e4a9ff2634ce",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1",
+    "blender.material.scene_conditioned_wayfinder_set.v1"
+  ],
+  "material_variation_request_sha256": "1a77d442c3793d8dfe80af7c5bbdd19e399d1684c3fb53d6e7e3d2bc43124419",
+  "blender_material_variation_receipt_sha256": "76d0a496ff0a1f10bc1c29638cd1ab52a28f2dd4ad81fc2c3de89ea2c1d41628",
+  "unreal_material_variation_receipt_sha256": "9b63b384c74156b8e67afd0fc5b1c9ccf227b0a09c6fb3411c2326a8409eea69",
+  "outcome_sha256": "9b63b384c74156b8e67afd0fc5b1c9ccf227b0a09c6fb3411c2326a8409eea69",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Material_B_1a77d442c379",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

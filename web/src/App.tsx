@@ -642,6 +642,9 @@ type SceneDccWorkState = {
     blender_camera_move_receipt_sha256?: string;
     unreal_camera_move_receipt_sha256?: string;
     camera_move_sequence_path?: string;
+    material_variation_request_sha256?: string;
+    blender_material_variation_receipt_sha256?: string;
+    unreal_material_variation_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1655,7 +1658,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.camera_move_request_sha256
+                  {dccWork.definition.material_variation_request_sha256
+                    ? "ComfyUI 场景目标 → Blender 材质 / Bake → Unreal 原生 PCG"
+                    : dccWork.definition.camera_move_request_sha256
                     ? "视觉目标 → Blender 三关键帧 → Unreal Sequencer 镜头动画"
                     : dccWork.definition.shot_package_request_sha256
                     ? "视觉目标 → Blender 镜头预演 → 原生 PCG → Level Sequence"
@@ -1843,8 +1848,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasNativePcgDensity = Boolean(agent.scene_dcc_work?.definition.pcg_density_request_sha256);
   const hasShotPackage = Boolean(agent.scene_dcc_work?.definition.shot_package_request_sha256);
   const hasCameraMove = Boolean(agent.scene_dcc_work?.definition.camera_move_request_sha256);
+  const hasMaterialVariation = Boolean(agent.scene_dcc_work?.definition.material_variation_request_sha256);
   const cases = [
-    ...(hasCameraMove
+    ...(hasMaterialVariation
+      ? [{
+          id: "material-variation-roundtrip",
+          tab: "当前 Session · 材质变体",
+          title: "让场景视觉方向成为 PCG 模块可继续编辑的材质系统",
+          description: "Agent 将当前 ComfyUI 场景目标、Wayfinder 编辑源和原生 PCG 候选编译成一项有限材质任务。Blender 保留三套节点与六张烘焙贴图，Unreal 创建 Material Instances 并按 A / B / C 模块身份分配。",
+          frames: [
+            { src: "/api/showcase/production/m40-material-target", alt: "ComfyUI 根据 Unreal 场景生成的视觉条件", label: "场景条件", title: "Beauty + Depth · 内容已绑定" },
+            { src: "/api/showcase/production/m40-material-blender", alt: "Blender 中三套可编辑 Wayfinder 材质", label: "DCC 材质", title: "3 套节点 · 6 张 512² Bake" },
+            { src: "/api/showcase/production/m40-material-unreal", alt: "Unreal 原生 PCG 应用三套 Material Instances", label: "引擎候选", title: "3 个 MI · 12 个 PCG 实例" },
+          ],
+          transition: "内容绑定的材质参数",
+          metricA: "92–95%",
+          metricALabel: "三套 UV 覆盖",
+          metricB: "0",
+          metricBLabel: "重复组件修改",
+          note: `材质请求 ${shortId(agent.scene_dcc_work?.definition.material_variation_request_sha256 ?? "")} 从未知完成状态恢复；候选 ${agent.scene_dcc_work?.definition.candidate_scene_path} 保持上游 PCG 与源关卡字节不变。`,
+          domains: ["条件·已绑定", "UV·已验证", "材质·可编辑", "PCG·已分配", "恢复·已对账"],
+        }]
+      : hasCameraMove
       ? [{
           id: "camera-move-roundtrip",
           tab: "当前 Session · 镜头运动",
@@ -2091,7 +2116,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasCameraMove && caseId !== "camera-move-roundtrip") {
+    if (hasMaterialVariation && caseId !== "material-variation-roundtrip") {
+      setCaseId("material-variation-roundtrip");
+    } else if (hasCameraMove && caseId !== "camera-move-roundtrip") {
       setCaseId("camera-move-roundtrip");
     } else if (hasShotPackage && caseId !== "shot-ready-environment") {
       setCaseId("shot-ready-environment");
@@ -2108,7 +2135,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasCameraMove, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasCameraMove, hasMaterialVariation, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

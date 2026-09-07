@@ -169,6 +169,12 @@ PCG 实例。首次回执中断后由新进程对账既有资产，重复创建�
 [材质变体实测记录](docs/evidence/M40_S1_MATERIAL_VARIATION_2026-09-07.md)
 列出了 UV、材质节点、贴图、Material Instance 与恢复结果。
 
+该能力现已作为第十三项生产能力进入当前 Scene Session。使用者从场景变更谱直接派发，既有
+DCC Worker 核对三台宿主的内容身份并恢复结果；界面把二维条件、Blender 材质制作和 Unreal
+PCG 应用放在同一条变更轨道中。
+
+![当前 Session 的场景条件材质路线](artifacts/goal/m41-s1-live-material-variation/live-material-variation-desktop.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：
@@ -354,7 +360,7 @@ PydanticAI 仅用于类型化模型边界；状态机、工具权限、策略、
 | Unreal ↔ Blender 镜头灯光交换 | 相机位置 / FOV 误差 0；3 盏登记灯光；重复回填副作用 0 |
 | ComfyUI 场景条件生成 | 826 节点实机能力；1024×576；RTX 4080 执行 9.41 秒 |
 | 场景条件目标 → Blender / Unreal Lookdev | 3 个登记材质目标、3 盏登记灯光；重复回流副作用 0；源关卡字节变化 0 |
-| Scene Session 生产能力链 | 12 个登记能力；每项使用 5 个持久生命周期事件，重复派发保持同一工作身份 |
+| Scene Session 生产能力链 | 13 个登记能力；每项使用 5 个持久生命周期事件，重复派发保持同一工作身份 |
 | Blender 程序化场景套件 | 3 个 Geometry Nodes 变体；每项 2 级 LOD、1 个简单碰撞体 |
 | ComfyUI 场景空间密度 | 29.197% 有效覆盖；3 个保护区泄漏 0；12 个确定性空间点 |
 | Unreal 原生 PCG 装配 | 3 种 Blender 网格、12 个原生实例；重复执行副作用 0；两项源文件变化 0 |

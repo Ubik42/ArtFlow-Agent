@@ -13,6 +13,11 @@ from .blender_set_dressing import (
 from .blender_surface import BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .lookdev_handoff import SceneLookdevRequest
+from .material_variation import (
+    BlenderMaterialVariationReceipt,
+    MaterialVariationRequest,
+    verify_material_variation,
+)
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
@@ -76,6 +81,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "density": project_root / "artifacts/goal/m34-s1-pcg-density",
         "shot_package": project_root / "artifacts/goal/m36-s1-shot-package",
         "camera_move": project_root / "artifacts/goal/m38-s1-camera-move",
+        "material_variation": project_root / "artifacts/goal/m40-s1-material-variation",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -352,7 +358,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         )
         if unreal_receipt.get("request_sha256") != request.request_sha256:
             raise ValueError("Unreal shot package references another request")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.material_variation_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal shot-package candidate changed")
         if unreal_receipt.get("sequence_asset_path") != work.level_sequence_path:
             raise ValueError("registered Level Sequence changed")
@@ -409,7 +418,12 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             raise ValueError("Unreal camera move references another Blender receipt")
         if unreal_receipt.get("source_sequence_path") != work.level_sequence_path:
             raise ValueError("camera move source Level Sequence changed")
-        if unreal_receipt.get("source_candidate_scene_path") != work.candidate_scene_path:
+        shot_package_receipt = json.loads(
+            (roots["shot_package"] / "unreal-shot-package-receipt.json").read_text(encoding="utf-8")
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != shot_package_receipt.get(
+            "candidate_scene_path"
+        ):
             raise ValueError("camera move source candidate changed")
         if unreal_receipt.get("sequence_asset_path") != work.camera_move_sequence_path:
             raise ValueError("camera-move Level Sequence changed")
@@ -441,6 +455,59 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             screenshot = roots["camera_move"] / str(preview_paths.get(label))
             if _file_sha256(screenshot) != preview_sha256s.get(label):
                 raise ValueError(f"Unreal camera-move {label} preview identity changed")
+
+    if work.material_variation_request_sha256 is not None:
+        request = MaterialVariationRequest.model_validate_json(
+            (roots["material_variation"] / "material-variation-request.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        blender_receipt = BlenderMaterialVariationReceipt.model_validate_json(
+            (roots["material_variation"] / "blender-material-variation-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if request.request_sha256 != work.material_variation_request_sha256:
+            raise ValueError("registered material-variation request changed")
+        if blender_receipt.receipt_sha256 != work.blender_material_variation_receipt_sha256:
+            raise ValueError("registered Blender material-variation receipt changed")
+        verify_material_variation(request, blender_receipt, roots["material_variation"])
+        unreal_receipt = _load_receipt(
+            roots["material_variation"] / "unreal-material-variation-receipt.json",
+            expected_sha256=str(work.unreal_material_variation_receipt_sha256),
+        )
+        if unreal_receipt.get("request_sha256") != request.request_sha256:
+            raise ValueError("Unreal material variation references another request")
+        if unreal_receipt.get("blender_receipt_sha256") != blender_receipt.receipt_sha256:
+            raise ValueError("Unreal material variation references another Blender receipt")
+        density_receipt = json.loads(
+            (roots["density"] / "unreal-native-pcg-density-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != density_receipt.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("material candidate no longer derives from native PCG")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal material candidate changed")
+        if unreal_receipt.get("status") != "reconciled":
+            raise ValueError("Unreal material variation is not reconciled")
+        if unreal_receipt.get("assigned_component_count") != 3:
+            raise ValueError("material variation component count changed")
+        counts = unreal_receipt.get("generated_instance_counts")
+        if not isinstance(counts, dict) or sum(counts.values()) != 12:
+            raise ValueError("material variation instance count changed")
+        instances = unreal_receipt.get("material_instance_paths")
+        if not isinstance(instances, dict) or set(instances) != {
+            "wayfinder-a",
+            "wayfinder-b",
+            "wayfinder-c",
+        }:
+            raise ValueError("material variation instance identities changed")
+        screenshot = roots["material_variation"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal material-variation screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -487,7 +554,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "DCC、ComfyUI、原生 PCG、Level Sequence 与镜头动画已回流",
+                    "DCC、ComfyUI、原生 PCG、材质变体与镜头资产已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

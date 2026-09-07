@@ -45,6 +45,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "unreal.pcg.native_density_kit.v1",
         "unreal.sequencer.procedural_environment_shot.v1",
         "blender.camera_move.three_key_dolly.v1",
+        "blender.material.scene_conditioned_wayfinder_set.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -74,7 +75,13 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90"
     )
     assert work["definition"]["camera_move_sequence_path"].endswith("LS_AF_CameraMove_548e7db8416f")
-    assert work["definition"]["candidate_scene_path"].endswith("ShotPackage_B_76936ac2cf65")
+    assert work["definition"]["material_variation_request_sha256"] == (
+        "1a77d442c3793d8dfe80af7c5bbdd19e399d1684c3fb53d6e7e3d2bc43124419"
+    )
+    assert work["definition"]["blender_material_variation_receipt_sha256"] == (
+        "76d0a496ff0a1f10bc1c29638cd1ab52a28f2dd4ad81fc2c3de89ea2c1d41628"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Material_B_1a77d442c379")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None
@@ -84,7 +91,9 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
             break
         time.sleep(0.01)
     assert finished is not None
-    assert finished.json()["scene_dcc_work"]["status"] == "succeeded"
+    assert finished.json()["scene_dcc_work"]["status"] == "succeeded", finished.json()[
+        "scene_dcc_work"
+    ]["message"]
     restored = AgentEventStore(database).load(RUN_ID).scene_dcc_work
     assert restored is not None
     assert restored.outcome_sha256 == work["definition"]["unreal_return_receipt_sha256"]

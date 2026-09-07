@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 89,
+  "stateRevision": 90,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M41",
+  "currentMilestone": "M42",
   "milestones": [
     {
       "id": "M0",
@@ -482,7 +482,7 @@
     {
       "id": "M41",
       "title": "Live material-variation dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M40"],
       "outcome": "The proven ComfyUI-to-Blender-to-Unreal material set becomes a thirteenth registered current-session capability, reusing the durable DCC worker and Scene Change Spectrum for direct dispatch, recovery and inspection.",
       "acceptance": [
@@ -490,39 +490,55 @@
         "Queue, claim, execute, reconcile and replay use the existing append-only worker without another scheduler or approval gate",
         "The Chinese product UI presents visual conditioning, Blender material authoring and Unreal PCG application as one continuous route"
       ]
+    },
+    {
+      "id": "M42",
+      "title": "Scene-conditioned terrain and biome blockout",
+      "status": "in_progress",
+      "dependsOn": ["M41"],
+      "outcome": "A current Unreal Scene Session uses a reviewed ComfyUI spatial subgraph to derive height and biome fields, Blender authors an editable Geometry Nodes terrain extension with UV and collision proxy, and Unreal imports it into an isolated candidate where a project-owned PCG graph consumes the biome partition.",
+      "acceptance": [
+        "A typed request binds current depth, protected regions, finite terrain bounds, reviewed ComfyUI recipe and the exact M40 candidate",
+        "The local ComfyUI emits inspectable height and biome maps without a model-authored graph",
+        "One real Blender run produces editable Geometry Nodes terrain, UV, collision proxy and a bounded exchange asset",
+        "One real Unreal run imports the terrain, connects the biome partition to project-owned PCG, captures the candidate and reconciles without changing upstream maps"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M41-S1",
-    "milestone": "M41",
-    "title": "Expose the material set as the thirteenth live production route",
-    "outcome": "Register the exact M40 ComfyUI, Blender and Unreal artifacts in the existing Scene DCC Work lifecycle, then present the material route in the Scene Change Spectrum.",
-    "risk": "R1",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "web/**", "docs/**", "scripts/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
+    "id": "M42-S1",
+    "milestone": "M42",
+    "title": "Generate and return a scene-conditioned terrain blockout",
+    "outcome": "Compile current scene depth and exclusions into reviewed height/biome maps, author an editable bounded terrain in Blender, and return it with biome-driven PCG placement to a new Unreal candidate.",
+    "risk": "R2",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not rerun ComfyUI, Blender or Unreal when frozen M40 identities verify",
-      "Do not add a new queue, worker, approval layer or material editor",
-      "Do not expose arbitrary shaders, texture paths, ComfyUI graphs or host scripts",
-      "Do not build a second Scene Session or publishing state machine"
+      "Do not expose arbitrary ComfyUI or Geometry Nodes graphs",
+      "Do not replace Unreal Landscape tooling or build a general terrain editor",
+      "Do not add erosion simulation, foliage asset downloads or another scheduler in this slice",
+      "Do not modify the M40 material candidate or source ArtFlowDemo in place"
     ],
     "acceptance": [
-      "The thirteenth capability verifies every frozen M40 request, texture, Blender and Unreal identity before entering the worker",
-      "Queue, claim, execute, reconcile and replay use the existing append-only DCC lifecycle",
-      "The Scene Change Spectrum presents the real ComfyUI-to-Blender-to-Unreal material route at desktop and narrow widths"
+      "The typed request binds exact depth, protection, bounds, ComfyUI recipe and M40 candidate identities",
+      "ComfyUI produces one height map and one biome mask through a fixed reviewed subgraph",
+      "Blender produces an editable Geometry Nodes terrain, named UV, collision proxy and GLB within finite budgets",
+      "Unreal imports the terrain and biome-driven PCG result into a derived candidate, captures it, and reconciles a repeat without upstream mutation"
     ],
     "stopConditions": [
-      "Stop if an M40 request, texture, Blender source, Material Instance or candidate identity no longer verifies",
-      "Stop if the route requires another scheduler or arbitrary material input",
+      "Stop if the current depth, protected mask or M40 candidate identity no longer verifies",
+      "Stop if the terrain cannot remain outside protected central geometry or within the registered bounds",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
-      {"id": "node", "kind": "command", "value": "node", "required": true},
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "m40_request", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/material-variation-request.json", "required": true},
-      {"id": "m40_blender_receipt", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/blender-material-variation-receipt.json", "required": true},
-      {"id": "m40_unreal_receipt", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/unreal-material-variation-receipt.json", "required": true}
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
+      {"id": "comfyui", "kind": "url", "value": "http://127.0.0.1:8188/system_stats", "required": true},
+      {"id": "scene_depth", "kind": "repo_path", "value": "artifacts/goal/m24-s1-scene-conditioning/depth-normalized.png", "required": true},
+      {"id": "protected_mask", "kind": "repo_path", "value": "artifacts/goal/m34-s1-pcg-density/protected-exclusion-mask.png", "required": true},
+      {"id": "material_candidate", "kind": "repo_path", "value": "artifacts/goal/m40-s1-material-variation/unreal-material-variation-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -538,9 +554,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0082.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0083.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M40 are complete. A content-bound ComfyUI visual target drove three editable Blender 5.2 shader variants with 92.36-94.84 percent UV coverage and six 512-square baked textures. Unreal 5.8.1 imported one master material and three Material Instances, assigned them to three native PCG components containing twelve instances, reconciled an unknown completion with zero duplicate side effects, and preserved the source level and upstream PCG candidate. Live dispatch and Scene Change Spectrum presentation are M41-S1 scope.",
+  "evidenceCeiling": "M0-M41 are complete. The scene-conditioned material set is the thirteenth finite current-session capability. The existing DCC worker verified the exact ComfyUI, Blender texture/source and Unreal Material Instance/candidate identities, projected five durable lifecycle events, replayed equivalently and produced zero duplicate side effects. Desktop and narrow Scene Change Spectrum captures present the real three-host material route. Scene-conditioned terrain and biome blockout is M42-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

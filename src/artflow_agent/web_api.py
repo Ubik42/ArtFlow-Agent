@@ -1519,6 +1519,15 @@ def create_app(
             "m38-unreal-start": goal_root / "m38-s1-camera-move" / "unreal-camera-move-start.png",
             "m38-unreal-middle": goal_root / "m38-s1-camera-move" / "unreal-camera-move-middle.png",
             "m38-unreal-end": goal_root / "m38-s1-camera-move" / "unreal-camera-move-end.png",
+            "m40-material-target": goal_root
+            / "m24-s1-scene-conditioning"
+            / "depth-guided-candidate.png",
+            "m40-material-blender": goal_root
+            / "m40-s1-material-variation"
+            / "AF_Wayfinder_MaterialVariations-preview.png",
+            "m40-material-unreal": goal_root
+            / "m40-s1-material-variation"
+            / "unreal-material-variation-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

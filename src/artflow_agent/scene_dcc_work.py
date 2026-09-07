@@ -11,6 +11,7 @@ from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingR
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
+from .material_variation import BlenderMaterialVariationReceipt, MaterialVariationRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .shot_package import ShotPackageRequest
@@ -47,8 +48,9 @@ class SceneDccWorkDefinition(BaseModel):
             "unreal.pcg.native_density_kit.v1",
             "unreal.sequencer.procedural_environment_shot.v1",
             "blender.camera_move.three_key_dolly.v1",
+            "blender.material.scene_conditioned_wayfinder_set.v1",
         ]
-    ] = Field(min_length=2, max_length=12)
+    ] = Field(min_length=2, max_length=13)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -112,9 +114,16 @@ class SceneDccWorkDefinition(BaseModel):
         default=None,
         pattern=r"^/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_[a-f0-9]{12}\.LS_AF_CameraMove_[a-f0-9]{12}$",
     )
+    material_variation_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_material_variation_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_material_variation_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -238,6 +247,17 @@ class SceneDccWorkDefinition(BaseModel):
             if self.unreal_shot_package_receipt_sha256 is None:
                 raise ValueError("camera move requires the registered shot package")
             expected_capabilities.append("blender.camera_move.three_key_dolly.v1")
+        material_identities = (
+            self.material_variation_request_sha256,
+            self.blender_material_variation_receipt_sha256,
+            self.unreal_material_variation_receipt_sha256,
+        )
+        if any(item is not None for item in material_identities):
+            if not all(item is not None for item in material_identities):
+                raise ValueError("DCC work requires every material-variation identity")
+            if self.unreal_native_pcg_density_receipt_sha256 is None:
+                raise ValueError("material variation requires the native PCG candidate")
+            expected_capabilities.append("blender.material.scene_conditioned_wayfinder_set.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -726,6 +746,50 @@ def compile_current_blender_dcc_work(
         payload["unreal_camera_move_receipt_sha256"] = unreal_camera_move["receipt_sha256"]
         payload["camera_move_sequence_path"] = unreal_camera_move["sequence_asset_path"]
         payload["unreal_return_receipt_sha256"] = unreal_camera_move["receipt_sha256"]
+    material_root = project_root / "artifacts/goal/m40-s1-material-variation"
+    material_request_path = material_root / "material-variation-request.json"
+    material_blender_path = material_root / "blender-material-variation-receipt.json"
+    material_unreal_path = material_root / "unreal-material-variation-receipt.json"
+    if all(
+        path.is_file()
+        for path in (material_request_path, material_blender_path, material_unreal_path)
+    ):
+        material_request = MaterialVariationRequest.model_validate_json(
+            material_request_path.read_text(encoding="utf-8")
+        )
+        material_blender = BlenderMaterialVariationReceipt.model_validate_json(
+            material_blender_path.read_text(encoding="utf-8")
+        )
+        material_unreal = json.loads(material_unreal_path.read_text(encoding="utf-8"))
+        if material_request.session_id != session_id:
+            raise ValueError("material variation references another Scene Session")
+        if material_request.native_pcg_receipt_sha256 != file_sha256(density_unreal_path):
+            raise ValueError("material variation references another native PCG receipt")
+        if material_blender.request_sha256 != material_request.request_sha256:
+            raise ValueError("Blender material variation references another request")
+        material_unreal_payload = dict(material_unreal)
+        material_unreal_sha = material_unreal_payload.pop("receipt_sha256", None)
+        if material_unreal_sha != dcc_work_sha256(material_unreal_payload):
+            raise ValueError("Unreal material-variation receipt identity changed")
+        if material_unreal.get("request_sha256") != material_request.request_sha256:
+            raise ValueError("Unreal material variation references another request")
+        if material_unreal.get("blender_receipt_sha256") != material_blender.receipt_sha256:
+            raise ValueError("Unreal material variation references another Blender receipt")
+        if material_unreal.get("source_candidate_scene_path") != density_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("material candidate no longer derives from native PCG")
+        if (
+            material_unreal.get("status") != "reconciled"
+            or material_unreal.get("capture_status") != "captured"
+        ):
+            raise ValueError("Unreal material variation is not reconciled with captured evidence")
+        payload["capability_ids"].append("blender.material.scene_conditioned_wayfinder_set.v1")
+        payload["material_variation_request_sha256"] = material_request.request_sha256
+        payload["blender_material_variation_receipt_sha256"] = material_blender.receipt_sha256
+        payload["unreal_material_variation_receipt_sha256"] = material_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = material_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = material_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

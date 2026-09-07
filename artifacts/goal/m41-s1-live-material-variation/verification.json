@@ -1,0 +1,22 @@
+{
+  "schema_id": "artflow-live-material-variation-verification/1",
+  "status": "passed",
+  "registered_capability_count": 13,
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true,
+  "route_media_count": 3,
+  "desktop": {
+    "viewport": "1600x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "narrow": {
+    "viewport": "980x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "browser_console_errors": 0,
+  "browser_console_warnings": 0
+}
