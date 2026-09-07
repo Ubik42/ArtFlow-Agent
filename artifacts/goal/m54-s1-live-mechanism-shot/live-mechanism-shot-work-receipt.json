@@ -1,0 +1,50 @@
+{
+  "schema_id": "artflow-live-mechanism-shot-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-f04300ec3725",
+  "work_sha256": "f04300ec372580ab77843dab44ac1f5426cad418feb4bbd8fdcca0453d6d3b05",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1",
+    "blender.material.scene_conditioned_wayfinder_set.v1",
+    "blender.cache.wind_veil.v1",
+    "blender.geometry_nodes.biome_foliage_kit.v1",
+    "blender.geometry_nodes.modular_environment.v1",
+    "blender.geometry_nodes.spline_infrastructure.v1",
+    "blender.armature.articulated_gate.v1",
+    "unreal.sequencer.mechanism_shot.v1"
+  ],
+  "mechanism_shot_request_sha256": "59b449e641704045759c9cb0d499ecb5f870279b4c75008af2e12bb57ddba9af",
+  "unreal_mechanism_shot_receipt_sha256": "2d003a0e56ca0cd40f66abf6e701c3326e0154daca956c9976d0df8a0468ac71",
+  "mechanism_shot_sequence_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_MechanismShot_3273ac1a1081.LS_AF_MechanismShot_3273ac1a1081",
+  "preview_sha256s": {
+    "closed_start": "618affbc55c46d623cc9ba0d4aeac028a0111886ba5aea2feea32e2db392f964",
+    "open": "8201d9453e63bc09febfed5acc49b9f999621116e019d39030eaed9a94f929a2",
+    "closed_end": "50815ed979e92e91730371abb28047ce605e741ebb465aafc36023149232e97f"
+  },
+  "outcome_sha256": "2d003a0e56ca0cd40f66abf6e701c3326e0154daca956c9976d0df8a0468ac71",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/MechanismShot_B_3273ac1a1081",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

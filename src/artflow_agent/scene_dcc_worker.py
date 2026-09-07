@@ -20,6 +20,7 @@ from .material_variation import (
     verify_material_variation,
 )
 from .mechanism_rig import MechanismRigRequest
+from .mechanism_shot import MechanismShotRequest
 from .modular_environment import ModularEnvironmentRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
@@ -93,6 +94,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "modular": project_root / "artifacts/goal/m47-s1-modular-environment",
         "spline": project_root / "artifacts/goal/m49-s1-spline-infrastructure",
         "mechanism": project_root / "artifacts/goal/m51-s1-mechanism-rig",
+        "mechanism_shot": project_root / "artifacts/goal/m53-s1-mechanism-shot",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -728,7 +730,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             "receipt_sha256"
         ):
             raise ValueError("registered Unreal mechanism receipt changed")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.mechanism_shot_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("mechanism candidate changed")
         if (
             unreal_receipt.get("status") != "reconciled"
@@ -749,6 +754,61 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["mechanism"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal mechanism screenshot identity changed")
+
+    if work.mechanism_shot_request_sha256 is not None:
+        request = MechanismShotRequest.model_validate_json(
+            (roots["mechanism_shot"] / "mechanism-shot-request.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if request.request_sha256 != work.mechanism_shot_request_sha256:
+            raise ValueError("registered mechanism-shot request changed")
+        receipt = _load_receipt(
+            roots["mechanism_shot"] / "unreal-mechanism-shot-receipt.json",
+            expected_sha256=str(work.unreal_mechanism_shot_receipt_sha256),
+        )
+        if receipt.get("request_sha256") != request.request_sha256:
+            raise ValueError("registered Unreal mechanism-shot receipt changed")
+        if receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("mechanism-shot candidate changed")
+        if receipt.get("sequence_asset_path") != work.mechanism_shot_sequence_path:
+            raise ValueError("mechanism-shot Level Sequence changed")
+        if receipt.get("source_candidate_scene_path") != request.source_candidate_scene_path:
+            raise ValueError("mechanism shot changed its source candidate")
+        if receipt.get("source_candidate_sha256_before") != receipt.get(
+            "source_candidate_sha256_after"
+        ):
+            raise ValueError("mechanism shot mutated its source candidate")
+        if (
+            receipt.get("status") != "reconciled"
+            or receipt.get("animation_track_count") != 1
+            or receipt.get("animation_section_count") != 1
+            or receipt.get("camera_binding_count") != 1
+            or receipt.get("camera_cut_track_count") != 1
+            or receipt.get("frame_numbers") != [1, 24, 48]
+        ):
+            raise ValueError("mechanism-shot sequence topology changed")
+        if any(
+            receipt.get(field) != 0
+            for field in (
+                "created_actor_count",
+                "created_package_count",
+                "created_binding_count",
+                "created_track_count",
+                "duplicate_track_count",
+            )
+        ):
+            raise ValueError("mechanism-shot replay created duplicate side effects")
+        registered_previews = {
+            "closed_start": work.mechanism_shot_closed_start_sha256,
+            "open": work.mechanism_shot_open_sha256,
+            "closed_end": work.mechanism_shot_closed_end_sha256,
+        }
+        for label, expected in registered_previews.items():
+            relative_path = str(receipt["preview_paths"][label])
+            path = roots["mechanism_shot"] / relative_path
+            if _file_sha256(path) != expected or receipt["preview_sha256s"][label] != expected:
+                raise ValueError(f"mechanism-shot {label} preview identity changed")
 
     return work.unreal_return_receipt_sha256
 

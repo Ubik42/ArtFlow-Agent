@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M54-S1",
+  "status": "completed",
+  "outcome": "The exact M53 mechanism-shot request, Unreal receipt, derived candidate, Level Sequence and three Sequencer-rendered action states are now the nineteenth content-bound current-session capability. The existing worker completed five lifecycle events; repeat dispatch and reducer replay preserved one terminal identity with zero duplicate external side effects. Desktop and narrow Chinese product views load all three real frames without horizontal overflow.",
+  "evidence": [
+    "artifacts/goal/m54-s1-live-mechanism-shot/live-mechanism-shot-work-receipt.json",
+    "artifacts/goal/m54-s1-live-mechanism-shot/live-mechanism-shot-desktop.png",
+    "artifacts/goal/m54-s1-live-mechanism-shot/live-mechanism-shot-narrow.png",
+    "docs/evidence/M54_S1_LIVE_MECHANISM_SHOT_2026-09-07.md"
+  ]
+}

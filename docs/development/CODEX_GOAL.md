@@ -178,9 +178,13 @@ Unreal 当前场景
   Level Sequence。派生候选包含一个骨骼动画段、可生成 CineCamera、常量相机轨道、Camera Cut 与
   灯光提示；Sequencer 真实渲染第 1、24、48 帧，形成闭合、开启、闭合三态。独立进程重跑没有新增
   Actor、Package、Binding 或 Track，M51 源候选保持字节不变。
-- **M54 · Live mechanism-shot dispatch（进行中）**：把 M53 的精确请求、Level Sequence、派生候选与
-  三张 Sequencer 帧登记为当前 Session 的第十九项有限能力，继续复用现有 DCC Worker、事件账本和
-  场景变更谱，不重新运行 Blender 或 Unreal。
+- **M54 · Live mechanism-shot dispatch（已完成）**：M53 的精确请求、Level Sequence、派生候选与
+  三张 Sequencer 帧已登记为当前 Session 的第十九项有限能力。既有 DCC Worker 完成五段生命周期，
+  重复派发和 Reducer 重放没有产生重复外部副作用；桌面与窄屏均直接展示真实闭合、开启、闭合帧。
+- **M55 · Scene-conditioned damage variant（进行中）**：建立一条新的跨宿主视觉生产路线。固定、
+  版本化的 ComfyUI 子图根据当前机位、对象身份和保护区生成空间损伤场；Blender 使用可编辑
+  Geometry Nodes / Boolean、材质节点和 Bake 制作受限破损变体；Unreal 将网格、材质、碰撞与
+  变体元数据回写到新的隔离候选。第一版只做静态英雄模块，不引入 Chaos 或任意节点图执行。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

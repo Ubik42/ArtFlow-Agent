@@ -664,6 +664,12 @@ type SceneDccWorkState = {
     mechanism_manifest_sha256?: string;
     mechanism_fbx_sha256?: string;
     unreal_mechanism_rig_receipt_sha256?: string;
+    mechanism_shot_request_sha256?: string;
+    unreal_mechanism_shot_receipt_sha256?: string;
+    mechanism_shot_sequence_path?: string;
+    mechanism_shot_closed_start_sha256?: string;
+    mechanism_shot_open_sha256?: string;
+    mechanism_shot_closed_end_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1873,8 +1879,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasModularEnvironment = Boolean(agent.scene_dcc_work?.definition.modular_environment_request_sha256);
   const hasSplineInfrastructure = Boolean(agent.scene_dcc_work?.definition.spline_infrastructure_request_sha256);
   const hasMechanismRig = Boolean(agent.scene_dcc_work?.definition.mechanism_rig_request_sha256);
+  const hasMechanismShot = Boolean(agent.scene_dcc_work?.definition.mechanism_shot_request_sha256);
   const cases = [
-    ...(hasMechanismRig
+    ...(hasMechanismShot
+      ? [{
+          id: "mechanism-shot-roundtrip",
+          tab: "当前 Session · 机关镜头",
+          title: "把可编辑机关动作编排成引擎内镜头资产",
+          description: "Agent 复用 Blender 绑定与 Unreal 动画资产，在派生候选中建立有限 Level Sequence、相机切轨和灯光提示。三张证据由 Sequencer 求值并渲染，形成闭合、开启、闭合的可交付动作段。",
+          frames: [
+            { src: "/api/showcase/production/m53-mechanism-closed-start", alt: "Unreal Sequencer 渲染的机关闭合起始帧", label: "第 1 帧", title: "闭合起始 · Sequence 已绑定" },
+            { src: "/api/showcase/production/m53-mechanism-open", alt: "Unreal Sequencer 渲染的机关开启帧", label: "第 24 帧", title: "左右铰链 · -70° / +70°" },
+            { src: "/api/showcase/production/m53-mechanism-closed-end", alt: "Unreal Sequencer 渲染的机关闭合结束帧", label: "第 48 帧", title: "闭合结束 · 回放已对账" },
+          ],
+          transition: "DCC 绑定动作编译为可剪辑引擎镜头",
+          metricA: "1 / 48",
+          metricALabel: "Level Sequence / 帧",
+          metricB: "0",
+          metricBLabel: "重放新增轨道",
+          note: `镜头请求 ${shortId(agent.scene_dcc_work?.definition.mechanism_shot_request_sha256 ?? "")} 已恢复为 ${agent.scene_dcc_work?.definition.mechanism_shot_sequence_path}；候选、动画段与三帧证据均由内容身份绑定。`,
+          domains: ["场景·已绑定", "绑定·可编辑", "Sequence·已生成", "三态·已渲染", "重放·已对账"],
+        }]
+      : hasMechanismRig
       ? [{
           id: "mechanism-rig-roundtrip",
           tab: "当前 Session · 机关动画",

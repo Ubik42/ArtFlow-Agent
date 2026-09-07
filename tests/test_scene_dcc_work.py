@@ -51,6 +51,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.geometry_nodes.modular_environment.v1",
         "blender.geometry_nodes.spline_infrastructure.v1",
         "blender.armature.articulated_gate.v1",
+        "unreal.sequencer.mechanism_shot.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -104,7 +105,18 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["mechanism_fbx_sha256"] == (
         "fc1c49dc622da2e3dd958aa94f5927d3440cd73444805edc5e326c88ed30e594"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Mechanism_B_2762b53baeec")
+    assert work["definition"]["mechanism_shot_request_sha256"] == (
+        "59b449e641704045759c9cb0d499ecb5f870279b4c75008af2e12bb57ddba9af"
+    )
+    assert work["definition"]["mechanism_shot_sequence_path"].endswith(
+        "LS_AF_MechanismShot_3273ac1a1081"
+    )
+    assert work["definition"]["mechanism_shot_open_sha256"] == (
+        "8201d9453e63bc09febfed5acc49b9f999621116e019d39030eaed9a94f929a2"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith(
+        "MechanismShot_B_3273ac1a1081"
+    )
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

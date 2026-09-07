@@ -1563,6 +1563,15 @@ def create_app(
             "m51-mechanism-unreal": goal_root
             / "m51-s1-mechanism-rig"
             / "unreal-mechanism-rig-candidate.png",
+            "m53-mechanism-closed-start": goal_root
+            / "m53-s1-mechanism-shot"
+            / "unreal-mechanism-shot-closed_start.png",
+            "m53-mechanism-open": goal_root
+            / "m53-s1-mechanism-shot"
+            / "unreal-mechanism-shot-open.png",
+            "m53-mechanism-closed-end": goal_root
+            / "m53-s1-mechanism-shot"
+            / "unreal-mechanism-shot-closed_end.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():
