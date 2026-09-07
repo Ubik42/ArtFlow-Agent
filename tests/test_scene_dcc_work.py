@@ -46,6 +46,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "unreal.sequencer.procedural_environment_shot.v1",
         "blender.camera_move.three_key_dolly.v1",
         "blender.material.scene_conditioned_wayfinder_set.v1",
+        "blender.cache.wind_veil.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -81,7 +82,10 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["blender_material_variation_receipt_sha256"] == (
         "76d0a496ff0a1f10bc1c29638cd1ab52a28f2dd4ad81fc2c3de89ea2c1d41628"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Material_B_1a77d442c379")
+    assert work["definition"]["simulation_cache_request_sha256"] == (
+        "e9e803c97da153d9ba52ad2e871cf3fc415d4b5ee9495e396b84d643a1a67dcb"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Simulation_B_e9e803c97da1")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

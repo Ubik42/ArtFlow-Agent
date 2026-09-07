@@ -1,0 +1,19 @@
+{
+  "schema_id": "artflow-live-simulation-cache-verification/1",
+  "backend": {
+    "capability_count": 14,
+    "dcc_event_count": 5,
+    "repeat_dispatch_same_work": true,
+    "replay_equivalent": true,
+    "duplicate_external_side_effect_count": 0
+  },
+  "frontend": {
+    "desktop_viewport": [1600, 1000],
+    "narrow_viewport": [980, 1000],
+    "horizontal_overflow": false,
+    "loaded_images": 5,
+    "failed_images": 0,
+    "console_errors": 0,
+    "console_warnings": 0
+  }
+}

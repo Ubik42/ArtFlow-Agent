@@ -1528,6 +1528,15 @@ def create_app(
             "m40-material-unreal": goal_root
             / "m40-s1-material-variation"
             / "unreal-material-variation-candidate.png",
+            "m43-simulation-source": goal_root
+            / "m42-s1-terrain-biome"
+            / "unreal-biome-terrain-candidate.png",
+            "m43-simulation-blender": goal_root
+            / "m43-s1-simulation-cache"
+            / "AF_WindVeil_036.png",
+            "m43-simulation-unreal": goal_root
+            / "m43-s1-simulation-cache"
+            / "unreal-simulation-cache-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

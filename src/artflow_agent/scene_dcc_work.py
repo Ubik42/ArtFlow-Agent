@@ -15,6 +15,7 @@ from .material_variation import BlenderMaterialVariationReceipt, MaterialVariati
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .shot_package import ShotPackageRequest
+from .simulation_cache import BlenderSimulationCacheReceipt, SimulationCacheRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -49,8 +50,9 @@ class SceneDccWorkDefinition(BaseModel):
             "unreal.sequencer.procedural_environment_shot.v1",
             "blender.camera_move.three_key_dolly.v1",
             "blender.material.scene_conditioned_wayfinder_set.v1",
+            "blender.cache.wind_veil.v1",
         ]
-    ] = Field(min_length=2, max_length=13)
+    ] = Field(min_length=2, max_length=14)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -121,9 +123,12 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_material_variation_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    simulation_cache_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_simulation_cache_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density|ShotPackage|Material|Simulation)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -258,6 +263,17 @@ class SceneDccWorkDefinition(BaseModel):
             if self.unreal_native_pcg_density_receipt_sha256 is None:
                 raise ValueError("material variation requires the native PCG candidate")
             expected_capabilities.append("blender.material.scene_conditioned_wayfinder_set.v1")
+        simulation_identities = (
+            self.simulation_cache_request_sha256,
+            self.blender_simulation_cache_receipt_sha256,
+            self.unreal_simulation_cache_receipt_sha256,
+        )
+        if any(item is not None for item in simulation_identities):
+            if not all(item is not None for item in simulation_identities):
+                raise ValueError("DCC work requires every simulation-cache identity")
+            if self.unreal_material_variation_receipt_sha256 is None:
+                raise ValueError("simulation cache requires the registered material route")
+            expected_capabilities.append("blender.cache.wind_veil.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -790,6 +806,38 @@ def compile_current_blender_dcc_work(
         payload["unreal_material_variation_receipt_sha256"] = material_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = material_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = material_unreal["candidate_scene_path"]
+    simulation_root = project_root / "artifacts/goal/m43-s1-simulation-cache"
+    simulation_request_path = simulation_root / "simulation-cache-request.json"
+    simulation_blender_path = simulation_root / "blender-simulation-cache-receipt.json"
+    simulation_unreal_path = simulation_root / "unreal-simulation-cache-receipt.json"
+    if all(path.is_file() for path in (simulation_request_path, simulation_blender_path, simulation_unreal_path)):
+        simulation_request = SimulationCacheRequest.model_validate_json(simulation_request_path.read_text(encoding="utf-8"))
+        simulation_blender = BlenderSimulationCacheReceipt.model_validate_json(simulation_blender_path.read_text(encoding="utf-8"))
+        simulation_unreal = json.loads(simulation_unreal_path.read_text(encoding="utf-8"))
+        if simulation_request.session_id != session_id:
+            raise ValueError("simulation cache references another Scene Session")
+        if simulation_blender.request_sha256 != simulation_request.request_sha256:
+            raise ValueError("Blender simulation cache references another request")
+        unreal_payload = dict(simulation_unreal)
+        unreal_sha = unreal_payload.pop("receipt_sha256", None)
+        if unreal_sha != dcc_work_sha256(unreal_payload):
+            raise ValueError("Unreal simulation-cache receipt identity changed")
+        if simulation_unreal.get("request_sha256") != simulation_request.request_sha256:
+            raise ValueError("Unreal simulation cache references another request")
+        if simulation_unreal.get("blender_receipt_sha256") != simulation_blender.receipt_sha256:
+            raise ValueError("Unreal simulation cache references another Blender receipt")
+        terrain_unreal_path = project_root / "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json"
+        terrain_unreal = json.loads(terrain_unreal_path.read_text(encoding="utf-8"))
+        if simulation_unreal.get("source_candidate_scene_path") != terrain_unreal.get("candidate_scene_path"):
+            raise ValueError("simulation cache no longer derives from the terrain candidate")
+        if simulation_unreal.get("status") != "reconciled" or simulation_unreal.get("capture_status") != "captured":
+            raise ValueError("Unreal simulation cache is not reconciled with captured evidence")
+        payload["capability_ids"].append("blender.cache.wind_veil.v1")
+        payload["simulation_cache_request_sha256"] = simulation_request.request_sha256
+        payload["blender_simulation_cache_receipt_sha256"] = simulation_blender.receipt_sha256
+        payload["unreal_simulation_cache_receipt_sha256"] = simulation_unreal["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = simulation_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = simulation_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

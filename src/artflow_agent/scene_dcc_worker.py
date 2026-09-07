@@ -22,6 +22,7 @@ from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 from .shot_package import ShotPackageRequest
+from .simulation_cache import BlenderSimulationCacheReceipt, SimulationCacheRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
     ComfySurfaceDetailReceipt,
@@ -82,6 +83,8 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "shot_package": project_root / "artifacts/goal/m36-s1-shot-package",
         "camera_move": project_root / "artifacts/goal/m38-s1-camera-move",
         "material_variation": project_root / "artifacts/goal/m40-s1-material-variation",
+        "terrain": project_root / "artifacts/goal/m42-s1-terrain-biome",
+        "simulation_cache": project_root / "artifacts/goal/m43-s1-simulation-cache",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -489,7 +492,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             "candidate_scene_path"
         ):
             raise ValueError("material candidate no longer derives from native PCG")
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.simulation_cache_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal material candidate changed")
         if unreal_receipt.get("status") != "reconciled":
             raise ValueError("Unreal material variation is not reconciled")
@@ -508,6 +514,37 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["material_variation"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal material-variation screenshot identity changed")
+
+    if work.simulation_cache_request_sha256 is not None:
+        request = SimulationCacheRequest.model_validate_json(
+            (roots["simulation_cache"] / "simulation-cache-request.json").read_text(encoding="utf-8")
+        )
+        blender_receipt = BlenderSimulationCacheReceipt.model_validate_json(
+            (roots["simulation_cache"] / "blender-simulation-cache-receipt.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.simulation_cache_request_sha256:
+            raise ValueError("registered simulation-cache request changed")
+        if blender_receipt.receipt_sha256 != work.blender_simulation_cache_receipt_sha256:
+            raise ValueError("registered Blender simulation-cache receipt changed")
+        _verify_artifacts(roots["simulation_cache"], blender_receipt.model_dump(mode="json"))
+        unreal_receipt = _load_receipt(
+            roots["simulation_cache"] / "unreal-simulation-cache-receipt.json",
+            expected_sha256=str(work.unreal_simulation_cache_receipt_sha256),
+        )
+        terrain_receipt = json.loads((roots["terrain"] / "unreal-biome-terrain-receipt.json").read_text(encoding="utf-8"))
+        if unreal_receipt.get("source_candidate_scene_path") != terrain_receipt.get("candidate_scene_path"):
+            raise ValueError("simulation-cache source terrain candidate changed")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("simulation-cache candidate changed")
+        if unreal_receipt.get("status") != "reconciled":
+            raise ValueError("Unreal simulation cache is not reconciled")
+        if (unreal_receipt.get("cache_binding_count"), unreal_receipt.get("geometry_cache_track_count"), unreal_receipt.get("geometry_cache_section_count")) != (1, 1, 1):
+            raise ValueError("simulation-cache Sequencer topology changed")
+        if unreal_receipt.get("duplicate_asset_count") != 0:
+            raise ValueError("simulation-cache replay created duplicate assets")
+        screenshot = roots["simulation_cache"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal simulation-cache screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -554,7 +591,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "DCC、ComfyUI、原生 PCG、材质变体与镜头资产已回流",
+                    "DCC、ComfyUI、原生 PCG、材质、镜头与动画缓存已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

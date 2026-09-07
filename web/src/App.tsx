@@ -645,6 +645,9 @@ type SceneDccWorkState = {
     material_variation_request_sha256?: string;
     blender_material_variation_receipt_sha256?: string;
     unreal_material_variation_receipt_sha256?: string;
+    simulation_cache_request_sha256?: string;
+    blender_simulation_cache_receipt_sha256?: string;
+    unreal_simulation_cache_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1849,8 +1852,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasShotPackage = Boolean(agent.scene_dcc_work?.definition.shot_package_request_sha256);
   const hasCameraMove = Boolean(agent.scene_dcc_work?.definition.camera_move_request_sha256);
   const hasMaterialVariation = Boolean(agent.scene_dcc_work?.definition.material_variation_request_sha256);
+  const hasSimulationCache = Boolean(agent.scene_dcc_work?.definition.simulation_cache_request_sha256);
   const cases = [
-    ...(hasMaterialVariation
+    ...(hasSimulationCache
+      ? [{
+          id: "simulation-cache-roundtrip",
+          tab: "当前 Session · 动画缓存",
+          title: "把 Blender 形变预演交付为 Unreal 可继续编排的时序资产",
+          description: "Agent 将地形候选、帧段、网格密度、形变幅度和缓存预算编译为有限任务。Blender 输出可编辑动画源与 Alembic 顶点缓存，Unreal 导入 Geometry Cache 并写入项目 Level Sequence。",
+          frames: [
+            { src: "/api/showcase/production/m43-simulation-source", alt: "Unreal 地形与 PCG 来源候选", label: "时序来源", title: "M42 地形候选 · 内容已绑定" },
+            { src: "/api/showcase/production/m43-simulation-blender", alt: "Blender 风幕形变缓存中间帧", label: "DCC 缓存", title: "F036 / 72 · Alembic 5.98 MB" },
+            { src: "/api/showcase/production/m43-simulation-unreal", alt: "Unreal Geometry Cache 与 Sequencer 候选", label: "引擎时序", title: "1 绑定 · 1 轨道 · 1 区段" },
+          ],
+          transition: "内容寻址的顶点动画缓存",
+          metricA: "72 / 24",
+          metricALabel: "缓存帧 / fps",
+          metricB: "0",
+          metricBLabel: "重复资产",
+          note: `模拟请求 ${shortId(agent.scene_dcc_work?.definition.simulation_cache_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}；上游地形候选保持字节不变。`,
+          domains: ["来源·已绑定", "动画·可编辑", "缓存·已导入", "序列·已写入", "重放·已对账"],
+        }]
+      : hasMaterialVariation
       ? [{
           id: "material-variation-roundtrip",
           tab: "当前 Session · 材质变体",
@@ -2116,7 +2139,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasMaterialVariation && caseId !== "material-variation-roundtrip") {
+    if (hasSimulationCache && caseId !== "simulation-cache-roundtrip") {
+      setCaseId("simulation-cache-roundtrip");
+    } else if (hasMaterialVariation && caseId !== "material-variation-roundtrip") {
       setCaseId("material-variation-roundtrip");
     } else if (hasCameraMove && caseId !== "camera-move-roundtrip") {
       setCaseId("camera-move-roundtrip");
@@ -2135,7 +2160,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasCameraMove, hasMaterialVariation, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasCameraMove, hasMaterialVariation, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSimulationCache, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

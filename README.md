@@ -22,6 +22,12 @@ Geometry Cache Track 和一个区段的 Level Sequence。重复回流对账已�
 | --- | --- |
 | ![Blender 风幕形变缓存](artifacts/goal/m43-s1-simulation-cache/AF_WindVeil_036.png) | ![Unreal Geometry Cache 候选](artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-candidate.png) |
 
+该时序路线已作为当前 Scene Session 的第十四项有限能力进入现有 DCC Worker。工作项冻结地形
+来源、Blender 源、Alembic、Geometry Cache、Level Sequence 与候选身份，并沿用同一组
+`queue / claim / execute / reconcile / succeed` 事件；刷新后可从事件投影恢复，不增加缓存专用调度器。
+
+![当前 Session 的 Blender 缓存与 Unreal Sequencer 路线](artifacts/goal/m44-s1-live-simulation-cache/live-simulation-cache-desktop.png)
+
 当前 DCC 路线已接入 Blender 5.2 LTS。Agent 将 Session 的场景尺度与视觉意图编译为类型化建模规格，固定 Blender 能力生成可编辑 `.blend`、嵌入式 GLB 和预览，随后由 Unreal Interchange 导入 Session 派生候选关卡。首个模块化祭坛包含 26 个 Blender 可编辑构件、3 个材质和 4,888 个生成三角面；回流后的 Unreal StaticMesh 为 952 个构建三角面并带 1 个简单碰撞，源关卡哈希未变化。
 
 | Blender 可编辑生成结果 | Unreal 隔离候选回流 |

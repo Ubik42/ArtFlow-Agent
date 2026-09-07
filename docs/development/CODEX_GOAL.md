@@ -147,9 +147,12 @@ Unreal 当前场景
 - **M43 · Simulation cache and Sequencer handoff（已完成）**：把 Blender 的确定性模拟与缓存能力
   接入当前 Scene Session；以有限对象集、帧段和预算生成可编辑动画源，再通过 Unreal Geometry
   Cache / Level Sequence 的类型化工具进入派生候选，形成区别于静态建模的时序内容路线。
-- **M44 · Live simulation-cache dispatch（进行中）**：把 M43 的地形来源、Blender 动画源、Alembic、
+- **M44 · Live simulation-cache dispatch（已完成）**：把 M43 的地形来源、Blender 动画源、Alembic、
   Geometry Cache、Level Sequence 和候选身份登记为当前 Session 的第十四项有限能力，复用既有
   DCC Worker、append-only 事件链和场景变更谱完成直接派发、恢复与展示。
+- **M45 · Biome-driven foliage kit and wind material（进行中）**：复用 M42 生物群落分区，让 Blender
+  以曲线与 Geometry Nodes 生成有限植被模块套件，并在 Unreal 中通过项目 PCG 与可调 WPO 风材质
+  形成可继续编辑的环境层；仍只写入派生候选。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

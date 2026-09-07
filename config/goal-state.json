@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 92,
+  "stateRevision": 93,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M44",
+  "currentMilestone": "M45",
   "milestones": [
     {
       "id": "M0",
@@ -520,7 +520,7 @@
     {
       "id": "M44",
       "title": "Live simulation-cache dispatch",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M43"],
       "outcome": "The proven Blender-to-Alembic-to-Unreal time-based route becomes a fourteenth finite current-session capability dispatched and recovered through the existing durable DCC work lifecycle.",
       "acceptance": [
@@ -528,39 +528,53 @@
         "Queue, claim, execute, reconcile and replay reuse the existing append-only worker with zero duplicate side effects",
         "The Chinese Scene Change Spectrum presents source terrain, Blender cache frames and Unreal time-based result as one route"
       ]
+    },
+    {
+      "id": "M45",
+      "title": "Biome-driven foliage kit and wind material",
+      "status": "in_progress",
+      "dependsOn": ["M44"],
+      "outcome": "The current biome partition drives a small editable Blender foliage kit and a project-owned Unreal PCG environment layer with bounded wind-material parameters in a derived candidate.",
+      "acceptance": [
+        "A typed request binds the exact biome mask, terrain candidate, finite species set and geometry/material budgets",
+        "One Blender run produces editable curve or Geometry Nodes foliage variants with UV, LOD and collision metadata",
+        "One Unreal run imports the kit, creates bounded WPO material instances and consumes the biome points through project PCG",
+        "A repeated return reconciles without duplicate assets, instances or upstream mutation"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M44-S1",
-    "milestone": "M44",
-    "title": "Dispatch and present the live simulation-cache route",
-    "outcome": "Register M43 as the fourteenth current-session capability and expose its durable lifecycle and real three-stage media in the existing product surface.",
+    "id": "M45-S1",
+    "milestone": "M45",
+    "title": "Generate and return a biome-driven foliage layer",
+    "outcome": "Compile the current biome field into a finite foliage kit, author it in Blender and return it through project PCG with bounded Unreal wind materials.",
     "risk": "R2",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
     "allowedPaths": ["src/artflow_agent/**", "tests/**", "integrations/blender/**", "integrations/unreal/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md"],
     "nonGoals": [
-      "Do not add another scheduler, event store or approval gate",
-      "Do not rerun Blender or Unreal when the frozen M43 receipts verify",
-      "Do not redesign unrelated screens or add a general cache browser",
-      "Do not modify the M43 candidate or upstream scenes"
+      "Do not download foliage packs or train a model",
+      "Do not expose arbitrary Geometry Nodes graphs or material expressions",
+      "Do not build a general vegetation editor or replace Unreal foliage tooling",
+      "Do not modify M42-M44 candidates or ArtFlowDemo in place"
     ],
     "acceptance": [
-      "The existing DCC work contract binds all M43 request, Blender and Unreal receipt identities",
-      "One queue-to-reconcile projection emits the existing five lifecycle events and replays equivalently",
-      "The Scene Change Spectrum renders M42 source, Blender frames and Unreal candidate from real artifacts",
-      "Focused backend and frontend checks pass without broad regression work"
+      "The request binds exact biome, terrain and source-candidate identities plus finite species and budgets",
+      "Blender produces at least three editable foliage variants with LOD and UV evidence",
+      "Unreal imports the variants, assigns bounded wind materials and places them through a project PCG graph",
+      "The second return reports zero duplicates and unchanged upstream hashes"
     ],
     "stopConditions": [
-      "Stop if any frozen M43 artifact identity no longer verifies",
-      "Stop if the current DCC worker cannot represent the route without a parallel state machine",
+      "Stop if the biome mask or M42 terrain candidate identity no longer verifies",
+      "Stop if generated variants exceed finite geometry or instance budgets",
       "Stop if project-owned changes overlap unknown user edits and cannot be preserved"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "simulation_request", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/simulation-cache-request.json", "required": true},
-      {"id": "blender_simulation", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/blender-simulation-cache-receipt.json", "required": true},
-      {"id": "unreal_simulation", "kind": "repo_path", "value": "artifacts/goal/m43-s1-simulation-cache/unreal-simulation-cache-receipt.json", "required": true}
+      {"id": "blender", "kind": "command", "value": "C:/Program Files/Blender Foundation/Blender 5.2/blender.exe", "required": true},
+      {"id": "unreal_editor", "kind": "command", "value": "C:/Program Files/Epic Games/UE_5.8/Engine/Binaries/Win64/UnrealEditor-Cmd.exe", "required": true},
+      {"id": "biome_mask", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/biome-mask.png", "required": true},
+      {"id": "terrain_candidate", "kind": "repo_path", "value": "artifacts/goal/m42-s1-terrain-biome/unreal-biome-terrain-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -576,9 +590,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0085.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0086.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M43 are complete. Blender 5.2 authored a bounded 72-frame deformation source and 5,980,896-byte Alembic cache from the exact M42 terrain candidate. Unreal 5.8.1 imported one Geometry Cache into a derived candidate and created one Level Sequence binding, track and section. Repeated return reconciled the same assets with zero duplicates and unchanged upstream candidate hash. Live simulation-cache dispatch is M44-S1 scope.",
+  "evidenceCeiling": "M0-M44 are complete. The Blender-to-Alembic-to-Unreal time-based route is the fourteenth finite current-session capability. The existing DCC worker verified all frozen identities, projected five lifecycle events, replayed equivalently and produced zero duplicate external side effects. Desktop and narrow Scene Change Spectrum captures present the real terrain-to-cache-to-Sequencer route. Biome-driven foliage kit and wind material is M45-S1 scope.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
