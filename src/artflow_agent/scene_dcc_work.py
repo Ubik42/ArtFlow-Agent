@@ -9,6 +9,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
+from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
@@ -45,8 +46,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.geometry_nodes.modular_wayfinder_kit.v1",
             "unreal.pcg.native_density_kit.v1",
             "unreal.sequencer.procedural_environment_shot.v1",
+            "blender.camera_move.three_key_dolly.v1",
         ]
-    ] = Field(min_length=2, max_length=11)
+    ] = Field(min_length=2, max_length=12)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -102,6 +104,13 @@ class SceneDccWorkDefinition(BaseModel):
     level_sequence_path: str | None = Field(
         default=None,
         pattern=r"^/Game/ArtFlow/Sequences/Generated/LS_AF_[a-f0-9]{12}\.LS_AF_[a-f0-9]{12}$",
+    )
+    camera_move_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    blender_camera_move_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    unreal_camera_move_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    camera_move_sequence_path: str | None = Field(
+        default=None,
+        pattern=r"^/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_[a-f0-9]{12}\.LS_AF_CameraMove_[a-f0-9]{12}$",
     )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
@@ -217,6 +226,18 @@ class SceneDccWorkDefinition(BaseModel):
             if self.unreal_native_pcg_density_receipt_sha256 is None:
                 raise ValueError("shot package requires the registered native PCG candidate")
             expected_capabilities.append("unreal.sequencer.procedural_environment_shot.v1")
+        camera_move_identities = (
+            self.camera_move_request_sha256,
+            self.blender_camera_move_receipt_sha256,
+            self.unreal_camera_move_receipt_sha256,
+            self.camera_move_sequence_path,
+        )
+        if any(item is not None for item in camera_move_identities):
+            if not all(item is not None for item in camera_move_identities):
+                raise ValueError("DCC work requires every camera-move identity")
+            if self.unreal_shot_package_receipt_sha256 is None:
+                raise ValueError("camera move requires the registered shot package")
+            expected_capabilities.append("blender.camera_move.three_key_dolly.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -652,6 +673,59 @@ def compile_current_blender_dcc_work(
         payload["level_sequence_path"] = shot_package_unreal["sequence_asset_path"]
         payload["unreal_return_receipt_sha256"] = shot_package_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = shot_package_unreal["candidate_scene_path"]
+    camera_move_root = project_root / "artifacts/goal/m38-s1-camera-move"
+    camera_move_request_path = camera_move_root / "camera-move-request.json"
+    blender_camera_move_path = camera_move_root / "blender-camera-move-receipt.json"
+    unreal_camera_move_path = camera_move_root / "unreal-camera-move-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            camera_move_request_path,
+            blender_camera_move_path,
+            unreal_camera_move_path,
+        )
+    ):
+        camera_move_request = CameraMoveRequest.model_validate_json(
+            camera_move_request_path.read_text(encoding="utf-8")
+        )
+        blender_camera_move = BlenderCameraMoveReceipt.model_validate_json(
+            blender_camera_move_path.read_text(encoding="utf-8")
+        )
+        unreal_camera_move = json.loads(unreal_camera_move_path.read_text(encoding="utf-8"))
+        if camera_move_request.session_id != session_id:
+            raise ValueError("camera move references another Scene Session")
+        if camera_move_request.shot_package_request_sha256 != payload.get(
+            "shot_package_request_sha256"
+        ):
+            raise ValueError("camera move references another shot package")
+        if camera_move_request.unreal_shot_package_receipt_sha256 != payload.get(
+            "unreal_shot_package_receipt_sha256"
+        ):
+            raise ValueError("camera move references another Unreal shot-package receipt")
+        if blender_camera_move.request_sha256 != camera_move_request.request_sha256:
+            raise ValueError("Blender camera move references another request")
+        unreal_camera_move_payload = dict(unreal_camera_move)
+        unreal_camera_move_sha = unreal_camera_move_payload.pop("receipt_sha256", None)
+        if unreal_camera_move_sha != dcc_work_sha256(unreal_camera_move_payload):
+            raise ValueError("Unreal camera-move receipt identity changed")
+        if unreal_camera_move.get("request_sha256") != camera_move_request.request_sha256:
+            raise ValueError("Unreal camera move references another request")
+        if unreal_camera_move.get("blender_receipt_sha256") != (blender_camera_move.receipt_sha256):
+            raise ValueError("Unreal camera move references another Blender receipt")
+        if unreal_camera_move.get("source_sequence_path") != payload.get("level_sequence_path"):
+            raise ValueError("camera move no longer derives from the shot-package Sequence")
+        if unreal_camera_move.get("source_candidate_scene_path") != payload.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("camera move no longer derives from the shot-package candidate")
+        if unreal_camera_move.get("status") != "reconciled":
+            raise ValueError("Unreal camera move is not reconciled")
+        payload["capability_ids"].append("blender.camera_move.three_key_dolly.v1")
+        payload["camera_move_request_sha256"] = camera_move_request.request_sha256
+        payload["blender_camera_move_receipt_sha256"] = blender_camera_move.receipt_sha256
+        payload["unreal_camera_move_receipt_sha256"] = unreal_camera_move["receipt_sha256"]
+        payload["camera_move_sequence_path"] = unreal_camera_move["sequence_asset_path"]
+        payload["unreal_return_receipt_sha256"] = unreal_camera_move["receipt_sha256"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

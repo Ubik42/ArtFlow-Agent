@@ -1,0 +1,39 @@
+{
+  "schema_id": "artflow-live-camera-move-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-edd1503285d1",
+  "work_sha256": "edd1503285d169cca339de9683b864941775f5ba113149c0dba84b69e5b5d29f",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1",
+    "unreal.sequencer.procedural_environment_shot.v1",
+    "blender.camera_move.three_key_dolly.v1"
+  ],
+  "camera_move_request_sha256": "ee6a93ca696043fc26c41990164aa7e9a47b23eed464c75a3ea214a3b2be5e90",
+  "blender_camera_move_receipt_sha256": "05d36760472a1ed8e15a739f9091a7185cf63dc35551b6ca7ba188107eb13eee",
+  "unreal_camera_move_receipt_sha256": "f55e39b1eacec900cafdc370d1b207329e9bcf8150bfe321ed032c0c47fc0d50",
+  "camera_move_sequence_path": "/Game/ArtFlow/Sequences/Generated/LS_AF_CameraMove_548e7db8416f.LS_AF_CameraMove_548e7db8416f",
+  "outcome_sha256": "f55e39b1eacec900cafdc370d1b207329e9bcf8150bfe321ed032c0c47fc0d50",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ShotPackage_B_76936ac2cf65",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

@@ -1479,24 +1479,18 @@ def create_app(
             "m30-detail-unreal": goal_root
             / "m30-s1-surface-detail"
             / "unreal-surface-detail-candidate.png",
-            "m32-kit-target": goal_root
-            / "m30-s1-surface-detail"
-            / "AF_Inlay_GeneratedDetail.png",
+            "m32-kit-target": goal_root / "m30-s1-surface-detail" / "AF_Inlay_GeneratedDetail.png",
             "m32-kit-bounds": goal_root
             / "m28-s1-set-dressing"
             / "unreal-set-dressing-candidate.png",
-            "m32-kit-blender": goal_root
-            / "m32-s1-procedural-kit"
-            / "AF_Wayfinder_Kit-preview.png",
+            "m32-kit-blender": goal_root / "m32-s1-procedural-kit" / "AF_Wayfinder_Kit-preview.png",
             "m32-kit-unreal": goal_root
             / "m32-s1-procedural-kit"
             / "unreal-procedural-kit-candidate.png",
             "m34-density-exclusion": goal_root
             / "m34-s1-pcg-density"
             / "protected-exclusion-mask.png",
-            "m34-density-mask": goal_root
-            / "m34-s1-pcg-density"
-            / "pcg-density-mask.png",
+            "m34-density-mask": goal_root / "m34-s1-pcg-density" / "pcg-density-mask.png",
             "m34-density-blender": goal_root
             / "m32-s1-procedural-kit"
             / "AF_Wayfinder_Kit-preview.png",
@@ -1506,15 +1500,25 @@ def create_app(
             "m36-shot-blender": goal_root
             / "m23-s5-camera-light"
             / "AF_ShrineCourtyard_Shot-preview.png",
-            "m36-shot-density": goal_root
-            / "m34-s1-pcg-density"
-            / "pcg-density-mask.png",
+            "m36-shot-density": goal_root / "m34-s1-pcg-density" / "pcg-density-mask.png",
             "m36-shot-pcg": goal_root
             / "m34-s1-pcg-density"
             / "unreal-native-pcg-density-candidate.png",
             "m36-shot-unreal": goal_root
             / "m36-s1-shot-package"
             / "unreal-shot-package-candidate.png",
+            "m38-blender-start": goal_root
+            / "m38-s1-camera-move"
+            / "AF_ShrineCourtyard_CameraMove-start.png",
+            "m38-blender-middle": goal_root
+            / "m38-s1-camera-move"
+            / "AF_ShrineCourtyard_CameraMove-middle.png",
+            "m38-blender-end": goal_root
+            / "m38-s1-camera-move"
+            / "AF_ShrineCourtyard_CameraMove-end.png",
+            "m38-unreal-start": goal_root / "m38-s1-camera-move" / "unreal-camera-move-start.png",
+            "m38-unreal-middle": goal_root / "m38-s1-camera-move" / "unreal-camera-move-middle.png",
+            "m38-unreal-end": goal_root / "m38-s1-camera-move" / "unreal-camera-move-end.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

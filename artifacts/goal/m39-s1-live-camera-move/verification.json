@@ -1,0 +1,23 @@
+{
+  "schema_id": "artflow-live-camera-move-verification/1",
+  "status": "passed",
+  "registered_capability_count": 12,
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true,
+  "camera_key_frames": [0, 60, 119],
+  "paired_host_image_count": 6,
+  "desktop": {
+    "viewport": "1600x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "narrow": {
+    "viewport": "980x1000",
+    "horizontal_overflow": false,
+    "failed_images": 0
+  },
+  "browser_console_errors": 0,
+  "browser_console_warnings": 0
+}

@@ -4514,6 +4514,17 @@ button:focus-visible {
   display: block;
   object-fit: cover;
 }
+.intent-to-world .frame-pair {
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  height: 100%;
+}
+.intent-to-world .paired-frame img {
+  min-height: 122px;
+}
+.intent-to-world .paired-frame img:first-child {
+  border-bottom: 1px solid rgba(130, 198, 176, 0.38);
+}
 .intent-to-world figure:after {
   position: absolute;
   inset: 55% 0 0;

@@ -638,6 +638,10 @@ type SceneDccWorkState = {
     shot_package_request_sha256?: string;
     unreal_shot_package_receipt_sha256?: string;
     level_sequence_path?: string;
+    camera_move_request_sha256?: string;
+    blender_camera_move_receipt_sha256?: string;
+    unreal_camera_move_receipt_sha256?: string;
+    camera_move_sequence_path?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1651,7 +1655,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.shot_package_request_sha256
+                  {dccWork.definition.camera_move_request_sha256
+                    ? "视觉目标 → Blender 三关键帧 → Unreal Sequencer 镜头动画"
+                    : dccWork.definition.shot_package_request_sha256
                     ? "视觉目标 → Blender 镜头预演 → 原生 PCG → Level Sequence"
                     : dccWork.definition.pcg_density_request_sha256
                     ? "Unreal 空间证据 → ComfyUI 密度 → Blender 套件 → 原生 PCG"
@@ -1836,8 +1842,28 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasProceduralKit = Boolean(agent.scene_dcc_work?.definition.procedural_kit_request_sha256);
   const hasNativePcgDensity = Boolean(agent.scene_dcc_work?.definition.pcg_density_request_sha256);
   const hasShotPackage = Boolean(agent.scene_dcc_work?.definition.shot_package_request_sha256);
+  const hasCameraMove = Boolean(agent.scene_dcc_work?.definition.camera_move_request_sha256);
   const cases = [
-    ...(hasShotPackage
+    ...(hasCameraMove
+      ? [{
+          id: "camera-move-roundtrip",
+          tab: "当前 Session · 镜头运动",
+          title: "让 Blender 镜头预演成为 Unreal 中可继续编辑的运动轨道",
+          description: "Agent 从当前 Shot Package 编译三个有限相机姿态。Blender 保留动画曲线和可编辑源文件，Unreal 从原 Sequence 派生新版本并写入 Transform Track；每个阶段并列呈现 DCC 预演与引擎结果。",
+          frames: [
+            { src: "/api/showcase/production/m38-blender-start", secondarySrc: "/api/showcase/production/m38-unreal-start", alt: "Blender 镜头运动起始帧", secondaryAlt: "Unreal 镜头运动起始帧", label: "起始姿态 · F000", title: "Blender / Unreal" },
+            { src: "/api/showcase/production/m38-blender-middle", secondarySrc: "/api/showcase/production/m38-unreal-middle", alt: "Blender 镜头运动中间帧", secondaryAlt: "Unreal 镜头运动中间帧", label: "中间姿态 · F060", title: "Blender / Unreal" },
+            { src: "/api/showcase/production/m38-blender-end", secondarySrc: "/api/showcase/production/m38-unreal-end", alt: "Blender 镜头运动结束帧", secondaryAlt: "Unreal 镜头运动结束帧", label: "结束姿态 · F119", title: "Blender / Unreal" },
+          ],
+          transition: "同一类型化相机姿态",
+          metricA: "27",
+          metricALabel: "Sequencer 键值",
+          metricB: "412.43 cm",
+          metricBLabel: "镜头位移",
+          note: `派生 Sequence ${agent.scene_dcc_work?.definition.camera_move_sequence_path ?? ""} 绑定请求 ${shortId(agent.scene_dcc_work?.definition.camera_move_request_sha256 ?? "")}；第二个引擎进程对账相同轨道，重复轨道为 0。`,
+          domains: ["目标·已绑定", "动画·可编辑", "轨道·已写入", "三帧·已回渲", "重放·已对账"],
+        }]
+      : hasShotPackage
       ? [{
           id: "shot-ready-environment",
           tab: "当前 Session · 镜头交付",
@@ -2065,7 +2091,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasShotPackage && caseId !== "shot-ready-environment") {
+    if (hasCameraMove && caseId !== "camera-move-roundtrip") {
+      setCaseId("camera-move-roundtrip");
+    } else if (hasShotPackage && caseId !== "shot-ready-environment") {
       setCaseId("shot-ready-environment");
     } else if (hasNativePcgDensity && caseId !== "native-pcg-density") {
       setCaseId("native-pcg-density");
@@ -2080,7 +2108,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasCameraMove, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasShotPackage, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },
@@ -2137,8 +2165,22 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       <div className={`intent-to-world frames-${activeCase.frames.length}`}>
         {activeCase.frames.map((frame, index) => (
           <Fragment key={frame.src}>
-            <figure>
-              <img src={frame.src} alt={frame.alt} />
+            <figure className={"secondarySrc" in frame ? "paired-frame" : undefined}>
+              {"secondarySrc" in frame && typeof frame.secondarySrc === "string" ? (
+                <div className="frame-pair">
+                  <img src={frame.src} alt={frame.alt} />
+                  <img
+                    src={frame.secondarySrc}
+                    alt={
+                      "secondaryAlt" in frame && typeof frame.secondaryAlt === "string"
+                        ? frame.secondaryAlt
+                        : frame.alt
+                    }
+                  />
+                </div>
+              ) : (
+                <img src={frame.src} alt={frame.alt} />
+              )}
               <figcaption><span>{frame.label}</span><strong>{frame.title}</strong></figcaption>
             </figure>
             {index < activeCase.frames.length - 1 && (

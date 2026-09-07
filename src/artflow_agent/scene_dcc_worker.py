@@ -11,6 +11,7 @@ from .blender_set_dressing import (
     verify_set_dressing,
 )
 from .blender_surface import BlenderSurfaceRequest
+from .camera_move import BlenderCameraMoveReceipt, CameraMoveRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
@@ -74,6 +75,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "kit": project_root / "artifacts/goal/m32-s1-procedural-kit",
         "density": project_root / "artifacts/goal/m34-s1-pcg-density",
         "shot_package": project_root / "artifacts/goal/m36-s1-shot-package",
+        "camera_move": project_root / "artifacts/goal/m38-s1-camera-move",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -380,6 +382,66 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal shot-package screenshot identity changed")
 
+    if work.camera_move_request_sha256 is not None:
+        request = CameraMoveRequest.model_validate_json(
+            (roots["camera_move"] / "camera-move-request.json").read_text(encoding="utf-8")
+        )
+        blender_receipt = BlenderCameraMoveReceipt.model_validate_json(
+            (roots["camera_move"] / "blender-camera-move-receipt.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.camera_move_request_sha256:
+            raise ValueError("registered camera-move request changed")
+        if blender_receipt.receipt_sha256 != work.blender_camera_move_receipt_sha256:
+            raise ValueError("registered Blender camera-move receipt changed")
+        for artifact in blender_receipt.artifacts:
+            path = (roots["camera_move"] / artifact.relative_path).resolve()
+            if roots["camera_move"].resolve() not in path.parents:
+                raise ValueError("camera-move artifact escaped its registered root")
+            if not path.is_file() or _file_sha256(path) != artifact.sha256:
+                raise ValueError("Blender camera-move artifact identity changed")
+        unreal_receipt = _load_receipt(
+            roots["camera_move"] / "unreal-camera-move-receipt.json",
+            expected_sha256=str(work.unreal_camera_move_receipt_sha256),
+        )
+        if unreal_receipt.get("request_sha256") != request.request_sha256:
+            raise ValueError("Unreal camera move references another request")
+        if unreal_receipt.get("blender_receipt_sha256") != blender_receipt.receipt_sha256:
+            raise ValueError("Unreal camera move references another Blender receipt")
+        if unreal_receipt.get("source_sequence_path") != work.level_sequence_path:
+            raise ValueError("camera move source Level Sequence changed")
+        if unreal_receipt.get("source_candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("camera move source candidate changed")
+        if unreal_receipt.get("sequence_asset_path") != work.camera_move_sequence_path:
+            raise ValueError("camera-move Level Sequence changed")
+        if {
+            unreal_receipt.get("source_sequence_sha256_before"),
+            unreal_receipt.get("source_sequence_sha256_after"),
+        } != {request.source_sequence_sha256}:
+            raise ValueError("camera move changed its source Level Sequence")
+        if {
+            unreal_receipt.get("source_candidate_sha256_before"),
+            unreal_receipt.get("source_candidate_sha256_after"),
+        } != {request.source_candidate_sha256}:
+            raise ValueError("camera move changed its source candidate")
+        if (
+            unreal_receipt.get("transform_track_count") != 1
+            or unreal_receipt.get("transform_section_count") != 1
+            or unreal_receipt.get("transform_channel_count") != 9
+            or unreal_receipt.get("frame_numbers") != [0, 60, 119]
+        ):
+            raise ValueError("camera-move Sequencer topology changed")
+        key_counts = unreal_receipt.get("keys_per_channel")
+        if not isinstance(key_counts, dict) or set(key_counts.values()) != {3}:
+            raise ValueError("camera-move key counts changed")
+        preview_paths = unreal_receipt.get("preview_paths")
+        preview_sha256s = unreal_receipt.get("preview_sha256s")
+        if not isinstance(preview_paths, dict) or not isinstance(preview_sha256s, dict):
+            raise ValueError("camera-move previews are incomplete")
+        for label in ("start", "middle", "end"):
+            screenshot = roots["camera_move"] / str(preview_paths.get(label))
+            if _file_sha256(screenshot) != preview_sha256s.get(label):
+                raise ValueError(f"Unreal camera-move {label} preview identity changed")
+
     return work.unreal_return_receipt_sha256
 
 
@@ -425,7 +487,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "DCC、ComfyUI 空间条件、原生 PCG 与 Level Sequence 已回流",
+                    "DCC、ComfyUI、原生 PCG、Level Sequence 与镜头动画已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:
