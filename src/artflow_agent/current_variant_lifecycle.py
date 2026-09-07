@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from .current_scene_evaluation import UnrealCandidateExecutionReceipt
 from .scene_correction_work import file_sha256, resolve_current_correction_receipt
 from .scene_disposition import (
     SceneVariantPublishReceipt,
@@ -29,6 +30,102 @@ def compile_current_publish_request(
     project_root: Path, state: AgentRunState
 ) -> SceneVariantPublishRequest:
     adoption = state.scene_candidate_adoption
+    routed = state.scene_dcc_candidate_evaluation
+    if adoption is not None and routed is not None:
+        decision = adoption.decision
+        evaluation = routed.domain_evaluation
+        dcc_work = state.scene_dcc_work
+        base_work = state.scene_candidate_work
+        scene = state.scene
+        if dcc_work is None or base_work is None or scene is None:
+            raise ValueError("routed publish requires evaluated DCC and base scene work")
+        if (
+            evaluation.status != "accepted"
+            or evaluation.failed_domains
+            or decision.evaluation_sha256 != evaluation.evaluation_sha256
+            or decision.plan_sha256 != routed.evaluation_input.route_decision_sha256
+            or decision.execution_receipt_sha256 != dcc_work.outcome_sha256
+        ):
+            raise ValueError("routed adoption references another evaluation or work item")
+        candidate = (
+            project_root
+            / "integrations/unreal/ArtFlowBridgeHost/Content"
+            / f"{decision.candidate_scene.removeprefix('/Game/')}.umap"
+        ).resolve()
+        candidate_root = (
+            project_root
+            / "integrations/unreal/ArtFlowBridgeHost/Content/ArtFlow/Sessions"
+        ).resolve()
+        try:
+            candidate.relative_to(candidate_root)
+        except ValueError as exc:
+            raise ValueError("routed candidate escaped the Session namespace") from exc
+        source = (
+            project_root
+            / "integrations/unreal/ArtFlowBridgeHost/Content/ArtFlowDemo.umap"
+        ).resolve()
+        if (
+            not candidate.is_file()
+            or file_sha256(candidate) != decision.candidate_level_sha256
+            or not source.is_file()
+            or file_sha256(source) != decision.source_level_sha256
+        ):
+            raise ValueError("routed candidate or source bytes changed after adoption")
+        base_plan = base_work.definition.candidate_plan
+        base_receipt_path = (
+            project_root
+            / "integrations/unreal/ArtFlowBridgeHost/Saved/ArtFlowSceneBridge/SceneCandidates"
+            / base_plan.plan_id
+            / "candidate-execution-receipt.json"
+        )
+        if not base_receipt_path.is_file():
+            raise ValueError("base scene receipt is unavailable before routed publish")
+        base_receipt = UnrealCandidateExecutionReceipt.model_validate_json(
+            base_receipt_path.read_text(encoding="utf-8-sig")
+        )
+        if (
+            base_receipt.plan_sha256 != base_plan.plan_sha256
+            or base_receipt.plan_id != base_plan.plan_id
+        ):
+            raise ValueError("base scene receipt references another Candidate Plan")
+        editable = next(
+            actor for actor in scene.digital_twin.actors if actor.label == "Editable_Form"
+        )
+        protected = next(
+            actor for actor in scene.digital_twin.actors if actor.label == "Protected_Blockout"
+        )
+        if len(editable.material_slots) != 1:
+            raise ValueError("current editable material identity is ambiguous")
+        transform = protected.transform
+        protected_fingerprint = canonical_sha256(
+            {
+                "label": protected.label,
+                "class": protected.class_path,
+                "location": [
+                    transform.location.x,
+                    transform.location.y,
+                    transform.location.z,
+                ],
+                "rotation": [
+                    transform.rotation.roll,
+                    transform.rotation.pitch,
+                    transform.rotation.yaw,
+                ],
+                "scale": [
+                    transform.scale.x,
+                    transform.scale.y,
+                    transform.scale.z,
+                ],
+                "tags": sorted(protected.tags),
+                "materials": [slot.material_path for slot in protected.material_slots],
+            }
+        )
+        return compile_publish_request(
+            decision,
+            protected_state_sha256=protected_fingerprint,
+            material_path=editable.material_slots[0].material_path,
+            instance_count=base_receipt.generated_instance_count,
+        )
     evaluation = state.scene_candidate_evaluation
     intake = state.scene_correction_intake
     work = state.scene_correction_work

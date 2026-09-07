@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 108,
+  "stateRevision": 109,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M60",
+  "currentMilestone": "M61",
   "milestones": [
     {
       "id": "M0",
@@ -720,47 +720,61 @@
     {
       "id": "M60",
       "title": "Selected-route evaluation and Unreal adoption",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": ["M59"],
       "outcome": "The exact candidate produced by the selected DCC route enters the existing current-session evaluation, Codex adoption and versioned Unreal publish lifecycle without falling back to the older cumulative candidate path.",
       "acceptance": [
         "Evaluation input binds the route decision, routed work outcome, final Unreal receipt and exact candidate identity",
         "Technical checks and visual evidence apply only to the selected route's delivered asset and scene impact",
         "Codex adoption and versioned publish cite the persisted routed evaluation and cannot substitute another candidate",
-        "The product view presents route choice, result quality and published disposition as one continuous production story"
+        "The product view presents route choice, result quality and publish-ready disposition as one continuous production story"
+      ]
+    },
+    {
+      "id": "M61",
+      "title": "Routed candidate versioned publish and Unreal review",
+      "status": "in_progress",
+      "dependsOn": ["M60"],
+      "outcome": "The exact adopted DCC route candidate is published once into its content-addressed Unreal namespace, reconciled after unknown completion and reopened through the registered review path without changing the source level.",
+      "acceptance": [
+        "The Unreal publisher consumes the M60 request and writes only the declared Published package",
+        "A second process reconciles the same package and produces zero duplicate publish side effects",
+        "The registered review action opens and verifies the exact published candidate, material, instance and protected-state facts",
+        "The Scene Change Spectrum projects evaluated, adopted, published and reviewed states from the current routed event chain"
       ]
     }
   ],
   "nextSlice": {
-    "id": "M60-S1",
-    "milestone": "M60",
-    "title": "Evaluate and adopt the exact selected DCC candidate",
-    "outcome": "Route the selected cloth-banner Unreal candidate through the existing current-session technical and visual evidence path, then produce one content-bound Codex adoption ready for the existing versioned publisher without adding another tribunal or publisher.",
-    "risk": "R2",
-    "evidenceTarget": "A3",
-    "requiresRealHosts": false,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "web/**"],
+    "id": "M61-S1",
+    "milestone": "M61",
+    "title": "Publish, reconcile and review the selected DCC candidate in Unreal",
+    "outcome": "Run the existing Unreal publisher against the M60 content-bound request, reconcile the same Published package from a fresh process, submit the typed receipt and perform the registered exact-version review without changing the source level.",
+    "risk": "R3",
+    "evidenceTarget": "A4",
+    "requiresRealHosts": true,
+    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "web/**"],
     "nonGoals": [
-      "Do not rerun ComfyUI or Blender unless routed evidence is missing",
-      "Do not add another evaluator, publisher, worker, reducer or approval gate",
-      "Do not evaluate unrelated legacy stages from the former cumulative DCC work",
-      "Do not broaden evaluation into a general asset-audit subsystem or expand test coverage beyond the routed contract"
+      "Do not rerun ComfyUI or Blender",
+      "Do not create a second publisher, review system, state machine or approval gate",
+      "Do not overwrite the source level or publish any candidate other than the M60 adopted identity",
+      "Do not broaden into packaging, marketplace installation or a test matrix"
     ],
     "acceptance": [
-      "One evaluation input binds the M59 decision, selected work outcome, Unreal receipt and cloth-banner candidate",
-      "Deterministic asset checks and visual evidence produce a persisted disposition for only that candidate",
-      "Codex adoption references the exact routed evaluation and is accepted by the existing versioned publish boundary",
-      "The Chinese product view connects automatic route choice, delivered result and disposition without framework-heavy copy"
+      "One Unreal process publishes only /Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28 and leaves ArtFlowDemo unchanged",
+      "A fresh process reconciles the identical package and receipt with duplicate_side_effect_count 0",
+      "The existing review request and receipt verify the exact published bytes and expected scene facts",
+      "The Chinese product view shows routed evaluation, adoption, publication and review from current persisted state"
     ],
     "stopConditions": [
-      "Stop if evaluation cannot bind the exact M59 route decision and final Unreal receipt",
-      "Stop if the current publisher requires an unrelated historical candidate identity",
-      "Stop if adoption could bypass deterministic failure or substitute a different candidate"
+      "Stop if the publisher requests a candidate or destination different from the M60 adoption",
+      "Stop if the source ArtFlowDemo bytes change",
+      "Stop if reconciliation cannot distinguish the existing package from a new publish side effect"
     ],
     "environmentRequirements": [
       {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "route_selection_receipt", "kind": "repo_path", "value": "artifacts/goal/m59-s1-dcc-route-selection/dcc-route-selection-receipt.json", "required": true},
-      {"id": "cloth_unreal_preview", "kind": "repo_path", "value": "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-candidate.png", "required": true}
+      {"id": "unreal_editor_cmd", "kind": "command", "value": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe", "required": true},
+      {"id": "unreal_project", "kind": "repo_path", "value": "integrations/unreal/ArtFlowBridgeHost/ArtFlowBridgeHost.uproject", "required": true},
+      {"id": "routed_adoption_receipt", "kind": "repo_path", "value": "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-receipt.json", "required": true}
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
@@ -776,9 +790,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0101.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0102.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M59 are complete. The current Scene Session now selects among three finite verified DCC routes from scene intent and readiness rather than dispatching a cumulative pseudo-pipeline. Decision dcc-route-b38cca403ba7 matches material intent to the cloth-banner route at 5 points and work dcc-work-4d29fa0d1a91 dispatches only three ordered ComfyUI, Blender and Unreal stages. Repeated dispatch and reducer replay preserve identity with zero duplicate external side effects; desktop and narrow product views expose the decision basis without failed media, overflow or console messages. Selected-route evaluation and adoption is M60-S1 scope and has not yet been implemented.",
+  "evidenceCeiling": "M0-M60 are complete. The selected cloth-banner route now owns evaluation dcc-evaluation-181f20992cd1, which binds route decision, DCC work, three host receipts, exact Unreal candidate bytes and preview. Six delivery checks and four Codex visual claims pass. Adoption scene-adoption-4f5d61aacbeaede7 locks content identity c7a243e05e28 and the existing publisher compiles the corresponding versioned destination. Repeated evaluation and adoption preserve identity, reducer replay is equivalent and duplicate external side effects remain zero. Real Unreal publication, reconciliation and exact-version review are M61-S1 scope and have not yet run.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

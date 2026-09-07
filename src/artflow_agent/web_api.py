@@ -60,6 +60,11 @@ from .dcc_route_selection import select_dcc_route
 from .providers import ComfyRecipeProvider
 from .recipes import RecipeCatalog
 from .review import create_contact_sheet
+from .routed_dcc_evaluation import (
+    RoutedDccVisualObservation,
+    compile_routed_dcc_adoption,
+    evaluate_routed_dcc_candidate,
+)
 from .run_store import RunStateError, RunStore
 from .scene_candidate_work import (
     SceneCandidateWorkClaimRequest,
@@ -563,6 +568,58 @@ def create_app(
             )
             return project_agent_run(agent_store, run_id)
         except (AgentRuntimeError, RuntimeError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/evaluate",
+        response_model=AgentRunProjection,
+    )
+    def evaluate_scene_dcc_work(
+        run_id: str,
+        payload: RoutedDccVisualObservation,
+        request: Request,
+    ):
+        _require_loopback(request, "DCC 候选视觉评价仅允许本机 Codex 编排器回传")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_dcc_candidate_evaluation is not None:
+                if state.scene_dcc_candidate_evaluation.visual_observation != payload:
+                    raise AgentRuntimeError(
+                        "routed DCC candidate already has a different visual observation"
+                    )
+                return project_agent_run(agent_store, run_id)
+            record = evaluate_routed_dcc_candidate(
+                resolved_project_root, state, payload
+            )
+            agent_store.record_scene_dcc_candidate_evaluation(
+                run_id,
+                record,
+                action_id=f"dcc-evaluation-{record.record_sha256[:16]}",
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
+            raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.post(
+        "/api/agent/runs/{run_id}/scene-dcc-work/adopt",
+        response_model=AgentRunProjection,
+    )
+    def adopt_scene_dcc_work(run_id: str, request: Request):
+        _require_loopback(request, "DCC 候选采用仅允许本机 Codex 编排器执行")
+        try:
+            state = agent_store.load(run_id)
+            if state.scene_candidate_adoption is not None:
+                return project_agent_run(agent_store, run_id)
+            record = compile_routed_dcc_adoption(resolved_project_root, state)
+            agent_store.record_scene_candidate_adoption(
+                run_id,
+                record,
+                action_id=f"dcc-adoption-{record.decision.decision_sha256[:16]}",
+            )
+            return project_agent_run(agent_store, run_id)
+        except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
 

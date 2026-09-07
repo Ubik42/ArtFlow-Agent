@@ -1,0 +1,34 @@
+{
+  "schema_id": "artflow-routed-dcc-visual-observation/1",
+  "observation_id": "dcc-visual-f6be537490c7",
+  "observation_sha256": "f6be537490c787a71024bd4b3063cef9c3f79430ac3a95e974bd1fbc5dcb233f",
+  "evaluator_id": "codex-native-multimodal-critic",
+  "route_decision_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+  "candidate_preview_sha256": "abdf571b7d41ea6571a425228f7deece2ad7f3116cfd23ea9b57db0d065fef2c",
+  "claims": [
+    {
+      "dimension": "material_direction",
+      "verdict": "passed",
+      "confidence": 0.94,
+      "rationale": "纹章、旧化边缘与暖色场景方向一致，材质层次清楚。"
+    },
+    {
+      "dimension": "silhouette_readability",
+      "verdict": "passed",
+      "confidence": 0.92,
+      "rationale": "风场形变形成明确外轮廓，旗面没有不可读的折叠穿插。"
+    },
+    {
+      "dimension": "scene_attachment",
+      "verdict": "passed",
+      "confidence": 0.91,
+      "rationale": "旗帜从登记挂点自然垂落，尺寸与相邻模块关系可信。"
+    },
+    {
+      "dimension": "production_readiness",
+      "verdict": "passed",
+      "confidence": 0.95,
+      "rationale": "当前结果具备材质、碰撞与稳定定格网格，可进入版本候选。"
+    }
+  ]
+}

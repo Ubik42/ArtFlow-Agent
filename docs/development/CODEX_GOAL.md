@@ -198,10 +198,16 @@ Unreal 当前场景
   编辑源/定格 GLB 和 Unreal 旗帜候选登记为当前 Session 的第二十一项 DCC 能力，接入既有
   Worker 和场景变更谱。五段生命周期、重复派发和 Reducer 重放均通过；桌面与窄屏以真实
   三宿主媒体呈现材质生成、物理解算和引擎回流，失败媒体、溢出和控制台消息均为 0。
-- **M59 · Intent-bound DCC route selection（进行中）**：把当前累积式能力登记收敛为可执行的
+- **M59 · Intent-bound DCC route selection（已完成）**：把当前累积式能力登记收敛为可执行的
   有限路线选择。Agent 根据 Scene Session 的场景事实、用户意图和能力就绪度，在布料旗帜、
   破损变体、机关镜头等已验证路线中选择一条最短依赖链，并把选择依据与具体宿主阶段写入
   同一工作定义；不新增状态机，也不把能力目录本身当成一次必须全部执行的流水线。
+- **M60 · Selected-route evaluation and Unreal adoption（已完成）**：自动选出的 DCC 候选拥有独立
+  内容身份评价，六项交付检查与四项 Codex 视觉判断分别覆盖路线回执、候选目录、上游不变、
+  几何预算、材质碰撞、预览内容、材质方向、轮廓、挂接和生产可用性。通过后由 Codex 锁定精确
+  Unreal 候选并编译既有 Publisher 的版本化发布请求；新路线入队会使旧候选评价与采用投影失效。
+- **M61 · Routed candidate versioned publish and Unreal review（进行中）**：用既有 Unreal 发布与
+  review 入口执行 M60 的内容寻址请求，验证未知完成对账、唯一 Published 包和精确版本复检。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

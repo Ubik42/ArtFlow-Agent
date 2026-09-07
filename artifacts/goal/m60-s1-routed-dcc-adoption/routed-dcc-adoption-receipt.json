@@ -1,0 +1,205 @@
+{
+  "schema_id": "artflow-routed-dcc-adoption-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "route_decision_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+  "work_sha256": "4d29fa0d1a910381d188ad65cd5287c53d6bad04cdef13ce32b13270811af708",
+  "outcome_sha256": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+  "evaluation": {
+    "schema_id": "artflow-routed-dcc-candidate-evaluation/1",
+    "record_id": "dcc-evaluation-181f20992cd1",
+    "record_sha256": "181f20992cd17b009b6c003a76bd6b8c47cbed4ee1c539399008be9ddb18ffa6",
+    "evaluation_input": {
+      "schema_id": "artflow-routed-dcc-evaluation-input/1",
+      "input_sha256": "6c04d2e7a3860ff22138d6ef8af9a9c3f2bb71259bd11234d5ff7034f81b8721",
+      "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+      "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+      "scene_package_sha256": "ca79f77b487ea5080876017d513f815c37846eb80edea2b33c4d990b7f07ecf6",
+      "route_decision_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+      "route_id": "cloth_banner",
+      "work_sha256": "4d29fa0d1a910381d188ad65cd5287c53d6bad04cdef13ce32b13270811af708",
+      "outcome_sha256": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b",
+      "request_sha256": "4db41b8ff0c213f925a077d36d43294c6cdd129e9f46ddd094c0f50aa5196cf2",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+      "candidate_level_sha256": "4a94f26415c5d4c88cee9032b616c720604b4e87976d63bd18c0a7789df95052",
+      "candidate_preview_sha256": "abdf571b7d41ea6571a425228f7deece2ad7f3116cfd23ea9b57db0d065fef2c",
+      "candidate_width": 1280,
+      "candidate_height": 720,
+      "source_scene": "/Game/ArtFlowDemo",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "registered_receipt": "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-receipt.json"
+    },
+    "technical_checks": [
+      {
+        "check_id": "route_identity",
+        "domain": "asset",
+        "status": "passed",
+        "reason": "路线决策、工作结果和三宿主回执身份一致",
+        "evidence_sha256": "1b44e59890435be83a1d25170a30f8665b7841c3254465fb6b8fad9baf7b1cba"
+      },
+      {
+        "check_id": "candidate_namespace",
+        "domain": "asset",
+        "status": "passed",
+        "reason": "Unreal 候选位于当前 Session 的隔离目录",
+        "evidence_sha256": "1643ab23204b70712c51b7ee6e4d486dc3febf53f9ab6d106808e97e85e8e71f"
+      },
+      {
+        "check_id": "source_invariant",
+        "domain": "asset",
+        "status": "passed",
+        "reason": "上游候选在旗帜回流前后保持不变",
+        "evidence_sha256": "59c58efbf4137b8af9ee0498506405f66fe4393281d6022abf9b7b7a07d4bb10"
+      },
+      {
+        "check_id": "geometry_budget",
+        "domain": "asset",
+        "status": "passed",
+        "reason": "旗帜三角面 3948/5000",
+        "evidence_sha256": "cb238066b93ac9319ace352a7b997a3d8b1d8279574b5a88ad1cf34cd58d8433"
+      },
+      {
+        "check_id": "delivery_readiness",
+        "domain": "material",
+        "status": "passed",
+        "reason": "材质槽 1；凸碰撞体 1",
+        "evidence_sha256": "bcdfe7d6222bfdfe4e9ade390196638aac29fab5f1bbc18e8ddc37cf95ca4036"
+      },
+      {
+        "check_id": "preview_content",
+        "domain": "image",
+        "status": "passed",
+        "reason": "候选预览 1280×720 与 Unreal 回执一致",
+        "evidence_sha256": "f77c1742c3f7f43376b4d6509f87680148fd6c3f4c17ee9c0150db90b3769a9d"
+      }
+    ],
+    "visual_observation": {
+      "schema_id": "artflow-routed-dcc-visual-observation/1",
+      "observation_id": "dcc-visual-f6be537490c7",
+      "observation_sha256": "f6be537490c787a71024bd4b3063cef9c3f79430ac3a95e974bd1fbc5dcb233f",
+      "evaluator_id": "codex-native-multimodal-critic",
+      "route_decision_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+      "candidate_preview_sha256": "abdf571b7d41ea6571a425228f7deece2ad7f3116cfd23ea9b57db0d065fef2c",
+      "claims": [
+        {
+          "dimension": "material_direction",
+          "verdict": "passed",
+          "confidence": 0.94,
+          "rationale": "纹章、旧化边缘与暖色场景方向一致，材质层次清楚。"
+        },
+        {
+          "dimension": "silhouette_readability",
+          "verdict": "passed",
+          "confidence": 0.92,
+          "rationale": "风场形变形成明确外轮廓，旗面没有不可读的折叠穿插。"
+        },
+        {
+          "dimension": "scene_attachment",
+          "verdict": "passed",
+          "confidence": 0.91,
+          "rationale": "旗帜从登记挂点自然垂落，尺寸与相邻模块关系可信。"
+        },
+        {
+          "dimension": "production_readiness",
+          "verdict": "passed",
+          "confidence": 0.95,
+          "rationale": "当前结果具备材质、碰撞与稳定定格网格，可进入版本候选。"
+        }
+      ]
+    },
+    "domain_evaluation": {
+      "schema_id": "artflow-scene-domain-evaluation/1",
+      "evaluation_id": "domain-evaluation-c4fe14835396",
+      "evaluation_sha256": "c4fe148353966028cd0cb738c0318daea8df670b6793879806f9d00cd6009002",
+      "plan_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+      "findings": [
+        {
+          "domain": "image",
+          "status": "passed",
+          "reason": "候选预览 1280×720 与 Unreal 回执一致；风场形变形成明确外轮廓，旗面没有不可读的折叠穿插。；旗帜从登记挂点自然垂落，尺寸与相邻模块关系可信。",
+          "evidence_sha256": "0d61792b4d226e7bd06286f240202ed5a57e1a706057dccc16ad2307fd64452e"
+        },
+        {
+          "domain": "material",
+          "status": "passed",
+          "reason": "材质槽 1；凸碰撞体 1；纹章、旧化边缘与暖色场景方向一致，材质层次清楚。；当前结果具备材质、碰撞与稳定定格网格，可进入版本候选。",
+          "evidence_sha256": "ca8baa7d6e7fee8f83b921945159d73be0bd5486d824993bbd3677a1d44853a8"
+        },
+        {
+          "domain": "asset",
+          "status": "passed",
+          "reason": "路线决策、工作结果和三宿主回执身份一致；Unreal 候选位于当前 Session 的隔离目录；上游候选在旗帜回流前后保持不变；旗帜三角面 3948/5000；风场形变形成明确外轮廓，旗面没有不可读的折叠穿插。；旗帜从登记挂点自然垂落，尺寸与相邻模块关系可信。；当前结果具备材质、碰撞与稳定定格网格，可进入版本候选。",
+          "evidence_sha256": "a21c7ca044a22cecb684676881239e7f176a61c01644bc327e4ee57e9881476b"
+        }
+      ],
+      "failed_domains": [],
+      "status": "accepted"
+    }
+  },
+  "adoption": {
+    "decision": {
+      "schema_id": "artflow-scene-adoption-decision/1",
+      "decision_id": "scene-adoption-4f5d61aacbeaede7",
+      "decision_sha256": "4f5d61aacbeaede7099b8eff0af8aae4e9f0952557766ac5703df043fed6a4e8",
+      "action": "publish",
+      "orchestrator": "codex",
+      "policy_version": "scene-disposition-policy/1",
+      "evaluation_sha256": "c4fe148353966028cd0cb738c0318daea8df670b6793879806f9d00cd6009002",
+      "plan_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+      "execution_receipt_sha256": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b",
+      "content_identity_sha256": "c7a243e05e28d2163e423c4833649169b2f77f4eb9ef6fb11a877025555d9958",
+      "source_scene": "/Game/ArtFlowDemo",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+      "candidate_level_sha256": "4a94f26415c5d4c88cee9032b616c720604b4e87976d63bd18c0a7789df95052",
+      "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28",
+      "rationale": "当前自动选路候选通过内容身份、几何预算、材质碰撞和独立视觉评价；Codex 采用该精确 Unreal 候选并交给既有版本发布器。"
+    }
+  },
+  "publish_request": {
+    "schema_id": "artflow-scene-variant-publish-request/1",
+    "request_id": "scene-publish-a46d9ff062987d4e",
+    "request_sha256": "a46d9ff062987d4edca671152039196ba005eecd5b3560398c9bcc311b6d10d3",
+    "idempotency_key": "scene-publish:a46d9ff062987d4edca671152039196ba005eecd5b3560398c9bcc311b6d10d3",
+    "decision": {
+      "schema_id": "artflow-scene-adoption-decision/1",
+      "decision_id": "scene-adoption-4f5d61aacbeaede7",
+      "decision_sha256": "4f5d61aacbeaede7099b8eff0af8aae4e9f0952557766ac5703df043fed6a4e8",
+      "action": "publish",
+      "orchestrator": "codex",
+      "policy_version": "scene-disposition-policy/1",
+      "evaluation_sha256": "c4fe148353966028cd0cb738c0318daea8df670b6793879806f9d00cd6009002",
+      "plan_sha256": "b38cca403ba7ee72f3ff1b7c23c0a84604ad686e61a85a67796909d736591fd9",
+      "execution_receipt_sha256": "def90cec8a69016f0ea3167be2477a31017b713f2e02d9bc907af010dfbfd42b",
+      "content_identity_sha256": "c7a243e05e28d2163e423c4833649169b2f77f4eb9ef6fb11a877025555d9958",
+      "source_scene": "/Game/ArtFlowDemo",
+      "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+      "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+      "candidate_level_sha256": "4a94f26415c5d4c88cee9032b616c720604b4e87976d63bd18c0a7789df95052",
+      "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28",
+      "rationale": "当前自动选路候选通过内容身份、几何预算、材质碰撞和独立视觉评价；Codex 采用该精确 Unreal 候选并交给既有版本发布器。"
+    },
+    "expected_protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+    "expected_material_path": "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial",
+    "expected_instance_count": 12
+  },
+  "route_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_candidate_evaluated",
+    "scene_candidate_adopted"
+  ],
+  "route_event_count": 7,
+  "technical_pass_count": 6,
+  "technical_check_count": 6,
+  "visual_pass_count": 4,
+  "visual_claim_count": 4,
+  "repeat_evaluation_same_record": true,
+  "repeat_adoption_same_decision": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

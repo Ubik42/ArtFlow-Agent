@@ -313,6 +313,24 @@ def evaluate_current_candidate(
 
 
 def resolve_current_candidate_beauty(project_root: Path, state: AgentRunState) -> Path:
+    dcc_work = state.scene_dcc_work
+    if (
+        dcc_work is not None
+        and dcc_work.definition.route_decision is not None
+        and dcc_work.definition.route_decision.selected_route_id == "cloth_banner"
+        and dcc_work.definition.cloth_banner_unreal_preview_sha256 is not None
+    ):
+        candidate = (
+            project_root
+            / "artifacts/goal/m57-s1-cloth-banner/unreal-cloth-banner-candidate.png"
+        ).resolve()
+        if (
+            not candidate.is_file()
+            or file_sha256(candidate)
+            != dcc_work.definition.cloth_banner_unreal_preview_sha256
+        ):
+            raise ValueError("routed DCC candidate preview no longer matches current work")
+        return candidate
     intake = state.scene_candidate_intake
     if intake is None:
         raise ValueError("current candidate beauty requires persisted technical intake")

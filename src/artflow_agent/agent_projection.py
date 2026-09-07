@@ -33,6 +33,7 @@ from .negative_control import NegativeControlRecord
 from .production_memory import MemoryRecord, MemoryScorecard
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
+from .routed_dcc_evaluation import RoutedDccCandidateEvaluationRecord
 from .scene_candidate_work import SceneCandidateWorkState
 from .scene_correction_work import SceneCorrectionWorkState
 from .scene_dcc_work import SceneDccWorkState
@@ -111,6 +112,7 @@ class AgentRunProjection(BaseModel):
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_dcc_work: SceneDccWorkState | None = None
+    scene_dcc_candidate_evaluation: RoutedDccCandidateEvaluationRecord | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
@@ -146,6 +148,7 @@ class AgentStreamSnapshot(BaseModel):
     scene_session: SceneSession | None = None
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_dcc_work: SceneDccWorkState | None = None
+    scene_dcc_candidate_evaluation: RoutedDccCandidateEvaluationRecord | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
@@ -291,6 +294,7 @@ def project_agent_run(store: AgentEventStore, run_id: str) -> AgentRunProjection
         scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
         scene_candidate_work=state.scene_candidate_work,
         scene_dcc_work=state.scene_dcc_work,
+        scene_dcc_candidate_evaluation=state.scene_dcc_candidate_evaluation,
         scene_candidate_intake=state.scene_candidate_intake,
         scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
         scene_correction_work=state.scene_correction_work,
@@ -347,6 +351,7 @@ def project_stream_snapshot(store: AgentEventStore, run_id: str) -> AgentStreamE
             scene_session=(state.scene_sessions[-1] if state.scene_sessions else None),
             scene_candidate_work=state.scene_candidate_work,
             scene_dcc_work=state.scene_dcc_work,
+            scene_dcc_candidate_evaluation=state.scene_dcc_candidate_evaluation,
             scene_candidate_intake=state.scene_candidate_intake,
             scene_candidate_visual_verdict=state.scene_candidate_visual_verdict,
             scene_correction_work=state.scene_correction_work,
@@ -517,6 +522,11 @@ def _project_event(event: AgentEvent) -> AgentTimelineItem:
             "Blender DCC 工作状态已更新",
             "DCC 执行与 Unreal 回流继续写入同一事件流",
             "active",
+        ),
+        "scene_dcc_candidate_evaluated": (
+            "DCC 候选已完成评价",
+            "路线身份、交付约束与独立视觉判断已绑定到当前候选",
+            "success",
         ),
         "scene_candidate_intake_evaluated": (
             "当前候选已通过技术审查",

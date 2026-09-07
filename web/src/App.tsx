@@ -509,6 +509,26 @@ type AgentProjection = {
   scene_session: SceneSession | null;
   scene_candidate_work: SceneCandidateWorkState | null;
   scene_dcc_work: SceneDccWorkState | null;
+  scene_dcc_candidate_evaluation: null | {
+    record_id: string;
+    record_sha256: string;
+    technical_checks: Array<{
+      check_id: string;
+      domain: "image" | "material" | "asset";
+      status: "passed" | "failed";
+      reason: string;
+    }>;
+    visual_observation: {
+      observation_id: string;
+      claims: Array<{
+        dimension: string;
+        verdict: "passed" | "failed" | "uncertain";
+        confidence: number;
+        rationale: string;
+      }>;
+    };
+    domain_evaluation: CurrentCandidateDomainVerdictRecord["domain_evaluation"];
+  };
   scene_candidate_intake: CurrentCandidateEvaluationRecord | null;
   scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | null;
   scene_correction_work: SceneCorrectionWorkState | null;
@@ -1588,6 +1608,7 @@ function SceneChangeSpectrum({
 
   const work = agent.scene_candidate_work;
   const dccWork = agent.scene_dcc_work;
+  const routedEvaluation = agent.scene_dcc_candidate_evaluation;
   const intake = agent.scene_candidate_intake;
   const visualVerdict = agent.scene_candidate_visual_verdict;
   const correctionWork = agent.scene_correction_work;
@@ -1681,7 +1702,13 @@ function SceneChangeSpectrum({
             <div>
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
-                {correctionWork
+                {routedEvaluation
+                  ? currentAdoption
+                    ? "自动选路候选已由 Codex 采用，发布请求已经就绪"
+                    : routedEvaluation.domain_evaluation.status === "accepted"
+                      ? "自动选路候选已通过技术与视觉评价"
+                      : `路线候选需要修正：${routedEvaluation.domain_evaluation.failed_domains.join("、")}`
+                  : correctionWork
                   ? currentLineage
                     ? "当前版本已发布并完成 Unreal 审阅"
                   : currentAdoption
@@ -1763,7 +1790,25 @@ function SceneChangeSpectrum({
                   <Layers3 size={13} /> 派发 Blender DCC
                 </button>
               ) : null}
-              {work ? (
+              {dccWork?.status === "succeeded" ? (
+                <div className={`candidate-work-pulse state-${routedEvaluation?.domain_evaluation.status === "accepted" ? "succeeded" : routedEvaluation ? "failed" : "reconciling"}`}>
+                  <span />
+                  <b>
+                    {currentAdoption
+                      ? "Codex 已采用精确 DCC 候选"
+                      : routedEvaluation?.domain_evaluation.status === "accepted"
+                        ? "路线候选评价通过"
+                        : routedEvaluation
+                          ? "路线候选需要定向修正"
+                          : "等待 Codex 评价路线结果"}
+                  </b>
+                  <small>
+                    {routedEvaluation
+                      ? `${routedEvaluation.technical_checks.filter((check) => check.status === "passed").length}/6 硬检查 · ${routedEvaluation.visual_observation.claims.filter((claim) => claim.verdict === "passed").length}/4 视觉判断${currentAdoption ? ` · ${shortId(currentAdoption.decision.decision_sha256)}` : ""}`
+                      : `候选 ${shortId(dccWork.definition.work_sha256)} 已回流`}
+                  </small>
+                </div>
+              ) : !dccWork && work ? (
                 correctionWork ? (
                   correctionVerdict?.domain_evaluation.status === "correction_required" ? (
                     <button type="button" disabled={busy} onClick={() => void queueCorrectionWork()}>
@@ -1926,6 +1971,8 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasDamageVariant = Boolean(agent.scene_dcc_work?.definition.damage_variant_request_sha256);
   const hasClothBanner = Boolean(agent.scene_dcc_work?.definition.cloth_banner_request_sha256);
   const routeDecision = agent.scene_dcc_work?.definition.route_decision;
+  const routedEvaluation = agent.scene_dcc_candidate_evaluation;
+  const routedAdoption = routedEvaluation ? agent.scene_candidate_adoption : null;
   const routeScoreboard = routeDecision?.candidates
     .map((candidate) => `${candidate.label} ${candidate.match_score} 分`)
     .join(" · ");
@@ -1935,20 +1982,30 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       ? [{
           id: "cloth-banner-roundtrip",
           tab: "当前 Session · 自动选路",
-          title: "“材质”意图匹配到风场旗帜路线",
-          description: `Agent 对照 ${routeDecision?.candidates.length ?? 3} 条已验证路线与当前场景事实，选择最短可行链。本轮只派发 ${routeDecision?.selected_stage_capability_ids.length ?? 3} 个阶段：固定 ComfyUI 子图生成纹章与旧化输入，Blender 完成材质与 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。`,
+          title: routedAdoption ? "风场旗帜候选通过评价并由 Codex 采用" : "“材质”意图匹配到风场旗帜路线",
+          description: routedAdoption
+            ? "Agent 将路线决策、ComfyUI 与 Blender 回执、Unreal 候选关卡和独立视觉判断锁定为同一内容身份。六项交付检查与四项视觉判断通过后，Codex 采用精确候选并编译版本化发布请求。"
+            : `Agent 对照 ${routeDecision?.candidates.length ?? 3} 条已验证路线与当前场景事实，选择最短可行链。本轮只派发 ${routeDecision?.selected_stage_capability_ids.length ?? 3} 个阶段：固定 ComfyUI 子图生成纹章与旧化输入，Blender 完成材质与 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。`,
           frames: [
             { src: "/api/showcase/production/m57-banner-texture", alt: "ComfyUI 根据场景视觉目标生成的旗帜纹章与旧化纹理", label: "节点生成", title: "固定子图 · 内容身份已绑定" },
             { src: "/api/showcase/production/m57-banner-blender", alt: "Blender 风场中完成布料解算的可编辑旗帜", label: "DCC 解算", title: "26 个 Pin 顶点 · 第 48 帧" },
             { src: "/api/showcase/production/m57-banner-unreal", alt: "Unreal 派生候选中的布料旗帜资产", label: "引擎回流", title: "3,948 三角面 · 材质与碰撞就绪" },
           ],
           transition: "节点材质与场景风向编译为可交付布料资产",
-          metricA: `${routeDecision?.selected_stage_capability_ids.length ?? 3} / 21`,
-          metricALabel: "本次阶段 / 已验证能力",
-          metricB: `${routeDecision?.candidates.find((candidate) => candidate.route_id === routeDecision.selected_route_id)?.matched_terms.length ?? 1}`,
-          metricBLabel: "命中意图词",
-          note: `${routeBasis ?? `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}`}。路线评分：${routeScoreboard ?? "风场旗帜 5 分 · 破损变体 0 分 · 机关镜头 0 分"}。`,
-          domains: ["挂点·已绑定", "材质·已生成", "布料·已解算", "资产·已回流", "重放·已对账"],
+          metricA: routedEvaluation
+            ? `${routedEvaluation.technical_checks.filter((check) => check.status === "passed").length} / 6`
+            : `${routeDecision?.selected_stage_capability_ids.length ?? 3} / 21`,
+          metricALabel: routedEvaluation ? "交付硬检查" : "本次阶段 / 已验证能力",
+          metricB: routedEvaluation
+            ? `${routedEvaluation.visual_observation.claims.filter((claim) => claim.verdict === "passed").length} / 4`
+            : `${routeDecision?.candidates.find((candidate) => candidate.route_id === routeDecision.selected_route_id)?.matched_terms.length ?? 1}`,
+          metricBLabel: routedEvaluation ? "视觉判断" : "命中意图词",
+          note: routedAdoption
+            ? `评价 ${shortId(routedEvaluation?.record_sha256 ?? "")} 已锁定候选内容；Codex 采用决定 ${shortId(routedAdoption.decision.decision_sha256)} 指向 ${routedAdoption.decision.published_scene}。`
+            : `${routeBasis ?? `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}`}。路线评分：${routeScoreboard ?? "风场旗帜 5 分 · 破损变体 0 分 · 机关镜头 0 分"}。`,
+          domains: routedEvaluation
+            ? ["选路·材质命中", "硬检查·6/6", "视觉·4/4", "Codex·已采用", "发布·已编译"]
+            : ["挂点·已绑定", "材质·已生成", "布料·已解算", "资产·已回流", "重放·已对账"],
         }]
       : hasDamageVariant
       ? [{

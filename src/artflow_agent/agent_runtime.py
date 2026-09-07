@@ -39,6 +39,7 @@ from .production_memory import (
 )
 from .provenance import VerifiedDeliveryRecord
 from .recovery_contracts import RecoveryScorecard
+from .routed_dcc_evaluation import RoutedDccCandidateEvaluationRecord
 from .scene_candidate_work import (
     SceneCandidateWorkDefinition,
     SceneCandidateWorkProgressRequest,
@@ -113,6 +114,7 @@ AgentEventType = Literal[
     "scene_dcc_work_queued",
     "scene_dcc_work_claimed",
     "scene_dcc_work_progressed",
+    "scene_dcc_candidate_evaluated",
     "scene_candidate_intake_evaluated",
     "scene_candidate_visual_evaluated",
     "scene_correction_work_queued",
@@ -254,6 +256,7 @@ class AgentRunState(BaseModel):
     scene_sessions: list[SceneSession] = Field(default_factory=list)
     scene_candidate_work: SceneCandidateWorkState | None = None
     scene_dcc_work: SceneDccWorkState | None = None
+    scene_dcc_candidate_evaluation: RoutedDccCandidateEvaluationRecord | None = None
     scene_candidate_intake: CurrentCandidateEvaluationRecord | None = None
     scene_candidate_visual_verdict: CurrentCandidateDomainVerdictRecord | None = None
     scene_correction_work: SceneCorrectionWorkState | None = None
@@ -460,6 +463,10 @@ class _SceneDccWorkClaimed(BaseModel):
 
 class _SceneDccWorkProgressed(BaseModel):
     progress: SceneDccWorkProgressRequest
+
+
+class _SceneDccCandidateEvaluated(BaseModel):
+    record: RoutedDccCandidateEvaluationRecord
 
 
 class _SceneCandidateEvaluated(BaseModel):
@@ -814,6 +821,21 @@ class AgentEventStore:
             "scene_candidate_adopted",
             _SceneCandidateAdopted(record=record).model_dump(mode="json"),
             idempotency_key=f"scene_candidate_adopted:{action_id}",
+        )
+        return self.load(run_id)
+
+    def record_scene_dcc_candidate_evaluation(
+        self,
+        run_id: str,
+        record: RoutedDccCandidateEvaluationRecord,
+        *,
+        action_id: str,
+    ) -> AgentRunState:
+        self._append(
+            run_id,
+            "scene_dcc_candidate_evaluated",
+            _SceneDccCandidateEvaluated(record=record).model_dump(mode="json"),
+            idempotency_key=f"scene_dcc_candidate_evaluated:{action_id}",
         )
         return self.load(run_id)
 
@@ -1786,6 +1808,7 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             state.scene_sessions.append(session)
             state.scene_candidate_work = None
             state.scene_dcc_work = None
+            state.scene_dcc_candidate_evaluation = None
             state.scene_candidate_intake = None
             state.scene_candidate_visual_verdict = None
             state.scene_correction_work = None
@@ -1837,6 +1860,16 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             ):
                 raise AgentRuntimeError("DCC work is stale or references another Session")
             state.scene_dcc_work = SceneDccWorkState(definition=definition)
+            state.scene_dcc_candidate_evaluation = None
+            state.scene_candidate_intake = None
+            state.scene_candidate_visual_verdict = None
+            state.scene_correction_work = None
+            state.scene_correction_intake = None
+            state.scene_correction_visual_verdict = None
+            state.scene_candidate_evaluation = None
+            state.scene_candidate_adoption = None
+            state.scene_variant_publication = None
+            state.scene_variant_review = None
         elif event.event_type == "scene_dcc_work_claimed":
             work = state.scene_dcc_work
             if work is None or work.status != "queued":
@@ -2045,19 +2078,49 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
             except ValueError as exc:
                 raise AgentRuntimeError(str(exc)) from exc
             state.scene_candidate_evaluation = record
+        elif event.event_type == "scene_dcc_candidate_evaluated":
+            work = state.scene_dcc_work
+            if work is None or work.status != "succeeded" or work.outcome_sha256 is None:
+                raise AgentRuntimeError("routed DCC evaluation requires succeeded DCC work")
+            if state.scene_dcc_candidate_evaluation is not None:
+                raise AgentRuntimeError("routed DCC candidate evaluation is already persisted")
+            record = _SceneDccCandidateEvaluated.model_validate(event.data).record
+            decision = work.definition.route_decision
+            if (
+                decision is None
+                or record.evaluation_input.run_id != state.run_id
+                or record.evaluation_input.session_sha256 != decision.session_sha256
+                or record.evaluation_input.scene_package_sha256
+                != decision.scene_package_sha256
+                or record.evaluation_input.route_decision_sha256
+                != decision.decision_sha256
+                or record.evaluation_input.work_sha256 != work.definition.work_sha256
+                or record.evaluation_input.outcome_sha256 != work.outcome_sha256
+            ):
+                raise AgentRuntimeError("routed DCC evaluation references another work item")
+            state.scene_dcc_candidate_evaluation = record
         elif event.event_type == "scene_candidate_adopted":
             evaluation = state.scene_candidate_evaluation
-            if evaluation is None:
+            routed_evaluation = state.scene_dcc_candidate_evaluation
+            if evaluation is None and routed_evaluation is None:
                 raise AgentRuntimeError("scene candidate adoption requires persisted evaluation")
             if state.scene_candidate_adoption is not None:
                 raise AgentRuntimeError("scene candidate adoption is already persisted")
             record = _SceneCandidateAdopted.model_validate(event.data).record
             decision = record.decision
-            corrected = evaluation.corrected_evaluation
-            corrected_plan = evaluation.corrected_plan
+            corrected = (
+                evaluation.corrected_evaluation
+                if evaluation is not None
+                else routed_evaluation.domain_evaluation
+            )
+            corrected_plan_sha256 = (
+                evaluation.corrected_plan.plan_sha256
+                if evaluation is not None
+                else routed_evaluation.evaluation_input.route_decision_sha256
+            )
             if (
                 decision.evaluation_sha256 != corrected.evaluation_sha256
-                or decision.plan_sha256 != corrected_plan.plan_sha256
+                or decision.plan_sha256 != corrected_plan_sha256
                 or decision.candidate_scene != corrected.candidate_scene
             ):
                 raise AgentRuntimeError("scene adoption references another evaluated candidate")

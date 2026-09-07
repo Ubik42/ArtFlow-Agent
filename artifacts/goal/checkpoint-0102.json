@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M60-S1",
+  "status": "completed",
+  "outcome": "The exact cloth-banner candidate selected by the current Scene Session now owns a typed evaluation record bound to the route decision, DCC work, three host receipts, Unreal candidate bytes and preview. Six delivery checks and four Codex visual claims pass, decision scene-adoption-4f5d61aacbeaede7 adopts only that candidate, and the existing publisher compiles its content-addressed destination. Repeated evaluation and adoption preserve identity, reducer replay is equivalent and duplicate external side effects remain zero.",
+  "evidence": [
+    "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-receipt.json",
+    "artifacts/goal/m60-s1-routed-dcc-adoption/codex-visual-observation.json",
+    "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-desktop.png",
+    "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-narrow.png",
+    "docs/evidence/M60_S1_ROUTED_DCC_ADOPTION_2026-09-07.md"
+  ]
+}
