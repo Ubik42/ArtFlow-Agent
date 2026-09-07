@@ -40,6 +40,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.lookdev.scene_target.v1",
         "blender.surface.uv_bake.v1",
         "blender.rigidbody.rubble_settle.v1",
+        "blender.surface.inlay_projection_bake.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -50,7 +51,10 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["set_dressing_request_sha256"] == (
         "c496854357decac61a42c1339e9d8fc3e281846a4e4ba5edfd0fdd0be99061b7"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Dressing_B_c496854357de")
+    assert work["definition"]["surface_detail_request_sha256"] == (
+        "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Detail_B_57113c2ebabd")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

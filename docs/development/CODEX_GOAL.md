@@ -98,9 +98,18 @@ Unreal 当前场景
 - **M29 · Live set-dressing dispatch（已完成）**：把刚体布景登记为 Scene Session 的第七项 DCC
   能力，复用已有 Worker 与事件账本，并在场景变更谱展示 Surface 输入、物理解算、变换清单和
   Unreal 布景候选之间的连续关系。
-- **M30 · Scene-conditioned surface detail projection（进行中）**：把 ComfyUI 的节点式生成用于
+- **M30 · Scene-conditioned surface detail projection（已完成）**：把 ComfyUI 的节点式生成用于
   引擎表面细节，而不止用于概念图。Agent 从当前 Unreal 机位、对象身份和有界区域选择登记的
-  ComfyUI 子图生成贴花/表面细节，Blender 负责投射与烘焙，Unreal 接收可编辑材质候选。
+  ComfyUI 子图生成贴花/表面细节，Blender 负责投射、UV、材质与烘焙，Unreal 接收可编辑材质
+  候选。当前真实链路生成一次后持续复用同一内容身份，重复 Unreal 回流没有创建或更新 Actor，
+  源关卡保持不变。
+- **M31 · Live surface-detail dispatch（已完成）**：把 M30 的请求、ComfyUI 回执、Blender 编辑源、
+  烘焙结果和 Unreal 候选登记为当前 Session 的第八项 DCC 能力，接入现有 queue / claim /
+  execute / reconcile 生命周期与场景变更谱，不增加调度器或确认门禁。
+- **M32 · Cross-host procedural scene assembly（进行中）**：继续把 Blender 作为完整 DCC 执行面，
+  组合 Geometry Nodes、材质与 UV、模拟、LOD/碰撞、格式转换和渲染预演；ComfyUI 提供登记的
+  ControlNet/LoRA/材质/深度节点子图；Unreal 负责 Scene Digital Twin、PCG、灯光、候选关卡和
+  最终采用。优先完成一个“视觉方向 → 模块/材质 → PCG 布局 → 同机位回渲”的短闭环。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

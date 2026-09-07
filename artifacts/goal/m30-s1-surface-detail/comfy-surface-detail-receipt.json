@@ -1,0 +1,50 @@
+{
+  "schema_id": "artflow-comfy-surface-detail-receipt/1",
+  "request_id": "surface-detail-57113c2ebabd9954",
+  "request_sha256": "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d",
+  "capability_id": "comfy.surface_detail.reference_flux2_klein.v1",
+  "status": "succeeded",
+  "comfyui_version": "0.28.0",
+  "device": "cuda:0 NVIDIA GeForce RTX 4080 : cudaMallocAsync",
+  "observed_node_count": 826,
+  "production_nodes": [
+    "GenerationReceipt",
+    "ProductionConstraintCheck",
+    "WorkflowContractCheck"
+  ],
+  "recipe_id": "surface-detail-reference-v1",
+  "recipe_version": "1.0.0",
+  "workflow_sha256": "cdec3a64abeb8dc327afad14106ad6990aed9a5e6f610814b860581a684575dc",
+  "provider_request_id": "9493f0ba-5c31-4d5d-aebd-9915eec8c447",
+  "image_variance": 2170.413,
+  "selected_detail_region": {
+    "x": 149,
+    "y": 122,
+    "width": 150,
+    "height": 311
+  },
+  "selected_pixel_coverage": 0.214446,
+  "artifacts": [
+    {
+      "kind": "reference_crop",
+      "relative_path": "AF_Inlay_SceneReference.png",
+      "sha256": "ea1bf7d92104e06889fb4f9e570a103fb9b3fc0aad14e2201e965ea52024947d",
+      "size_bytes": 203218
+    },
+    {
+      "kind": "generated_detail",
+      "relative_path": "AF_Inlay_GeneratedDetail.png",
+      "sha256": "71e20d6a5970d386b9de84ab175d9990a0b0ee268b5f8317c877f9c12fa3bc32",
+      "size_bytes": 348469
+    },
+    {
+      "kind": "projection_texture",
+      "relative_path": "AF_Inlay_ProjectionTexture.png",
+      "sha256": "b320aadea2b749fdf5f830a656b1879709f8cc9028659f44536b9dab189f6578",
+      "size_bytes": 367312
+    }
+  ],
+  "elapsed_seconds": 286.892,
+  "completed_at": "2026-09-07T11:17:47.818312Z",
+  "receipt_sha256": "3b02444571c3d3b525bef1b2df0fdaede89d9ca0e035a24b4e1c2574db220fc2"
+}

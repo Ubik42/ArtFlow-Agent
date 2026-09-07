@@ -1,0 +1,17 @@
+{
+  "slice_id": "M31-S1",
+  "status": "passed",
+  "capability_count": 8,
+  "work_sha256": "f2acdb38965b239ec2efff567c4945d356fc31e600a301059b1de94718eb3c04",
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true,
+  "frontend_build": "passed",
+  "desktop_viewport": "1600x1000",
+  "narrow_viewport": "980x1000",
+  "narrow_horizontal_overflow_px": 0,
+  "failed_images": 0,
+  "console_errors": 0,
+  "console_warnings": 0
+}

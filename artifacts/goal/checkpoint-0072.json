@@ -1,0 +1,16 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M30-S1",
+  "status": "completed",
+  "outcome": "A current Unreal scene region now drives one registered ComfyUI graph, a Blender projection, UV and bake capability, and a content-addressed Unreal material candidate. The real provider output was generated once; subsequent Blender and Unreal executions reconciled identities without source-level mutation or duplicate Actors.",
+  "evidence": [
+    "artifacts/goal/m30-s1-surface-detail/comfy-surface-detail-receipt.json",
+    "artifacts/goal/m30-s1-surface-detail/blender-surface-detail-receipt.json",
+    "artifacts/goal/m30-s1-surface-detail/unreal-surface-detail-return-receipt.json",
+    "artifacts/goal/m30-s1-surface-detail/AF_Inlay_GeneratedDetail.png",
+    "artifacts/goal/m30-s1-surface-detail/AF_Inlay_ProjectedDetail-preview.png",
+    "artifacts/goal/m30-s1-surface-detail/verification.json",
+    "docs/evidence/M30_S1_SCENE_CONDITIONED_SURFACE_DETAIL_2026-09-07.md"
+  ]
+}

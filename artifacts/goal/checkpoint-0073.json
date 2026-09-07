@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M31-S1",
+  "status": "completed",
+  "outcome": "The scene-conditioned ComfyUI-to-Blender-to-Unreal route is now the eighth current-session DCC capability. The existing append-only worker binds and replays all four identities, while the Chinese Scene Change Spectrum presents the real four-stage route at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m31-s1-live-surface-detail/live-surface-detail-work-receipt.json",
+    "artifacts/goal/m31-s1-live-surface-detail/live-surface-detail-desktop.png",
+    "artifacts/goal/m31-s1-live-surface-detail/live-surface-detail-narrow.png",
+    "artifacts/goal/m31-s1-live-surface-detail/verification.json",
+    "docs/evidence/M31_S1_LIVE_SURFACE_DETAIL_2026-09-07.md"
+  ]
+}

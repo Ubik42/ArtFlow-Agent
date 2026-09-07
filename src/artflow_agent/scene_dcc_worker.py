@@ -13,6 +13,12 @@ from .blender_set_dressing import (
 from .blender_surface import BlenderSurfaceRequest
 from .lookdev_handoff import SceneLookdevRequest
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
+from .surface_detail import (
+    BlenderSurfaceDetailReceipt,
+    ComfySurfaceDetailReceipt,
+    SurfaceDetailRequest,
+    verify_surface_detail_artifacts,
+)
 
 WORKER_ID = "artflow-local-blender-worker-v1"
 
@@ -61,6 +67,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "lookdev": project_root / "artifacts/goal/m24-s2-scene-lookdev",
         "surface": project_root / "artifacts/goal/m26-s1-surface-bake",
         "dressing": project_root / "artifacts/goal/m28-s1-set-dressing",
+        "detail": project_root / "artifacts/goal/m30-s1-surface-detail",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -195,7 +202,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["dressing"] / "unreal-set-dressing-return-receipt.json",
             expected_sha256=str(work.unreal_set_dressing_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.surface_detail_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal set-dressing candidate changed")
         surface_return = json.loads(
             (roots["surface"] / "unreal-surface-return-receipt.json").read_text(encoding="utf-8")
@@ -207,6 +217,46 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["dressing"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal set-dressing screenshot identity changed")
+
+    if work.surface_detail_request_sha256 is not None:
+        request = SurfaceDetailRequest.model_validate_json(
+            (roots["detail"] / "surface-detail-request.json").read_text(encoding="utf-8")
+        )
+        comfy_receipt = ComfySurfaceDetailReceipt.model_validate_json(
+            (roots["detail"] / "comfy-surface-detail-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        blender_receipt = BlenderSurfaceDetailReceipt.model_validate_json(
+            (roots["detail"] / "blender-surface-detail-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if request.request_sha256 != work.surface_detail_request_sha256:
+            raise ValueError("registered surface-detail request changed")
+        if comfy_receipt.receipt_sha256 != work.comfy_surface_detail_receipt_sha256:
+            raise ValueError("registered Comfy surface-detail receipt changed")
+        if blender_receipt.receipt_sha256 != work.blender_surface_detail_receipt_sha256:
+            raise ValueError("registered Blender surface-detail receipt changed")
+        verify_surface_detail_artifacts(request, comfy_receipt, blender_receipt, roots["detail"])
+        unreal_receipt = _load_receipt(
+            roots["detail"] / "unreal-surface-detail-return-receipt.json",
+            expected_sha256=str(work.unreal_surface_detail_return_receipt_sha256),
+        )
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal surface-detail candidate changed")
+        dressing_return = json.loads(
+            (roots["dressing"] / "unreal-set-dressing-return-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != dressing_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("surface-detail candidate no longer derives from set dressing")
+        screenshot = roots["detail"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal surface-detail screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
@@ -253,7 +303,7 @@ class SceneDccWorker:
                     run_id,
                     work.definition,
                     "succeeded",
-                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface 与物理布景已回流",
+                    "建模、PBR、Geometry Nodes、镜头灯光、Lookdev、Surface、物理布景与表面细节已回流",
                     outcome_sha256=outcome,
                 )
         except (OSError, TypeError, ValueError) as exc:

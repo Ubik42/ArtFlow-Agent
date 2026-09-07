@@ -74,6 +74,20 @@ Unreal 布景候选，重复派发恢复同一个内容寻址工作项，不会�
 
 ![当前 Session 的物理布景生产路线](artifacts/goal/m29-s1-live-dressing/live-dressing-route.png)
 
+第八条生产路线让 ComfyUI 的节点图直接服务于三维表面制作。Agent 从当前 Unreal 机位裁取
+`AF_Inlay` 区域，向登记的 FLUX.2 Klein ReferenceLatent 图填入有限参数，并从一次真实输出中
+选择青铜绿日轮细节。Blender 将纹理转换为带厚度、带 UV 的可编辑嵌件，完成材质装配与 Bake；
+Unreal 再把网格、纹理和项目自有材质写入隔离候选。重复回流创建与更新对象均为 0，源关卡未改变。
+
+| ComfyUI 场景条件生成 | Blender 三维嵌件与烘焙 |
+| --- | --- |
+| ![ComfyUI 根据 Unreal 场景生成表面方向](artifacts/goal/m30-s1-surface-detail/AF_Inlay_GeneratedDetail.png) | ![Blender 将二维细节转换为可编辑三维嵌件](artifacts/goal/m30-s1-surface-detail/AF_Inlay_ProjectedDetail-preview.png) |
+
+这条路线已登记为当前 Scene Session 的第八项 DCC 能力。场景变更谱直接呈现 Unreal 取样、
+ComfyUI 生成、Blender 转化和引擎回流，并沿用同一条可恢复事件链。
+
+![当前 Session 的表面细节生产路线](artifacts/goal/m31-s1-live-surface-detail/live-surface-detail-desktop.png)
+
 ## 项目定位
 
 游戏美术团队已经能够使用 ComfyUI、图像模型和各类生成服务快速产出概念方案，但把生成结果真正带入 Unreal 生产管线仍有明显断层：

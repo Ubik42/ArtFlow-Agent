@@ -1,0 +1,34 @@
+{
+  "schema_id": "artflow-live-surface-detail-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-f2acdb38965b",
+  "work_sha256": "f2acdb38965b239ec2efff567c4945d356fc31e600a301059b1de94718eb3c04",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1"
+  ],
+  "surface_detail_request_sha256": "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d",
+  "comfy_surface_detail_receipt_sha256": "3b02444571c3d3b525bef1b2df0fdaede89d9ca0e035a24b4e1c2574db220fc2",
+  "blender_surface_detail_receipt_sha256": "ad7178a3e353b3939afe270c70a05909323203ffc86998ad48b424f543c97d8b",
+  "outcome_sha256": "3645aa293abe353315a585a8c5ee778a4b78a3e862c449a720fc47863ddfe5b2",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Detail_B_57113c2ebabd",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

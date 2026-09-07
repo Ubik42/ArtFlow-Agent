@@ -10,6 +10,11 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
+from .surface_detail import (
+    BlenderSurfaceDetailReceipt,
+    ComfySurfaceDetailReceipt,
+    SurfaceDetailRequest,
+)
 
 SceneDccWorkStatus = Literal["queued", "claimed", "executing", "reconciling", "succeeded", "failed"]
 SceneDccProgressStatus = Literal["executing", "reconciling", "succeeded", "failed"]
@@ -33,8 +38,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.lookdev.scene_target.v1",
             "blender.surface.uv_bake.v1",
             "blender.rigidbody.rubble_settle.v1",
+            "blender.surface.inlay_projection_bake.v1",
         ]
-    ] = Field(min_length=2, max_length=7)
+    ] = Field(min_length=2, max_length=8)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -61,9 +67,19 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_set_dressing_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    surface_detail_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    comfy_surface_detail_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    blender_surface_detail_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_surface_detail_return_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -127,6 +143,18 @@ class SceneDccWorkDefinition(BaseModel):
             if self.surface_receipt_sha256 is None:
                 raise ValueError("set dressing requires the baked surface")
             expected_capabilities.append("blender.rigidbody.rubble_settle.v1")
+        detail_identities = (
+            self.surface_detail_request_sha256,
+            self.comfy_surface_detail_receipt_sha256,
+            self.blender_surface_detail_receipt_sha256,
+            self.unreal_surface_detail_return_receipt_sha256,
+        )
+        if any(item is not None for item in detail_identities):
+            if not all(item is not None for item in detail_identities):
+                raise ValueError("DCC work requires every surface-detail identity")
+            if self.set_dressing_receipt_sha256 is None:
+                raise ValueError("surface detail requires the registered set dressing")
+            expected_capabilities.append("blender.surface.inlay_projection_bake.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -389,6 +417,53 @@ def compile_current_blender_dcc_work(
         payload["unreal_set_dressing_return_receipt_sha256"] = dressing_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = dressing_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = dressing_unreal["candidate_scene_path"]
+    detail_root = project_root / "artifacts/goal/m30-s1-surface-detail"
+    detail_request_path = detail_root / "surface-detail-request.json"
+    comfy_detail_path = detail_root / "comfy-surface-detail-receipt.json"
+    blender_detail_path = detail_root / "blender-surface-detail-receipt.json"
+    unreal_detail_path = detail_root / "unreal-surface-detail-return-receipt.json"
+    if all(
+        path.is_file()
+        for path in (
+            detail_request_path,
+            comfy_detail_path,
+            blender_detail_path,
+            unreal_detail_path,
+        )
+    ):
+        detail_request = SurfaceDetailRequest.model_validate_json(
+            detail_request_path.read_text(encoding="utf-8")
+        )
+        comfy_detail = ComfySurfaceDetailReceipt.model_validate_json(
+            comfy_detail_path.read_text(encoding="utf-8")
+        )
+        blender_detail = BlenderSurfaceDetailReceipt.model_validate_json(
+            blender_detail_path.read_text(encoding="utf-8")
+        )
+        unreal_detail = json.loads(unreal_detail_path.read_text(encoding="utf-8"))
+        if detail_request.session_id != session_id:
+            raise ValueError("surface detail references another Scene Session")
+        if comfy_detail.request_sha256 != detail_request.request_sha256:
+            raise ValueError("Comfy surface-detail receipt references another request")
+        if blender_detail.request_sha256 != detail_request.request_sha256:
+            raise ValueError("Blender surface-detail receipt references another request")
+        if blender_detail.comfy_receipt_sha256 != comfy_detail.receipt_sha256:
+            raise ValueError("Blender surface detail references another Comfy receipt")
+        if unreal_detail.get("blender_receipt_sha256") != blender_detail.receipt_sha256:
+            raise ValueError("Unreal surface detail references another Blender receipt")
+        if unreal_detail.get("source_candidate_scene_path") != dressing_unreal.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("surface-detail candidate no longer derives from set dressing")
+        if unreal_detail.get("capture_status") != "completed":
+            raise ValueError("Unreal surface-detail return capture is not complete")
+        payload["capability_ids"].append("blender.surface.inlay_projection_bake.v1")
+        payload["surface_detail_request_sha256"] = detail_request.request_sha256
+        payload["comfy_surface_detail_receipt_sha256"] = comfy_detail.receipt_sha256
+        payload["blender_surface_detail_receipt_sha256"] = blender_detail.receipt_sha256
+        payload["unreal_surface_detail_return_receipt_sha256"] = unreal_detail["receipt_sha256"]
+        payload["unreal_return_receipt_sha256"] = unreal_detail["receipt_sha256"]
+        payload["candidate_scene_path"] = unreal_detail["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

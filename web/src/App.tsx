@@ -622,6 +622,10 @@ type SceneDccWorkState = {
     set_dressing_receipt_sha256?: string;
     set_dressing_manifest_sha256?: string;
     unreal_set_dressing_return_receipt_sha256?: string;
+    surface_detail_request_sha256?: string;
+    comfy_surface_detail_receipt_sha256?: string;
+    blender_surface_detail_receipt_sha256?: string;
+    unreal_surface_detail_return_receipt_sha256?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1635,7 +1639,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.set_dressing_request_sha256
+                  {dccWork.definition.surface_detail_request_sha256
+                    ? "Unreal 取样 → ComfyUI → Blender 投射 / Bake → Unreal"
+                    : dccWork.definition.set_dressing_request_sha256
                     ? "Surface → Blender 物理解算 → Unreal 布景"
                     : dccWork.definition.surface_request_sha256
                     ? "Lookdev → Blender UV / Bake → Unreal"
@@ -1808,8 +1814,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSceneLookdev = Boolean(agent.scene_dcc_work?.definition.lookdev_request_sha256);
   const hasSurfaceBake = Boolean(agent.scene_dcc_work?.definition.surface_request_sha256);
   const hasSetDressing = Boolean(agent.scene_dcc_work?.definition.set_dressing_request_sha256);
+  const hasSurfaceDetail = Boolean(agent.scene_dcc_work?.definition.surface_detail_request_sha256);
   const cases = [
-    ...(hasSetDressing
+    ...(hasSurfaceDetail
+      ? [{
+          id: "scene-surface-detail",
+          tab: "当前 Session · 表面细节",
+          title: "从引擎局部意图，生成可回流的三维材质嵌件",
+          description: "Agent 绑定当前机位、对象与有限区域，编译已登记的 ComfyUI 图。选定细节随后进入 Blender 投射、UV 与 Bake，最终由 Unreal return tool 装配为候选专属网格、纹理和引擎材质。",
+          frames: [
+            { src: "/api/showcase/production/m30-detail-source", alt: "从 Unreal 当前候选裁取的嵌件区域", label: "场景取样", title: "当前机位 · AF_Inlay" },
+            { src: "/api/showcase/production/m30-detail-generated", alt: "ComfyUI 根据场景生成的青铜绿日轮嵌件", label: "节点生成", title: "FLUX.2 Klein · 一次生成" },
+            { src: "/api/showcase/production/m30-detail-blender", alt: "Blender 中投射并烘焙后的三维嵌件", label: "DCC 转化", title: "8 顶点 · 12 三角形 · 可编辑" },
+            { src: "/api/showcase/production/m30-detail-unreal", alt: "Unreal 中接收表面细节资产的隔离候选", label: "引擎回流", title: "网格 + 纹理 + 项目材质" },
+          ],
+          transition: "类型化制品链",
+          metricA: "21.44%",
+          metricALabel: "生成图选区覆盖",
+          metricB: "0",
+          metricBLabel: "重复回流对象变更",
+          note: `Surface Detail ${shortId(agent.scene_dcc_work?.definition.surface_detail_request_sha256 ?? "")} 绑定同一 Session；ComfyUI 输出只生成一次，Blender 与 Unreal 后续均按内容身份对账。`,
+          domains: ["场景·已绑定", "节点图·已执行", "DCC·已烘焙", "材质·已装配", "UE·已对账"],
+        }]
+      : hasSetDressing
       ? [{
           id: "physics-set-dressing",
           tab: "当前 Session · 物理布景",
@@ -1957,14 +1984,16 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasSetDressing && caseId !== "physics-set-dressing") {
+    if (hasSurfaceDetail && caseId !== "scene-surface-detail") {
+      setCaseId("scene-surface-detail");
+    } else if (hasSetDressing && caseId !== "physics-set-dressing") {
       setCaseId("physics-set-dressing");
     } else if (hasSurfaceBake && caseId !== "surface-bake-roundtrip") {
       setCaseId("surface-bake-roundtrip");
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasSceneLookdev, hasSetDressing, hasSurfaceBake]);
+  }, [caseId, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

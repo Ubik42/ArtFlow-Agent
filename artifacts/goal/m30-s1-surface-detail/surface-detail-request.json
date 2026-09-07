@@ -1,0 +1,31 @@
+{
+  "schema_id": "artflow-surface-detail-request/1",
+  "request_id": "surface-detail-57113c2ebabd9954",
+  "request_sha256": "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d",
+  "session_id": "scene-session-dc31f6ed0f4e",
+  "session_sha256": "dc31f6ed0f4e38a179db7854f36aac7ee060bdcbf7218cd0784cb8ea372d192b",
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Dressing_B_c496854357de",
+  "source_render_sha256": "1f0751d3d4d8dc7575627a8f6b0b50f7d08b6853a0b681c6f5b627373d6b3183",
+  "source_render_region": {
+    "x": 500,
+    "y": 56,
+    "width": 320,
+    "height": 320
+  },
+  "surface_request_sha256": "9cbf7f1f20ab5f0844b1af56f1383245a57ec278783f43fcdac748d88df7bf55",
+  "surface_receipt_sha256": "15da49c17f068876d28681a69ca8688711cd317de444004b55714e69dfd6aa27",
+  "source_blend_sha256": "1640c9ecfe7c35574f43ee0fe0e72271533e427639509796a91139ddadf51db1",
+  "target_object": "AF_Inlay",
+  "comfy_capability_id": "comfy.surface_detail.reference_flux2_klein.v1",
+  "comfy_recipe_id": "surface-detail-reference-v1",
+  "blender_capability_id": "blender.surface.inlay_projection_bake.v1",
+  "prompt": "orthographic square ancient bronze-and-stone shrine inlay surface filling the frame, carved concentric sun glyph with restrained turquoise oxidation, physically plausible game material detail, frontal flat albedo, preserve the source warm stone palette",
+  "negative_prompt": "scene, camera, perspective, horizon, characters, text, logo, watermark, frame, cast shadow",
+  "seed": 300907,
+  "denoise": 0.82,
+  "resolution": 512,
+  "projection_scale": 0.86,
+  "projection_offset_m": 0.003,
+  "output_stem": "AF_Inlay_ProjectedDetail"
+}

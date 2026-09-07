@@ -1,0 +1,31 @@
+{
+  "slice_id": "M30-S1",
+  "status": "passed",
+  "request_sha256": "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d",
+  "comfy": {
+    "version": "0.28.0",
+    "device": "NVIDIA GeForce RTX 4080",
+    "workflow_sha256": "cdec3a64abeb8dc327afad14106ad6990aed9a5e6f610814b860581a684575dc",
+    "provider_request_id": "9493f0ba-5c31-4d5d-aebd-9915eec8c447",
+    "generated_once": true,
+    "selected_pixel_coverage": 0.214446
+  },
+  "blender": {
+    "version": "5.2.0 LTS",
+    "capability_id": "blender.surface.inlay_projection_bake.v1",
+    "editable_blend": true,
+    "vertex_count": 8,
+    "triangle_count": 12,
+    "uv_loop_count": 24,
+    "receipt_sha256": "ad7178a3e353b3939afe270c70a05909323203ffc86998ad48b424f543c97d8b"
+  },
+  "unreal": {
+    "version": "5.8.1-56057345+++UE5+Release-5.8",
+    "status": "reconciled",
+    "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Detail_B_57113c2ebabd",
+    "repeat_created_actor_count": 0,
+    "repeat_updated_actor_count": 0,
+    "source_level_unchanged": true,
+    "projected_component_visible": true
+  }
+}

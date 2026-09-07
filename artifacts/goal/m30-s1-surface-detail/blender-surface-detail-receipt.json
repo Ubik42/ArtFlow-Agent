@@ -1,0 +1,46 @@
+{
+  "schema_id": "artflow-blender-surface-detail-receipt/1",
+  "request_id": "surface-detail-57113c2ebabd9954",
+  "request_sha256": "57113c2ebabd9954a7f879f57e56ee0054b5487ae4347c127e10196f9fad5e1d",
+  "comfy_receipt_sha256": "3b02444571c3d3b525bef1b2df0fdaede89d9ca0e035a24b4e1c2574db220fc2",
+  "capability_id": "blender.surface.inlay_projection_bake.v1",
+  "status": "succeeded",
+  "blender_version": "5.2.0 LTS",
+  "target_object": "AF_Inlay",
+  "decal_object": "AF_Inlay_ProjectedDetail",
+  "vertex_count": 8,
+  "triangle_count": 12,
+  "uv_loop_count": 24,
+  "material_slots": [
+    "M_AF_ProjectedInlay"
+  ],
+  "artifacts": [
+    {
+      "kind": "blend",
+      "relative_path": "AF_Inlay_ProjectedDetail.blend",
+      "sha256": "17e0533b650060c94f9ca78bcecafdece46363128a032cdc19b7a4c8a5d0a963",
+      "size_bytes": 1770042
+    },
+    {
+      "kind": "glb",
+      "relative_path": "AF_Inlay_ProjectedDetail.glb",
+      "sha256": "2d517385a9bb6c466dcf759d5bb5d6d4a9f14ba479c2cd752b186f8d9f089a70",
+      "size_bytes": 546608
+    },
+    {
+      "kind": "preview",
+      "relative_path": "AF_Inlay_ProjectedDetail-preview.png",
+      "sha256": "46fde558629ee915c4bc929ff40d2e7cd9c7acc7c1019ddc1d14662c330f6321",
+      "size_bytes": 733382
+    },
+    {
+      "kind": "baked_texture",
+      "relative_path": "AF_Inlay_ProjectedDetail_BaseColor.png",
+      "sha256": "8c57f10c51e378248436b439cef9ddca69acfc92e32a165c66bf8b58da9458a7",
+      "size_bytes": 176723
+    }
+  ],
+  "elapsed_seconds": 1.509,
+  "completed_at": "2026-09-07T11:52:43.937998Z",
+  "receipt_sha256": "ad7178a3e353b3939afe270c70a05909323203ffc86998ad48b424f543c97d8b"
+}
