@@ -42,6 +42,7 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
         "blender.rigidbody.rubble_settle.v1",
         "blender.surface.inlay_projection_bake.v1",
         "blender.geometry_nodes.modular_wayfinder_kit.v1",
+        "unreal.pcg.native_density_kit.v1",
     ]
     assert work["definition"]["accepted_visual_target_sha256"] == (
         "0f65a7a7bb0f1bdd0bdf9ab41e2b9e3367d0c6a15be364a5b3b9e8ccc9ff41cb"
@@ -58,7 +59,13 @@ def test_blender_dcc_work_uses_current_session_event_lifecycle(tmp_path: Path) -
     assert work["definition"]["procedural_kit_request_sha256"] == (
         "084ec73721a5efa5d87d15209bfbd7062804023b491a4fd4ca3fd7f85993f65a"
     )
-    assert work["definition"]["candidate_scene_path"].endswith("Kit_B_084ec73721a5")
+    assert work["definition"]["pcg_density_request_sha256"] == (
+        "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5"
+    )
+    assert work["definition"]["pcg_density_spatial_manifest_sha256"] == (
+        "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb"
+    )
+    assert work["definition"]["candidate_scene_path"].endswith("Density_B_1a637a8d89b8")
 
     assert client.post(f"{base}/start").status_code == 202
     finished = None

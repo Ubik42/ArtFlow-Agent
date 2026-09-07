@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "codex-goal-checkpoint@1.0.0",
+  "goalId": "artflow-agent",
+  "sliceId": "M35-S1",
+  "status": "completed",
+  "outcome": "The scene-conditioned native PCG density route is now the tenth current-session production capability. Exact ComfyUI, spatial, Blender-kit, native-graph and Unreal-candidate identities replay through the existing five-event worker lifecycle, while the Scene Change Spectrum presents four real stages at desktop and narrow widths.",
+  "evidence": [
+    "artifacts/goal/m35-s1-live-native-pcg/live-native-pcg-work-receipt.json",
+    "artifacts/goal/m35-s1-live-native-pcg/live-native-pcg-desktop.png",
+    "artifacts/goal/m35-s1-live-native-pcg/live-native-pcg-narrow.png",
+    "artifacts/goal/m35-s1-live-native-pcg/verification.json",
+    "docs/evidence/M35_S1_LIVE_NATIVE_PCG_2026-09-07.md"
+  ]
+}

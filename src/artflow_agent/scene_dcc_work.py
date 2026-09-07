@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from .blender_set_dressing import BlenderSetDressingReceipt, BlenderSetDressingRequest
 from .blender_surface import BlenderSurfaceReceipt, BlenderSurfaceRequest
 from .lookdev_handoff import BlenderLookdevReceipt, SceneLookdevRequest
+from .pcg_density import PcgDensityReceipt, PcgDensityRequest, file_sha256
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest
 from .surface_detail import (
     BlenderSurfaceDetailReceipt,
@@ -41,8 +42,9 @@ class SceneDccWorkDefinition(BaseModel):
             "blender.rigidbody.rubble_settle.v1",
             "blender.surface.inlay_projection_bake.v1",
             "blender.geometry_nodes.modular_wayfinder_kit.v1",
+            "unreal.pcg.native_density_kit.v1",
         ]
-    ] = Field(min_length=2, max_length=9)
+    ] = Field(min_length=2, max_length=10)
     modeling_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     pbr_request_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     layout_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
@@ -85,9 +87,21 @@ class SceneDccWorkDefinition(BaseModel):
     unreal_procedural_kit_return_receipt_sha256: str | None = Field(
         default=None, pattern=r"^[a-f0-9]{64}$"
     )
+    pcg_density_request_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    pcg_density_receipt_sha256: str | None = Field(default=None, pattern=r"^[a-f0-9]{64}$")
+    pcg_density_spatial_manifest_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    unreal_native_pcg_density_receipt_sha256: str | None = Field(
+        default=None, pattern=r"^[a-f0-9]{64}$"
+    )
+    native_pcg_graph_path: str | None = Field(
+        default=None,
+        pattern=r"^/Game/ArtFlow/PCG/Generated/PCG_AF_Density_[a-f0-9]{12}\.PCG_AF_Density_[a-f0-9]{12}$",
+    )
     unreal_return_receipt_sha256: str = Field(pattern=r"^[a-f0-9]{64}$")
     candidate_scene_path: str = Field(
-        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit)_B_[a-f0-9]{12}$"
+        pattern=r"^/Game/ArtFlow/Sessions/AF_[a-f0-9]{12}/Candidates/(?:Blender|Shot|Lookdev|Surface|Dressing|Detail|Kit|Density)_B_[a-f0-9]{12}$"
     )
 
     @model_validator(mode="after")
@@ -175,6 +189,19 @@ class SceneDccWorkDefinition(BaseModel):
             if self.blender_surface_detail_receipt_sha256 is None:
                 raise ValueError("procedural kit requires the scene-conditioned surface detail")
             expected_capabilities.append("blender.geometry_nodes.modular_wayfinder_kit.v1")
+        density_identities = (
+            self.pcg_density_request_sha256,
+            self.pcg_density_receipt_sha256,
+            self.pcg_density_spatial_manifest_sha256,
+            self.unreal_native_pcg_density_receipt_sha256,
+            self.native_pcg_graph_path,
+        )
+        if any(item is not None for item in density_identities):
+            if not all(item is not None for item in density_identities):
+                raise ValueError("DCC work requires every native PCG density identity")
+            if self.procedural_kit_receipt_sha256 is None:
+                raise ValueError("native PCG density requires the registered procedural kit")
+            expected_capabilities.append("unreal.pcg.native_density_kit.v1")
         if self.capability_ids != expected_capabilities:
             raise ValueError("DCC work capability order does not match its artifacts")
         if self.work_sha256 != expected or self.work_id != f"dcc-work-{expected[:12]}":
@@ -516,6 +543,49 @@ def compile_current_blender_dcc_work(
         payload["unreal_procedural_kit_return_receipt_sha256"] = kit_unreal["receipt_sha256"]
         payload["unreal_return_receipt_sha256"] = kit_unreal["receipt_sha256"]
         payload["candidate_scene_path"] = kit_unreal["candidate_scene_path"]
+    density_root = project_root / "artifacts/goal/m34-s1-pcg-density"
+    density_request_path = density_root / "pcg-density-request.json"
+    density_receipt_path = density_root / "pcg-density-receipt.json"
+    density_unreal_path = density_root / "unreal-native-pcg-density-receipt.json"
+    if all(path.is_file() for path in (density_request_path, density_receipt_path, density_unreal_path)):
+        density_request = PcgDensityRequest.model_validate_json(
+            density_request_path.read_text(encoding="utf-8")
+        )
+        density_receipt = PcgDensityReceipt.model_validate_json(
+            density_receipt_path.read_text(encoding="utf-8")
+        )
+        density_unreal = json.loads(density_unreal_path.read_text(encoding="utf-8"))
+        spatial_path = density_root / density_receipt.spatial_manifest_path
+        if density_request.session_id != session_id:
+            raise ValueError("native PCG density references another Scene Session")
+        if density_request.kit_receipt_sha256 != payload.get("procedural_kit_receipt_sha256"):
+            raise ValueError("native PCG density references another procedural kit")
+        if density_receipt.request_sha256 != density_request.request_sha256:
+            raise ValueError("ComfyUI density receipt references another request")
+        if file_sha256(spatial_path) != density_receipt.spatial_manifest_sha256:
+            raise ValueError("native PCG spatial manifest identity changed")
+        unreal_payload = dict(density_unreal)
+        unreal_sha = unreal_payload.pop("receipt_sha256", None)
+        if unreal_sha != dcc_work_sha256(unreal_payload):
+            raise ValueError("Unreal native PCG receipt identity changed")
+        if density_unreal.get("request_sha256") != density_request.request_sha256:
+            raise ValueError("Unreal native PCG return references another request")
+        if density_unreal.get("density_receipt_sha256") != density_receipt.receipt_sha256:
+            raise ValueError("Unreal native PCG return references another ComfyUI receipt")
+        if density_unreal.get("spatial_manifest_sha256") != density_receipt.spatial_manifest_sha256:
+            raise ValueError("Unreal native PCG return references another spatial manifest")
+        if density_unreal.get("source_candidate_scene_path") != kit_unreal.get("candidate_scene_path"):
+            raise ValueError("native PCG candidate no longer derives from the procedural kit")
+        if density_unreal.get("status") != "reconciled" or density_unreal.get("capture_status") != "captured":
+            raise ValueError("Unreal native PCG return is not reconciled with captured evidence")
+        payload["capability_ids"].append("unreal.pcg.native_density_kit.v1")
+        payload["pcg_density_request_sha256"] = density_request.request_sha256
+        payload["pcg_density_receipt_sha256"] = density_receipt.receipt_sha256
+        payload["pcg_density_spatial_manifest_sha256"] = density_receipt.spatial_manifest_sha256
+        payload["unreal_native_pcg_density_receipt_sha256"] = density_unreal["receipt_sha256"]
+        payload["native_pcg_graph_path"] = density_unreal["native_pcg_graph_path"]
+        payload["unreal_return_receipt_sha256"] = density_unreal["receipt_sha256"]
+        payload["candidate_scene_path"] = density_unreal["candidate_scene_path"]
     digest = dcc_work_sha256(payload)
     return SceneDccWorkDefinition(
         **payload,

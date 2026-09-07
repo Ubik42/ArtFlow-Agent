@@ -1,0 +1,16 @@
+{
+  "schema_id": "artflow-live-native-pcg-verification/1",
+  "status": "passed",
+  "work_id": "dcc-work-f3ea74c7e62a",
+  "capability_count": 10,
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "replay_equivalent": true,
+  "duplicate_external_side_effect_count": 0,
+  "desktop": {"width": 1600, "height": 1000, "horizontal_overflow_px": 0},
+  "narrow": {"width": 980, "height": 1000, "horizontal_overflow_px": 0},
+  "loaded_image_count": 6,
+  "failed_image_count": 0,
+  "console_error_count": 0,
+  "console_warning_count": 0
+}

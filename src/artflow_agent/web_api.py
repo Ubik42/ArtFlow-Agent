@@ -1491,6 +1491,18 @@ def create_app(
             "m32-kit-unreal": goal_root
             / "m32-s1-procedural-kit"
             / "unreal-procedural-kit-candidate.png",
+            "m34-density-exclusion": goal_root
+            / "m34-s1-pcg-density"
+            / "protected-exclusion-mask.png",
+            "m34-density-mask": goal_root
+            / "m34-s1-pcg-density"
+            / "pcg-density-mask.png",
+            "m34-density-blender": goal_root
+            / "m32-s1-procedural-kit"
+            / "AF_Wayfinder_Kit-preview.png",
+            "m34-density-unreal": goal_root
+            / "m34-s1-pcg-density"
+            / "unreal-native-pcg-density-candidate.png",
         }
         path = allowed.get(asset_name)
         if path is None or not path.is_file():

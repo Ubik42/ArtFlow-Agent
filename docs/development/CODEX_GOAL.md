@@ -119,9 +119,12 @@ Unreal 当前场景
   Agent 从当前 Unreal Depth 与保护区编译固定 ComfyUI 密度蒙版任务，将输出投影为 12 个类型化
   空间点；项目自有 Unreal PCG 图消费这些点和 M32 的三种模块资产，在隔离候选中生成 12 个
   原生实例。重复执行完成对账，保护区泄漏、重复副作用和源文件变化均为 0。
-- **M35 · Live native PCG route（进行中）**：把 M34 的精确场景输入、ComfyUI 回执、空间清单、
+- **M35 · Live native PCG route（已完成）**：把 M34 的精确场景输入、ComfyUI 回执、空间清单、
   原生 PCG 图与 Unreal 候选登记为当前 Session 的第十项生产能力，复用现有 Worker 和事件账本，
   并在场景变更谱中呈现“场景条件 → 节点密度 → Blender 套件 → 原生 PCG 候选”。
+- **M36 · Shot-ready procedural environment package（进行中）**：把当前视觉目标、Blender 镜头与
+  灯光预演、原生 PCG 候选编译为可直接交付镜头部门的 Unreal Level Sequence 候选，包含登记的
+  CineCamera、有限灯光参数、PCG 场景版本和同机位预览，不另建调度器或开放任意 Sequencer 脚本。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
 

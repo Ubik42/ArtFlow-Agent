@@ -630,6 +630,11 @@ type SceneDccWorkState = {
     procedural_kit_receipt_sha256?: string;
     procedural_kit_manifest_sha256?: string;
     unreal_procedural_kit_return_receipt_sha256?: string;
+    pcg_density_request_sha256?: string;
+    pcg_density_receipt_sha256?: string;
+    pcg_density_spatial_manifest_sha256?: string;
+    unreal_native_pcg_density_receipt_sha256?: string;
+    native_pcg_graph_path?: string;
   };
   status: "queued" | "claimed" | "executing" | "reconciling" | "succeeded" | "failed";
   worker_id: string | null;
@@ -1643,7 +1648,9 @@ function SceneChangeSpectrum({
                   Blender DCC · {dccWork.status === "succeeded" ? "已回流" : workLabels[dccWork.status]}
                 </b>
                 <small>
-                  {dccWork.definition.procedural_kit_request_sha256
+                  {dccWork.definition.pcg_density_request_sha256
+                    ? "Unreal 空间证据 → ComfyUI 密度 → Blender 套件 → 原生 PCG"
+                    : dccWork.definition.procedural_kit_request_sha256
                     ? "场景目标 → Blender 程序化套件 → PCG 装配 → Unreal"
                     : dccWork.definition.surface_detail_request_sha256
                     ? "Unreal 取样 → ComfyUI → Blender 投射 / Bake → Unreal"
@@ -1822,8 +1829,29 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   const hasSetDressing = Boolean(agent.scene_dcc_work?.definition.set_dressing_request_sha256);
   const hasSurfaceDetail = Boolean(agent.scene_dcc_work?.definition.surface_detail_request_sha256);
   const hasProceduralKit = Boolean(agent.scene_dcc_work?.definition.procedural_kit_request_sha256);
+  const hasNativePcgDensity = Boolean(agent.scene_dcc_work?.definition.pcg_density_request_sha256);
   const cases = [
-    ...(hasProceduralKit
+    ...(hasNativePcgDensity
+      ? [{
+          id: "native-pcg-density",
+          tab: "当前 Session · 空间生成",
+          title: "让节点式图像条件真正驱动 Unreal 原生 PCG",
+          description: "Agent 从当前场景深度与保护对象编译固定空间任务。ComfyUI 负责密度和排除蒙版，Blender 提供带 UV、LOD 与碰撞的三变体套件，项目自有 PCG 图再把 12 个验证点实例化到隔离候选。",
+          frames: [
+            { src: "/api/showcase/production/m34-density-exclusion", alt: "由 Unreal 对象范围编译的三个保护区域", label: "场景约束", title: "Depth + 3 个保护区域" },
+            { src: "/api/showcase/production/m34-density-mask", alt: "ComfyUI 固定节点图输出的可用空间密度", label: "节点密度", title: "29.197% 覆盖 · 泄漏 0" },
+            { src: "/api/showcase/production/m34-density-blender", alt: "Blender 生成的三变体 Wayfinder 程序化套件", label: "DCC 套件", title: "3 变体 · UV · LOD · 碰撞" },
+            { src: "/api/showcase/production/m34-density-unreal", alt: "Unreal 原生 PCG 装配后的隔离候选", label: "原生 PCG", title: "12 实例 · 3 网格 · 已对账" },
+          ],
+          transition: "类型化空间投影",
+          metricA: "12 / 3",
+          metricALabel: "实例与网格变体",
+          metricB: "0",
+          metricBLabel: "保护区泄漏",
+          note: `空间清单 ${shortId(agent.scene_dcc_work?.definition.pcg_density_spatial_manifest_sha256 ?? "")} 与原生图 ${agent.scene_dcc_work?.definition.native_pcg_graph_path ?? ""} 绑定；重复执行副作用为 0。`,
+          domains: ["场景·已绑定", "密度·已验证", "DCC·可编辑", "PCG·原生执行", "UE·已对账"],
+        }]
+      : hasProceduralKit
       ? [{
           id: "procedural-kit-assembly",
           tab: "当前 Session · 程序化装配",
@@ -2011,7 +2039,9 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
   ];
   const [caseId, setCaseId] = useState("rain-wet-courtyard");
   useEffect(() => {
-    if (hasProceduralKit && caseId !== "procedural-kit-assembly") {
+    if (hasNativePcgDensity && caseId !== "native-pcg-density") {
+      setCaseId("native-pcg-density");
+    } else if (hasProceduralKit && caseId !== "procedural-kit-assembly") {
       setCaseId("procedural-kit-assembly");
     } else if (hasSurfaceDetail && caseId !== "scene-surface-detail") {
       setCaseId("scene-surface-detail");
@@ -2022,7 +2052,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
     } else if (hasSceneLookdev && caseId === "rain-wet-courtyard") {
       setCaseId("scene-conditioned-lookdev");
     }
-  }, [caseId, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
+  }, [caseId, hasNativePcgDensity, hasProceduralKit, hasSceneLookdev, hasSetDressing, hasSurfaceBake, hasSurfaceDetail]);
   const activeCase = cases.find((item) => item.id === caseId) ?? cases[0];
   const capabilities = [
     { key: "image", label: "视觉方向", detail: "GPT Image 2 / ComfyUI", tone: "cyan" },

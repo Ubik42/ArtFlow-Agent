@@ -1,0 +1,37 @@
+{
+  "schema_id": "artflow-live-native-pcg-work-receipt/1",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "work_id": "dcc-work-f3ea74c7e62a",
+  "work_sha256": "f3ea74c7e62a88b5d34a53cfb792be696f2d7841b524a4800eaacc13ba60fd12",
+  "status": "succeeded",
+  "worker_id": "artflow-local-blender-worker-v1",
+  "capability_ids": [
+    "blender.architectural_prop.weathered_shrine.v1",
+    "blender.comfy_pbr.assembly.v1",
+    "blender.geometry_nodes.shrine_courtyard.v1",
+    "blender.shot.rain_breakthrough.v1",
+    "blender.lookdev.scene_target.v1",
+    "blender.surface.uv_bake.v1",
+    "blender.rigidbody.rubble_settle.v1",
+    "blender.surface.inlay_projection_bake.v1",
+    "blender.geometry_nodes.modular_wayfinder_kit.v1",
+    "unreal.pcg.native_density_kit.v1"
+  ],
+  "pcg_density_request_sha256": "1a637a8d89b8a697e9d9bfedea7fcb59c9f9b7ae722dd4f67d86f6f78da4a7a5",
+  "pcg_density_receipt_sha256": "c3a551c664bcfb7081f95587d846525aa5660bedde43e382553cb6cca5e9ad23",
+  "pcg_density_spatial_manifest_sha256": "69570d74a4b721c2932e13d21f1f208b635a9e395a634e6b64502e35cf3aa0bb",
+  "native_pcg_graph_path": "/Game/ArtFlow/PCG/Generated/PCG_AF_Density_1a637a8d89b8.PCG_AF_Density_1a637a8d89b8",
+  "outcome_sha256": "159ea2469413be9c139408f3440c58996b0d1614aa37eca5310754502202c834",
+  "candidate_scene_path": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/Density_B_1a637a8d89b8",
+  "dcc_event_types": [
+    "scene_dcc_work_queued",
+    "scene_dcc_work_claimed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed",
+    "scene_dcc_work_progressed"
+  ],
+  "dcc_event_count": 5,
+  "repeat_dispatch_same_work": true,
+  "duplicate_external_side_effect_count": 0,
+  "replay_equivalent": true
+}

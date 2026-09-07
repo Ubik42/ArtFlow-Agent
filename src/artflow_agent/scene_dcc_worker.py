@@ -12,6 +12,7 @@ from .blender_set_dressing import (
 )
 from .blender_surface import BlenderSurfaceRequest
 from .lookdev_handoff import SceneLookdevRequest
+from .pcg_density import PcgDensityReceipt, PcgDensityRequest
 from .procedural_kit import ProceduralKitReceipt, ProceduralKitRequest, verify_procedural_kit
 from .scene_dcc_work import SceneDccWorkDefinition, SceneDccWorkProgressRequest
 from .surface_detail import (
@@ -70,6 +71,7 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         "dressing": project_root / "artifacts/goal/m28-s1-set-dressing",
         "detail": project_root / "artifacts/goal/m30-s1-surface-detail",
         "kit": project_root / "artifacts/goal/m32-s1-procedural-kit",
+        "density": project_root / "artifacts/goal/m34-s1-pcg-density",
     }
     model_request = json.loads(
         (roots["model"] / "modeling-request.json").read_text(encoding="utf-8")
@@ -282,7 +284,10 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
             roots["kit"] / "unreal-procedural-kit-return-receipt.json",
             expected_sha256=str(work.unreal_procedural_kit_return_receipt_sha256),
         )
-        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+        if (
+            work.pcg_density_request_sha256 is None
+            and unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path
+        ):
             raise ValueError("Unreal procedural-kit candidate changed")
         detail_return = json.loads(
             (roots["detail"] / "unreal-surface-detail-return-receipt.json").read_text(
@@ -296,6 +301,43 @@ def reconcile_registered_chain(project_root: Path, work: SceneDccWorkDefinition)
         screenshot = roots["kit"] / str(unreal_receipt["screenshot_path"])
         if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
             raise ValueError("Unreal procedural-kit screenshot identity changed")
+
+    if work.pcg_density_request_sha256 is not None:
+        request = PcgDensityRequest.model_validate_json(
+            (roots["density"] / "pcg-density-request.json").read_text(encoding="utf-8")
+        )
+        receipt = PcgDensityReceipt.model_validate_json(
+            (roots["density"] / "pcg-density-receipt.json").read_text(encoding="utf-8")
+        )
+        if request.request_sha256 != work.pcg_density_request_sha256:
+            raise ValueError("registered PCG density request changed")
+        if receipt.receipt_sha256 != work.pcg_density_receipt_sha256:
+            raise ValueError("registered PCG density receipt changed")
+        spatial_path = roots["density"] / receipt.spatial_manifest_path
+        if _file_sha256(spatial_path) != work.pcg_density_spatial_manifest_sha256:
+            raise ValueError("registered PCG density spatial manifest changed")
+        unreal_receipt = _load_receipt(
+            roots["density"] / "unreal-native-pcg-density-receipt.json",
+            expected_sha256=str(work.unreal_native_pcg_density_receipt_sha256),
+        )
+        if unreal_receipt.get("native_pcg_graph_path") != work.native_pcg_graph_path:
+            raise ValueError("registered native PCG graph changed")
+        if unreal_receipt.get("candidate_scene_path") != work.candidate_scene_path:
+            raise ValueError("Unreal native PCG candidate changed")
+        kit_return = json.loads(
+            (roots["kit"] / "unreal-procedural-kit-return-receipt.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        if unreal_receipt.get("source_candidate_scene_path") != kit_return.get(
+            "candidate_scene_path"
+        ):
+            raise ValueError("native PCG candidate no longer derives from procedural kit")
+        if unreal_receipt.get("generated_instance_count") != 12:
+            raise ValueError("native PCG instance count changed")
+        screenshot = roots["density"] / str(unreal_receipt["screenshot_path"])
+        if _file_sha256(screenshot) != unreal_receipt.get("screenshot_sha256"):
+            raise ValueError("Unreal native PCG screenshot identity changed")
 
     return work.unreal_return_receipt_sha256
 
