@@ -47,6 +47,7 @@ from .current_scene_evaluation import (
     resolve_current_candidate_beauty,
 )
 from .current_variant_lifecycle import (
+    compile_current_inspection_request,
     compile_current_publish_request,
     compile_current_review_request,
     validate_current_publish_receipt,
@@ -794,6 +795,14 @@ def create_app(
         except (AgentRuntimeError, OSError, ValueError) as exc:
             status_code = 404 if str(exc).startswith("Unknown Agent run") else 409
             raise HTTPException(status_code=status_code, detail=str(exc)) from exc
+
+    @app.get('/api/agent/runs/{run_id}/current-variant/inspection-request')
+    def get_current_variant_inspection_request(run_id: str, request: Request):
+        _require_loopback(request, '当前候选原生检查仅允许本机 Unreal 宿主领取')
+        try:
+            return compile_current_inspection_request(resolved_project_root, agent_store.load(run_id))
+        except (AgentRuntimeError, OSError, ValueError) as exc:
+            raise HTTPException(status_code=404 if str(exc).startswith('Unknown Agent run') else 409, detail=str(exc)) from exc
 
     @app.get(
         "/api/agent/runs/{run_id}/current-variant/publish-request",

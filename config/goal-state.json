@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 110,
+  "stateRevision": 111,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M62",
+  "currentMilestone": "M63",
   "milestones": [
     {
       "id": "M0",
@@ -880,7 +880,7 @@
     {
       "id": "M62",
       "title": "Native candidate inspection in the publish workflow",
-      "status": "in_progress",
+      "status": "completed",
       "dependsOn": [
         "M61"
       ],
@@ -890,16 +890,28 @@
         "Inspection keeps the source and adopted candidate unchanged",
         "The existing event store remains the only lifecycle authority"
       ]
+    },
+    {
+      "id": "M63",
+      "title": "Native publication feedback in Scene Lab",
+      "status": "in_progress",
+      "dependsOn": [
+        "M62"
+      ],
+      "outcome": "Expose current candidate inspection and version identity in the existing scene workflow, using persisted native evidence.",
+      "acceptance": [
+        "The existing Scene Lab identifies which native facts belong to the current published version without adding an approval step"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M62-S1",
-    "milestone": "M62",
-    "title": "Integrate native snapshot acquisition into existing publish action",
-    "outcome": "Resolve the current adopted identity, inspect its scene in the owned UE host, then compile and execute the existing publisher without a manual bootstrap request.",
-    "risk": "R3",
-    "evidenceTarget": "A4",
-    "requiresRealHosts": true,
+    "id": "M63-S1",
+    "milestone": "M63",
+    "title": "Show native publication facts in the existing scene workflow",
+    "outcome": "Expose current candidate instance count and verified version identity in Scene Lab from existing evidence.",
+    "risk": "R1",
+    "evidenceTarget": "A3",
+    "requiresRealHosts": false,
     "allowedPaths": [
       "src/artflow_agent/**",
       "tests/**",
@@ -912,17 +924,15 @@
       "README.md"
     ],
     "nonGoals": [
-      "No second event store or approval system",
-      "Do not regenerate ComfyUI or Blender assets",
-      "Do not modify source or adopted candidate bytes"
+      "No new event store or approval system",
+      "Do not regenerate assets or republish a scene just for UI evidence"
     ],
     "acceptance": [
-      "One product action obtains a fresh candidate-bound snapshot and uses it for publication",
-      "Changed scene identity is rejected before publication",
-      "Replay reuses the same published version"
+      "Existing UI displays facts tied to the exact current publication",
+      "Changed or absent facts are not presented as current success"
     ],
     "stopConditions": [
-      "Source or adopted candidate bytes change unexpectedly"
+      "Unexpected source asset mutation"
     ],
     "environmentRequirements": [
       {
@@ -970,9 +980,9 @@
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0103.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0104.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M61 completed in real UE 5.8.1 commandlet processes: candidate-bound snapshot contains 18 instances rather than the earlier base scene 12; publish/reconcile and inspect/reconcile agree on exact file hashes, source unchanged, zero duplicate side effects. Current UI renders the routed lineage from 46 persisted events. 203 quick checks and web build passed. No new rendered visual-quality claim. Automatic snapshot orchestration remains M62.",
+  "evidenceCeiling": "M62 verified: missing native facts were recreated by the existing publish action in real UE 5.8.1; two independent processes reconciled the same 18-instance published version. Source and adopted candidate bytes unchanged, duplicate side effects zero. 206 checks passed and schemas exported; no new visual-quality claim.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",

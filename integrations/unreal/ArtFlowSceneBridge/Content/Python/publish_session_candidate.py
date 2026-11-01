@@ -4,6 +4,7 @@ import hashlib
 import json
 import os
 import re
+import runpy
 import urllib.request
 from datetime import UTC, datetime
 from pathlib import Path
@@ -103,9 +104,21 @@ if current_origin or current_run:
         or "\\" in current_run
     ):
         fail("current publish requires a localhost origin and registered run identity")
+    inspection = request_json(
+        f"{current_origin}/api/agent/runs/{current_run}/current-variant/inspection-request"
+    )
+    if inspection.get('schema_id')!='artflow-current-inspection-request/1':
+        fail('unsupported native inspection request')
+    if inspection.get('required'):
+        # Same registered product action and host; facts are collected before
+        # requesting the final publish contract. No hand-written bootstrap file.
+        inspect_module=runpy.run_path(str(Path(__file__).with_name('inspect_routed_publish_candidate.py')))
+        inspect_module['inspect_decision'](inspection['decision'])
     request = request_json(
         f"{current_origin}/api/agent/runs/{current_run}/current-variant/publish-request"
     )
+    if inspection.get('required') and request['decision']!=inspection['decision']:
+        fail('adoption changed between native inspection and publication')
     result_path = (
         Path(unreal.Paths.project_saved_dir()).resolve()
         / "ArtFlowSceneBridge"

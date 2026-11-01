@@ -28,6 +28,33 @@ if TYPE_CHECKING:
     from .agent_runtime import AgentRunState
 
 
+def compile_current_inspection_request(project_root: Path, state: AgentRunState) -> dict:
+    """Resolve adoption without requiring the native observations it will collect."""
+    adoption, routed = state.scene_candidate_adoption, state.scene_dcc_candidate_evaluation
+    if adoption is None:
+        raise ValueError('current inspection requires an adopted candidate')
+    if routed is None:
+        return {'schema_id':'artflow-current-inspection-request/1','required':False}
+    decision=adoption.decision
+    work=state.scene_dcc_work
+    evaluation=routed.domain_evaluation
+    if (work is None or evaluation.status!='accepted' or evaluation.failed_domains
+        or decision.evaluation_sha256!=evaluation.evaluation_sha256
+        or decision.plan_sha256!=routed.evaluation_input.route_decision_sha256
+        or decision.execution_receipt_sha256!=work.outcome_sha256):
+        raise ValueError('routed inspection references another evaluation or work item')
+    content=(project_root/'integrations/unreal/ArtFlowBridgeHost/Content').resolve()
+    candidate=(content/(decision.candidate_scene.removeprefix('/Game/')+'.umap')).resolve()
+    if not candidate.is_relative_to(content/'ArtFlow/Sessions'):
+        raise ValueError('inspection candidate escaped the Session namespace')
+    source=content/'ArtFlowDemo.umap'
+    if (not candidate.is_file() or file_sha256(candidate)!=decision.candidate_level_sha256
+        or not source.is_file() or file_sha256(source)!=decision.source_level_sha256):
+        raise ValueError('routed candidate or source bytes changed after adoption')
+    return {'schema_id':'artflow-current-inspection-request/1','required':True,
+            'decision':decision.model_dump(mode='json')}
+
+
 def compile_current_publish_request(
     project_root: Path, state: AgentRunState
 ) -> SceneVariantPublishRequest:

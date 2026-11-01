@@ -236,4 +236,4 @@ Unreal 当前场景
   通过不可变事件和类型化 artifact，不通过表演式多 Agent 对话。
 - 每轮从 goal-state 和 checkpoint 恢复。接受条件满足后立即记录证据并切换下一切片，避免目标漂移。
 
-- **M62 · Native candidate inspection in the publish workflow（进行中）**：把当前候选快照采集自动接入已有发布操作，保持同一事件账本，避免手工准备中间请求。
+- **M62 · Native candidate inspection in the publish workflow（已完成）**：发布动作自动领取已采用身份、采集原生候选事实、编译请求并执行既有发布。缺失旧快照时真实 UE 重建 18 实例事实；两个进程均复用同一发布版本，源与候选字节不变。见 docs/evidence/M62_NATIVE_PUBLISH_2026-11-01.md。
