@@ -18,6 +18,7 @@ from .scene_variant_lifecycle import (
 from .scene_variant_review import (
     SceneVariantReviewReceipt,
     SceneVariantReviewRequest,
+    compile_routed_dcc_variant_lineage,
     compile_scene_variant_lineage,
     compile_scene_variant_review_request,
 )
@@ -263,7 +264,8 @@ def validate_current_review_receipt(
 ) -> SceneVariantReviewRecord | None:
     publication = state.scene_variant_publication
     evaluation = state.scene_candidate_evaluation
-    if publication is None or evaluation is None:
+    routed = state.scene_dcc_candidate_evaluation
+    if publication is None or (evaluation is None and routed is None):
         raise ValueError("current review requires publication and evaluation")
     request = compile_current_review_request(state)
     if (
@@ -280,14 +282,30 @@ def validate_current_review_receipt(
         raise ValueError("review receipt references another current publication")
     if receipt.status != "reconciled":
         return None
-    lineage = compile_scene_variant_lineage(
-        failed=evaluation.failed_evaluation,
-        corrected=evaluation.corrected_evaluation,
-        publish_request=publication.request,
-        publish_receipt=publication.receipt,
-        review_request=request,
-        review_receipt=receipt,
-    )
+    if routed is not None:
+        route_id = routed.evaluation_input.route_id
+        lineage = compile_routed_dcc_variant_lineage(
+            route_id=route_id,
+            evaluation_sha256=routed.domain_evaluation.evaluation_sha256,
+            route_decision_sha256=routed.evaluation_input.route_decision_sha256,
+            work_sha256=routed.evaluation_input.outcome_sha256,
+            technical_check_count=sum(check.status == "passed" for check in routed.technical_checks),
+            visual_claim_count=sum(claim.verdict == "passed" for claim in routed.visual_observation.claims),
+            publish_request=publication.request,
+            publish_receipt=publication.receipt,
+            review_request=request,
+            review_receipt=receipt,
+        )
+    else:
+        assert evaluation is not None
+        lineage = compile_scene_variant_lineage(
+            failed=evaluation.failed_evaluation,
+            corrected=evaluation.corrected_evaluation,
+            publish_request=publication.request,
+            publish_receipt=publication.receipt,
+            review_request=request,
+            review_receipt=receipt,
+        )
     return SceneVariantReviewRecord(
         request=request,
         receipt=receipt,

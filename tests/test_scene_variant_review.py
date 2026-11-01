@@ -16,6 +16,7 @@ from artflow_agent.scene_variant_review import (
     SceneVariantReviewReceipt,
     SceneVariantReviewRequest,
     compile_scene_variant_lineage,
+    compile_routed_dcc_variant_lineage,
     compile_scene_variant_review_request,
 )
 
@@ -118,3 +119,31 @@ def test_lineage_retains_four_domains_and_ends_in_real_unreal_review() -> None:
         "inspected",
     ]
     assert lineage.source_level_unchanged is True
+
+
+def test_routed_lineage_preserves_publish_identity_without_fake_correction() -> None:
+    _, _, request, receipt = inputs()
+    review = compile_scene_variant_review_request(request, receipt)
+    arguments = dict(
+        route_id="cloth_banner",
+        evaluation_sha256=request.decision.evaluation_sha256,
+        route_decision_sha256=request.decision.plan_sha256,
+        work_sha256=request.decision.execution_receipt_sha256,
+        technical_check_count=6,
+        visual_claim_count=4,
+        publish_request=request,
+        publish_receipt=receipt,
+        review_request=review,
+        review_receipt=review_receipt(review),
+    )
+    lineage = compile_routed_dcc_variant_lineage(**arguments)
+    assert lineage.lineage_kind == "routed_dcc"
+    assert lineage.correction_domain is None
+    assert lineage.route_id == "cloth_banner"
+    assert lineage.published_level_sha256 == receipt.published_level_sha256
+    assert [step.kind for step in lineage.steps] == [
+        "target", "route", "candidate", "evaluation", "adoption", "review"
+    ]
+    arguments["work_sha256"] = "0" * 64
+    with pytest.raises(ValueError, match="another evaluation or work result"):
+        compile_routed_dcc_variant_lineage(**arguments)

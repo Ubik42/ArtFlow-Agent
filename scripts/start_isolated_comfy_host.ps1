@@ -5,7 +5,7 @@ param(
 
 $ErrorActionPreference = "Stop"
 $comfyRoot = "D:\3D\_tools\_reference\_AI\ComfyUI"
-$productionNodes = "D:\3D\_tools\ComfyUI-Production-Nodes"
+$productionNodes = "D:\3D\_tools\_AIGC&Agent\ComfyUI-Production-Nodes"
 $runtimeRoot = Join-Path $PSScriptRoot "..\artifacts\runtime\$RuntimeName"
 $endpoint = "http://127.0.0.1:$Port"
 

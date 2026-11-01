@@ -13,10 +13,10 @@
 ## Repository identity and boundaries
 
 - This repository is the independent **ArtFlow AIGC Agent** and flagship portfolio product.
-- `D:\3D\_tools\art-pipeline-skill` is a separate tool/asset-audit Skill repository with its own
+- `D:\3D\_tools\_DCC\art-pipeline-skill` is a separate tool/asset-audit Skill repository with its own
   Git history and `/goal`; never merge its scanner, Maya/Unreal audit milestones or machine state
   into ArtFlow.
-- `D:\3D\_tools\ComfyUI-Production-Nodes` is a separate installable ComfyUI package integrated
+- `D:\3D\_tools\_AIGC&Agent\ComfyUI-Production-Nodes` is a separate installable ComfyUI package integrated
   through versioned contracts.
 - The ArtFlow Unreal Bridge remains separately installable but is developed, built and tested in
   this repository like any other project component. Project-owned disposable Unreal hosts are

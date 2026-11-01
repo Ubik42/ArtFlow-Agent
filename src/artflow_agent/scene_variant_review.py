@@ -94,9 +94,13 @@ class VariantLineageStep(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     index: int = Field(ge=1, le=9)
-    kind: Literal["target", "candidate", "correction", "adoption", "publish", "review"]
+    kind: Literal[
+        "target", "route", "candidate", "evaluation", "correction", "adoption", "publish", "review"
+    ]
     label: str
-    state: Literal["retained", "failed", "corrected", "adopted", "published", "inspected"]
+    state: Literal[
+        "retained", "selected", "failed", "evaluated", "corrected", "adopted", "published", "inspected"
+    ]
     detail: str
     identity: str
 
@@ -107,6 +111,7 @@ class SceneVariantLineage(BaseModel):
     schema_id: Literal["artflow-scene-variant-lineage/1"] = (
         "artflow-scene-variant-lineage/1"
     )
+    lineage_kind: Literal["correction", "routed_dcc"] = "correction"
     case_id: Literal["sunlit-overgrown", "current-session"]
     status: Literal["published"]
     source_scene: str
@@ -114,7 +119,8 @@ class SceneVariantLineage(BaseModel):
     published_scene: str
     content_identity_sha256: str = Field(pattern=SHA256)
     published_level_sha256: str = Field(pattern=SHA256)
-    correction_domain: Domain
+    correction_domain: Domain | None = None
+    route_id: Literal["cloth_banner", "damage_variant", "mechanism_shot"] | None = None
     retained_domains: list[Domain]
     generated_instance_count: int = Field(ge=0)
     duplicate_side_effect_count: Literal[0]
@@ -226,5 +232,70 @@ def compile_scene_variant_lineage(
             VariantLineageStep(index=4, kind="adoption", label="Codex 采用", state="adopted", detail=f"{len(corrected.findings)} 域通过，锁定候选内容身份", identity=decision.decision_sha256[:12]),
             VariantLineageStep(index=5, kind="publish", label="版本发布", state="published", detail="写入唯一 Published 场景变体", identity=decision.content_identity_sha256[:12]),
             VariantLineageStep(index=6, kind="review", label="Unreal 审阅", state="inspected", detail="新进程加载复检，源关卡未保存", identity=review_request.review_sha256[:12]),
+        ],
+    )
+
+
+def compile_routed_dcc_variant_lineage(
+    *,
+    route_id: Literal["cloth_banner", "damage_variant", "mechanism_shot"],
+    evaluation_sha256: str,
+    route_decision_sha256: str,
+    work_sha256: str,
+    technical_check_count: int,
+    visual_claim_count: int,
+    publish_request: SceneVariantPublishRequest,
+    publish_receipt: SceneVariantPublishReceipt,
+    review_request: SceneVariantReviewRequest,
+    review_receipt: SceneVariantReviewReceipt,
+) -> SceneVariantLineage:
+    decision = publish_request.decision
+    if (
+        decision.evaluation_sha256 != evaluation_sha256
+        or decision.plan_sha256 != route_decision_sha256
+        or decision.execution_receipt_sha256 != work_sha256
+    ):
+        raise ValueError("routed lineage references another evaluation or work result")
+    if review_request.review_sha256 != review_receipt.review_sha256:
+        raise ValueError("review receipt references another review request")
+    if (
+        review_receipt.published_scene != decision.published_scene
+        or review_receipt.published_level_sha256 != publish_receipt.published_level_sha256
+        or review_receipt.source_level_sha256_after != decision.source_level_sha256
+        or review_receipt.protected_state_sha256
+        != publish_request.expected_protected_state_sha256
+        or review_receipt.material_path != publish_request.expected_material_path
+        or review_receipt.generated_instance_count != publish_request.expected_instance_count
+    ):
+        raise ValueError("Unreal review facts differ from the routed published decision")
+    route_labels = {
+        "cloth_banner": "风场旗帜",
+        "damage_variant": "破损变体",
+        "mechanism_shot": "机关镜头",
+    }
+    return SceneVariantLineage(
+        lineage_kind="routed_dcc",
+        case_id="current-session",
+        status="published",
+        source_scene=decision.source_scene,
+        candidate_scene=decision.candidate_scene,
+        published_scene=decision.published_scene,
+        content_identity_sha256=decision.content_identity_sha256,
+        published_level_sha256=publish_receipt.published_level_sha256,
+        correction_domain=None,
+        route_id=route_id,
+        retained_domains=["image", "material", "asset"],
+        generated_instance_count=publish_receipt.generated_instance_count,
+        duplicate_side_effect_count=publish_receipt.duplicate_side_effect_count,
+        source_level_unchanged=True,
+        review_status=review_receipt.status,
+        review_id=review_request.review_id,
+        steps=[
+            VariantLineageStep(index=1, kind="target", label="场景意图", state="retained", detail="当前 Scene Session 与源关卡事实已绑定", identity=decision.source_level_sha256[:12]),
+            VariantLineageStep(index=2, kind="route", label="能力选路", state="selected", detail=f"选择{route_labels[route_id]}的最短已验证宿主链", identity=route_decision_sha256[:12]),
+            VariantLineageStep(index=3, kind="candidate", label="DCC 候选", state="retained", detail="ComfyUI、Blender 与 Unreal 回执汇聚为一个候选", identity=work_sha256[:12]),
+            VariantLineageStep(index=4, kind="evaluation", label="独立评价", state="evaluated", detail=f"{technical_check_count} 项硬检查与 {visual_claim_count} 项视觉判断通过", identity=evaluation_sha256[:12]),
+            VariantLineageStep(index=5, kind="adoption", label="Codex 采用", state="adopted", detail="锁定精确候选内容身份并发布唯一版本", identity=decision.decision_sha256[:12]),
+            VariantLineageStep(index=6, kind="review", label="Unreal 发布复核", state="inspected", detail="独立进程加载 Published 版本，源关卡未保存", identity=review_request.review_sha256[:12]),
         ],
     )

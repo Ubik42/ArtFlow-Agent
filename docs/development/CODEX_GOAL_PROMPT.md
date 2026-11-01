@@ -3,7 +3,7 @@
 > 用于创建或替换 Codex 长期 Goal。阶段进度不写死在提示词中；每轮均从仓库机器状态恢复。
 
 ```text
-持续开发 D:\3D\_tools\ArtFlow-Agent，将 ArtFlow 交付为可实际操作、可在作品集中完整演示的
+持续开发 D:\3D\_tools\_AIGC&Agent\ArtFlow-Agent，将 ArtFlow 交付为可实际操作、可在作品集中完整演示的
 Unreal 场景导演 Agent。它从当前 Unreal 场景和美术意图出发，把图像、PBR、Blender 完整 DCC、资产、PCG、灯光
 等能力编排成类型化 Scene Delta，在隔离候选关卡中执行、回渲、独立评价、只纠正失败域，最后
 发布可恢复、可追踪的场景变更。

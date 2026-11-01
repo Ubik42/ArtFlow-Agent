@@ -71,7 +71,10 @@ from .scene_variant_lifecycle import (
     SceneVariantReviewRecord,
     validate_session_binding,
 )
-from .scene_variant_review import compile_scene_variant_lineage
+from .scene_variant_review import (
+    compile_routed_dcc_variant_lineage,
+    compile_scene_variant_lineage,
+)
 from .tribunal import TribunalReport
 
 AgentEventType = Literal[
@@ -2138,7 +2141,8 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
         elif event.event_type == "scene_variant_reviewed":
             publication = state.scene_variant_publication
             evaluation = state.scene_candidate_evaluation
-            if publication is None or evaluation is None:
+            routed = state.scene_dcc_candidate_evaluation
+            if publication is None or (evaluation is None and routed is None):
                 raise AgentRuntimeError("scene review requires persisted evaluation and publication")
             if state.scene_variant_review is not None:
                 raise AgentRuntimeError("scene variant review is already persisted")
@@ -2149,14 +2153,29 @@ def reduce_agent_events(events: list[AgentEvent]) -> AgentRunState:
                 != publication.request.decision.decision_sha256
             ):
                 raise AgentRuntimeError("scene review references another published variant")
-            expected = compile_scene_variant_lineage(
-                failed=evaluation.failed_evaluation,
-                corrected=evaluation.corrected_evaluation,
-                publish_request=publication.request,
-                publish_receipt=publication.receipt,
-                review_request=record.request,
-                review_receipt=record.receipt,
-            )
+            if routed is not None:
+                expected = compile_routed_dcc_variant_lineage(
+                    route_id=routed.evaluation_input.route_id,
+                    evaluation_sha256=routed.domain_evaluation.evaluation_sha256,
+                    route_decision_sha256=routed.evaluation_input.route_decision_sha256,
+                    work_sha256=routed.evaluation_input.outcome_sha256,
+                    technical_check_count=sum(check.status == "passed" for check in routed.technical_checks),
+                    visual_claim_count=sum(claim.verdict == "passed" for claim in routed.visual_observation.claims),
+                    publish_request=publication.request,
+                    publish_receipt=publication.receipt,
+                    review_request=record.request,
+                    review_receipt=record.receipt,
+                )
+            else:
+                assert evaluation is not None
+                expected = compile_scene_variant_lineage(
+                    failed=evaluation.failed_evaluation,
+                    corrected=evaluation.corrected_evaluation,
+                    publish_request=publication.request,
+                    publish_receipt=publication.receipt,
+                    review_request=record.request,
+                    review_receipt=record.receipt,
+                )
             if record.lineage != expected:
                 raise AgentRuntimeError("scene review lineage differs from persisted artifacts")
             state.scene_variant_review = record

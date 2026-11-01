@@ -176,7 +176,7 @@ if decision.get("content_identity_sha256") != identity:
 candidate_scene = decision["candidate_scene"]
 published_scene = decision["published_scene"]
 candidate_match = re.fullmatch(
-    r"/Game/ArtFlow/Sessions/AF_([a-f0-9]{12})/Candidates/C_([a-f0-9]{12})",
+    r"/Game/ArtFlow/Sessions/AF_([a-f0-9]{12})/Candidates/([A-Za-z0-9_]+)",
     candidate_scene,
 )
 if candidate_match is None:
@@ -288,4 +288,3 @@ unreal.log(
     f"ARTFLOW_SESSION_PUBLISH status={result['status']} path={published_scene} "
     f"instances={published_facts['generated_instance_count']}"
 )
-
