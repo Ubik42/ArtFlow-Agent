@@ -480,3 +480,9 @@ uv run python -m pytest tests/test_mcp_facade.py -q
 - [Unreal AIGC 场景转换调研](docs/research/UNREAL_AIGC_SCENE_TRANSFORMATION_2026-08-27.md)
 - [演示与复现指南](docs/DEMO_GUIDE.md)
 - [完整验证证据](docs/evidence/)
+
+## 当前路线发布与复核
+
+风场旗帜路线已完成真实 UE 5.8.1 发布、独立进程对账和版本复核。发布前读取当前候选的 18 个实例、保护对象与材质；源关卡保持不变。实现与原始回执见 [M61 案例](docs/evidence/M61_ROUTED_PUBLISH_2026-11-01.md)。
+
+![当前路线的发布与复核界面](docs/evidence/m61/published-route-ui.png)

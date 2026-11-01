@@ -206,7 +206,7 @@ Unreal 当前场景
   内容身份评价，六项交付检查与四项 Codex 视觉判断分别覆盖路线回执、候选目录、上游不变、
   几何预算、材质碰撞、预览内容、材质方向、轮廓、挂接和生产可用性。通过后由 Codex 锁定精确
   Unreal 候选并编译既有 Publisher 的版本化发布请求；新路线入队会使旧候选评价与采用投影失效。
-- **M61 · Routed candidate versioned publish and Unreal review（进行中）**：用既有 Unreal 发布与
+- **M61 · Routed candidate versioned publish and Unreal review（已完成）**：用既有 Unreal 发布与
   review 入口执行 M60 的内容寻址请求，验证未知完成对账、唯一 Published 包和精确版本复检。
 
 具体唯一下一切片、允许路径、风险、停止条件和证据上限由 `config/goal-state.json` 决定。
@@ -235,3 +235,5 @@ Unreal 当前场景
 - Planner、Specialist、Judge、Critic、Recovery 与 Publisher 仅按真实权限/上下文隔离；所有协作
   通过不可变事件和类型化 artifact，不通过表演式多 Agent 对话。
 - 每轮从 goal-state 和 checkpoint 恢复。接受条件满足后立即记录证据并切换下一切片，避免目标漂移。
+
+- **M62 · Native candidate inspection in the publish workflow（进行中）**：把当前候选快照采集自动接入已有发布操作，保持同一事件账本，避免手工准备中间请求。

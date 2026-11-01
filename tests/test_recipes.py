@@ -4,11 +4,12 @@ from artflow_agent.domain import EnvironmentSnapshot
 from artflow_agent.recipes import RecipeCatalog, RecipeError
 
 
-def test_bundled_catalog_contains_two_reviewed_recipes() -> None:
+def test_bundled_catalog_contains_registered_reviewed_recipes() -> None:
     catalog = RecipeCatalog.bundled()
     assert [item.recipe_id for item in catalog.list()] == [
         "composition-preserving-v1",
         "masked-refinement-v1",
+        "surface-detail-reference-v1",
     ]
 
 

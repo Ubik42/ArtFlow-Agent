@@ -1,0 +1,82 @@
+{
+  "status": "verified",
+  "run_id": "unreal-artflow-ue-89ac07a74988b8dd2fca9295e141a6fd-ca79f77b487e",
+  "lineage": {
+    "schema_id": "artflow-scene-variant-lineage/1",
+    "lineage_kind": "routed_dcc",
+    "case_id": "current-session",
+    "status": "published",
+    "source_scene": "/Game/ArtFlowDemo",
+    "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+    "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28",
+    "content_identity_sha256": "c7a243e05e28d2163e423c4833649169b2f77f4eb9ef6fb11a877025555d9958",
+    "published_level_sha256": "a48e511e284a4d50c019046ce6ec5db0080711f70cc11230d24b28de599c43ea",
+    "correction_domain": null,
+    "route_id": "cloth_banner",
+    "retained_domains": [
+      "image",
+      "material",
+      "asset"
+    ],
+    "generated_instance_count": 18,
+    "duplicate_side_effect_count": 0,
+    "source_level_unchanged": true,
+    "review_status": "reconciled",
+    "review_id": "scene-review-e7c079d5656e652f",
+    "steps": [
+      {
+        "index": 1,
+        "kind": "target",
+        "label": "场景意图",
+        "state": "retained",
+        "detail": "当前 Scene Session 与源关卡事实已绑定",
+        "identity": "620e481466b4"
+      },
+      {
+        "index": 2,
+        "kind": "route",
+        "label": "能力选路",
+        "state": "selected",
+        "detail": "选择风场旗帜的最短已验证宿主链",
+        "identity": "b38cca403ba7"
+      },
+      {
+        "index": 3,
+        "kind": "candidate",
+        "label": "DCC 候选",
+        "state": "retained",
+        "detail": "ComfyUI、Blender 与 Unreal 回执汇聚为一个候选",
+        "identity": "def90cec8a69"
+      },
+      {
+        "index": 4,
+        "kind": "evaluation",
+        "label": "独立评价",
+        "state": "evaluated",
+        "detail": "6 项硬检查与 4 项视觉判断通过",
+        "identity": "c4fe14835396"
+      },
+      {
+        "index": 5,
+        "kind": "adoption",
+        "label": "Codex 采用",
+        "state": "adopted",
+        "detail": "锁定精确候选内容身份并发布唯一版本",
+        "identity": "4f5d61aacbea"
+      },
+      {
+        "index": 6,
+        "kind": "review",
+        "label": "Unreal 发布复核",
+        "state": "inspected",
+        "detail": "独立进程加载 Published 版本，源关卡未保存",
+        "identity": "e7c079d5656e"
+      }
+    ]
+  },
+  "source_level_sha256": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "observed_instance_count": 18,
+  "original_request_instance_count": 12,
+  "native_candidate_inspection": true,
+  "host_mode": "UE 5.8 commandlet; scene state and saved assets, no new visual recording"
+}

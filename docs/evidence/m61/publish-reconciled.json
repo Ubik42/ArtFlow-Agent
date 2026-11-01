@@ -1,0 +1,19 @@
+{
+  "schema_id": "artflow-scene-variant-publish-receipt/1",
+  "request_id": "scene-publish-2112feccc46d3ae7",
+  "request_sha256": "2112feccc46d3ae7cdf789b73ef01c7234cf5b758689d84dd8b2caf81167c14b",
+  "decision_sha256": "4f5d61aacbeaede7099b8eff0af8aae4e9f0952557766ac5703df043fed6a4e8",
+  "status": "reconciled",
+  "candidate_scene": "/Game/ArtFlow/Sessions/AF_dc31f6ed0f4e/Candidates/ClothBanner_B_4db41b8ff0c2",
+  "candidate_level_sha256": "4a94f26415c5d4c88cee9032b616c720604b4e87976d63bd18c0a7789df95052",
+  "published_scene": "/Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28",
+  "published_level_sha256": "a48e511e284a4d50c019046ce6ec5db0080711f70cc11230d24b28de599c43ea",
+  "source_level_sha256_before": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "source_level_sha256_after": "620e481466b40de6dab569737ba782246f85b62a6123ea7e702102ed5d24974a",
+  "protected_state_sha256": "18fe1bae0b9317874f613368c7de1d93fb6f9b7f225f33487669976578b07733",
+  "material_path": "/Engine/EngineMaterials/DefaultMaterial.DefaultMaterial",
+  "generated_instance_count": 18,
+  "duplicate_side_effect_count": 0,
+  "completed_at": "2026-11-01T20:20:04.541093Z",
+  "receipt_sha256": "49a6e79200f28b27f7cea18d3b37575f4f6919356e24bd60036054714b19dcd5"
+}

@@ -134,7 +134,7 @@ if not published_file.is_file() or file_sha256(published_file) != request["publi
     fail("published level bytes differ from the publish receipt")
 source_before = file_sha256(source_file)
 
-if current_origin and current_run and not unreal.EditorLoadingAndSavingUtils.load_map(published_scene):
+if not unreal.EditorLoadingAndSavingUtils.load_map(published_scene):
     fail("Unreal could not open the exact Published variant for review")
 
 world = unreal.get_editor_subsystem(unreal.UnrealEditorSubsystem).get_editor_world()

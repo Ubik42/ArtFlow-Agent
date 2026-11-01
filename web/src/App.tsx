@@ -842,6 +842,8 @@ type CurrentCorrectionEvaluationRecord = {
 };
 type SceneVariantLineage = {
   schema_id: "artflow-scene-variant-lineage/1";
+  lineage_kind?: "correction" | "routed_dcc";
+  route_id?: "cloth_banner" | "damage_variant" | "mechanism_shot" | null;
   case_id: "sunlit-overgrown" | "current-session";
   status: "published";
   source_scene: string;
@@ -849,7 +851,7 @@ type SceneVariantLineage = {
   published_scene: string;
   content_identity_sha256: string;
   published_level_sha256: string;
-  correction_domain: SceneDomain;
+  correction_domain: SceneDomain | null;
   retained_domains: SceneDomain[];
   generated_instance_count: number;
   duplicate_side_effect_count: 0;
@@ -858,9 +860,9 @@ type SceneVariantLineage = {
   review_id: string;
   steps: Array<{
     index: number;
-    kind: "target" | "candidate" | "correction" | "adoption" | "publish" | "review";
+    kind: "target" | "route" | "candidate" | "evaluation" | "correction" | "adoption" | "publish" | "review";
     label: string;
-    state: "retained" | "failed" | "corrected" | "adopted" | "published" | "inspected";
+    state: "retained" | "selected" | "failed" | "evaluated" | "corrected" | "adopted" | "published" | "inspected";
     detail: string;
     identity: string;
   }>;
@@ -1703,7 +1705,9 @@ function SceneChangeSpectrum({
               <span>{isPersisted ? <Check size={14} /> : draft.can_stage ? <ArrowUpRight size={14} /> : <LockKeyhole size={14} />}</span>
               <strong>
                 {routedEvaluation
-                  ? currentAdoption
+                  ? currentLineage?.lineage_kind === "routed_dcc"
+                    ? "自动选路候选已发布，并完成 Unreal 独立复核"
+                    : currentAdoption
                     ? "自动选路候选已由 Codex 采用，发布请求已经就绪"
                     : routedEvaluation.domain_evaluation.status === "accepted"
                       ? "自动选路候选已通过技术与视觉评价"
@@ -1794,7 +1798,9 @@ function SceneChangeSpectrum({
                 <div className={`candidate-work-pulse state-${routedEvaluation?.domain_evaluation.status === "accepted" ? "succeeded" : routedEvaluation ? "failed" : "reconciling"}`}>
                   <span />
                   <b>
-                    {currentAdoption
+                    {currentLineage?.lineage_kind === "routed_dcc"
+                      ? "DCC 场景版本已发布并复核"
+                      : currentAdoption
                       ? "Codex 已采用精确 DCC 候选"
                       : routedEvaluation?.domain_evaluation.status === "accepted"
                         ? "路线候选评价通过"
@@ -1982,8 +1988,10 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
       ? [{
           id: "cloth-banner-roundtrip",
           tab: "当前 Session · 自动选路",
-          title: routedAdoption ? "风场旗帜候选通过评价并由 Codex 采用" : "“材质”意图匹配到风场旗帜路线",
-          description: routedAdoption
+          title: liveLineage?.lineage_kind === "routed_dcc" ? "风场旗帜已发布为可复核的 Unreal 场景版本" : routedAdoption ? "风场旗帜候选通过评价并由 Codex 采用" : "“材质”意图匹配到风场旗帜路线",
+          description: liveLineage?.lineage_kind === "routed_dcc"
+            ? "从场景意图选择旗帜制作路线，依次完成材质生成、Blender 布料解算、Unreal 回流与候选评价。发布前读取当前候选的真实场景快照，独立引擎进程再次核对发布文件、18 个实例、材质与保护对象，源关卡保持不变。"
+            : routedAdoption
             ? "Agent 将路线决策、ComfyUI 与 Blender 回执、Unreal 候选关卡和独立视觉判断锁定为同一内容身份。六项交付检查与四项视觉判断通过后，Codex 采用精确候选并编译版本化发布请求。"
             : `Agent 对照 ${routeDecision?.candidates.length ?? 3} 条已验证路线与当前场景事实，选择最短可行链。本轮只派发 ${routeDecision?.selected_stage_capability_ids.length ?? 3} 个阶段：固定 ComfyUI 子图生成纹章与旧化输入，Blender 完成材质与 Cloth 解算，再将第 48 帧定格网格回流 Unreal 派生候选。`,
           frames: [
@@ -2004,7 +2012,7 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
             ? `评价 ${shortId(routedEvaluation?.record_sha256 ?? "")} 已锁定候选内容；Codex 采用决定 ${shortId(routedAdoption.decision.decision_sha256)} 指向 ${routedAdoption.decision.published_scene}。`
             : `${routeBasis ?? `旗帜请求 ${shortId(agent.scene_dcc_work?.definition.cloth_banner_request_sha256 ?? "")} 已恢复为候选 ${agent.scene_dcc_work?.definition.candidate_scene_path}`}。路线评分：${routeScoreboard ?? "风场旗帜 5 分 · 破损变体 0 分 · 机关镜头 0 分"}。`,
           domains: routedEvaluation
-            ? ["选路·材质命中", "硬检查·6/6", "视觉·4/4", "Codex·已采用", "发布·已编译"]
+            ? ["选路·材质命中", "硬检查·6/6", "视觉·4/4", "Codex·已采用", liveLineage?.lineage_kind === "routed_dcc" ? "发布·已复核" : "发布·已编译"]
             : ["挂点·已绑定", "材质·已生成", "布料·已解算", "资产·已回流", "重放·已对账"],
         }]
       : hasDamageVariant
@@ -2483,7 +2491,8 @@ function ScenePipelineOverview({ agent }: { agent: AgentProjection }) {
         ))}
       </div>
 
-      {activeCase.id === "sunlit-overgrown" && lineage && (
+      {lineage && (activeCase.id === "sunlit-overgrown" ||
+        (activeCase.id === "cloth-banner-roundtrip" && lineage.lineage_kind === "routed_dcc")) && (
         <SceneVariantLedger lineage={lineage} source={lineageSource} />
       )}
 
@@ -2548,11 +2557,13 @@ function SceneVariantLedger({ lineage, source }: { lineage: SceneVariantLineage;
     window.setTimeout(() => setCopied(false), 1600);
   };
   return (
-    <section className="variant-lineage" aria-label="晴光庭院场景变体谱系">
+    <section className="variant-lineage" aria-label="场景变体谱系">
       <header className="lineage-header">
         <div>
           <span><Route size={14} /> 场景变体谱系</span>
-          <strong>一次失败，只改变一条支线；采用结果已进入 Unreal 版本</strong>
+          <strong>{lineage.lineage_kind === "routed_dcc"
+            ? "选定的 DCC 路线已发布，并完成 Unreal 独立复核"
+            : "一次失败，只改变一条支线；采用结果已进入 Unreal 版本"}</strong>
         </div>
         <div className="lineage-identity">
           <small className="lineage-source">{source}</small>
@@ -2585,7 +2596,7 @@ function SceneVariantLedger({ lineage, source }: { lineage: SceneVariantLineage;
           <code title={lineage.published_scene}>{lineage.published_scene}</code>
         </div>
         <dl>
-          <div><dt>保留领域</dt><dd>{lineage.retained_domains.length} / 4</dd></div>
+          <div><dt>保留领域</dt><dd>{lineage.retained_domains.length}</dd></div>
           <div><dt>PCG 实例</dt><dd>{lineage.generated_instance_count}</dd></div>
           <div><dt>重复副作用</dt><dd>{lineage.duplicate_side_effect_count}</dd></div>
           <div><dt>源关卡保存</dt><dd>{lineage.source_level_unchanged ? "0" : "—"}</dd></div>

@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .current_scene_evaluation import UnrealCandidateExecutionReceipt
+from .routed_publish_facts import load_routed_publish_facts
 from .scene_correction_work import file_sha256, resolve_current_correction_receipt
 from .scene_disposition import (
     SceneVariantPublishReceipt,
@@ -121,11 +122,15 @@ def compile_current_publish_request(
                 "materials": [slot.material_path for slot in protected.material_slots],
             }
         )
+        facts = load_routed_publish_facts(project_root, decision)
+        if (facts["protected_state_sha256"] != protected_fingerprint
+                or facts["material_path"] != editable.material_slots[0].material_path):
+            raise ValueError("Routed candidate changed protected state or editable material")
         return compile_publish_request(
             decision,
             protected_state_sha256=protected_fingerprint,
             material_path=editable.material_slots[0].material_path,
-            instance_count=base_receipt.generated_instance_count,
+            instance_count=facts["generated_instance_count"],
         )
     evaluation = state.scene_candidate_evaluation
     intake = state.scene_correction_intake

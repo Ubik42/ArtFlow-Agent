@@ -209,7 +209,11 @@ if candidate_facts["protected_state_sha256"] != request["expected_protected_stat
 if candidate_facts["material_path"] != request["expected_material_path"]:
     fail("candidate material changed after evaluation")
 if candidate_facts["generated_instance_count"] != request["expected_instance_count"]:
-    fail("candidate PCG instance count changed after evaluation")
+    fail(
+        "candidate PCG instance count changed after evaluation: "
+        f"observed={candidate_facts['generated_instance_count']}, "
+        f"expected={request['expected_instance_count']}"
+    )
 del candidate_world
 unreal.SystemLibrary.collect_garbage()
 

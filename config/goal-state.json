@@ -1,11 +1,11 @@
 {
   "schemaVersion": "codex-goal-state@2.0.0",
-  "stateRevision": 109,
+  "stateRevision": 110,
   "strategyVersion": "5.0.0",
   "goalId": "artflow-agent",
   "objective": "Build a practical Unreal-native AIGC production Agent that turns current scene intent into real image, PBR, Blender-generated geometry, asset, PCG and lighting work, coordinates these capabilities through a hand-built durable typed runtime, and returns editable results through isolated Unreal candidates without accumulating approval gates, audit subsystems or decorative framework layers.",
   "status": "active",
-  "currentMilestone": "M61",
+  "currentMilestone": "M62",
   "milestones": [
     {
       "id": "M0",
@@ -13,13 +13,17 @@
       "status": "completed",
       "dependsOn": [],
       "outcome": "The real RTX 4080 baseline remains reproducible and scene, provider, route, approval and receipt boundaries validate across Python, TypeScript and Unreal C++.",
-      "acceptance": ["Real baseline and cross-language contract evidence are recorded without overstating human adoption"]
+      "acceptance": [
+        "Real baseline and cross-language contract evidence are recorded without overstating human adoption"
+      ]
     },
     {
       "id": "M1",
       "title": "Hand-built Agent kernel and scene context",
       "status": "completed",
-      "dependsOn": ["M0"],
+      "dependsOn": [
+        "M0"
+      ],
       "outcome": "A verified Scene Package becomes durable AgentRun context in an append-only SQLite event model reconstructed by a deterministic reducer and exposed through a bounded capability registry.",
       "acceptance": [
         "Restart reconstructs the same state and pending interrupt from events",
@@ -31,47 +35,69 @@
       "id": "M2",
       "title": "Scene Lab and typed Agent event UI",
       "status": "completed",
-      "dependsOn": ["M1"],
+      "dependsOn": [
+        "M1"
+      ],
       "outcome": "A redesigned visual-production workspace exposes scene constraints, Agent lifecycle, tool actions, persisted approvals, recovery and evidence through typed streaming state.",
-      "acceptance": ["Refresh preserves the current run and pending decision, and every visible proof maps to real state or evidence"]
+      "acceptance": [
+        "Refresh preserves the current run and pending decision, and every visible proof maps to real state or evidence"
+      ]
     },
     {
       "id": "M3",
       "title": "Real Unreal scene and matched provider routing",
       "status": "completed",
-      "dependsOn": ["M2"],
+      "dependsOn": [
+        "M2"
+      ],
       "outcome": "One real Unreal scene package runs through local ComfyUI and Codex built-in GPT Image 2 using the same constraints and normalized receipts without a permission prompt.",
-      "acceptance": ["Both real execution surfaces are bound to the same verified scene intent, persist normalized receipts, recover idempotently and remain explicitly unselected"]
+      "acceptance": [
+        "Both real execution surfaces are bound to the same verified scene intent, persist normalized receipts, recover idempotently and remain explicitly unselected"
+      ]
     },
     {
       "id": "M4",
       "title": "Evaluation tribunal and bounded revision",
       "status": "completed",
-      "dependsOn": ["M3"],
+      "dependsOn": [
+        "M3"
+      ],
       "outcome": "Independent deterministic and multimodal evaluators expose disagreement, reject attractive-invalid candidates and verify one evidence-selected mask-bounded revision.",
-      "acceptance": ["An attractive negative control is rejected and evaluator evidence replays without regenerating images"]
+      "acceptance": [
+        "An attractive negative control is rejected and evaluator evidence replays without regenerating images"
+      ]
     },
     {
       "id": "M5",
       "title": "Recovery observability memory and evaluation",
       "status": "completed",
-      "dependsOn": ["M4"],
+      "dependsOn": [
+        "M4"
+      ],
       "outcome": "The Agent survives injected failures without duplicate side effects, emits correlated OpenTelemetry evidence, governs production memory and reports frozen Harness evaluations.",
-      "acceptance": ["Recovery, context, policy and memory scorecards report denominators, latency and cost from reproducible cases"]
+      "acceptance": [
+        "Recovery, context, policy and memory scorecards report denominators, latency and cost from reproducible cases"
+      ]
     },
     {
       "id": "M6",
       "title": "Verified provenance and portfolio case study",
       "status": "completed",
-      "dependsOn": ["M5"],
+      "dependsOn": [
+        "M5"
+      ],
       "outcome": "The complete Unreal-to-provider-to-tribunal-to-adoption-to-reimport story ships with independently verified C2PA provenance and inspectable evidence for every public claim.",
-      "acceptance": ["One successful run and one failure-injected run can be independently replayed and verified"]
+      "acceptance": [
+        "One successful run and one failure-injected run can be independently replayed and verified"
+      ]
     },
     {
       "id": "M7",
       "title": "Scene Digital Twin and staged Scene Delta kernel",
       "status": "completed",
-      "dependsOn": ["M6"],
+      "dependsOn": [
+        "M6"
+      ],
       "outcome": "A real UE 5.8 scene exports stable 3D facts and accepts a frozen typed lighting/PCG SceneChangePlan whose dry-run proves dependency, scope, fingerprint, deterministic seed, validation and cleanup semantics before any host mutation.",
       "acceptance": [
         "The extended scene package records actor, material, light, PCG, data-layer, bounds and protected-object facts with content hashes",
@@ -83,7 +109,9 @@
       "id": "M8",
       "title": "ComfyUI production graph and PBR material route",
       "status": "completed",
-      "dependsOn": ["M7"],
+      "dependsOn": [
+        "M7"
+      ],
       "outcome": "Reviewed ComfyUI subgraphs and verified production nodes compile visual intent into validated PBR texture sets and Unreal material instances without arbitrary graph execution.",
       "acceptance": [
         "Runtime capability inspection proves every required custom node and workflow version",
@@ -94,7 +122,9 @@
       "id": "M9",
       "title": "PCG lighting and asset scene-transformation closed loop",
       "status": "completed",
-      "dependsOn": ["M8"],
+      "dependsOn": [
+        "M8"
+      ],
       "outcome": "One project-owned concept target drives staged lighting, PCG layout and bounded asset/material changes, same-camera rerender evaluation, failed-domain correction and verified publish or discard.",
       "acceptance": [
         "The source camera, protected actors and walkable bounds remain invariant while the staged 3D scene visibly changes",
@@ -106,7 +136,9 @@
       "id": "M10",
       "title": "MCP interoperability image-to-3D experiment and portfolio release",
       "status": "completed",
-      "dependsOn": ["M9"],
+      "dependsOn": [
+        "M9"
+      ],
       "outcome": "A thin MCP facade exposes the same bounded resources and tools, one optional image-to-3D provider passes through Interchange validation, and a Chinese screenshot-rich case study truthfully demonstrates the complete Unreal scene-transformation Agent.",
       "acceptance": [
         "MCP calls enter the existing policy, event, idempotency and validation path and expose no arbitrary host execution",
@@ -118,7 +150,9 @@
       "id": "M11",
       "title": "Live Scene Session and Scene Change Spectrum",
       "status": "completed",
-      "dependsOn": ["M10"],
+      "dependsOn": [
+        "M10"
+      ],
       "outcome": "A real imported Unreal scene opens an interactive Scene Session where the user states a visual intent, scopes bounded image, material, asset, PCG and lighting domains, and inspects a deterministic typed Scene Delta draft through ArtFlow's distinctive Scene Change Spectrum interface.",
       "acceptance": [
         "Scene Session planning derives only from the attached scene, registered capabilities and explicit user scope and causes no external side effect",
@@ -130,7 +164,9 @@
       "id": "M12",
       "title": "Unreal editor session bridge and candidate execution",
       "status": "completed",
-      "dependsOn": ["M11"],
+      "dependsOn": [
+        "M11"
+      ],
       "outcome": "The Unreal editor can initiate a Scene Session, receive a typed candidate-stage request and execute registered scene tools in an isolated candidate level with durable receipts and reconciliation.",
       "acceptance": [
         "One editor-originated session completes inspect, draft, stage, rerender and reconcile against the project-owned UE 5.8 host",
@@ -141,7 +177,9 @@
       "id": "M13",
       "title": "Cross-pipeline scene transformation and failed-domain correction",
       "status": "completed",
-      "dependsOn": ["M12"],
+      "dependsOn": [
+        "M12"
+      ],
       "outcome": "Reviewed ComfyUI graphs, GPT Image 2 development orchestration, PBR materials, project and generated assets, PCG and lighting cooperate through one typed plan, with independent evaluation and failed-domain-only correction.",
       "acceptance": [
         "At least two materially different production cases use different capability routes while sharing the same coordinator and evidence model",
@@ -152,7 +190,9 @@
       "id": "M14",
       "title": "Embedded delivery and portfolio release",
       "status": "completed",
-      "dependsOn": ["M13"],
+      "dependsOn": [
+        "M13"
+      ],
       "outcome": "ArtFlow ships as a polished Chinese portfolio product with an Unreal-facing entry, multiple reproducible production cases, restrained documentation, real screenshots and a traceable release package.",
       "acceptance": [
         "A reviewer can understand, launch and verify the core workflow without reading development history",
@@ -163,7 +203,9 @@
       "id": "M15",
       "title": "Evidence-bound disposition and versioned Unreal publish",
       "status": "completed",
-      "dependsOn": ["M14"],
+      "dependsOn": [
+        "M14"
+      ],
       "outcome": "The orchestrator adopts or rejects Session candidates from persisted evaluation evidence and publishes accepted work as a versioned Unreal scene variant with replayable provenance, without overwriting the source level or duplicating package side effects.",
       "acceptance": [
         "A typed disposition decision can reference only an accepted domain evaluation and exact candidate content identity",
@@ -175,7 +217,9 @@
       "id": "M16",
       "title": "Scene Variant Ledger and embedded Unreal review",
       "status": "completed",
-      "dependsOn": ["M15"],
+      "dependsOn": [
+        "M15"
+      ],
       "outcome": "The Scene Change Spectrum presents evaluation, correction, adoption and versioned publish as one legible scene-variant lineage, while a registered Unreal review action opens the exact published map and returns a typed inspection receipt without exposing arbitrary paths or host execution.",
       "acceptance": [
         "The Chinese product UI distinguishes candidate, corrected, adopted, published and reconciled states from real receipts rather than simulated progress",
@@ -187,7 +231,9 @@
       "id": "M17",
       "title": "Durable live scene-variant lifecycle",
       "status": "completed",
-      "dependsOn": ["M16"],
+      "dependsOn": [
+        "M16"
+      ],
       "outcome": "Evaluation, failed-domain correction, Codex adoption, Unreal publish and review become first-class append-only Scene Session events, so the live workspace projects the current run's real variant lifecycle instead of depending on frozen showcase data.",
       "acceptance": [
         "Typed lifecycle events bind every evaluation, correction, adoption, publish and review transition to one Scene Session, stage request and candidate identity",
@@ -199,7 +245,9 @@
       "id": "M18",
       "title": "Unreal-native lifecycle callback",
       "status": "completed",
-      "dependsOn": ["M17"],
+      "dependsOn": [
+        "M17"
+      ],
       "outcome": "The Unreal-facing bridge appends registered evaluation, adoption, publish and review receipts directly to the matching current Scene Session, replacing the one-off historical migration route while preserving the same reducer and projection.",
       "acceptance": [
         "Unreal can submit only registered content identities for the current run and Session and cannot supply a host path or arbitrary lifecycle schema",
@@ -211,7 +259,9 @@
       "id": "M19",
       "title": "Live candidate execution and progress",
       "status": "completed",
-      "dependsOn": ["M18"],
+      "dependsOn": [
+        "M18"
+      ],
       "outcome": "A staged Candidate Plan becomes a content-bound work item that the Unreal editor can claim, execute and reconcile from the current Scene Session, with typed progress returning through the existing event stream and no manual command-line launch.",
       "acceptance": [
         "Only the current Session's registered staged plan can enter the Unreal work queue, and no caller can supply an arbitrary command, script, workflow or host path",
@@ -223,7 +273,9 @@
       "id": "M20",
       "title": "Current-session tribunal and failed-domain correction",
       "status": "completed",
-      "dependsOn": ["M19"],
+      "dependsOn": [
+        "M19"
+      ],
       "outcome": "The current Scene Session evaluates its own Unreal candidate rerender and 3D host receipt, classifies failed domains, preserves passed evidence, submits only a bounded correction plan and advances an accepted candidate toward adoption without loading historical M16 evaluation artifacts.",
       "acceptance": [
         "Technical checks and the visual critic evaluate the exact current work outcome and cannot cite another Session, candidate or showcase artifact",
@@ -235,7 +287,9 @@
       "id": "M21",
       "title": "Current-session versioned publish and Unreal review",
       "status": "completed",
-      "dependsOn": ["M20"],
+      "dependsOn": [
+        "M20"
+      ],
       "outcome": "The exact current candidate adopted by Codex is published into a content-addressed Unreal variant namespace, reconciled without duplicate packages and opened through the registered review action while the source level remains byte-identical.",
       "acceptance": [
         "Publish derives only from the current persisted adoption and exact candidate bytes and cannot accept a caller path or arbitrary package name",
@@ -247,7 +301,9 @@
       "id": "M22",
       "title": "Unreal-native operator lifecycle controls",
       "status": "completed",
-      "dependsOn": ["M21"],
+      "dependsOn": [
+        "M21"
+      ],
       "outcome": "An artist can advance the current Scene Session from candidate execution through correction, publish and exact-version review from registered Unreal editor actions, while the Scene Change Spectrum reflects each durable state without command-line operation.",
       "acceptance": [
         "Editor actions derive the only legal next lifecycle command from the current Agent projection and never accept an arbitrary script, path, map or event payload",
@@ -259,7 +315,9 @@
       "id": "M23",
       "title": "Blender DCC production bridge and Unreal return",
       "status": "completed",
-      "dependsOn": ["M22"],
+      "dependsOn": [
+        "M22"
+      ],
       "outcome": "Blender becomes a complete DCC execution surface for current Scene Sessions: bounded modeling and Geometry Nodes, ComfyUI-driven PBR assembly and baking, scene layout, lighting and later simulation caches return editable project-owned results to isolated Unreal candidates through one durable work lifecycle.",
       "acceptance": [
         "The Agent derives a typed modeling specification from current scene scale, placement bounds and visual intent rather than emitting Blender code",
@@ -272,7 +330,9 @@
       "id": "M24",
       "title": "Scene-conditioned ComfyUI production route",
       "status": "completed",
-      "dependsOn": ["M23"],
+      "dependsOn": [
+        "M23"
+      ],
       "outcome": "ComfyUI becomes a scene-conditioned generation surface beneath the ArtFlow control plane: Unreal passes drive reviewed ControlNet, LoRA and Production Nodes capabilities whose typed outputs continue into Blender and isolated Unreal candidates.",
       "acceptance": [
         "The Agent discovers the real local ComfyUI and Production Nodes capabilities from runtime facts rather than documentation claims",
@@ -285,7 +345,9 @@
       "id": "M25",
       "title": "DCC capability graph and live dispatch",
       "status": "completed",
-      "dependsOn": ["M24"],
+      "dependsOn": [
+        "M24"
+      ],
       "outcome": "Blender's modeling, UV/material/bake, Geometry Nodes, lighting and later cache operations combine with reviewed ComfyUI subgraphs and typed Unreal tools as one discoverable Scene Session capability graph whose real work is dispatched and observed through the existing durable product lifecycle.",
       "acceptance": [
         "The capability graph reports real Blender, ComfyUI and Unreal readiness with versioned typed inputs instead of treating each host script as a separate demo",
@@ -298,7 +360,9 @@
       "id": "M26",
       "title": "Surface authoring and bake round-trip",
       "status": "completed",
-      "dependsOn": ["M25"],
+      "dependsOn": [
+        "M25"
+      ],
       "outcome": "The current Scene Session can ask Blender for bounded UV and material-bake work derived from an accepted lookdev direction, then return reusable textures and an editable exchange asset to a new isolated Unreal candidate through the same durable capability lifecycle.",
       "acceptance": [
         "A typed request binds the current lookdev blend, Session identity, registered object scope, UV method, atlas resolution and finite bake channels",
@@ -311,7 +375,9 @@
       "id": "M27",
       "title": "Live surface capability dispatch",
       "status": "completed",
-      "dependsOn": ["M26"],
+      "dependsOn": [
+        "M26"
+      ],
       "outcome": "The proven Blender UV and material-bake route becomes a registered current-session capability in the existing DCC work lifecycle and Scene Change Spectrum, so an artist can dispatch and inspect it without using development scripts.",
       "acceptance": [
         "The existing Scene DCC Work definition admits the exact surface request, Blender receipt and Unreal return identities as a sixth finite capability",
@@ -323,7 +389,9 @@
       "id": "M28",
       "title": "Physics-assisted set dressing round-trip",
       "status": "completed",
-      "dependsOn": ["M27"],
+      "dependsOn": [
+        "M27"
+      ],
       "outcome": "A current Scene Session can use a bounded Blender rigid-body settle capability for deterministic prop dressing, then return a validated transform manifest and editable source to a new isolated Unreal candidate.",
       "acceptance": [
         "A typed request binds scene bounds, registered source prototypes, deterministic seed, object count and finite simulation frame budget",
@@ -336,7 +404,9 @@
       "id": "M29",
       "title": "Live set-dressing dispatch",
       "status": "completed",
-      "dependsOn": ["M28"],
+      "dependsOn": [
+        "M28"
+      ],
       "outcome": "The verified physics-assisted set-dressing route becomes a seventh registered current-session DCC capability and is visible through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The DCC Work binds the exact set-dressing request, Blender receipt, transform manifest and Unreal return identities",
@@ -348,7 +418,9 @@
       "id": "M30",
       "title": "Scene-conditioned surface detail projection",
       "status": "completed",
-      "dependsOn": ["M29"],
+      "dependsOn": [
+        "M29"
+      ],
       "outcome": "A reviewed ComfyUI subgraph turns current Unreal scene evidence and a bounded object region into surface detail that Blender projects and bakes onto registered geometry before Unreal receives an editable isolated material candidate.",
       "acceptance": [
         "A typed request binds the current Session, source render and object identity, bounded target region, registered ComfyUI workflow and exact Blender surface consumer",
@@ -361,7 +433,9 @@
       "id": "M31",
       "title": "Live surface-detail dispatch",
       "status": "completed",
-      "dependsOn": ["M30"],
+      "dependsOn": [
+        "M30"
+      ],
       "outcome": "The proven ComfyUI-to-Blender surface-detail route becomes an eighth registered current-session DCC capability and is legible through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The work item binds the exact surface-detail request, ComfyUI receipt, Blender receipt and Unreal return identity",
@@ -373,7 +447,9 @@
       "id": "M32",
       "title": "Cross-host procedural scene assembly",
       "status": "completed",
-      "dependsOn": ["M31"],
+      "dependsOn": [
+        "M31"
+      ],
       "outcome": "A current Scene Session composes registered ComfyUI visual subgraphs, Blender procedural DCC operations and Unreal PCG or lighting tools into one bounded scene-assembly task whose intermediate artifacts remain editable.",
       "acceptance": [
         "Capability selection is derived from current scene facts and real host readiness, not a fixed demo sequence",
@@ -385,7 +461,9 @@
       "id": "M33",
       "title": "Live procedural assembly dispatch",
       "status": "completed",
-      "dependsOn": ["M32"],
+      "dependsOn": [
+        "M32"
+      ],
       "outcome": "The proven scene-conditioned procedural-kit route becomes a ninth registered current-session DCC capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The work item binds the exact kit request, Blender receipt, manifest and Unreal return identities",
@@ -397,7 +475,9 @@
       "id": "M34",
       "title": "Scene-conditioned native PCG density",
       "status": "completed",
-      "dependsOn": ["M33"],
+      "dependsOn": [
+        "M33"
+      ],
       "outcome": "A reviewed ComfyUI spatial-conditioning subgraph converts current Unreal passes and protected regions into validated density data that a project-owned native PCG graph consumes together with the registered Blender kit in a new candidate.",
       "acceptance": [
         "A typed request binds current Depth or Object ID evidence, protected exclusions, fixed conditioning capability and the exact M32 kit identity",
@@ -410,7 +490,9 @@
       "id": "M35",
       "title": "Live native PCG route",
       "status": "completed",
-      "dependsOn": ["M34"],
+      "dependsOn": [
+        "M34"
+      ],
       "outcome": "The proven scene-conditioned density route becomes a tenth registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The work item binds the exact scene-pass request, ComfyUI receipt, spatial manifest, native PCG graph and Unreal candidate identities",
@@ -422,7 +504,9 @@
       "id": "M36",
       "title": "Shot-ready procedural environment package",
       "status": "completed",
-      "dependsOn": ["M35"],
+      "dependsOn": [
+        "M35"
+      ],
       "outcome": "A current Scene Session compiles its accepted visual direction, Blender camera-light previs and native PCG environment candidate into a bounded Unreal Level Sequence candidate ready for shot review.",
       "acceptance": [
         "A typed shot-package request binds the current camera, registered lighting parameters, exact native PCG candidate and finite sequence range",
@@ -434,7 +518,9 @@
       "id": "M37",
       "title": "Live shot-package dispatch",
       "status": "completed",
-      "dependsOn": ["M36"],
+      "dependsOn": [
+        "M36"
+      ],
       "outcome": "The proven Blender-to-Unreal shot package becomes an eleventh registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The work item binds the exact shot-package request, Blender shot receipt, Level Sequence and Unreal candidate identities",
@@ -446,7 +532,9 @@
       "id": "M38",
       "title": "Bounded cinematic camera move",
       "status": "completed",
-      "dependsOn": ["M37"],
+      "dependsOn": [
+        "M37"
+      ],
       "outcome": "The current shot-ready environment gains a bounded, editable cinematic camera move authored from Blender previs and returned as a verified Unreal Sequencer transform track with inspectable start, middle and end frames.",
       "acceptance": [
         "A typed camera-move request binds the current shot package, finite three-key transform curve and existing sequence identity",
@@ -458,7 +546,9 @@
       "id": "M39",
       "title": "Live camera-move dispatch",
       "status": "completed",
-      "dependsOn": ["M38"],
+      "dependsOn": [
+        "M38"
+      ],
       "outcome": "The proven Blender-to-Sequencer camera move becomes a twelfth registered current-session capability and is dispatched, replayed and presented through the existing worker lifecycle and Scene Change Spectrum.",
       "acceptance": [
         "The work item binds the exact camera-move request, Blender animated source, derived Level Sequence and Unreal three-frame receipt identities",
@@ -470,7 +560,9 @@
       "id": "M40",
       "title": "Scene-conditioned material variation set",
       "status": "completed",
-      "dependsOn": ["M39"],
+      "dependsOn": [
+        "M39"
+      ],
       "outcome": "A current Scene Session turns its registered ComfyUI visual target into a bounded material-variation set: Blender authors editable shader-node variants and baked textures, while Unreal applies deterministic Material Instances across the existing native PCG kit inside an isolated candidate.",
       "acceptance": [
         "A typed request binds the current visual target, exact Wayfinder kit, finite material palette, bake channels and existing PCG candidate",
@@ -483,7 +575,9 @@
       "id": "M41",
       "title": "Live material-variation dispatch",
       "status": "completed",
-      "dependsOn": ["M40"],
+      "dependsOn": [
+        "M40"
+      ],
       "outcome": "The proven ComfyUI-to-Blender-to-Unreal material set becomes a thirteenth registered current-session capability, reusing the durable DCC worker and Scene Change Spectrum for direct dispatch, recovery and inspection.",
       "acceptance": [
         "The work item binds the exact conditioning, material request, editable Blender source, six texture and Unreal candidate identities",
@@ -495,7 +589,9 @@
       "id": "M42",
       "title": "Scene-conditioned terrain and biome blockout",
       "status": "completed",
-      "dependsOn": ["M41"],
+      "dependsOn": [
+        "M41"
+      ],
       "outcome": "A current Unreal Scene Session uses a reviewed ComfyUI spatial subgraph to derive height and biome fields, Blender authors an editable Geometry Nodes terrain extension with UV and collision proxy, and Unreal imports it into an isolated candidate where a project-owned PCG graph consumes the biome partition.",
       "acceptance": [
         "A typed request binds current depth, protected regions, finite terrain bounds, reviewed ComfyUI recipe and the exact M40 candidate",
@@ -508,7 +604,9 @@
       "id": "M43",
       "title": "Simulation cache and Sequencer handoff",
       "status": "completed",
-      "dependsOn": ["M42"],
+      "dependsOn": [
+        "M42"
+      ],
       "outcome": "Blender simulation and cache operations become a finite current-session capability that returns editable time-based content to an isolated Unreal candidate and Level Sequence.",
       "acceptance": [
         "A typed request binds a finite actor set, frame range, solver recipe, terrain candidate and resource budget",
@@ -521,7 +619,9 @@
       "id": "M44",
       "title": "Live simulation-cache dispatch",
       "status": "completed",
-      "dependsOn": ["M43"],
+      "dependsOn": [
+        "M43"
+      ],
       "outcome": "The proven Blender-to-Alembic-to-Unreal time-based route becomes a fourteenth finite current-session capability dispatched and recovered through the existing durable DCC work lifecycle.",
       "acceptance": [
         "The work item binds the exact terrain candidate, Blender source, Alembic, Geometry Cache, Level Sequence and derived candidate identities",
@@ -533,7 +633,9 @@
       "id": "M45",
       "title": "Biome-driven foliage kit and wind material",
       "status": "completed",
-      "dependsOn": ["M44"],
+      "dependsOn": [
+        "M44"
+      ],
       "outcome": "The current biome partition drives a small editable Blender foliage kit and a project-owned Unreal PCG environment layer with bounded wind-material parameters in a derived candidate.",
       "acceptance": [
         "A typed request binds the exact biome mask, terrain candidate, finite species set and geometry/material budgets",
@@ -546,7 +648,9 @@
       "id": "M46",
       "title": "Live biome-foliage dispatch",
       "status": "completed",
-      "dependsOn": ["M45"],
+      "dependsOn": [
+        "M45"
+      ],
       "outcome": "The proven biome-to-Blender-to-Unreal foliage route becomes the fifteenth finite current-session capability dispatched and recovered by the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds exact mask, points, Blender source, GLB/LOD, wind material, PCG graph and candidate identities",
@@ -558,7 +662,9 @@
       "id": "M47",
       "title": "Concept-guided modular environment assembly",
       "status": "completed",
-      "dependsOn": ["M46"],
+      "dependsOn": [
+        "M46"
+      ],
       "outcome": "Current scene conditioning drives a bounded modular environment layout authored as editable Blender Geometry Nodes content and reconstructed as project-owned Unreal actors and PCG in a derived candidate.",
       "acceptance": [
         "A typed request binds current depth, protection, visual target, source candidate and finite module/layout budgets",
@@ -571,7 +677,9 @@
       "id": "M48",
       "title": "Live modular-environment dispatch",
       "status": "completed",
-      "dependsOn": ["M47"],
+      "dependsOn": [
+        "M47"
+      ],
       "outcome": "The proven scene-conditioned modular assembly becomes the sixteenth finite current-session capability dispatched and recovered through the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds exact conditioning, module-zone, Blender source, GLB, manifest and Unreal candidate identities",
@@ -583,7 +691,9 @@
       "id": "M49",
       "title": "Scene-conditioned spline infrastructure",
       "status": "completed",
-      "dependsOn": ["M48"],
+      "dependsOn": [
+        "M48"
+      ],
       "outcome": "Current scene geometry and protected regions drive an editable spline-based cable or pipe network authored in Blender and reconstructed as bounded Unreal SplineComponents in a derived candidate.",
       "acceptance": [
         "A typed request binds the exact current depth, protection field, modular candidate and finite route, support and geometry budgets",
@@ -596,7 +706,9 @@
       "id": "M50",
       "title": "Live spline-infrastructure dispatch",
       "status": "completed",
-      "dependsOn": ["M49"],
+      "dependsOn": [
+        "M49"
+      ],
       "outcome": "The proven route-field, Blender curve and Unreal spline chain becomes the seventeenth finite current-session capability dispatched by the existing durable DCC lifecycle and presented in the Scene Change Spectrum.",
       "acceptance": [
         "The work item binds exact scene conditioning, corridor, Blender source, manifest, exchange assets and Unreal candidate identities",
@@ -608,7 +720,9 @@
       "id": "M51",
       "title": "Procedural mechanism rig and animation handoff",
       "status": "completed",
-      "dependsOn": ["M50"],
+      "dependsOn": [
+        "M50"
+      ],
       "outcome": "Current modular scene intent drives a bounded articulated mechanism authored with an editable Blender armature and action, then imported as Unreal skeletal and animation assets in a derived candidate.",
       "acceptance": [
         "A typed request binds the exact modular or spline candidate, visual intent, mechanism dimensions, joint limits, frame range and geometry budget",
@@ -621,7 +735,9 @@
       "id": "M52",
       "title": "Live mechanism-animation dispatch",
       "status": "completed",
-      "dependsOn": ["M51"],
+      "dependsOn": [
+        "M51"
+      ],
       "outcome": "The proven articulated-gate request, editable Blender rig, FBX exchange, Unreal skeletal assets and derived candidate become the eighteenth finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds the exact request, Blender source, FBX, manifest, Unreal skeletal mesh, skeleton, animation and candidate identities",
@@ -633,7 +749,9 @@
       "id": "M53",
       "title": "Sequenced mechanism shot handoff",
       "status": "completed",
-      "dependsOn": ["M52"],
+      "dependsOn": [
+        "M52"
+      ],
       "outcome": "The registered articulated mechanism and animation become an editable Unreal Level Sequence shot with bounded camera and lighting cues in a candidate derived from the exact M51 scene.",
       "acceptance": [
         "A typed request binds the exact M51 candidate, skeletal mesh, skeleton, animation, frame range and finite shot parameters",
@@ -646,7 +764,9 @@
       "id": "M54",
       "title": "Live mechanism-shot dispatch",
       "status": "completed",
-      "dependsOn": ["M53"],
+      "dependsOn": [
+        "M53"
+      ],
       "outcome": "The proven mechanism-shot request, Unreal Level Sequence, derived candidate and three rendered action states become the nineteenth finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds the exact M53 request, Level Sequence, candidate and three Sequencer-rendered previews",
@@ -658,7 +778,9 @@
       "id": "M55",
       "title": "Scene-conditioned damage variant",
       "status": "completed",
-      "dependsOn": ["M54"],
+      "dependsOn": [
+        "M54"
+      ],
       "outcome": "A reviewed ComfyUI spatial graph turns the current Unreal view, object identity and protected regions into a bounded damage field; Blender authors editable geometric and material damage, and Unreal receives a production-ready static hero-module variant in a derived candidate.",
       "acceptance": [
         "A typed request binds the exact source candidate, target module, camera conditioning, protection field and finite geometry, texture and execution budgets",
@@ -671,7 +793,9 @@
       "id": "M56",
       "title": "Live damage-variant dispatch",
       "status": "completed",
-      "dependsOn": ["M55"],
+      "dependsOn": [
+        "M55"
+      ],
       "outcome": "The proven scene-conditioned damage field, editable Blender source, exchange asset and Unreal candidate become the twentieth finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds exact conditioning, ComfyUI, Blender, GLB, material, manifest and Unreal candidate identities",
@@ -683,7 +807,9 @@
       "id": "M57",
       "title": "Scene-conditioned cloth banner authoring",
       "status": "completed",
-      "dependsOn": ["M56"],
+      "dependsOn": [
+        "M56"
+      ],
       "outcome": "Current Unreal attachment, scale, wind and visual intent drive a reviewed ComfyUI material graph and a deterministic Blender cloth authoring capability; the baked editable banner returns as a material-bound static asset in a derived Unreal candidate.",
       "acceptance": [
         "A typed request binds current-scene attachment, dimensions, protected bounds, finite cloth parameters, registered ComfyUI graph and exact texture outputs",
@@ -696,7 +822,9 @@
       "id": "M58",
       "title": "Live cloth-banner dispatch",
       "status": "completed",
-      "dependsOn": ["M57"],
+      "dependsOn": [
+        "M57"
+      ],
       "outcome": "The proven scene-conditioned banner texture, editable Blender cloth source, baked exchange mesh and Unreal candidate become the twenty-first finite current-session capability dispatched through the existing durable DCC lifecycle.",
       "acceptance": [
         "The work item binds the exact request, ComfyUI receipt, Blender receipt, texture, editable source, GLB, manifest, preview and Unreal candidate identities",
@@ -708,7 +836,9 @@
       "id": "M59",
       "title": "Intent-bound DCC route selection",
       "status": "completed",
-      "dependsOn": ["M58"],
+      "dependsOn": [
+        "M58"
+      ],
       "outcome": "A current Scene Session selects one finite production route from scene facts, explicit intent and capability readiness, and dispatches only that route's shortest registered dependency chain through the existing durable work lifecycle.",
       "acceptance": [
         "A typed route decision identifies one registered route, exact stage capabilities, scene and intent identities, readiness facts and a bounded selection basis",
@@ -721,7 +851,9 @@
       "id": "M60",
       "title": "Selected-route evaluation and Unreal adoption",
       "status": "completed",
-      "dependsOn": ["M59"],
+      "dependsOn": [
+        "M59"
+      ],
       "outcome": "The exact candidate produced by the selected DCC route enters the existing current-session evaluation, Codex adoption and versioned Unreal publish lifecycle without falling back to the older cumulative candidate path.",
       "acceptance": [
         "Evaluation input binds the route decision, routed work outcome, final Unreal receipt and exact candidate identity",
@@ -733,8 +865,10 @@
     {
       "id": "M61",
       "title": "Routed candidate versioned publish and Unreal review",
-      "status": "in_progress",
-      "dependsOn": ["M60"],
+      "status": "completed",
+      "dependsOn": [
+        "M60"
+      ],
       "outcome": "The exact adopted DCC route candidate is published once into its content-addressed Unreal namespace, reconciled after unknown completion and reopened through the registered review path without changing the source level.",
       "acceptance": [
         "The Unreal publisher consumes the M60 request and writes only the declared Published package",
@@ -742,57 +876,103 @@
         "The registered review action opens and verifies the exact published candidate, material, instance and protected-state facts",
         "The Scene Change Spectrum projects evaluated, adopted, published and reviewed states from the current routed event chain"
       ]
+    },
+    {
+      "id": "M62",
+      "title": "Native candidate inspection in the publish workflow",
+      "status": "in_progress",
+      "dependsOn": [
+        "M61"
+      ],
+      "outcome": "The existing publish action collects current candidate facts automatically before compiling a routed publish request.",
+      "acceptance": [
+        "A new routed candidate enters inspection, publication and review without manually preparing a facts file",
+        "Inspection keeps the source and adopted candidate unchanged",
+        "The existing event store remains the only lifecycle authority"
+      ]
     }
   ],
   "nextSlice": {
-    "id": "M61-S1",
-    "milestone": "M61",
-    "title": "Publish, reconcile and review the selected DCC candidate in Unreal",
-    "outcome": "Run the existing Unreal publisher against the M60 content-bound request, reconcile the same Published package from a fresh process, submit the typed receipt and perform the registered exact-version review without changing the source level.",
+    "id": "M62-S1",
+    "milestone": "M62",
+    "title": "Integrate native snapshot acquisition into existing publish action",
+    "outcome": "Resolve the current adopted identity, inspect its scene in the owned UE host, then compile and execute the existing publisher without a manual bootstrap request.",
     "risk": "R3",
     "evidenceTarget": "A4",
     "requiresRealHosts": true,
-    "allowedPaths": ["src/artflow_agent/**", "tests/**", "scripts/**", "integrations/unreal/**", "docs/**", "config/goal-state.json", "artifacts/goal/**", "README.md", "web/**"],
+    "allowedPaths": [
+      "src/artflow_agent/**",
+      "tests/**",
+      "scripts/**",
+      "integrations/unreal/**",
+      "docs/**",
+      "web/**",
+      "config/goal-state.json",
+      "artifacts/goal/**",
+      "README.md"
+    ],
     "nonGoals": [
-      "Do not rerun ComfyUI or Blender",
-      "Do not create a second publisher, review system, state machine or approval gate",
-      "Do not overwrite the source level or publish any candidate other than the M60 adopted identity",
-      "Do not broaden into packaging, marketplace installation or a test matrix"
+      "No second event store or approval system",
+      "Do not regenerate ComfyUI or Blender assets",
+      "Do not modify source or adopted candidate bytes"
     ],
     "acceptance": [
-      "One Unreal process publishes only /Game/ArtFlow/Published/AF_dc31f6ed0f4e/V_c7a243e05e28 and leaves ArtFlowDemo unchanged",
-      "A fresh process reconciles the identical package and receipt with duplicate_side_effect_count 0",
-      "The existing review request and receipt verify the exact published bytes and expected scene facts",
-      "The Chinese product view shows routed evaluation, adoption, publication and review from current persisted state"
+      "One product action obtains a fresh candidate-bound snapshot and uses it for publication",
+      "Changed scene identity is rejected before publication",
+      "Replay reuses the same published version"
     ],
     "stopConditions": [
-      "Stop if the publisher requests a candidate or destination different from the M60 adoption",
-      "Stop if the source ArtFlowDemo bytes change",
-      "Stop if reconciliation cannot distinguish the existing package from a new publish side effect"
+      "Source or adopted candidate bytes change unexpectedly"
     ],
     "environmentRequirements": [
-      {"id": "python", "kind": "command", "value": "python", "required": true},
-      {"id": "unreal_editor_cmd", "kind": "command", "value": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe", "required": true},
-      {"id": "unreal_project", "kind": "repo_path", "value": "integrations/unreal/ArtFlowBridgeHost/ArtFlowBridgeHost.uproject", "required": true},
-      {"id": "routed_adoption_receipt", "kind": "repo_path", "value": "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-receipt.json", "required": true}
+      {
+        "id": "python",
+        "kind": "command",
+        "value": "python",
+        "required": true
+      },
+      {
+        "id": "unreal_editor_cmd",
+        "kind": "command",
+        "value": "C:\\Program Files\\Epic Games\\UE_5.8\\Engine\\Binaries\\Win64\\UnrealEditor-Cmd.exe",
+        "required": true
+      },
+      {
+        "id": "unreal_project",
+        "kind": "repo_path",
+        "value": "integrations/unreal/ArtFlowBridgeHost/ArtFlowBridgeHost.uproject",
+        "required": true
+      },
+      {
+        "id": "routed_adoption_receipt",
+        "kind": "repo_path",
+        "value": "artifacts/goal/m60-s1-routed-dcc-adoption/routed-dcc-adoption-receipt.json",
+        "required": true
+      }
     ],
     "validationCommands": [
       "python scripts/validate_goal_state.py",
-      "powershell -ExecutionPolicy Bypass -File scripts/validate.ps1 -Tier quick"
+      "git diff --check"
     ]
   },
   "manualTracks": [],
   "continuationPolicy": {
-    "sourceOfTruth": ["config/goal-state.json", "the checkpoint referenced by lastCheckpoint", "observable code, tests and current artifacts", "docs/AGENT_ENGINEERING_BLUEPRINT.md", "docs/development/CODEX_GOAL.md and docs/development/CODEX_LOOP.md"],
+    "sourceOfTruth": [
+      "config/goal-state.json",
+      "the checkpoint referenced by lastCheckpoint",
+      "observable code, tests and current artifacts",
+      "docs/AGENT_ENGINEERING_BLUEPRINT.md",
+      "docs/development/CODEX_GOAL.md and docs/development/CODEX_LOOP.md"
+    ],
     "maxInProgressMilestones": 1,
     "checkpointRequiredBeforeAdvance": true,
     "executeValidationCommandsDynamically": false,
     "dirtyWorktreePolicy": "preserve_and_report",
     "manualTrackPolicy": "non_blocking_unless_promoted"
   },
-  "lastCheckpoint": "artifacts/goal/checkpoint-0102.json",
+  "lastCheckpoint": "artifacts/goal/checkpoint-0103.json",
   "currentBlocker": null,
-  "evidenceCeiling": "M0-M60 are complete. The selected cloth-banner route now owns evaluation dcc-evaluation-181f20992cd1, which binds route decision, DCC work, three host receipts, exact Unreal candidate bytes and preview. Six delivery checks and four Codex visual claims pass. Adoption scene-adoption-4f5d61aacbeaede7 locks content identity c7a243e05e28 and the existing publisher compiles the corresponding versioned destination. Repeated evaluation and adoption preserve identity, reducer replay is equivalent and duplicate external side effects remain zero. Real Unreal publication, reconciliation and exact-version review are M61-S1 scope and have not yet run.",
+  "evidenceCeiling": "M61 completed in real UE 5.8.1 commandlet processes: candidate-bound snapshot contains 18 instances rather than the earlier base scene 12; publish/reconcile and inspect/reconcile agree on exact file hashes, source unchanged, zero duplicate side effects. Current UI renders the routed lineage from 46 persisted events. 203 quick checks and web build passed. No new rendered visual-quality claim. Automatic snapshot orchestration remains M62.",
   "constraints": [
     "ArtFlow Agent remains the independent flagship portfolio product; the sibling Art Pipeline Skill has separate Git and goal state and is only a reusable capability layer",
     "Project-owned DCC and engine fixtures, bounded local GPU runs, built-in Codex image generation, candidate selection and local portfolio delivery are autonomous development scope; unrelated user data and shared installations remain protected",
